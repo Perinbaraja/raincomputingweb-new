@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom"
 import Chat from "../pages/Chat/Chat"
 
 // // File Manager
-import FileManager from "../pages/FileManager/index"
+// import FileManager from "../pages/FileManager/index"
 
 // Profile
 import UserProfile from "../pages/Authentication/user-profile"
@@ -20,10 +20,6 @@ import TasksKanban from "../pages/Tasks/tasks-kanban"
 import TasksCreate from "../pages/Tasks/tasks-create"
 
 // //Projects
-import ProjectsGrid from "../pages/Projects/projects-grid"
-import ProjectsList from "../pages/Projects/projects-list"
-import ProjectsOverview from "../pages/Projects/ProjectOverview/projects-overview"
-import ProjectsCreate from "../pages/Projects/projects-create"
 
 // //Ecommerce Pages
 import EcommerceProducts from "../pages/Ecommerce/EcommerceProducts/index"
@@ -43,8 +39,6 @@ import EmailAlertTemplte from "../pages/Email/email-template-alert"
 import EmailTemplateBilling from "../pages/Email/email-template-billing"
 
 //Invoices
-import InvoicesList from "../pages/Invoices/invoices-list"
-import InvoiceDetail from "../pages/Invoices/invoices-detail"
 
 // Authentication related pages
 import Login from "../pages/Authentication/Login"
@@ -203,7 +197,6 @@ const authProtectedRoutes = [
   //popup
 
   //File Manager
-  { path: "/apps-filemanager", component: FileManager },
 
   // //calendar
   // { path: "/calendar", component: Calendar },
@@ -229,8 +222,6 @@ const authProtectedRoutes = [
   { path: "/email-template-billing", component: EmailTemplateBilling },
 
   //Invoices
-  { path: "/invoices-list", component: InvoicesList },
-  { path: "/invoices-detail/:id?", component: InvoiceDetail },
 
   // Tasks
   { path: "/tasks-list", component: TasksList },
@@ -238,11 +229,6 @@ const authProtectedRoutes = [
   { path: "/tasks-create", component: TasksCreate },
 
   //Projects
-  { path: "/projects-grid", component: ProjectsGrid },
-  { path: "/projects-list", component: ProjectsList },
-  { path: "/projects-overview", component: ProjectsOverview },
-  { path: "/projects-overview/:id", component: ProjectsOverview },
-  { path: "/projects-create", component: ProjectsCreate },
 
   //Blog
   { path: "/blog-list", component: BlogList },
