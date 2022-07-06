@@ -113,9 +113,9 @@ export const ON_ADD_COMMENT = "/comments-product-add-comment"
 //Demo
 export const GET_DEMO_DATA = "https://jsonplaceholder.typicode.com/posts"
 
-export const GET_ATTORNEYS_DATA = `${BASE_URL}user/attorneys`
+export const GET_ATTORNEYS_DATA = `${BASE_URL}/user/attorneys`
 
-export const POST_USER_LOGIN = `${BASE_URL}user/login`
+export const POST_USER_LOGIN = `${BASE_URL}/user/login`
 export const POST_USER_REGISTER = `${BASE_URL}/user/register`
 
 export const GET_ALL_ATTORNEYS_DATA =
