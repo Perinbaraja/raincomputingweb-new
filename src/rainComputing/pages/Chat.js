@@ -50,8 +50,10 @@ import {
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 
+import profile from "assets/images/avatar-defult.jpg"
+
 // const initialGroupMember = [currentUser.userID]
-const RPChat = () => {
+const RcChat = () => {
   const currentUser = JSON.parse(localStorage.getItem("authUser"))
 
   const {
@@ -520,13 +522,13 @@ const RPChat = () => {
                                             </span>
                                           )}
                                         </div>
-                                        {/* <div className="align-self-center me-3">
+                                        <div className="align-self-center me-3">
                                           <img
-                                            src={images[chat.image]}
+                                            src={profile}
                                             className="rounded-circle avatar-xs"
                                             alt=""
                                           />
-                                        </div> */}
+                                        </div>
 
                                         <div className="flex-grow-1 overflow-hidden">
                                           <h5 className="text-truncate font-size-14 mb-1">
@@ -918,4 +920,4 @@ const RPChat = () => {
   )
 }
 
-export default RPChat
+export default RcChat

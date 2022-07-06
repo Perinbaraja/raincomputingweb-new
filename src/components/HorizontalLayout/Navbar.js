@@ -95,6 +95,15 @@ const Navbar = props => {
                     {props.t("Home")} {props.menuOpen}
                   </Link>
                 </li>
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle arrow-none"
+                    to="/rc-chat"
+                  >
+                    <i className="bx bxl-messenger me-2"></i>
+                    {props.t("Chat")} {props.menuOpen}
+                  </Link>
+                </li>
               </ul>
             </Collapse>
           </nav>
