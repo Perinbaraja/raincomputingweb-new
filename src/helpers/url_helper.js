@@ -1,3 +1,6 @@
+const BASE_URL = `${SERVER_URL}/api`
+import { SERVER_URL } from "rainComputing/helpers/configuration"
+
 //REGISTER
 export const POST_FAKE_REGISTER = "/post-fake-register"
 
@@ -118,18 +121,14 @@ export const GET_ATTORNEYS_DATA = `${BASE_URL}/user/attorneys`
 export const POST_USER_LOGIN = `${BASE_URL}/user/login`
 export const POST_USER_REGISTER = `${BASE_URL}/user/register`
 
-export const GET_ALL_ATTORNEYS_DATA =
-  `${BASE_URL}/user/allAttorney`
+export const GET_ALL_ATTORNEYS_DATA = `${BASE_URL}/user/allAttorney`
 
 export const PUT_USER_UPDATE = `${BASE_URL}/user/update`
 
-export const GET_ATTORNEYSCOUNT_DATA =
-  `${BASE_URL}/user/attorneyCount`
+export const GET_ATTORNEYSCOUNT_DATA = `${BASE_URL}/user/attorneyCount`
 
-export const GET_ATTORNEY_BY_ID =
-  `${BASE_URL}/user/attorneydetails`
+export const GET_ATTORNEY_BY_ID = `${BASE_URL}/user/attorneydetails`
 
-export const GET_PRIVATECHAT =
-  `${BASE_URL}/chat/allPrivateMessages`
+export const GET_PRIVATECHAT = `${BASE_URL}/chat/allPrivateMessages`
 
 export const GET_ALLUSER = `${BASE_URL}/user/allUser`
