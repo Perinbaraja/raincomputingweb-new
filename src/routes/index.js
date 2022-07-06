@@ -12,7 +12,7 @@ import FileManager from "../pages/FileManager/index"
 import UserProfile from "../pages/Authentication/user-profile"
 
 // Pages Calendar
-import Calendar from "../pages/Calendar/index"
+// import Calendar from "../pages/Calendar/index"
 
 // //Tasks
 import TasksList from "../pages/Tasks/tasks-list"
@@ -206,7 +206,7 @@ const authProtectedRoutes = [
   { path: "/apps-filemanager", component: FileManager },
 
   // //calendar
-  { path: "/calendar", component: Calendar },
+  // { path: "/calendar", component: Calendar },
 
   // //profile
   { path: "/profile", component: UserProfile },
