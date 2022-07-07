@@ -1,5 +1,6 @@
-const BASE_URL = `${SERVER_URL}/api`
 import { SERVER_URL } from "rainComputing/helpers/configuration"
+
+const BASE_URL = `${SERVER_URL}/api`
 
 //REGISTER
 export const POST_FAKE_REGISTER = "/post-fake-register"

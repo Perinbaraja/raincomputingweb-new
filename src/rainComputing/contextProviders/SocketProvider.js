@@ -17,6 +17,19 @@ export function SocketProvider({ children }) {
       })
     : null
 
+  if (socket) {
+    socket.once("connect", () => {
+      // USER IS ONLINE
+      socket.on("online", userId => {
+        console.log(userId, "Is Online!") // update online status
+      })
+      // USER IS OFFLINE
+      socket.on("offline", userId => {
+        console.log(userId, "Is Offline!") // update offline status
+      })
+    })
+  }
+
   return (
     <SocketContext.Provider
       value={{

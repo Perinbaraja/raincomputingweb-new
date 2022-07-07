@@ -525,12 +525,12 @@ const RcChat = () => {
                                         <div className="align-self-center me-3">
                                           <img
                                             src={profile}
-                                            className="rounded-circle avatar-xs"
+                                            className="rounded-circle  avatar-xs  "
                                             alt=""
                                           />
                                         </div>
 
-                                        <div className="flex-grow-1 overflow-hidden">
+                                        <div className="flex-grow-1 overflow-hidden align-self-center ">
                                           <h5 className="text-truncate font-size-14 mb-1">
                                             {chat.isGroup
                                               ? chat.groupName
