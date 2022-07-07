@@ -1,1 +1,1 @@
-export const SERVER_URL = "http://rainapi.azurewebsites.net/"
+export const SERVER_URL = "https://rainapi.azurewebsites.net/"
