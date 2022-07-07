@@ -17,6 +17,10 @@ import UserProfile from "../pages/Authentication/user-profile"
 // //Tasks
 
 // //Projects
+import ProjectsGrid from "../pages/Projects/projects-grid"
+import ProjectsList from "../pages/Projects/projects-list"
+import ProjectsOverview from "../pages/Projects/ProjectOverview/projects-overview"
+import ProjectsCreate from "../pages/Projects/projects-create"
 
 // //Ecommerce Pages
 
@@ -108,7 +112,11 @@ const authProtectedRoutes = [
   // Tasks
 
   //Projects
-
+  { path: "/projects-grid", component: ProjectsGrid },
+  { path: "/projects-list", component: ProjectsList },
+  { path: "/projects-overview", component: ProjectsOverview },
+  { path: "/projects-overview/:id", component: ProjectsOverview },
+  { path: "/projects-create", component: ProjectsCreate },
   //Blog
 
   // Contacts
