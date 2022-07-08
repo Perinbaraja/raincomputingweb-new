@@ -20,6 +20,8 @@
 // @import "./rtl/text-rtl";
 
 body {
+  max-width: 1440px;
+    margin: 0 auto;
   * {
     outline: none;
   }

@@ -15,19 +15,12 @@ import { withRouter, Link } from "react-router-dom"
 
 // users
 import user1 from "../../../assets/images/users/avatar-2.jpg"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
+  const { currentUser } = useUser()
   const [menu, setMenu] = useState(false)
-
-  const [username, setusername] = useState("")
-
-  useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      const obj = JSON.parse(localStorage.getItem("authUser"))
-      setusername(obj.username)
-    }
-  }, [])
 
   return (
     <React.Fragment>
@@ -47,7 +40,7 @@ const ProfileMenu = props => {
             alt="Header Avatar"
           />
           <span className="d-none d-xl-inline-block ms-2 me-1 fw-bolder font-size-16">
-            {username}
+            {currentUser?.username}
           </span>
           <i className="mdi mdi-chevron-down d-none d-xl-inline-block" />
         </DropdownToggle>

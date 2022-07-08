@@ -3,8 +3,6 @@ import PropTypes from "prop-types"
 import { getAllChatRooms } from "rainComputing/helpers/backend_helper"
 import { useNotifications } from "./NotificationsProvider"
 
-const currentUser = JSON.parse(localStorage.getItem("authUser"))
-
 const ChatContext = React.createContext()
 
 export const useChat = () => {
@@ -12,6 +10,7 @@ export const useChat = () => {
 }
 
 export function ChatProvider({ socket, children }) {
+  const currentUser = JSON.parse(localStorage.getItem("authUser"))
   const { notifications, setNotifications } = useNotifications()
   const [chats, setChats] = useState([])
   const [currentRoom, setCurrentRoom] = useState(null)

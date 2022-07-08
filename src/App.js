@@ -1,7 +1,7 @@
 import PropTypes from "prop-types"
 import React from "react"
 
-import { Switch, BrowserRouter as Router } from "react-router-dom"
+import { Switch, BrowserRouter as Router, Route } from "react-router-dom"
 import { connect } from "react-redux"
 
 // Import Routes all
@@ -26,47 +26,29 @@ import fakeBackend from "./helpers/AuthType/fakeBackend"
 // Activating fake backend
 fakeBackend()
 
-// const firebaseConfig = {
-//   apiKey: process.env.                      ,
-//   authDomain: process.env.REACT_APP_AUTHDOMAIN,
-//   databaseURL: process.env.REACT_APP_DATABASEURL,
-//   projectId: process.env.REACT_APP_PROJECTID,
-//   storageBucket: process.env.REACT_APP_STORAGEBUCKET,
-//   messagingSenderId: process.env.REACT_APP_MESSAGINGSENDERID,
-//   appId: process.env.REACT_APP_APPID,
-//   measurementId: process.env.REACT_APP_MEASUREMENTID,
-// }
-
-// init firebase backend
-// initFirebaseBackend(firebaseConfig)
-
-//Custom
-
 import { ChatProvider } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
+import ContactsGrid from "pages/Contacts/contacts-grid"
+import LandingGrid from "rainComputing/pages/landing/LandingGrid"
 
-const App = props => {
+const App = () => {
   const { socket } = useSocket()
-  function getLayout() {
-    let layoutCls = VerticalLayout
-    switch (props.layout.layoutType) {
-      case "horizontal":
-        layoutCls = HorizontalLayout
-        break
-      default:
-        layoutCls = VerticalLayout
-        break
-    }
-    return layoutCls
-  }
 
-  const Layout = getLayout()
   return (
     <ChatProvider socket={socket}>
       {/* <NotificationsProvider> */}
       <React.Fragment>
         <Router>
           <Switch>
+            <Route
+              path="/"
+              exact
+              render={props => (
+                <HorizontalLayout>
+                  <LandingGrid {...props} />
+                </HorizontalLayout>
+              )}
+            />
             {publicRoutes.map((route, idx) => (
               <Authmiddleware
                 path={route.path}
@@ -81,7 +63,7 @@ const App = props => {
             {authProtectedRoutes.map((route, idx) => (
               <Authmiddleware
                 path={route.path}
-                layout={Layout}
+                layout={HorizontalLayout}
                 component={route.component}
                 key={idx}
                 isAuthProtected={true}
@@ -96,14 +78,4 @@ const App = props => {
   )
 }
 
-App.propTypes = {
-  layout: PropTypes.any,
-}
-
-const mapStateToProps = state => {
-  return {
-    layout: state.Layout,
-  }
-}
-
-export default connect(mapStateToProps, null)(App)
+export default App

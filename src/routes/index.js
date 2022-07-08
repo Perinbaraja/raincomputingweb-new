@@ -9,7 +9,7 @@ import Chat from "../pages/Chat/Chat"
 // import FileManager from "../pages/FileManager/index"
 
 // Profile
-import UserProfile from "../pages/Authentication/user-profile"
+// import UserProfile from "../pages/Authentication/user-profile"
 
 // Pages Calendar
 // import Calendar from "../pages/Calendar/index"
@@ -31,7 +31,6 @@ import ProjectsCreate from "../pages/Projects/projects-create"
 // Authentication related pages
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
-import Register from "../pages/Authentication/Register"
 import ForgetPwd from "../pages/Authentication/ForgetPassword"
 
 //  // Inner Authentication
@@ -51,28 +50,6 @@ import ConfirmMail2 from "../pages/AuthenticationInner/page-confirm-mail-2"
 import TwostepVerification from "../pages/AuthenticationInner/auth-two-step-verification"
 import TwostepVerification2 from "../pages/AuthenticationInner/auth-two-step-verification-2"
 
-// Dashboard
-
-//Crypto
-
-// Charts
-
-// Maps
-
-//Icons
-
-//Tables
-
-//Blog
-
-// Forms
-
-//Ui
-
-//Pages
-
-//Contacts
-import ContactsGrid from "../pages/Contacts/contacts-grid"
 import ContactsList from "../pages/Contacts/ContactList/contacts-list"
 import ContactsProfile from "../pages/Contacts/ContactsProfile/contacts-profile"
 
@@ -86,30 +63,15 @@ import LandingPage from "pages/Contacts/landingPage"
 
 //Custom
 import RcChat from "rainComputing/pages/Chat"
+import RainRegister from "rainComputing/pages/auth/Register"
+import RainLogin from "rainComputing/pages/auth/Login"
+import UserProfile from "rainComputing/pages/user/Profile"
 
 const authProtectedRoutes = [
   //Crypto
 
   //chat
   { path: "/chat", component: Chat },
-
-  //popup
-
-  //File Manager
-
-  // //calendar
-  // { path: "/calendar", component: Calendar },
-
-  // //profile
-  { path: "/profile", component: UserProfile },
-
-  //Ecommerce
-
-  //Email
-
-  //Invoices
-
-  // Tasks
 
   //Projects
   { path: "/projects-grid", component: ProjectsGrid },
@@ -120,37 +82,22 @@ const authProtectedRoutes = [
   //Blog
 
   // Contacts
-  { path: "/contacts-grid", component: ContactsGrid },
+  // { path: "/contacts-grid", component: ContactsGrid },
   { path: "/contacts-list", component: ContactsList },
   { path: "/contacts-profile", component: ContactsProfile },
 
-  //Charts
-
-  // Icons
-
-  // Tables
-
-  // Maps
-
-  // Forms
-
-  // Ui
-
-  //Utility
-
   //Custom Pages
   { path: "/rc-chat", component: RcChat },
+  { path: "/profile", component: UserProfile },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
-  { path: "/", exact: true, component: () => <Redirect to="/contacts-grid" /> },
+  // { path: "/", exact: true, component: () => <Redirect to="/contacts-grid" /> },
 ]
 
 const publicRoutes = [
   { path: "/logout", component: Logout },
-  { path: "/login", component: Login },
   { path: "/forgot-password", component: ForgetPwd },
-  { path: "/register", component: Register },
   { path: "/popup", component: Popup },
 
   // Authentication Inner
@@ -168,7 +115,11 @@ const publicRoutes = [
   { path: "/auth-two-step-verification", component: TwostepVerification },
   { path: "/auth-two-step-verification-2", component: TwostepVerification2 },
 
-  { path: "/", component: LandingPage },
+  // { path: "/", component: LandingPage },
+
+  //CUSTOM COMPONENTS
+  { path: "/register", component: RainRegister },
+  { path: "/login", component: RainLogin },
 ]
 
 export { authProtectedRoutes, publicRoutes }
