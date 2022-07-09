@@ -52,7 +52,6 @@ import { useChat } from "rainComputing/contextProviders/ChatProvider"
 
 import profile from "assets/images/avatar-defult.jpg"
 
-// const initialGroupMember = [currentUser.userID]
 const RcChat = () => {
   const currentUser = JSON.parse(localStorage.getItem("authUser"))
 
@@ -193,9 +192,9 @@ const RcChat = () => {
   }
 
   const handleGroupCreationCancel = () => {
-    setGroupMembers(initialGroupMember)
+    setGroupMembers([])
     setGroupName("")
-    setCreateGroupModal(!createGroupModal)
+    setCreateGroupModal(false)
   }
 
   const handleAddingGroupMembers = id => {
