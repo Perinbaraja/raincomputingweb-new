@@ -13,16 +13,10 @@ export function SocketProvider({ children }) {
   const user = JSON.parse(localStorage.getItem("authUser"))
   const [socket, setSocket] = useState(() => {
     if (user)
-      io(SERVER_URL, {
+      return io(SERVER_URL, {
         query: { id: user.userID },
       })
   })
-  user
-    ? io(SERVER_URL, {
-        query: { id: user.userID },
-      })
-    : null
-
   if (socket) {
     socket.once("connect", () => {
       // USER IS ONLINE
@@ -43,6 +37,7 @@ export function SocketProvider({ children }) {
       })
     )
   }
+
   return (
     <SocketContext.Provider
       value={{
