@@ -87,10 +87,7 @@ const Navbar = props => {
             >
               <ul className="navbar-nav">
                 <li className="nav-item dropdown">
-                  <Link
-                    className="nav-link dropdown-toggle arrow-none"
-                    to="/contacts-grid"
-                  >
+                  <Link className="nav-link dropdown-toggle arrow-none" to="/">
                     <i className="bx bx-home-circle me-2"></i>
                     {props.t("Home")} {props.menuOpen}
                   </Link>
