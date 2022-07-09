@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Route, Redirect } from "react-router-dom"
 
@@ -7,27 +7,28 @@ const Authmiddleware = ({
   layout: Layout,
   isAuthProtected,
   ...rest
-}) => (
-  <Route
-    {...rest}
-    render={props => {
-      if (isAuthProtected && !localStorage.getItem("authUser")) {
+}) => {
+  return (
+    <Route
+      {...rest}
+      render={props => {
+        if (isAuthProtected && !localStorage.getItem("authUser")) {
+          return (
+            <Redirect
+              to={{ pathname: "/login", state: { from: props.location } }}
+            />
+          )
+        }
+
         return (
-          <Redirect
-            to={{ pathname: "/login", state: { from: props.location } }}
-          />
+          <Layout>
+            <Component {...props} />
+          </Layout>
         )
-      }
-
-      return (
-        <Layout>
-          <Component {...props} />
-        </Layout>
-      )
-    }}
-  />
-)
-
+      }}
+    />
+  )
+}
 Authmiddleware.propTypes = {
   isAuthProtected: PropTypes.bool,
   component: PropTypes.any,

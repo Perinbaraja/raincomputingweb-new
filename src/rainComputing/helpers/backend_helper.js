@@ -21,6 +21,8 @@ const getRoomMessages = payload =>
 const userRegisteration = payload => post(`${BASE_URL}/user/register`, payload)
 const userLogin = payload => post(`${BASE_URL}/user/login`, payload)
 const userUpdate = payload => put(`${BASE_URL}/user/edit`, payload)
+const findMe = () => get(`${BASE_URL}/user/whoiam`)
+const logoutUser = () => get(`${BASE_URL}/user/logout`)
 
 export {
   getAllAttorneys,
@@ -32,4 +34,6 @@ export {
   userRegisteration,
   userLogin,
   userUpdate,
+  findMe,
+  logoutUser,
 }
