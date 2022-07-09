@@ -18,16 +18,19 @@ import { withRouter, Link, useHistory } from "react-router-dom"
 import user1 from "../../../assets/images/users/avatar-2.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { logoutUser } from "rainComputing/helpers/backend_helper"
+import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
   const histroy = useHistory()
   const { currentUser } = useUser()
+  const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
 
   const handleLogout = async () => {
     const res = await logoutUser()
     if (res.success) {
+      socket?.emit("close_manually")
       localStorage.removeItem("authUser")
       histroy.push("/login")
     } else {
