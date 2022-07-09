@@ -765,7 +765,7 @@ const RcChat = () => {
                         <div className="chat-conversation p-3">
                           <ul className="list-unstyled">
                             <PerfectScrollbar
-                              style={{ height: "300px" }}
+                              style={{ height: "320px" }}
                               containerRef={ref => setMessageBox(ref)}
                             >
                               <li>
