@@ -40,15 +40,18 @@ const LandingGrid = () => {
     }
   }
 
-  //   useEffect(() => {
-  //     const handleLoad = async () => {
-  //       setLoading(true)
-  //       await loadAttorney()
-  //       setLoading(false)
-  //     }
+  useEffect(() => {
+    const handleLoad = async () => {
+      setLoading(true)
+      await loadAttorney()
+      setLoading(false)
+    }
+    handleLoad()
+  }, [page, limit])
 
-  //     handleLoad()
-  //   }, [page, limit])
+  useEffect(() => {
+    setPage(1)
+  }, [searchText])
 
   useEffect(() => {
     console.log("searchText :", searchText)
