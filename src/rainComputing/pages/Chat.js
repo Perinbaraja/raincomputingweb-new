@@ -489,7 +489,7 @@ const RcChat = () => {
                               className="list-unstyled chat-list"
                               id="recent-list"
                             >
-                              <PerfectScrollbar style={{ height: "410px" }}>
+                              <PerfectScrollbar style={{ height: "300px" }}>
                                 {map(chats, chat => (
                                   <li
                                     key={chat._id}
@@ -567,7 +567,7 @@ const RcChat = () => {
                           </div>
                           <h5 className="font-size-14 mb-3">Group</h5>
                           <ul className="list-unstyled chat-list">
-                            <PerfectScrollbar style={{ height: "410px" }}>
+                            <PerfectScrollbar style={{ height: "300px" }}>
                               {chats &&
                                 chats
                                   .filter(c => c.isGroup)
@@ -620,7 +620,7 @@ const RcChat = () => {
                           <h5 className="font-size-14 mb-3">Contact</h5>
 
                           <div>
-                            <PerfectScrollbar style={{ height: "310px" }}>
+                            <PerfectScrollbar style={{ height: "300px" }}>
                               {contacts &&
                                 contacts.map((contact, i) => (
                                   <ul
@@ -765,7 +765,7 @@ const RcChat = () => {
                         <div className="chat-conversation p-3">
                           <ul className="list-unstyled">
                             <PerfectScrollbar
-                              style={{ height: "470px" }}
+                              style={{ height: "320px" }}
                               containerRef={ref => setMessageBox(ref)}
                             >
                               <li>
