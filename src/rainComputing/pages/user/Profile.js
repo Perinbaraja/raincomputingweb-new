@@ -27,23 +27,21 @@ import Breadcrumb from "components/Common/Breadcrumb"
 import avatar from "assets/images/users/avatar-2.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { userUpdate } from "rainComputing/helpers/backend_helper"
-// actions
-// import { editProfile, resetProfileFlag } from "../../store/actions"
 
 const UserProfile = props => {
+  const user=localStorage.getItem("authUser")
   const [updateSuccess, setUpdateSuccess] = useState("")
   const [updateError, setUpdateError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { currentUser, setCurrentUser } = useUser()
+  const { currentUser, setCurrentUser } = useUser(user)
 
-  // Form validation
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      firstname: "",
-      lastname: "",
+      firstname: currentUser?.firstname,
+      lastname: currentUser?.lastname,
     },
     validationSchema: Yup.object({
       firstname: Yup.string().required("Please Enter Your First Name"),
@@ -57,7 +55,7 @@ const UserProfile = props => {
         localStorage.setItem("authUser", JSON.stringify(res))
         setCurrentUser(res)
         setUpdateSuccess("User Details updated Successfully")
-        onSubmitProps.resetForm()
+        // onSubmitProps.resetForm()
       } else {
         setUpdateSuccess("")
         setCurrentUser(res)
@@ -94,7 +92,7 @@ const UserProfile = props => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>{currentUser.username}</h5>
+                        <h5>{currentUser.firstname+" "+currentUser.lastname}</h5>
                         <p className="mb-1">{currentUser.email}</p>
                       </div>
                     </div>

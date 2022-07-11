@@ -401,7 +401,7 @@ const RcChat = () => {
                         <div className="flex-grow-1">
                           <h5 className="font-size-15 mt-0 mb-1">
                             {/* {currentUser.name} */}
-                            {currentUser?.username}
+                            {currentUser?.firstname+" "+currentUser?.lastname}
                           </h5>
                           <p className="text-muted mb-0">
                             <i className="mdi mdi-circle text-success align-middle me-1" />
