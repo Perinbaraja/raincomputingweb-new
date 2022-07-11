@@ -45,11 +45,9 @@ const RainRegister = () => {
       email: Yup.string().required("Please Enter Your Email"),
       firstname: Yup.string().required("Please Enter Your firstname"),
       lastname: Yup.string().required("Please Enter Your lastname"),
-      password: Yup.string().required("Please Enter Your Password"),
-      // .matches(
-      //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{5,})/,
-      //   "Must Contain 5 Characters, One Uppercase,Lowercase,Number,Special Character"
-      // ),
+      password: Yup.string()
+        .required("Please Enter Your Password")
+        .matches(/^(?=.{5,})/, "Must Contain 5 Characters"),
     }),
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
