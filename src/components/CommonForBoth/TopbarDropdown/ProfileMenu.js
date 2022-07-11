@@ -57,7 +57,7 @@ const ProfileMenu = props => {
               alt="Header Avatar"
             />
             <span className="d-none d-xl-inline-block ms-2 me-1 fw-bolder font-size-16">
-              {currentUser?.firstname+" "+currentUser?.lastname}
+              {currentUser?.firstname + " " + currentUser?.lastname}
             </span>
             <i className="mdi mdi-chevron-down d-none d-xl-inline-block" />
           </DropdownToggle>
@@ -72,7 +72,7 @@ const ProfileMenu = props => {
             {props.t("My Wallet")}
           </DropdownItem> */}
             <DropdownItem tag="a" href="#">
-              <span className="badge bg-success float-end">11</span>
+              <span className="badge bg-success float-end"></span>
               <i className="bx bx-wrench font-size-16 align-middle me-1" />
               {props.t("Settings")}
             </DropdownItem>
