@@ -86,6 +86,7 @@ const RcChat = () => {
   const [contacts, setContacts] = useState([])
   const [recivers, setRecivers] = useState([])
   const [createGroupModal, setCreateGroupModal] = useState(false)
+  const [listGroupMembers, setListGroupMembers] = useState(false)
   const [groupName, setGroupName] = useState("")
   const [groupMembers, setGroupMembers] = useState([])
   const [groupCreationLoader, setGroupCreationLoader] = useState(false)
@@ -197,6 +198,17 @@ const RcChat = () => {
     setCreateGroupModal(false)
   }
 
+  const toggle_groupMemberList = () => {
+    setListGroupMembers(!listGroupMembers)
+    document.body.classList.add("no_padding")
+  }
+
+  const handleGroupMembersListCancel = () => {
+    setGroupMembers([])
+    setGroupName("")
+    setListGroupMembers(false)
+  }
+
   const handleAddingGroupMembers = id => {
     if (groupMembers.includes(id)) {
       const membersAfterRemove = groupMembers.filter(m => m !== id)
@@ -283,9 +295,90 @@ const RcChat = () => {
     }
   }, [currentRoom])
 
+  //serach recent user
+  const searchUsers = () => {
+    var input, filter, ul, li, a, i, txtValue
+    input = document.getElementById("search-user")
+    filter = input.value.toUpperCase()
+    ul = document.getElementById("recent-list")
+    li = ul.getElementsByTagName("li")
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("a")[0]
+      txtValue = a.textContent || a.innerText
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = ""
+      } else {
+        li[i].style.display = "none"
+      }
+    }
+  }
+
   return (
     <>
       <div className="page-content">
+        <>
+          <Modal
+            size="lg"
+            isOpen={listGroupMembers}
+            toggle={() => {
+              toggle_groupMemberList()
+            }}
+            backdrop={"static"}
+            id="staticBackdrop"
+            centered
+          >
+            <div className="modal-header">
+              <h5 className="modal-title mt-0" id="myLargeModalLabel">
+                Group Members
+              </h5>
+              <button
+                onClick={() => {
+                  handleGroupMembersListCancel()
+                }}
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <Row className="mb-3"></Row>
+              <Row className="mb-3">
+                {/* <p className="col-md-2 text-center mt-1">Group Members</p> */}
+                <div
+                  className="col-md-10 px-1 d-flex flex-wrap"
+                  style={{ height: "max-content" }}
+                >
+                  {currentRoom &&
+                    currentRoom.members.map((contact, i) => (
+                      <Button
+                        key={i}
+                        className="btn-rounded mx-1 mb-2"
+                        // onClick={() => handleAddingGroupMembers(contact._id)}
+                      >
+                        {contact.firstname} {contact.lastname}
+                      </Button>
+                    ))}
+                </div>
+              </Row>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                onClick={() => {
+                  handleGroupMembersListCancel()
+                }}
+                className="btn btn-secondary "
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </Modal>
+        </>
+        {/* groupmemberslist */}
         <>
           <Modal
             size="lg"
@@ -346,7 +439,13 @@ const RcChat = () => {
                       className="btn-rounded mx-1 mb-2"
                       onClick={() => handleAddingGroupMembers(contact._id)}
                     >
-                      {contact.firstname} {contact.lastname}
+                      <div className="d-flex ">
+                        {contact.firstname} {contact.lastname}
+                      </div>
+
+                      <div className="font-size-0 text-body ">
+                        {contact.email}
+                      </div>
                     </Button>
                   ))}
                 </div>
@@ -380,6 +479,7 @@ const RcChat = () => {
             </div>
           </Modal>
         </>
+
         <MetaTags>
           <title>Chat</title>
         </MetaTags>
@@ -429,6 +529,7 @@ const RcChat = () => {
                     <div className="search-box chat-search-box py-4">
                       <div className="position-relative">
                         <Input
+                          onKeyUp={searchUsers}
                           id="search-user"
                           type="text"
                           className="form-control"
@@ -722,8 +823,10 @@ const RcChat = () => {
                                     <i className="bx bx-cog" />
                                   </DropdownToggle>
                                   <DropdownMenu>
-                                    <DropdownItem href="#">
-                                      View Profile
+                                    <DropdownItem
+                                      onClick={() => toggle_groupMemberList()}
+                                    >
+                                      Group Members
                                     </DropdownItem>
                                     <DropdownItem href="#">
                                       Clear chat
