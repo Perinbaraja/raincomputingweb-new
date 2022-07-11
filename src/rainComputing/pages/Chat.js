@@ -493,15 +493,17 @@ const RcChat = () => {
                       <div className="d-flex">
                         <div className="align-self-center me-3">
                           <img
-                            src={images.avatar1}
-                            className="avatar-xs rounded-circle"
+                            src={profile}
+                            className="avatar-sm rounded-circle"
                             alt=""
                           />
                         </div>
                         <div className="flex-grow-1">
                           <h5 className="font-size-15 mt-0 mb-1">
                             {/* {currentUser.name} */}
-                            {currentUser?.firstname+" "+currentUser?.lastname}
+                            {currentUser?.firstname +
+                              " " +
+                              currentUser?.lastname}
                           </h5>
                           <p className="text-muted mb-0">
                             <i className="mdi mdi-circle text-success align-middle me-1" />
@@ -625,7 +627,7 @@ const RcChat = () => {
                                         <div className="align-self-center me-3">
                                           <img
                                             src={profile}
-                                            className="rounded-circle  avatar-xs  "
+                                            className="rounded-circle  avatar-sm  "
                                             alt=""
                                           />
                                         </div>
@@ -910,7 +912,7 @@ const RcChat = () => {
                                         </DropdownMenu>
                                       </UncontrolledDropdown>
                                       <div
-                                        className="ctext-wrap"
+                                        className="ctext-wrap "
                                         style={{
                                           backgroundColor:
                                             msg.message.sender ==

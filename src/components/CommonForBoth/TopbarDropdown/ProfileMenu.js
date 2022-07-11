@@ -15,7 +15,7 @@ import { connect } from "react-redux"
 import { withRouter, Link, useHistory } from "react-router-dom"
 
 // users
-import user1 from "../../../assets/images/users/avatar-2.jpg"
+import user1 from "../../../assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { logoutUser } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"

@@ -24,12 +24,12 @@ import { withRouter } from "react-router-dom"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
 
-import avatar from "assets/images/users/avatar-2.jpg"
+import avatar from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { userUpdate } from "rainComputing/helpers/backend_helper"
 
 const UserProfile = props => {
-  const user=localStorage.getItem("authUser")
+  const user = localStorage.getItem("authUser")
   const [updateSuccess, setUpdateSuccess] = useState("")
   const [updateError, setUpdateError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -90,9 +90,11 @@ const UserProfile = props => {
                         className="avatar-md rounded-circle img-thumbnail"
                       />
                     </div>
-                    <div className="flex-grow-1 align-self-center">
+                    <div className="flex-grow-1 align-self-center ms-3">
                       <div className="text-muted">
-                        <h5>{currentUser.firstname+" "+currentUser.lastname}</h5>
+                        <h5>
+                          {currentUser.firstname + " " + currentUser.lastname}
+                        </h5>
                         <p className="mb-1">{currentUser.email}</p>
                       </div>
                     </div>
