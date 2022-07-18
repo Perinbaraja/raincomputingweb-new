@@ -12,7 +12,7 @@ import {
 import { withTranslation } from "react-i18next"
 // Redux
 import { connect } from "react-redux"
-import { withRouter, Link, useHistory } from "react-router-dom"
+import { withRouter, Link, useHistory, NavLink } from "react-router-dom"
 
 // users
 import user1 from "../../../assets/images/avatar-defult.jpg"
@@ -67,10 +67,35 @@ const ProfileMenu = props => {
               <i className="bx bx-user font-size-16 align-middle me-1" />
               {props.t("Profile")}{" "}
             </DropdownItem>
-            {/* <DropdownItem tag="a" href="/crypto-wallet">
-            <i className="bx bx-wallet font-size-16 align-middle me-1"/>
-            {props.t("My Wallet")}
-          </DropdownItem> */}
+            {!currentUser?.attorneyStatus ? (
+              <DropdownItem tag="a" href="/attorney-signup">
+                <i className="bx bx-group font-size-16 align-middle me-1" />
+                {props.t("Register as Attorney")}
+              </DropdownItem>
+            ) : (
+              <DropdownItem tag="a" href="/reqattorney">
+                <i className="bx bx-group font-size-16 align-middle me-1" />
+                {props.t("Attorney")}
+                {currentUser?.attorneyStatus === "requested" && (
+                  <i className="bx bx-loader  bx-spin font-size-16 align-middle ms-2  text-primary float-end" />
+                )}
+                {currentUser?.attorneyStatus === "approved" && (
+                  <i className="bx bx-comment-error  font-size-16 align-middle ms-2 text-success  float-end" />
+                )}
+                {currentUser?.attorneyStatus === "rejected" && (
+                  <i className="bx bx-x  font-size-16 align-middle ms-2 text-danger float-end" />
+                )}
+              </DropdownItem>
+            )}
+
+            {currentUser?.attorneyStatus === "approved" && (
+              <Link to="/firmlanding" className="dropdown-item">
+                <span className="badge bg-success float-end"></span>
+                <i className="bx  bx-buildings font-size-16 align-middle me-1" />
+                {props.t("Firm")}
+              </Link>
+            )}
+
             <DropdownItem tag="a" href="#">
               <span className="badge bg-success float-end"></span>
               <i className="bx bx-wrench font-size-16 align-middle me-1" />

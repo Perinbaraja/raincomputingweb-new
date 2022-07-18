@@ -1,5 +1,6 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import PropTypes from "prop-types"
+import { getAttorneyByUserID } from "rainComputing/helpers/backend_helper"
 
 const UserContext = React.createContext()
 
@@ -10,12 +11,28 @@ export function useUser() {
 export function UserProvider({ children }) {
   const user = JSON.parse(localStorage.getItem("authUser"))
   const [currentUser, setCurrentUser] = useState(user)
+  const [currentAttorney, setCurrentAttorney] = useState({})
+  useEffect(() => {
+    if (currentUser) {
+      const handleFetching = async () => {
+        const res = await getAttorneyByUserID({ userID: currentUser.userID })
+        console.log("currentAttorney Res : ",res)
+        if (res.success) {
+          setCurrentAttorney(res.attorney)
+        }
+      }
+
+      handleFetching()
+    }
+    return () => {}
+  }, [currentUser])
 
   return (
     <UserContext.Provider
       value={{
         currentUser,
         setCurrentUser,
+        currentAttorney,
       }}
     >
       {children}

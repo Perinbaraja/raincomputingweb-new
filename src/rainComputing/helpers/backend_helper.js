@@ -23,6 +23,26 @@ const userLogin = payload => post(`${BASE_URL}/user/login`, payload)
 const userUpdate = payload => put(`${BASE_URL}/user/edit`, payload)
 const findMe = () => get(`${BASE_URL}/user/whoiam`)
 const logoutUser = () => get(`${BASE_URL}/user/logout`)
+const registerAttorney = payload =>
+  post(`${BASE_URL}/attorney/register`, payload)
+const getAttorneyByUserID = payload =>
+  post(`${BASE_URL}/attorney/getByUserId`, payload)
+const getFirmsByAttorneyID = payload =>
+  post(`${BASE_URL}/firm/getFirmByAttorneyId`, payload)
+const registerFirm = payload => post(`${BASE_URL}/firm/register`, payload)
+const getAllRegAttorneys = payload =>
+  post(`${BASE_URL}/attorney/getAllAttorney`, payload)
+const regAttorneyDetails = payload =>
+  post(`${BASE_URL}/attorney/regAttorneyDetails`, payload)
+
+const addNewUser = payload => put(`${BASE_URL}/pchat/addtoGroup`, payload)
+//Removing the User from Group
+const deleteUser = payload =>
+  put(`${BASE_URL}/pchat/removeGroupmember`, payload)
+//Deleting the Group
+const deleteGroup = payload => put(`${BASE_URL}/pchat/deleteChat`, payload)
+
+const getFirmId = payload => put(`${BASE_URL}firm/getFirmById`, payload)
 
 export {
   getAllAttorneys,
@@ -36,4 +56,14 @@ export {
   userUpdate,
   findMe,
   logoutUser,
+  registerAttorney,
+  getAttorneyByUserID,
+  getFirmsByAttorneyID,
+  registerFirm,
+  getAllRegAttorneys,
+  regAttorneyDetails,
+  addNewUser,
+  deleteUser,
+  deleteGroup,
+  getFirmId,
 }

@@ -28,6 +28,7 @@ import {
   UncontrolledDropdown,
   UncontrolledTooltip,
   Modal,
+  Alert,
 } from "reactstrap"
 import classnames from "classnames"
 
@@ -46,6 +47,9 @@ import {
   getAllChatRooms,
   getAllUsers,
   getRoomMessages,
+  deleteUser,
+  addNewUser,
+  deleteGroup,
 } from "rainComputing/helpers/backend_helper"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
@@ -85,11 +89,33 @@ const RcChat = () => {
   //Custom
   const [contacts, setContacts] = useState([])
   const [recivers, setRecivers] = useState([])
-  const [createGroupModal, setCreateGroupModal] = useState(false)
-  const [listGroupMembers, setListGroupMembers] = useState(false)
+  // const [listGroupMembers, setListGroupMembers] = useState(false)
+
+  //Creating and listing Group Members
   const [groupName, setGroupName] = useState("")
   const [groupMembers, setGroupMembers] = useState([])
+  const [createGroupModal, setCreateGroupModal] = useState(false)
+
+  //Updating Group Modal
+  const [updateGroupName, setUpdateGroupName] = useState("")
+  const [updateGroupModal, setUpdateGroupModal] = useState(false)
+
+  //Delete Group Modal
+  const [deleteGroupModal, setDeleteGroupModal] = useState(false)
+
+
+
+  //Adding and Removing Users
+  const [manageUsers, setManageUsers] = useState([])
+  const [removeUsers, setRemoveUsers] = useState([])
+
+  //Delete Group
+
+  //Loaders
   const [groupCreationLoader, setGroupCreationLoader] = useState(false)
+  const [groupUpdateLoader, setGroupUpdateLoader] = useState(false)
+  const [removeUserLoader, setRemoveUserLoader] = useState(false)
+  const [deleteGroupLoader,setDeleteGroupLoader]=useState(false)
 
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
@@ -148,6 +174,7 @@ const RcChat = () => {
   const ongetAllChatRooms = async () => {
     const chatRoomsRes = await getAllChatRooms({ userID: currentUser.userID })
     if (chatRoomsRes.success) {
+      console.log("setting chat : ", chatRoomsRes.chats)
       setChats(chatRoomsRes.chats)
       setCurrentRoom(chatRoomsRes.chats[0])
       if (chatRoomsRes.chats.length < 1) {
@@ -178,7 +205,9 @@ const RcChat = () => {
     const chatMember = members.filter(
       member => member._id !== currentUser.userID
     )
-    return chatMember[0].firstname + " " + chatMember[0].lastname
+    if (chatMember.length > 0)
+      return chatMember[0].firstname + " " + chatMember[0].lastname
+    return "Guest Chat"
   }
 
   const getMemberName = id => {
@@ -192,21 +221,30 @@ const RcChat = () => {
     document.body.classList.add("no_padding")
   }
 
+  const toggle_groupMemberList = () => {
+    setUpdateGroupName(currentRoom.groupName)
+    setUpdateGroupModal(!updateGroupModal)
+    document.body.classList.add("no_padding")
+  }
+  const toggle_DeleteGroupModal = () => {
+    setDeleteGroupModal(!deleteGroupModal)
+    document.body.classList.add("no_padding")
+  }
+
   const handleGroupCreationCancel = () => {
     setGroupMembers([])
     setGroupName("")
     setCreateGroupModal(false)
   }
 
-  const toggle_groupMemberList = () => {
-    setListGroupMembers(!listGroupMembers)
-    document.body.classList.add("no_padding")
+  const handleGroupMembersListCancel = () => {
+    setManageUsers([])
+    setRemoveUsers([])
+    setUpdateGroupModal(false)
   }
 
-  const handleGroupMembersListCancel = () => {
-    setGroupMembers([])
-    setGroupName("")
-    setListGroupMembers(false)
+  const handleDeleteGroupCancel = () => {
+    setDeleteGroupModal(false)
   }
 
   const handleAddingGroupMembers = id => {
@@ -235,8 +273,100 @@ const RcChat = () => {
         console.log("Error : ", createdRoomRes?.msg || "error")
       }
     }
+    setGroupName("")
+    setGroupMembers([])
     setCreateGroupModal(false)
     setGroupCreationLoader(false)
+  }
+
+  const searchUsers = () => {
+    var input, filter, ul, li, a, i, txtValue
+    input = document.getElementById("search-user")
+    filter = input.value.toUpperCase()
+    ul = document.getElementById("recent-list")
+    li = ul.getElementsByTagName("li")
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("a")[0]
+      txtValue = a.textContent || a.innerText
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = ""
+      } else {
+        li[i].style.display = "none"
+      }
+    }
+  }
+
+  const handleAddingNewGroupMembers = id => {
+    if (manageUsers.includes(id)) {
+      const membersAfterRemove = manageUsers.filter(m => m !== id)
+      setManageUsers(membersAfterRemove)
+    } else {
+      setManageUsers([...manageUsers, id])
+    }
+  }
+
+  const handleUpdatingGroup = async () => {
+    setGroupUpdateLoader(true)
+    if (!updateGroupName) {
+      console.log("Please provide group name to Update Group ")
+    } else {
+      const payload = {
+        members: manageUsers,
+        chatRoomId: currentRoom._id,
+        groupName: updateGroupName,
+      }
+      const updatedRoomRes = await addNewUser(payload)
+      if (updatedRoomRes.success) {
+        await ongetAllChatRooms()
+      } else {
+        console.log("Error : ", updatedRoomRes?.msg || "error")
+      }
+    }
+    setUpdateGroupModal(false)
+    setGroupUpdateLoader(false)
+  }
+  const handleRemoveUsersfromGroup = async id => {
+    if (removeUsers.includes(id)) {
+      const membersAfterRemove = removeUsers.filter(m => m !== id)
+      setRemoveUsers(membersAfterRemove)
+    } else {
+      setRemoveUsers([...removeUsers, id])
+    }
+  }
+  // console.log("/-------", removeUsers)
+
+  const handleRemoveUser = async () => {
+    setRemoveUserLoader(true)
+    if (!removeUsers) {
+      console.log("Please provide group name to Update Group ")
+    } else {
+      const payload = {
+        members: removeUsers,
+        chatRoomId: currentRoom._id,
+      }
+      const removeUserRes = await deleteUser(payload)
+      if (removeUserRes.success) {
+        await ongetAllChatRooms()
+      } else {
+        console.log("Error : ", removeUserRes?.msg || "error")
+      }
+    }
+    setUpdateGroupModal(false)
+    setRemoveUserLoader(false)
+  }
+
+  const handleDeletegroup = async () => {
+    const payload = {
+      chatRoomId: currentRoom,
+    }
+    const deleteGroupRes = await deleteGroup(payload)
+    if (deleteGroupRes.success) {
+      await ongetAllChatRooms()
+    } else {
+      console.log("Error : ", deleteGroupRes?.msg || "error")
+    }
+    setDeleteGroupModal(false)
+    setDeleteGroupLoader(false)
   }
 
   useEffect(() => {
@@ -296,22 +426,6 @@ const RcChat = () => {
   }, [currentRoom])
 
   //serach recent user
-  const searchUsers = () => {
-    var input, filter, ul, li, a, i, txtValue
-    input = document.getElementById("search-user")
-    filter = input.value.toUpperCase()
-    ul = document.getElementById("recent-list")
-    li = ul.getElementsByTagName("li")
-    for (i = 0; i < li.length; i++) {
-      a = li[i].getElementsByTagName("a")[0]
-      txtValue = a.textContent || a.innerText
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        li[i].style.display = ""
-      } else {
-        li[i].style.display = "none"
-      }
-    }
-  }
 
   return (
     <>
@@ -319,7 +433,7 @@ const RcChat = () => {
         <>
           <Modal
             size="lg"
-            isOpen={listGroupMembers}
+            isOpen={updateGroupModal}
             toggle={() => {
               toggle_groupMemberList()
             }}
@@ -328,25 +442,34 @@ const RcChat = () => {
             centered
           >
             <div className="modal-header">
-              <h5 className="modal-title mt-0" id="myLargeModalLabel">
-                Group Members
-              </h5>
-              <button
-                onClick={() => {
-                  handleGroupMembersListCancel()
-                }}
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+              {currentRoom && (
+                <div>
+                  <h5
+                    className="modal-title mt-0 me-1 font-size-24 d-flex align-self-center align-items-center"
+                    id="myLargeModalLabel"
+                  >
+                    Manage Group
+                    <span className="font-size-20">
+                      ({currentRoom.groupName}){" "}
+                    </span>
+                  </h5>
+                  <button
+                    onClick={() => {
+                      handleGroupMembersListCancel()
+                    }}
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              )}
             </div>
             <div className="modal-body">
-              <Row className="mb-3"></Row>
               <Row className="mb-3">
-                {/* <p className="col-md-2 text-center mt-1">Group Members</p> */}
+                <h6 className="text-primary mt-2">Group Members :</h6>
                 <div
                   className="col-md-10 px-1 d-flex flex-wrap"
                   style={{ height: "max-content" }}
@@ -356,15 +479,111 @@ const RcChat = () => {
                       <Button
                         key={i}
                         className="btn-rounded mx-1 mb-2"
-                        // onClick={() => handleAddingGroupMembers(contact._id)}
+                        color={
+                          removeUsers.includes(contact._id)
+                            ? "danger"
+                            : "success"
+                        }
+                        onClick={() => {
+                          handleRemoveUsersfromGroup(contact._id)
+                        }}
                       >
                         {contact.firstname} {contact.lastname}
                       </Button>
                     ))}
                 </div>
+                <div>
+                  {removeUserLoader ? (
+                    <button type="button" className="btn btn-dark ">
+                      <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>{" "}
+                      Loading
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-group-small"
+                      onClick={() => handleRemoveUser()}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </Row>
+
+              <Row className="mb-3">
+                <div className="modal-body">
+                  <Row className="mb-3 float-left">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label text-primary"
+                    >
+                      Group name
+                    </label>
+                    <div className="col-md-10">
+                      <input
+                        className="form-control"
+                        type="text"
+                        placeholder="My Group 1"
+                        value={updateGroupName}
+                        onChange={e => setUpdateGroupName(e.target.value)}
+                      />
+                    </div>
+                  </Row>
+                  <Row className="mb-3">
+                    <p className="col-md-2 text-center mt-1 text-primary ">
+                      Add Members
+                    </p>
+                    <div
+                      className="col-md-10 px-1 d-flex flex-wrap"
+                      style={{ height: "max-content" }}
+                    >
+                      {currentRoom &&
+                        contacts
+                          .filter(
+                            f => !currentRoom.members.some(g => g._id === f._id)
+                          )
+                          .map((contact, i) => (
+                            <Button
+                              key={i}
+                              color={
+                                manageUsers.includes(contact._id)
+                                  ? "success"
+                                  : "light"
+                              }
+                              className="btn-rounded mx-1 mb-2"
+                              onClick={() =>
+                                handleAddingNewGroupMembers(contact._id)
+                              }
+                            >
+                              <div className="d-flex ">
+                                {contact.firstname} {contact.lastname}
+                              </div>
+
+                              {/* <div className="font-size-0 text-body ">
+                              {contact.email}
+                            </div> */}
+                            </Button>
+                          ))}
+                    </div>
+                  </Row>
+                </div>
               </Row>
             </div>
             <div className="modal-footer">
+              {groupUpdateLoader ? (
+                <button type="button" className="btn btn-dark ">
+                  <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>{" "}
+                  Loading
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => handleUpdatingGroup()}
+                >
+                  Update
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -373,7 +592,7 @@ const RcChat = () => {
                 className="btn btn-secondary "
                 data-dismiss="modal"
               >
-                Close
+                Cancel
               </button>
             </div>
           </Modal>
@@ -474,6 +693,66 @@ const RcChat = () => {
                   onClick={() => handleGroupCreation()}
                 >
                   Create Group
+                </button>
+              )}
+            </div>
+          </Modal>
+        </>
+        <>
+          <Modal
+            size="lg"
+            isOpen={deleteGroupModal}
+            toggle={() => {
+              toggle_DeleteGroupModal()
+            }}
+            backdrop={"static"}
+            id="staticBackdrop"
+            centered
+          >
+            <div className="modal-header">
+              <h5 className="modal-title mt-0" id="myLargeModalLabel">
+                Delete this Group ?
+              </h5>
+              <button
+                onClick={() => {
+                  handleDeleteGroupCancel()
+                }}
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <Row className="mb-3">
+                <h5 className="text-center">Are You Sure Want to Delete this Group ?</h5>
+              </Row>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                onClick={() => {
+                  handleDeleteGroupCancel()
+                }}
+                className="btn btn-secondary "
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+              {deleteGroupLoader ? (
+                <button type="button" className="btn btn-dark ">
+                  <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>{" "}
+                  Loading
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => handleDeletegroup()}
+                >
+                  Delete
                 </button>
               )}
             </div>
@@ -825,16 +1104,21 @@ const RcChat = () => {
                                     <i className="bx bx-cog" />
                                   </DropdownToggle>
                                   <DropdownMenu>
+                                    {currentRoom.isGroup && (
+                                      <DropdownItem
+                                        onClick={() => toggle_groupMemberList()}
+                                      >
+                                        Manage Group
+                                      </DropdownItem>
+                                    )}
                                     <DropdownItem
-                                      onClick={() => toggle_groupMemberList()}
+                                      href="#"
+                                      onClick={() => toggle_DeleteGroupModal()}
                                     >
-                                      Group Members
+                                      Delete Chat
                                     </DropdownItem>
-                                    <DropdownItem href="#">
-                                      Clear chat
-                                    </DropdownItem>
-                                    <DropdownItem href="#">Muted</DropdownItem>
-                                    <DropdownItem href="#">Delete</DropdownItem>
+
+                                    {/* <DropdownItem href="#">Delete</DropdownItem> */}
                                   </DropdownMenu>
                                 </Dropdown>
                               </li>

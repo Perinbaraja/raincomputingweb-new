@@ -66,6 +66,12 @@ import RcChat from "rainComputing/pages/Chat"
 import RainRegister from "rainComputing/pages/auth/Register"
 import RainLogin from "rainComputing/pages/auth/Login"
 import UserProfile from "rainComputing/pages/user/Profile"
+import AttorneyRegister from "rainComputing/pages/user/AttorneyRegister"
+import FirmLanding from "rainComputing/pages/attorney/FirmLanding"
+import FirmCreate from "rainComputing/pages/user/FirmCreate"
+import AttorneyLanding from "rainComputing/pages/attorney/AttorneyLanding"
+import AttorneyDetails from "rainComputing/pages/attorney/attorneyLanding/AttorneyDetailsCard"
+import FirmGroup from "rainComputing/pages/attorney/firmLanding/firmGroup"
 
 const authProtectedRoutes = [
   //Crypto
@@ -89,6 +95,12 @@ const authProtectedRoutes = [
   //Custom Pages
   { path: "/rc-chat", component: RcChat },
   { path: "/profile", component: UserProfile },
+  { path: "/attorney-signup", component: AttorneyRegister },
+  { path: "/firmcreate", component: FirmCreate },
+  { path: "/firmlanding", component: FirmLanding },
+  { path: "/reqattorney", component: AttorneyLanding },
+  { path: "/attorneydetail", component: AttorneyDetails },
+  { path: "/firmgroup", component: FirmGroup },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
