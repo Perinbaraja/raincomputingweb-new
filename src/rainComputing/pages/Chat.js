@@ -32,7 +32,7 @@ import {
   Label,
 } from "reactstrap"
 import classnames from "classnames"
-
+import Base64Downloader from "react-base64-downloader"
 //Import Scrollbar
 import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
@@ -397,12 +397,14 @@ const RcChat = () => {
     const tempRES = []
     Promise.all(
       Object.values(files).map(async (i, j) => {
+        console.log("result :", i)
         const res = await convertBase64(i)
         const data = {
           metaData: { name: i.name, type: i.type, size: i.size },
           base64: res,
         }
         tempRES.push({ attachmentData: data, chatRoomId: currentRoom._id })
+        console.log("base64 :", data)
       })
     )
     setIsAttachment(true)
@@ -1263,12 +1265,33 @@ const RcChat = () => {
                                         ) : (
                                           <>
                                             {msg.attachments.map((i, j) => (
-                                              <p key={j}>
-                                                {
-                                                  i.attachmentData?.metaData
-                                                    ?.type
-                                                }
-                                              </p>
+                                              // <p key={j}>
+                                              //   {
+                                              //     i.attachmentData?.metaData
+                                              //       ?.type
+                                              //   }
+                                              // </p>
+                                              <div key={j}>
+                                                <img
+                                                  src={i.attachmentData?.base64}
+                                                  height="180px"
+                                                  width="180px"
+                                                  alt="Red dot"
+                                                />
+
+                                                {/* <Base64Downloader
+                                                  className="d-flex "
+                                                  base64={
+                                                    i.attachmentData?.base64
+                                                  }
+                                                  downloadName={
+                                                    i.attachmentData?.metaData
+                                                      ?.name
+                                                  }
+                                                >
+                                                  download
+                                                </Base64Downloader> */}
+                                              </div>
                                             ))}
                                           </>
                                         )}
@@ -1326,7 +1349,7 @@ const RcChat = () => {
                                           multiple={true}
                                           id="hidden-file"
                                           className="d-none"
-                                          accept="image/*"
+                                          accept="image/*,.pdf"
                                           onChange={e => {
                                             upload(e)
                                           }}
@@ -1344,7 +1367,7 @@ const RcChat = () => {
                                       </div>
                                     </li>
                                     <li className="list-inline-item">
-                                      <Link to="#">
+                                      {/* <Link to="#">
                                         <i
                                           className="mdi mdi-file-document-outline"
                                           id="Filetooltip"
@@ -1355,7 +1378,7 @@ const RcChat = () => {
                                         >
                                           Add Files
                                         </UncontrolledTooltip>
-                                      </Link>
+                                      </Link> */}
                                     </li>
                                   </ul>
                                 </div>

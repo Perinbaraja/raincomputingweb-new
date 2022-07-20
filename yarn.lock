@@ -11364,6 +11364,11 @@ react-auth-code-input@^1.2.1:
   resolved "https://registry.npmjs.org/react-auth-code-input/-/react-auth-code-input-1.2.1.tgz"
   integrity sha512-+S5yBwi/lv/2/jolaryx1veHXDIomeIL/YOx1HVpqIWFlFz2eXWFNN8aA3RniJmp+YzVc5G04gQlFLpXT8Km+w==
 
+react-base64-downloader@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/react-base64-downloader/-/react-base64-downloader-2.1.7.tgz#f29b5ab0b29ec22ccac3d3007795a65fb76c6dcf"
+  integrity sha512-2ZNpjoTxH+DAX44YgA1vCBbOU74Qo14+BeCWyMq705xy67rohJtu0vVO4IyOqXVoXmpZcibaPnl9rzLijzAxlQ==
+
 react-beautiful-dnd@^13.0.0:
   version "13.1.0"
   resolved "https://registry.npmjs.org/react-beautiful-dnd/-/react-beautiful-dnd-13.1.0.tgz"
