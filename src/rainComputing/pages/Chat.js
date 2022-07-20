@@ -29,6 +29,7 @@ import {
   UncontrolledTooltip,
   Modal,
   Alert,
+  Label,
 } from "reactstrap"
 import classnames from "classnames"
 
@@ -103,8 +104,6 @@ const RcChat = () => {
   //Delete Group Modal
   const [deleteGroupModal, setDeleteGroupModal] = useState(false)
 
-
-
   //Adding and Removing Users
   const [manageUsers, setManageUsers] = useState([])
   const [removeUsers, setRemoveUsers] = useState([])
@@ -115,7 +114,11 @@ const RcChat = () => {
   const [groupCreationLoader, setGroupCreationLoader] = useState(false)
   const [groupUpdateLoader, setGroupUpdateLoader] = useState(false)
   const [removeUserLoader, setRemoveUserLoader] = useState(false)
-  const [deleteGroupLoader,setDeleteGroupLoader]=useState(false)
+  const [deleteGroupLoader, setDeleteGroupLoader] = useState(false)
+
+  //Attachements
+  const [isAttachment, setIsAttachment] = useState(false)
+  const [attachments, setAttachments] = useState(null)
 
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
@@ -143,17 +146,38 @@ const RcChat = () => {
   //Use For Chat Box
 
   const addMessage = async () => {
-    if (curMessage) {
+    if (isAttachment || curMessage) {
+      const chatRoomId = currentRoom._id
+      const sender = currentUser.userID
+      const receivers = recivers
+      const messageData = curMessage ? curMessage : "Attachment"
+      const createdAt = Date.now()
       const msgData = {
-        chatRoomId: currentRoom._id,
-        sender: currentUser.userID,
-        receivers: recivers,
-        messageData: curMessage,
-        createdAt: Date.now(),
+        chatRoomId,
+        sender,
+        receivers,
+        messageData,
+        isAttachment,
+        attachments,
+        createdAt,
       }
       handleSendingMessage(msgData)
-      setMessages([...messages, { message: msgData }])
+      const senderMessage = {
+        chatRoomId,
+        message: {
+          sender,
+          receivers,
+          messageData,
+        },
+        createdAt,
+        isAttachment,
+        attachments,
+      }
+      setMessages([...messages, senderMessage])
+
       await getRoomsonEveryMessage()
+      setAttachments(null)
+      setIsAttachment(false)
       setcurMessage("")
     }
   }
@@ -174,7 +198,6 @@ const RcChat = () => {
   const ongetAllChatRooms = async () => {
     const chatRoomsRes = await getAllChatRooms({ userID: currentUser.userID })
     if (chatRoomsRes.success) {
-      console.log("setting chat : ", chatRoomsRes.chats)
       setChats(chatRoomsRes.chats)
       setCurrentRoom(chatRoomsRes.chats[0])
       if (chatRoomsRes.chats.length < 1) {
@@ -369,6 +392,35 @@ const RcChat = () => {
     setDeleteGroupLoader(false)
   }
 
+  const upload = async e => {
+    const files = e.target.files
+    const tempRES = []
+    Promise.all(
+      Object.values(files).map(async (i, j) => {
+        const res = await convertBase64(i)
+        const data = {
+          metaData: { name: i.name, type: i.type, size: i.size },
+          base64: res,
+        }
+        tempRES.push({ attachmentData: data, chatRoomId: currentRoom._id })
+      })
+    )
+    setIsAttachment(true)
+    setAttachments(tempRES)
+  }
+  const convertBase64 = file => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      }
+      fileReader.onerror = error => {
+        reject(error)
+      }
+    })
+  }
+
   useEffect(() => {
     /* To Set Attorney as Contacts */
     // const onGetContacts = async () => {
@@ -424,8 +476,6 @@ const RcChat = () => {
       onGetMessages()
     }
   }, [currentRoom])
-
-  //serach recent user
 
   return (
     <>
@@ -727,7 +777,9 @@ const RcChat = () => {
             </div>
             <div className="modal-body">
               <Row className="mb-3">
-                <h5 className="text-center">Are You Sure Want to Delete this Group ?</h5>
+                <h5 className="text-center">
+                  Are You Sure Want to Delete this Group ?
+                </h5>
               </Row>
             </div>
             <div className="modal-footer">
@@ -1206,7 +1258,26 @@ const RcChat = () => {
                                         <div className="conversation-name">
                                           {getMemberName(msg.message.sender)}
                                         </div>
-                                        <p>{msg.message.messageData}</p>
+                                        {!msg.isAttachment ? (
+                                          <p>{msg.message?.messageData}</p>
+                                        ) : (
+                                          <>
+                                            {msg.attachments.map((i, j) => (
+                                              <p key={j}>
+                                                {
+                                                  i.attachmentData?.metaData
+                                                    ?.type
+                                                }
+                                              </p>
+                                            ))}
+                                          </>
+                                        )}
+                                        {/* <p>
+                                          {!msg.isAttachment
+                                            ? msg.message.messageData
+                                            : msg.attachments?.attachmentData
+                                                ?.metaData?.type}
+                                        </p> */}
                                         <p className="chat-time mb-0">
                                           <i className="bx bx-time-five align-middle me-1" />
                                           {moment(msg.createdAt).format(
@@ -1249,18 +1320,28 @@ const RcChat = () => {
                                       </Link>
                                     </li>
                                     <li className="list-inline-item">
-                                      <Link to="#">
-                                        <i
-                                          className="mdi mdi-file-image-outline"
-                                          id="Imagetooltip"
+                                      <div>
+                                        <Input
+                                          type="file"
+                                          multiple={true}
+                                          id="hidden-file"
+                                          className="d-none"
+                                          accept="image/*"
+                                          onChange={e => {
+                                            upload(e)
+                                          }}
                                         />
-                                        <UncontrolledTooltip
-                                          placement="top"
-                                          target="Imagetooltip"
-                                        >
-                                          Images
-                                        </UncontrolledTooltip>
-                                      </Link>
+                                        <Label htmlFor="hidden-file">
+                                          {" "}
+                                          <i
+                                            className="mdi mdi-file-image-outline "
+                                            style={{
+                                              color: "#556EE6",
+                                              fontSize: 16,
+                                            }}
+                                          />
+                                        </Label>
+                                      </div>
                                     </li>
                                     <li className="list-inline-item">
                                       <Link to="#">

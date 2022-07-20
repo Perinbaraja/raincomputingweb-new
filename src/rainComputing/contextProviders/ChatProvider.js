@@ -57,7 +57,7 @@ export function ChatProvider({ socket, children }) {
             )
             setNotifications(filteredNotification)
           }
-          setMessages([...messages, { message: msgData }])
+          setMessages([...messages, msgData])
         } else {
           setNotifications([msgData, ...notifications])
         }
