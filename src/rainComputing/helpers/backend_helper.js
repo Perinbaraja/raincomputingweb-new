@@ -42,7 +42,10 @@ const deleteUser = payload =>
 //Deleting the Group
 const deleteGroup = payload => put(`${BASE_URL}/pchat/deleteChat`, payload)
 
-const getFirmId = payload => put(`${BASE_URL}firm/getFirmById`, payload)
+const getFirmbyId = payload => post(`${BASE_URL}/firm/getFirmById`, payload)
+
+const addFirmMember = payload => put(`${BASE_URL}/firm/addtofirm`, payload)
+const removeFirmMember = payload => put(`${BASE_URL}/firm/removefirmmember`, payload)
 
 export {
   getAllAttorneys,
@@ -65,5 +68,7 @@ export {
   addNewUser,
   deleteUser,
   deleteGroup,
-  getFirmId,
+  getFirmbyId,
+  addFirmMember,
+  removeFirmMember
 }

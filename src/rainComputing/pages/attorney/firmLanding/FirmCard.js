@@ -11,14 +11,14 @@ import {
   Row,
 } from "reactstrap"
 
-const FirmCard = ({ isMyFirm, firmname, membersCount, ctaLink }) => {
+const FirmCard = ({ isMyFirm, firmname, membersCount, ctaLink ,firmid}) => {
   return (
     <Card>
       <CardBody>
         <CardTitle className="mt-0">{firmname}</CardTitle>
         <CardText>Total Members: {membersCount}</CardText>
         <Link
-          to="/firmgroup"
+          to={`/firminfo?id=${firmid}`}
           className={`btn ${isMyFirm ? "btn-success" : "btn-primary"}`}
         >
           {isMyFirm ? "Go to my firm" : "Go to firm"}
@@ -33,6 +33,7 @@ FirmCard.propTypes = {
   firmname: PropTypes.string,
   membersCount: PropTypes.number,
   ctaLink: PropTypes.string,
+  firmid: PropTypes.string,
 }
 
 export default FirmCard

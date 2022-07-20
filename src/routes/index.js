@@ -71,7 +71,7 @@ import FirmLanding from "rainComputing/pages/attorney/FirmLanding"
 import FirmCreate from "rainComputing/pages/user/FirmCreate"
 import AttorneyLanding from "rainComputing/pages/attorney/AttorneyLanding"
 import AttorneyDetails from "rainComputing/pages/attorney/attorneyLanding/AttorneyDetailsCard"
-import FirmGroup from "rainComputing/pages/attorney/firmLanding/firmGroup"
+import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
 
 const authProtectedRoutes = [
   //Crypto
@@ -100,7 +100,7 @@ const authProtectedRoutes = [
   { path: "/firmlanding", component: FirmLanding },
   { path: "/reqattorney", component: AttorneyLanding },
   { path: "/attorneydetail", component: AttorneyDetails },
-  { path: "/firmgroup", component: FirmGroup },
+  { path: "/firminfo", component: FirmInfo },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

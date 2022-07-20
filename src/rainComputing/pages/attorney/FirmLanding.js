@@ -20,7 +20,7 @@ const FirmLanding = () => {
   const { currentAttorney } = useUser()
   const [firms, setFirms] = useState([])
   const [myFirm, setMyFirm] = useState(null)
-  console.log("currentAttorney ", myFirm)
+  // console.log("currentAttorney ", myFirm)
 
   useEffect(() => {
     const handleFetchingFirms = async () => {
@@ -57,6 +57,7 @@ const FirmLanding = () => {
             />
             {myFirm ? (
               <FirmCard
+                firmid={myFirm?._id}
                 firmname={myFirm?.firmName}
                 isMyFirm
                 membersCount={myFirm?.members?.length}
@@ -68,9 +69,7 @@ const FirmLanding = () => {
                   <CardText>
                     You Are Not Having Firm Account So Please Create A Firm
                   </CardText>
-                  <Link
-                    to="/firmcreate"
-                  >
+                  <Link to="/firmcreate">
                     <Button color="info" type="submit">
                       Create Firm
                     </Button>
@@ -86,6 +85,7 @@ const FirmLanding = () => {
                 .map(i => (
                   <Col md="6" key={i}>
                     <FirmCard
+                      firmid={i?._id}
                       firmname={i.firmName}
                       membersCount={i.members.length}
                     />

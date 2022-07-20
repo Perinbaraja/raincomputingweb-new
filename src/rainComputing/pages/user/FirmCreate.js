@@ -118,14 +118,13 @@ const FirmCreate = () => {
                     <h4 className="card-title mb-4"> Firm Create</h4>
                     <div className="wizard clearfix">
                       <div className="steps clearfix">
-                        <ul>
+                        {/* <ul>
                           <NavItem className={classnames({})}>
                             <NavLink>
-                              <span className="number">2</span> Firm
-                              Registration
+                              <span className="text">Firm Registration</span> 
                             </NavLink>
                           </NavItem>
-                        </ul>
+                        </ul> */}
                       </div>
                       <div className="content clearfix mt-2">
                         <div>
