@@ -32,7 +32,7 @@ import {
   Label,
 } from "reactstrap"
 import classnames from "classnames"
-import Base64Downloader from "react-base64-downloader"
+
 //Import Scrollbar
 import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
