@@ -1274,8 +1274,7 @@ const RcChat = () => {
                                               <div key={j}>
                                                 <img
                                                   src={i.attachmentData?.base64}
-                                                  height="180px"
-                                                  width="180px"
+                                                  height="200px"
                                                   alt="Red dot"
                                                 />
 
