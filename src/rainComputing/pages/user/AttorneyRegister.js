@@ -46,7 +46,7 @@ const AttorneyRegister = () => {
         phoneNumber: values.phonenumber,
         address: values.address,
         userID: currentUser.userID,
-        status: "requested",
+        status: "approved",
       })
     },
   })

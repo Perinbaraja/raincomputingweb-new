@@ -1275,6 +1275,7 @@ const RcChat = () => {
                                                 <img
                                                   src={i.attachmentData?.base64}
                                                   height="200px"
+                                                  width="200px"
                                                   alt="Red dot"
                                                 />
 
@@ -1325,6 +1326,7 @@ const RcChat = () => {
                                   className="form-control chat-input"
                                   placeholder="Enter Message..."
                                 />
+
                                 <div className="chat-input-links">
                                   <ul className="list-inline mb-0">
                                     <li className="list-inline-item">
@@ -1345,14 +1347,15 @@ const RcChat = () => {
                                       <div>
                                         <Input
                                           type="file"
-                                          multiple={true}
+                                          multiple={false}
                                           id="hidden-file"
                                           className="d-none"
-                                          accept="image/*,.pdf"
+                                          accept="image/*"
                                           onChange={e => {
                                             upload(e)
                                           }}
                                         />
+
                                         <Label htmlFor="hidden-file">
                                           {" "}
                                           <i

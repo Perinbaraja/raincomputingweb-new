@@ -15,7 +15,10 @@ import {
 import Breadcrumb from "components/Common/Breadcrumb"
 import avatar from "assets/images/avatar-defult.jpg"
 
-import { getFirmbyId, removeFirmMember } from "rainComputing/helpers/backend_helper"
+import {
+  getFirmbyId,
+  removeFirmMember,
+} from "rainComputing/helpers/backend_helper"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 import { Link } from "react-router-dom"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
@@ -91,18 +94,18 @@ const FirmInfo = () => {
     setAddMemberModal(false)
   }
 
-  const handleRemovingFirmMembers = async (id) =>{
+  const handleRemovingFirmMembers = async id => {
     const payload = {
-        firmId: currentFirm._id,
-        members: [id],
-      }
-      const res= await removeFirmMember(payload)
-      if (res.success) {
-        console.log(res)
-        await getAllFirms()
-      } else {
-        console.log("Error : ", res?.msg || "error")
-      }
+      firmId: currentFirm._id,
+      members: [id],
+    }
+    const res = await removeFirmMember(payload)
+    if (res.success) {
+      console.log(res)
+      await getAllFirms()
+    } else {
+      console.log("Error : ", res?.msg || "error")
+    }
   }
 
   useEffect(() => {
@@ -123,6 +126,7 @@ const FirmInfo = () => {
     getAllFirms()
   }, [])
 
+  console.log("CF", currentFirm)
 
   return (
     <React.Fragment>
@@ -259,21 +263,23 @@ const FirmInfo = () => {
                       return false
                     }}
                   >
-                    <Row>
-                      <Col>
-                        <div className="text-sm-end">
-                          <Button
-                            type="button"
-                            color="primary"
-                            className="btn-rounded  mb-2 me-2"
-                            onClick={() => toggle_addMemberModal()}
-                          >
-                            <i className="mdi mdi-plus me-1" />
-                            Add New Member
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
+                    {currentAttorney?._id === currentFirm?.attorneyId && (
+                      <Row>
+                        <Col>
+                          <div className="text-sm-end">
+                            <Button
+                              type="button"
+                              color="primary"
+                              className="btn-rounded  mb-2 me-2"
+                              onClick={() => toggle_addMemberModal()}
+                            >
+                              <i className="mdi mdi-plus me-1" />
+                              Add New Member
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
                     <Row>
                       <Col>
                         <div className="table-responsive">
@@ -284,27 +290,42 @@ const FirmInfo = () => {
                                 <th scope="col">First Name</th>
                                 <th scope="col">Last Name</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">Action</th>
+                                {currentAttorney?._id ===
+                                  currentFirm?.attorneyId && (
+                                  <th scope="col">Action</th>
+                                )}
                               </tr>
                             </thead>
                             <tbody>
-                              {currentFirm?.members.map((member, j) => (
-                                <tr key={j}>
-                                  <td> {j + 1} </td>
-                                  <td> {member.regUser?.firstname} </td>
-                                  <td>{member.regUser?.lastname} </td>
-                                  <td> {member.regUser?.email} </td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      className="btn btn-primary"
-                                      onClick={()=>handleRemovingFirmMembers(member._id)}
-                                    >
-                                      Remove
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
+                              {currentFirm?.members
+                                // .filter(i => i._id !== currentAttorney?._id)
+                                .map((member, j) => (
+                                  <tr key={j}>
+                                    <td> {j + 1} </td>
+                                    <td> {member.regUser?.firstname} </td>
+                                    <td>{member.regUser?.lastname} </td>
+                                    <td> {member.regUser?.email} </td>
+                                    {currentAttorney?._id ===
+                                      currentFirm?.attorneyId && (
+                                      <td>
+                                        {member._id !==
+                                          currentFirm?.attorneyId && (
+                                          <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={() =>
+                                              handleRemovingFirmMembers(
+                                                member._id
+                                              )
+                                            }
+                                          >
+                                            Remove
+                                          </button>
+                                        )}
+                                      </td>
+                                    )}
+                                  </tr>
+                                ))}
                             </tbody>
                           </Table>
                         </div>
