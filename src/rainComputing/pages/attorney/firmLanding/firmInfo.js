@@ -24,8 +24,11 @@ import { Link } from "react-router-dom"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
 import { addFirmMember } from "rainComputing/helpers/backend_helper"
+import DeleteModal from "rainComputing/components/modals/DeleteModal"
+import { useModal } from "rainComputing/helpers/hooks/useModal"
 
 const FirmInfo = () => {
+  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [loading, setLoading] = useState(false)
   const query = useQuery()
   const [currentFirm, setCurrentFirm] = useState(null)
@@ -33,6 +36,7 @@ const FirmInfo = () => {
   const { currentAttorney } = useUser()
   const [manageMembers, setManageMembers] = useState([])
   const [members, setMembers] = useState([])
+  const [selectedMember, setSelectedMember] = useState(null)
 
   const getAllFirms = async () => {
     const res = await getFirmbyId({
@@ -94,10 +98,10 @@ const FirmInfo = () => {
     setAddMemberModal(false)
   }
 
-  const handleRemovingFirmMembers = async id => {
+  const handleRemovingFirmMembers = async () => {
     const payload = {
       firmId: currentFirm._id,
-      members: [id],
+      members: [selectedMember?._id],
     }
     const res = await removeFirmMember(payload)
     if (res.success) {
@@ -106,6 +110,7 @@ const FirmInfo = () => {
     } else {
       console.log("Error : ", res?.msg || "error")
     }
+    setModalOpen(false)
   }
 
   useEffect(() => {
@@ -126,10 +131,15 @@ const FirmInfo = () => {
     getAllFirms()
   }, [])
 
-  console.log("CF", currentFirm)
-
   return (
     <React.Fragment>
+      <DeleteModal
+        show={modalOpen}
+        onDeleteClick={handleRemovingFirmMembers}
+        confirmText="Yes,Remove"
+        cancelText="Cancel"
+        onCloseClick={toggleModal}
+      />
       <MetaTags>
         <title>Firm | Rain - Admin & Dashboard Template</title>
       </MetaTags>
@@ -313,11 +323,10 @@ const FirmInfo = () => {
                                           <button
                                             type="button"
                                             className="btn btn-primary"
-                                            onClick={() =>
-                                              handleRemovingFirmMembers(
-                                                member._id
-                                              )
-                                            }
+                                            onClick={() => {
+                                              setSelectedMember(member)
+                                              setModalOpen(true)
+                                            }}
                                           >
                                             Remove
                                           </button>
