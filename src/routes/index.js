@@ -31,7 +31,6 @@ import ProjectsCreate from "../pages/Projects/projects-create"
 // Authentication related pages
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
-import ForgetPwd from "../pages/Authentication/ForgetPassword"
 
 //  // Inner Authentication
 import Login1 from "../pages/AuthenticationInner/Login"
@@ -72,6 +71,9 @@ import FirmCreate from "rainComputing/pages/user/FirmCreate"
 import AttorneyLanding from "rainComputing/pages/attorney/AttorneyLanding"
 import AttorneyDetails from "rainComputing/pages/attorney/attorneyLanding/AttorneyDetailsCard"
 import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
+import ForgetPwd from "rainComputing/pages/auth/forgetPassword"
+import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
+import emailForgetPassword from "rainComputing/pages/auth/emailForgetPassword"
 
 const authProtectedRoutes = [
   //Crypto
@@ -109,8 +111,11 @@ const authProtectedRoutes = [
 
 const publicRoutes = [
   { path: "/logout", component: Logout },
-  { path: "/forgot-password", component: ForgetPwd },
   { path: "/popup", component: Popup },
+  { path: "/forgot-password", component: ForgetPwd },
+  { path: "/verifyemail", component: VerifyEmailPage },
+  { path: "/emailforgotPwd", component: emailForgetPassword },
+
 
   // Authentication Inner
   { path: "/pages-login", component: Login1 },
