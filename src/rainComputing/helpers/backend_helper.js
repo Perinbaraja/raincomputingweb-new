@@ -47,11 +47,11 @@ const getFirmbyId = payload => post(`${BASE_URL}/firm/getFirmById`, payload)
 const addFirmMember = payload => put(`${BASE_URL}/firm/addtofirm`, payload)
 const removeFirmMember = payload => put(`${BASE_URL}/firm/removefirmmember`, payload)
 
-const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
+// const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
 
-const setForgettingPassword = payload =>post(`${BASE_URL}/user/verifyForgetPassword`, payload)
+// const setForgettingPassword = payload =>post(`${BASE_URL}/user/verifyForgetPassword`, payload)
 
-const setResetPassword = payload =>post(`${BASE_URL}/user/forgetPassword`, payload)
+// const setResetPassword = payload =>post(`${BASE_URL}/user/forgetPassword`, payload)
 
 
 export {
@@ -78,7 +78,7 @@ export {
   getFirmbyId,
   addFirmMember,
   removeFirmMember,
-  verifyUserEmail,
-  setForgettingPassword,
-  setResetPassword
+  // verifyUserEmail,
+  // setForgettingPassword,
+  // setResetPassword
 }

@@ -14,6 +14,7 @@ import {
   Row,
   FormFeedback,
   Button,
+  Alert,
 } from "reactstrap"
 // Formik Validation
 import * as Yup from "yup"
@@ -24,6 +25,10 @@ import { useHistory } from "react-router-dom"
 const AttorneyRegister = () => {
   const history = useHistory()
   const { currentUser, setCurrentUser } = useUser()
+  const [attorneyregistrationError, setAttorneyRegistrationError] = useState("")
+  const [attorneyregistrationSuccess, setAttorneyRegistrationSuccess] =
+    useState("")
+  const [loading, setLoading] = useState(false)
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -40,14 +45,31 @@ const AttorneyRegister = () => {
       phonenumber: Yup.string().required("Please Enter Your Phone Number"),
       //   email: Yup.string().required("Please Enter Your Email"),
     }),
-    onSubmit: values => {
-      handleAttorneyReg({
+    onSubmit: async (values, onSubmitProps) => {
+      //   dispatch(registerUser({ ...values, aflag: true }))
+      handleAttorneyReg ( {
         barNumber: values.attorneybarnumber,
         phoneNumber: values.phonenumber,
         address: values.address,
         userID: currentUser.userID,
         status: "approved",
       })
+      const res = await registerAttorney({
+        ...values,
+        aflag: true,
+        handleAttorneyReg,
+      })
+      if (res.success) {
+        setAttorneyRegistrationError("")
+        setAttorneyRegistrationSuccess(res.msg)
+        console.log("Sucesss",res)
+
+        // onSubmitProps.setSubmitting(false) //Vidhya
+        onSubmitProps.resetForm()
+      } else {
+        setAttorneyRegistrationSuccess(res.msg)
+        setAttorneyRegistrationError("")
+      }
     },
   })
 
@@ -58,7 +80,7 @@ const AttorneyRegister = () => {
       console.log("attorney", res)
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
-      history.push("/profile")
+      history.push("/")
     } else {
       console.log("Failed to registering attorney", res)
     }
@@ -83,6 +105,18 @@ const AttorneyRegister = () => {
                       validation.handleSubmit()
                     }}
                   >
+                    {attorneyregistrationSuccess && (
+                      <Alert className="fw-bolder text-center" color="success">
+                       Attorney Registration Sucessfull
+                      </Alert>
+                    )}
+
+                    {attorneyregistrationError && (
+                      <Alert color="danger" className="fw-bolder text-center">
+                       Attorney Registration Failed
+                      </Alert>
+                    )}
+
                     <h4 className="card-title mb-4">
                       {" "}
                       Attorney Registration Details
