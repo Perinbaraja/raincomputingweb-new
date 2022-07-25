@@ -56,6 +56,12 @@ import { useNotifications } from "rainComputing/contextProviders/NotificationsPr
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 
 import profile from "assets/images/avatar-defult.jpg"
+import { FakeCases } from "./FakeData"
+import CaseGrid from "rainComputing/components/chat/CaseGrid"
+import useAccordian from "rainComputing/helpers/hooks/useAccordian"
+import SubgroupBar from "rainComputing/components/chat/SubgroupBar"
+
+const subGroupColors = ["#0000ff", "#ffa500", "#ffc0cb", "#87ceeb"]
 
 const RcChat = () => {
   const currentUser = JSON.parse(localStorage.getItem("authUser"))
@@ -71,6 +77,8 @@ const RcChat = () => {
     setMessages,
   } = useChat()
   const { notifications, setNotifications } = useNotifications()
+  const [activeAccordian, setActiveAccordian, handleSettingActiveAccordion] =
+    useAccordian(-1)
 
   const [messageBox, setMessageBox] = useState(null)
   // eslint-disable-next-line no-unused-vars
@@ -119,6 +127,9 @@ const RcChat = () => {
   //Attachements
   const [isAttachment, setIsAttachment] = useState(false)
   const [attachments, setAttachments] = useState(null)
+
+  //Sub-Group
+  const [selectedGroup, setSelectedgroup] = useState(0)
 
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
@@ -989,7 +1000,7 @@ const RcChat = () => {
                           </div>
                         </TabPane>
 
-                        <TabPane tabId="2">
+                        {/* <TabPane tabId="2">
                           <div className="d-grid gap-2">
                             <button
                               type="button"
@@ -1033,7 +1044,7 @@ const RcChat = () => {
                                             </span>
                                           </div> */}
 
-                                          <div className="flex-grow-1 overflow-hidden">
+                        {/* <div className="flex-grow-1 overflow-hidden">
                                             <h5 className="font-size-14 mb-0">
                                               {group.groupName}
                                             </h5>
@@ -1049,6 +1060,23 @@ const RcChat = () => {
                                   ))}
                             </PerfectScrollbar>
                           </ul>
+                        </TabPane> */}
+                        <TabPane tabId="2">
+                          <PerfectScrollbar style={{ height: "300px" }}>
+                            <ul className="list-unstyled chat-list ">
+                              {FakeCases.map((ca, j) => (
+                                <CaseGrid
+                                  caseData={ca}
+                                  index={j}
+                                  key={j}
+                                  active={activeAccordian}
+                                  onAccordionButtonClick={
+                                    handleSettingActiveAccordion
+                                  }
+                                />
+                              ))}
+                            </ul>
+                          </PerfectScrollbar>
                         </TabPane>
 
                         <TabPane tabId="3">
@@ -1090,7 +1118,7 @@ const RcChat = () => {
                 {currentRoom && (
                   <div className="w-100 user-chat">
                     <Card>
-                      <div className="p-4 border-bottom ">
+                      <div className="p-3 border-bottom ">
                         <Row>
                           <Col md="4" xs="9">
                             <h5 className="font-size-15 mb-1">
@@ -1099,7 +1127,7 @@ const RcChat = () => {
                                 : getChatName(currentRoom.members)}
                             </h5>
 
-                            <p className="text-muted mb-0">
+                            {/* <p className="text-muted mb-0">
                               <i
                                 className={
                                   Chat_Box_User_Status === "online"
@@ -1110,6 +1138,18 @@ const RcChat = () => {
                                 }
                               />
                               {Chat_Box_User_Status}
+                            </p> */}
+                            <p
+                              style={{
+                                color:
+                                  subGroupColors[
+                                    selectedGroup % subGroupColors.length
+                                  ],
+                              }}
+                            >
+                              {selectedGroup === 0
+                                ? "Everyone"
+                                : `Private Group ${selectedGroup} `}
                             </p>
                           </Col>
                           <Col md="8" xs="3">
@@ -1210,11 +1250,6 @@ const RcChat = () => {
                               style={{ height: "320px" }}
                               containerRef={ref => setMessageBox(ref)}
                             >
-                              <li>
-                                <div className="chat-day-title">
-                                  <span className="title">Today</span>
-                                </div>
-                              </li>
                               {messages &&
                                 messages.map((msg, m) => (
                                   <li
@@ -1251,10 +1286,19 @@ const RcChat = () => {
                                       </UncontrolledDropdown>
                                       <div
                                         className="ctext-wrap "
+                                        // style={{
+                                        //   backgroundColor:
+                                        //     msg.message.sender ==
+                                        //       currentUser.userID && "#b3ffb3",
+                                        // }}
                                         style={{
                                           backgroundColor:
                                             msg.message.sender ==
-                                              currentUser.userID && "#b3ffb3",
+                                              currentUser.userID &&
+                                            subGroupColors[
+                                              selectedGroup %
+                                                subGroupColors.length
+                                            ] + "33",
                                         }}
                                       >
                                         <div className="conversation-name">
@@ -1314,6 +1358,13 @@ const RcChat = () => {
                             </PerfectScrollbar>
                           </ul>
                         </div>
+                        {currentRoom?.isGroup && (
+                          <SubgroupBar
+                            selectedGroup={selectedGroup}
+                            setSelectedgroup={setSelectedgroup}
+                            subGroupColors={subGroupColors}
+                          />
+                        )}
                         <div className="p-3 chat-input-section">
                           <Row>
                             <Col>

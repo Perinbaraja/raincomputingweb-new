@@ -1,0 +1,47 @@
+.sg-wrapper {
+    margin: 5px 15px;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 0px 15px;
+}
+
+.sg-wrapper:hover {
+    box-shadow: 0px 2px 8px #00000029;
+}
+
+.sg-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 10px;
+    padding: 5px 0px;
+
+}
+
+.sg-container::-webkit-scrollbar {
+    width: 10px;
+    height: 6px;
+}
+
+.sg-container::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #a9a9a9;
+    margin: 100px;
+}
+
+.sg-container::-webkit-scrollbar-thumb {
+    background: #0f0f0f;
+    border-radius: 100vh;
+    border: 3px solid #0d0d0d;
+}
+
+.sg-container::-webkit-scrollbar-thumb:hover {
+    background: #0f0f0f;
+}
+
+.sg-item {
+    padding: 1px 5px;
+    border-radius: 2px;
+    transition: all 0.5s;
+
+}

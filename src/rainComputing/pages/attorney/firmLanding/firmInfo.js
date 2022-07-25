@@ -25,10 +25,10 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
 import { addFirmMember } from "rainComputing/helpers/backend_helper"
 import DeleteModal from "rainComputing/components/modals/DeleteModal"
-import { useModal } from "rainComputing/helpers/hooks/useModal"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 
 const FirmInfo = () => {
-  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
+  const { toggleOpen, setToggleOpen, toggleIt } = useToggle(false)
   const [loading, setLoading] = useState(false)
   const query = useQuery()
   const [currentFirm, setCurrentFirm] = useState(null)
@@ -110,7 +110,7 @@ const FirmInfo = () => {
     } else {
       console.log("Error : ", res?.msg || "error")
     }
-    setModalOpen(false)
+    setToggleOpen(false)
   }
 
   useEffect(() => {
@@ -134,11 +134,11 @@ const FirmInfo = () => {
   return (
     <React.Fragment>
       <DeleteModal
-        show={modalOpen}
+        show={toggleOpen}
         onDeleteClick={handleRemovingFirmMembers}
         confirmText="Yes,Remove"
         cancelText="Cancel"
-        onCloseClick={toggleModal}
+        onCloseClick={toggleIt}
       />
       <MetaTags>
         <title>Firm | Rain - Admin & Dashboard Template</title>
@@ -325,7 +325,7 @@ const FirmInfo = () => {
                                             className="btn btn-primary"
                                             onClick={() => {
                                               setSelectedMember(member)
-                                              setModalOpen(true)
+                                              setToggleOpen(true)
                                             }}
                                           >
                                             Remove
