@@ -490,6 +490,8 @@ const RcChat = () => {
     }
   }, [currentRoom])
 
+  // console.log("Chat Receivers:", recivers)
+
   return (
     <>
       <div className="page-content">
@@ -1038,13 +1040,13 @@ const RcChat = () => {
                                               {getNotificationCount(group._id)}
                                             </span>
                                           )}
-                                          {/* <div className="avatar-xs me-3">
+                                          <div className="avatar-xs me-3">
                                             <span className="avatar-title rounded-circle bg-primary bg-soft text-primary">
                                               {group.image}
                                             </span>
-                                          </div> */}
+                                          </div>
 
-                        {/* <div className="flex-grow-1 overflow-hidden">
+                                          <div className="flex-grow-1 overflow-hidden">
                                             <h5 className="font-size-14 mb-0">
                                               {group.groupName}
                                             </h5>
@@ -1062,6 +1064,16 @@ const RcChat = () => {
                           </ul>
                         </TabPane> */}
                         <TabPane tabId="2">
+                          <div className="d-grid gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-info btn-rounded mb-2"
+                              onClick={() => toggle_createGroupModal()}
+                            >
+                              Create group
+                              <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
+                            </button>
+                          </div>
                           <PerfectScrollbar style={{ height: "300px" }}>
                             <ul className="list-unstyled chat-list ">
                               {FakeCases.map((ca, j) => (
@@ -1360,9 +1372,11 @@ const RcChat = () => {
                         </div>
                         {currentRoom?.isGroup && (
                           <SubgroupBar
+                            parentRoom={currentRoom}
                             selectedGroup={selectedGroup}
                             setSelectedgroup={setSelectedgroup}
                             subGroupColors={subGroupColors}
+                            setRecivers={setRecivers}
                           />
                         )}
                         <div className="p-3 chat-input-section">

@@ -45,14 +45,19 @@ const deleteGroup = payload => put(`${BASE_URL}/pchat/deleteChat`, payload)
 const getFirmbyId = payload => post(`${BASE_URL}/firm/getFirmById`, payload)
 
 const addFirmMember = payload => put(`${BASE_URL}/firm/addtofirm`, payload)
-const removeFirmMember = payload => put(`${BASE_URL}/firm/removefirmmember`, payload)
+const removeFirmMember = payload =>
+  put(`${BASE_URL}/firm/removefirmmember`, payload)
 
 const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
 
-const setForgettingPassword = payload =>post(`${BASE_URL}/user/verifyForgetPassword`, payload)
+const setForgettingPassword = payload =>
+  post(`${BASE_URL}/user/verifyForgetPassword`, payload)
 
-const setResetPassword = payload =>post(`${BASE_URL}/user/forgetPassword`, payload)
+const setResetPassword = payload =>
+  post(`${BASE_URL}/user/forgetPassword`, payload)
 
+const getSubgroups = payload =>
+  post(`${BASE_URL}/subgroup/getByParentRoom`, payload)
 
 export {
   getAllAttorneys,
@@ -80,5 +85,6 @@ export {
   removeFirmMember,
   verifyUserEmail,
   setForgettingPassword,
-  setResetPassword
+  setResetPassword,
+  getSubgroups,
 }
