@@ -10,7 +10,14 @@ import OnOffSwitch from "../switch/OnOffSwitch"
 import DynamicModel from "../modals/DynamicModal"
 import CaseMembers from "./CaseMembers"
 
-const CaseGrid = ({ caseData, index, active, onAccordionButtonClick }) => {
+const CaseGrid = ({
+  caseData,
+  index,
+  active,
+  onAccordionButtonClick,
+  handleSelectingCase,
+  selected,
+}) => {
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const {
     toggleOpen: membersModelOpen,
@@ -39,17 +46,16 @@ const CaseGrid = ({ caseData, index, active, onAccordionButtonClick }) => {
           modalTitle=" Case Members Setting"
           modalSubtitle="You have 5 Members in case"
         >
-          <CaseMembers />
+          <CaseMembers members={caseData?.caseMembers} />
         </DynamicModel>
       </>
-      <li
-        className={classNames(
-          "px-3 py-2",
-          index === active && "active-case-bg"
-        )}
-      >
+      <li className={classNames("px-3 py-2", selected && "active-case-bg")}>
         <Row className="align-middle py-1" style={{ maxWidth: "100%" }}>
-          <Col xs={11}>
+          <Col
+            xs={11}
+            className="pointer"
+            onClick={() => handleSelectingCase(caseData)}
+          >
             <span className="fw-medium">{caseData.caseId}</span>
             <span className="text-muted font-size-12 ms-2">
               {caseData.caseName}
@@ -89,21 +95,21 @@ const CaseGrid = ({ caseData, index, active, onAccordionButtonClick }) => {
             <span className="fw-medium font-size-11">
               Saved Messages & Files
             </span>
-            <AccordionContainer>
+            {/* <AccordionContainer>
               <span>
                 Bookmarks <span>({caseData?.bookmarks?.length})</span>
               </span>
-            </AccordionContainer>
-            <AccordionContainer>
+            </AccordionContainer> */}
+            {/* <AccordionContainer>
               <span>
                 Pending Messages <span>(1)</span>
               </span>
-            </AccordionContainer>
-            <AccordionContainer>
+            </AccordionContainer> */}
+            {/* <AccordionContainer>
               <span>
                 Shared Files <span>({caseData?.files?.length})</span>
               </span>
-            </AccordionContainer>
+            </AccordionContainer> */}
           </div>
           <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>
@@ -126,7 +132,9 @@ CaseGrid.propTypes = {
   index: PropTypes.number,
   active: PropTypes.number,
   onAccordionButtonClick: PropTypes.func,
+  handleSelectingCase: PropTypes.func,
   children: PropTypes.any,
+  selected: PropTypes.bool,
 }
 
 export default CaseGrid

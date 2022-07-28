@@ -74,6 +74,7 @@ import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
 import ForgetPwd from "rainComputing/pages/auth/forgetPassword"
 import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
 import emailForgetPassword from "rainComputing/pages/auth/emailForgetPassword"
+import ChatRc from "rainComputing/pages/chat/Chat"
 
 const authProtectedRoutes = [
   //Crypto
@@ -103,6 +104,7 @@ const authProtectedRoutes = [
   { path: "/reqattorney", component: AttorneyLanding },
   { path: "/attorneydetail", component: AttorneyDetails },
   { path: "/firminfo", component: FirmInfo },
+  { path: "/chat-rc", component: ChatRc },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
@@ -115,7 +117,6 @@ const publicRoutes = [
   { path: "/forgot-password", component: ForgetPwd },
   { path: "/verifyemail", component: VerifyEmailPage },
   { path: "/emailforgotPwd", component: emailForgetPassword },
-
 
   // Authentication Inner
   { path: "/pages-login", component: Login1 },

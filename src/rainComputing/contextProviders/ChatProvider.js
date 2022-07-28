@@ -15,6 +15,7 @@ export function ChatProvider({ socket, children }) {
   const [chats, setChats] = useState([])
   const [currentRoom, setCurrentRoom] = useState(null)
   const [messages, setMessages] = useState([])
+  const [messageStack, setMessageStack] = useState([])
 
   const getRoomsonEveryMessage = async () => {
     const chatRoomsRes = await getAllChatRooms({ userID: currentUser.userID })
@@ -24,8 +25,9 @@ export function ChatProvider({ socket, children }) {
       setChats([])
     }
   }
-  const handleSendingMessage = msgData => {
-    socket.emit("send_message", msgData)
+  const handleSendingMessage = async msgData => {
+    setMessageStack(prevStae => [...prevStae, msgData])
+    await socket.emit("s_m", msgData)
   }
 
   //   useEffect(() => {
@@ -70,6 +72,28 @@ export function ChatProvider({ socket, children }) {
       })
     }
   }, [socket, handleSendingMessage])
+
+  useEffect(() => {
+    if (currentRoom) {
+      if (socket == null) return
+      socket.off("r_m").once("r_m", async msgData => {
+        console.log("Received message : ", msgData)
+        if (msgData?.groupId === currentRoom._id) {
+          setMessages([...messages, msgData])
+        }
+      })
+      socket.off("s_s").once("s_s", async msgData => {
+        console.log("Message send successfully : ", msgData)
+        setMessageStack([])
+        setMessages([...messages, msgData])
+      })
+    } else {
+      if (socket == null) return
+      socket.off("r_m").once("r_m", async msgData => {
+        console.log("Received message for notifications: ", msgData)
+      })
+    }
+  }, [socket, handleSendingMessage])
   return (
     <ChatContext.Provider
       value={{
@@ -81,6 +105,8 @@ export function ChatProvider({ socket, children }) {
         handleSendingMessage,
         messages,
         setMessages,
+        messageStack,
+        setMessageStack,
       }}
     >
       {children}

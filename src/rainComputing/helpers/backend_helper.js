@@ -59,6 +59,16 @@ const setResetPassword = payload =>
 const getSubgroups = payload =>
   post(`${BASE_URL}/subgroup/getByParentRoom`, payload)
 
+const createNewCase = payload => post(`${BASE_URL}/case/create`, payload)
+const getCasesByUserId = payload =>
+  post(`${BASE_URL}/case/getByUserId`, payload)
+
+const getGroupsByUserIdandCaseId = payload =>
+  post(`${BASE_URL}/group/getByUserandCaseId`, payload)
+
+const getMessagesByUserIdandGroupId = payload =>
+  post(`${BASE_URL}/message/get`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -87,4 +97,8 @@ export {
   setForgettingPassword,
   setResetPassword,
   getSubgroups,
+  createNewCase,
+  getCasesByUserId,
+  getGroupsByUserIdandCaseId,
+  getMessagesByUserIdandGroupId,
 }

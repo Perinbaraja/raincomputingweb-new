@@ -6,64 +6,20 @@ import { getSubgroups } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const SubgroupBar = ({
-  parentRoom,
-  selectedGroup,
+  groups,
   setSelectedgroup,
   subGroupColors,
-  setRecivers,
+  subGroupIndex,
+  setSubGroupindex,
 }) => {
-  const { currentUser } = useUser()
-  const [selectedSubGroup, setSlectedSubGroup] = useState(parentRoom)
   const [isShowMenu, setIsShowMenu] = useState(false)
-  const [groups, setGroups] = useState([])
-  const itemStyle = id => {
-    const color = subGroupColors[id % subGroupColors.length] || "#00ff00"
+  const itemStyle = index => {
+    const color = subGroupColors[index % subGroupColors.length] || "#00ff00"
     return {
-      backgroundColor: selectedGroup === id ? color : color + "22",
-      color: selectedGroup === id ? "white" : color,
+      backgroundColor: subGroupIndex === index ? color : color + "22",
+      color: subGroupIndex === index ? "white" : color,
     }
   }
-
-  useEffect(() => {
-    if (selectedGroup === 0) {
-      setRecivers(
-        parentRoom.members
-          .filter(m => m._id !== currentUser?.userID)
-          .map(r => r._id)
-      )
-    } else {
-      setRecivers(
-        selectedSubGroup.members
-          .filter(m => m.id !== currentUser?.userID)
-          .map(r => r.id)
-      )
-    }
-
-    return () => {}
-  }, [selectedSubGroup])
-
-  useEffect(() => {
-    console.log("parentRoom :", parentRoom)
-
-    const gettingSubGroups = async () => {
-      const payload = {
-        parentRoomId: parentRoom._id,
-      }
-
-      const res = await getSubgroups(payload)
-
-      if (res.success) {
-        setGroups(res.subGroups)
-      } else {
-        console.log("Error while fetching SubGroups : ", res)
-      }
-    }
-
-    gettingSubGroups()
-    return () => {}
-  }, [parentRoom])
-
-  console.log("selectedSubGroup:", groups)
   return (
     <div className="sg-wrapper">
       <Row
@@ -73,7 +29,7 @@ const SubgroupBar = ({
       >
         <Col xs={11} className="">
           <div className="sg-container">
-            <div
+            {/* <div
               className="pointer sg-item text-nowrap "
               style={itemStyle(0)}
               onClick={() => {
@@ -82,18 +38,19 @@ const SubgroupBar = ({
               // style={{ backgroundColor: colors[s % colors.length] }}
             >
               Everyone
-            </div>
+            </div> */}
             {groups &&
               groups.map((sub, s) => (
                 <div
                   key={s}
                   className="pointer sg-item text-nowrap "
-                  style={itemStyle(s + 1)}
+                  style={itemStyle(s)}
                   onClick={() => {
-                    setSelectedgroup(s + 1), setSlectedSubGroup(sub)
+                    setSubGroupindex(s)
+                    setSelectedgroup(sub)
                   }}
                 >
-                  {sub.name} ({sub.members?.length})
+                  {sub.groupName} ({sub.groupMembers?.length})
                 </div>
               ))}
           </div>
@@ -109,11 +66,11 @@ const SubgroupBar = ({
 }
 
 SubgroupBar.propTypes = {
-  selectedGroup: PropTypes.number,
   setSelectedgroup: PropTypes.func,
-  setRecivers: PropTypes.func,
   subGroupColors: PropTypes.any,
-  parentRoom: PropTypes.string,
+  groups: PropTypes.array,
+  subGroupIndex: PropTypes.number,
+  setSubGroupindex: PropTypes.func,
 }
 
 export default React.memo(SubgroupBar)

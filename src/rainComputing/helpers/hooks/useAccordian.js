@@ -7,7 +7,7 @@ const useAccordian = (initialIndex = -1) => {
       ? setActiveAccordian(-1)
       : setActiveAccordian(index)
   }
-  return [activeAccordian, setActiveAccordian, handleSettingActiveAccordion]
+  return { activeAccordian, setActiveAccordian, handleSettingActiveAccordion }
 }
 
 export default useAccordian

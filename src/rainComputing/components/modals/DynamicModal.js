@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { Modal, ModalBody } from "reactstrap"
+import { Modal, ModalBody, ModalHeader } from "reactstrap"
 import "../chat/style/case-grid.scss"
 
 const DynamicModel = ({
@@ -10,6 +10,7 @@ const DynamicModel = ({
   modalTitle,
   modalSubtitle,
   children,
+  footer = true,
 }) => {
   return (
     <Modal
@@ -19,19 +20,34 @@ const DynamicModel = ({
       size={size}
       backdrop={"static"}
     >
-      <ModalBody className="py-3 px-5" style={{ backgroundColor: "#fdfdfd" }}>
-        <div className="mt-3">
+      <ModalHeader>
+        <div className="">
           <h6 className="fw-medium" style={{ display: "block" }}>
             {modalTitle}
           </h6>
           <span className="text-muted"> {modalSubtitle}</span>
+          {/* <button
+            onClick={() => {
+              toggle()
+            }}
+            type="button"
+            className="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button> */}
         </div>
+      </ModalHeader>
+      <ModalBody className="p-3" style={{ backgroundColor: "#fdfdfd" }}>
         <>{children}</>
-        <div className="d-flex justify-content-end my-2">
-          <button className="btn btn-primary" onClick={() => toggle()}>
-            DONE
-          </button>
-        </div>
+        {footer && (
+          <div className="d-flex justify-content-end my-2">
+            <button className="btn btn-primary" onClick={() => toggle()}>
+              DONE
+            </button>
+          </div>
+        )}
       </ModalBody>
     </Modal>
   )
@@ -43,6 +59,7 @@ DynamicModel.propTypes = {
   modalTitle: PropTypes.string,
   children: PropTypes.any,
   open: PropTypes.bool,
+  footer: PropTypes.bool,
   toggle: PropTypes.func,
 }
 

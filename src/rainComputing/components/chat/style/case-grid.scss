@@ -32,6 +32,10 @@ $active-bg: #ECF2FE;
     cursor: pointer;
 }
 
+.member-card {
+    width: 240px;
+}
+
 .member-card:hover {
     transform: translateY(-2px);
     transition: all 0.4s;

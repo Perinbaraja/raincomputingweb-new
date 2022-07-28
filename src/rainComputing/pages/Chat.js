@@ -77,8 +77,7 @@ const RcChat = () => {
     setMessages,
   } = useChat()
   const { notifications, setNotifications } = useNotifications()
-  const [activeAccordian, setActiveAccordian, handleSettingActiveAccordion] =
-    useAccordian(-1)
+  const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
 
   const [messageBox, setMessageBox] = useState(null)
   // eslint-disable-next-line no-unused-vars
