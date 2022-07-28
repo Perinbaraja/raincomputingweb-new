@@ -69,6 +69,8 @@ const getGroupsByUserIdandCaseId = payload =>
 const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
 
+const getFileFromGFS = ({ id }) => get(`${SERVER_URL}/file/${id}`)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -101,4 +103,5 @@ export {
   getCasesByUserId,
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
+  getFileFromGFS,
 }

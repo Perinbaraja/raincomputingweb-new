@@ -39,6 +39,9 @@ import useAccordian from "rainComputing/helpers/hooks/useAccordian"
 import SubgroupBar from "rainComputing/components/chat/SubgroupBar"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import moment from "moment"
+import axios from "axios"
+import { SERVER_URL } from "rainComputing/helpers/configuration"
+import AttachmentViewer from "rainComputing/components/chat/AttachmentViewer"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -83,6 +86,8 @@ const ChatRc = () => {
   const [currentSubGroupIndex, setCurrentSubGroupIndex] = useState(0)
   const [receivers, setReceivers] = useState([])
   const [curMessage, setcurMessage] = useState("")
+  const [isAttachment, setIsAttachment] = useState(false)
+  const [allFiles, setAllFiles] = useState([])
 
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
@@ -116,18 +121,52 @@ const ChatRc = () => {
 
   //Sending Message
   const handleSendMessage = async () => {
-    if (curMessage) {
-      const payLoad = {
+    if (isAttachment || curMessage) {
+      let attachmentsId = []
+      let payLoad = {
         caseId: currentCase?._id,
         groupId: currentChat?._id,
         sender: currentUser?.userID,
         receivers,
         messageData: curMessage,
-        isAttachement: false,
-        attachments: [],
+        isAttachment,
       }
+      if (isAttachment) {
+        const formData = new FormData()
+        for (var i = 0; i < allFiles.length; i++) {
+          formData.append("file", allFiles[i])
+        }
+        // formData.append("file", allFiles)
+        const fileUploadRes = await axios.post(
+          `${SERVER_URL}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": `multipart/form-data`,
+            },
+          }
+        )
+        const { data } = fileUploadRes
+        if (data.success) {
+          console.log("setting a id")
+          await data.files?.map(file =>
+            attachmentsId.push({
+              type: file.contentType,
+              size: file.size,
+              id: file.id,
+              name: file.originalname,
+              dbName: file.filename,
+              aflag: true,
+            })
+          )
+        }
+      }
+      payLoad.attachments = attachmentsId
+      console.log("message payLoad", payLoad)
       handleSendingMessage(payLoad)
+      setAllFiles([])
       setcurMessage("")
+      setIsAttachment(false)
     } else {
       console.log("You can't send empty message")
     }
@@ -137,7 +176,7 @@ const ChatRc = () => {
   const onKeyPress = e => {
     const { key } = e
     if (key === "Enter") {
-      console.log("Enter key Pressed")
+      handleSendMessage()
     }
   }
 
@@ -157,6 +196,22 @@ const ChatRc = () => {
       messageBox.scrollTop = messageBox.scrollHeight + 1000
     }
   }
+
+  //Handling File change
+  const handleFileChange = e => {
+    setAllFiles(e.target.files)
+  }
+
+  //SideEffect for setting isAttachment
+
+  useEffect(() => {
+    if (Array.from(allFiles)?.length > 0) {
+      console.log("setting attachment true")
+      setIsAttachment(true)
+    }
+  }, [allFiles])
+
+  //Scroll to messages bottom on load & message arrives
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
   }, [messages])
@@ -420,7 +475,10 @@ const ChatRc = () => {
                                         : ""
                                     }
                                   >
-                                    <div className="conversation-list mw-75">
+                                    <div
+                                      className="conversation-list"
+                                      style={{ maxWidth: "80%" }}
+                                    >
                                       {/* <UncontrolledDropdown>
                                         <DropdownToggle
                                           href="#"
@@ -459,7 +517,14 @@ const ChatRc = () => {
                                           {getMemberName(msg.sender)}
                                         </div>
                                         <div className="mb-1">
-                                          {msg.messageData}
+                                          {msg.isAttachment ? (
+                                            <AttachmentViewer
+                                              attachments={msg.attachments}
+                                              text={msg.messageData}
+                                            />
+                                          ) : (
+                                            msg.messageData
+                                          )}
                                         </div>
                                         <p className="chat-time mb-0">
                                           <i className="bx bx-comment-check align-middle me-1" />
@@ -535,13 +600,14 @@ const ChatRc = () => {
                                       <div>
                                         <Input
                                           type="file"
-                                          multiple={false}
+                                          name="file"
+                                          multiple={true}
                                           id="hidden-file"
                                           className="d-none"
-                                          accept="image/*"
-                                          // onChange={e => {
-                                          //   upload(e)
-                                          // }}
+                                          accept="image/*,.pdf"
+                                          onChange={e => {
+                                            handleFileChange(e)
+                                          }}
                                         />
 
                                         <Label
@@ -558,10 +624,16 @@ const ChatRc = () => {
                                         </Label>
                                       </div>
                                     </li>
-                                    <li className="list-inline-item"></li>
                                   </ul>
                                 </div>
                               </div>
+                              {Array.from(allFiles)?.length > 0 && (
+                                <div className="d-flex gap-2 flex-wrap">
+                                  {Array.from(allFiles)?.map((att, a) => (
+                                    <span key={a}>{att.name}</span>
+                                  ))}
+                                </div>
+                              )}
                             </Col>
                             <Col className="col-auto">
                               <Button
