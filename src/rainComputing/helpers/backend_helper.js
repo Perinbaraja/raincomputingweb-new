@@ -69,6 +69,11 @@ const getGroupsByUserIdandCaseId = payload =>
 const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
 
+const createOnevsOneChat = payload =>
+  post(`${BASE_URL}/group/createChat`, payload)
+
+const getOnevsOneChat = payload => post(`${BASE_URL}/group/getChat`, payload)
+
 const getFileFromGFS = ({ id }) => get(`${SERVER_URL}/file/${id}`)
 
 export {
@@ -104,4 +109,6 @@ export {
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
   getFileFromGFS,
+  createOnevsOneChat,
+  getOnevsOneChat,
 }
