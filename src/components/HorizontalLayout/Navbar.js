@@ -95,7 +95,7 @@ const Navbar = props => {
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
-                    to="/rc-chat"
+                    to="/chat-rc"
                   >
                     <i className="bx bxl-messenger me-2"></i>
                     {props.t("Chat")} {props.menuOpen}

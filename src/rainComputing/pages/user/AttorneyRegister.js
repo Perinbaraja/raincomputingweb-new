@@ -58,7 +58,7 @@ const AttorneyRegister = () => {
       console.log("attorney", res)
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
-      history.push("/profile")
+      history.push("/")
     } else {
       console.log("Failed to registering attorney", res)
     }

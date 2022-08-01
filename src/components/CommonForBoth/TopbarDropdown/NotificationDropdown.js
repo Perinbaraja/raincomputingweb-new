@@ -46,7 +46,7 @@ const NotificationDropdown = props => {
                   <h6 className="m-0"> {props.t("Notifications")} </h6>
                 </Col>
                 <div className="col-auto">
-                  <a href="/rc-chat" className="small">
+                  <a href="/chat-rc" className="small">
                     {" "}
                     View All
                   </a>
@@ -55,7 +55,7 @@ const NotificationDropdown = props => {
             </div>
 
             <SimpleBar style={{ height: "230px" }}>
-              <Link to="/rc-chat" className="text-reset notification-item">
+              <Link to="/chat-rc" className="text-reset notification-item">
                 <div className="d-flex">
                   <div className="avatar-xs me-3">
                     <span className="avatar-title bg-primary rounded-circle font-size-16">
