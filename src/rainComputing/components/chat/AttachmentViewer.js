@@ -21,7 +21,7 @@ const AttachmentViewer = ({ attachments, text }) => {
             >
               <div className="aligner_item">
                 <i
-                  className="mdi mdi-file-pdf mdi-24px text-center"
+                  className="mdi mdi-file-pdf mdi-36px text-center"
                   style={{ color: "red", padding: 2 }}
                 />
                 <div style={{ wordBreak: "break-all" }}>{att?.name}</div>

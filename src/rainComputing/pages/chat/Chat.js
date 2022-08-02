@@ -93,6 +93,7 @@ const ChatRc = () => {
   const [curMessage, setcurMessage] = useState("")
   const [isAttachment, setIsAttachment] = useState(false)
   const [allFiles, setAllFiles] = useState([])
+  const [loading, setLoading] = useState(false)
 
   //Toaster settings
   toastr.options = {
@@ -179,6 +180,7 @@ const ChatRc = () => {
 
   //Sending Message
   const handleSendMessage = async () => {
+    setLoading(true)
     if (isAttachment || curMessage) {
       let attachmentsId = []
       let payLoad = {
@@ -228,6 +230,7 @@ const ChatRc = () => {
     } else {
       console.log("You can't send empty message")
     }
+    setLoading(false)
   }
 
   //Detecting Enter key Press in textbox
@@ -268,7 +271,7 @@ const ChatRc = () => {
       setIsAttachment(true)
     }
   }, [allFiles])
-
+  console.log("selected files", allFiles)
   //Scroll to messages bottom on load & message arrives
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
@@ -287,7 +290,8 @@ const ChatRc = () => {
           setAllgroups(subGroupsRes.groups)
           setCurrentChat(subGroupsRes.groups[0])
         }
-        // console.log("Rendering subGroupsRes   :", subGroupsRes)
+
+        console.log("Rendering subGroupsRes   :", subGroupsRes)
       }
       onGettingSubgroups()
     }
@@ -365,6 +369,26 @@ const ChatRc = () => {
                 />
               </DynamicSuspense>
             </DynamicModel>
+
+            {/* Model for creating subgroup */}
+            {/* <DynamicModel
+              open={newCaseModelOpen}
+              toggle={toggleNewCaseModelOpen}
+              size="lg"
+              modalTitle="New Case"
+              footer={false}
+            >
+              <DynamicSuspense>
+                <CreateCase
+                  formValues={newCase}
+                  setFormValues={setNewCase}
+                  contacts={contacts}
+                  setModalOpen={setNewCaseModelOpen}
+                  getAllCases={ongetAllCases}
+                />
+              </DynamicSuspense>
+            </DynamicModel>
+ */}
 
             <MetaTags>
               <title>Chat RC</title>
@@ -726,7 +750,7 @@ const ChatRc = () => {
                                             multiple={true}
                                             id="hidden-file"
                                             className="d-none"
-                                            accept="image/*,.pdf"
+                                            accept=".png, .jpg, .jpeg,.pdf"
                                             onChange={e => {
                                               handleFileChange(e)
                                             }}
@@ -749,26 +773,43 @@ const ChatRc = () => {
                                     </ul>
                                   </div>
                                 </div>
+
                                 {Array.from(allFiles)?.length > 0 && (
-                                  <div className="d-flex gap-2 flex-wrap">
+                                  <div className="d-flex gap-2 flex-wrap mt-2 ">
                                     {Array.from(allFiles)?.map((att, a) => (
-                                      <span key={a}>{att.name}</span>
+                                      <span
+                                        className="badge badge-soft-primary font-size-13"
+                                        key={a}
+                                      >
+                                        {att.name}
+                                      </span>
                                     ))}
                                   </div>
                                 )}
                               </Col>
                               <Col className="col-auto">
-                                <Button
-                                  type="button"
-                                  color="primary"
-                                  onClick={() => handleSendMessage()}
-                                  className="btn btn-primary btn-rounded chat-send w-md "
-                                >
-                                  <span className="d-none d-sm-inline-block me-2">
-                                    Send
-                                  </span>
-                                  <i className="mdi mdi-send" />
-                                </Button>
+                                {loading ? (
+                                  <Button
+                                    type="button"
+                                    className="btn btn-primary btn-rounded chat-send w-md "
+                                    color="primary"
+                                    style={{ cursor: "not-allowed" }}
+                                  >
+                                    <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    type="button"
+                                    color="primary"
+                                    onClick={() => handleSendMessage()}
+                                    className="btn btn-primary btn-rounded chat-send w-md "
+                                  >
+                                    <span className="d-none d-sm-inline-block me-2">
+                                      Send
+                                    </span>
+                                    <i className="mdi mdi-send" />
+                                  </Button>
+                                )}
                               </Col>
                             </Row>
                           </div>

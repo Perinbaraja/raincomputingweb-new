@@ -30,7 +30,7 @@ const ProjectDetail = ({ project }) => {
         <div>
           {" "}
           <h5 className="font-size-16 mt-4">Biography :</h5>
-          <p className="text-muted">{project.bio}</p>
+          <p className="text-muted">{project.bio ? project.bio : null}</p>
         </div>
         <div>
           {" "}
@@ -38,23 +38,23 @@ const ProjectDetail = ({ project }) => {
           <p className="text-muted">
             {" "}
             <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l1}
+            {project.l1 ? project.l1 : null}
           </p>
           <p className="text-muted">
             {" "}
             <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l2}
+            {project?.l2}
           </p>
-          {/* <p className="text-muted">
+          <p className="text-muted">
             {" "}
             <i className="mdi mdi-chevron-right text-primary me-1" />
             {project.l3}
-          </p> */}
-          {/* <p className="text-muted">
+          </p>
+          <p className="text-muted">
             {" "}
             <i className="mdi mdi-chevron-right text-primary me-1" />
             {project.l4}
-          </p> */}
+          </p>
         </div>
 
         <h5 className="font-size-16 mt-4">Attorney Address :</h5>
