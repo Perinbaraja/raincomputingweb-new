@@ -76,7 +76,7 @@ function usersList() {
                             <th scope="col">First Name</th>
                             <th scope="col">Last Name</th>
                             <th scope="col">Email</th>
-                            <th scope="col">Status</th>
+
                             <th scope="col">Action</th>
                           </tr>
                         </thead>
@@ -87,7 +87,7 @@ function usersList() {
                               <td>{user.firstname} </td>
                               <td> {user.lastname}</td>
                               <td> {user.email}</td>
-                              <td> {user.aflag}</td>
+
                               <td>
                                 {/* <Dropdown
                                   isOpen={action}
@@ -113,16 +113,16 @@ function usersList() {
                                     <DropdownItem >Disable</DropdownItem>
                                   </DropdownMenu> */}
 
-                                   <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={() => {
-                                      setSelectedUser(user)
-                                      setModalOpen(true)
-                                    }}
-                                  >
-                                    Remove
-                                  </button> 
+                                <button
+                                  type="button"
+                                  className="btn btn-primary"
+                                  onClick={() => {
+                                    setSelectedUser(user)
+                                    setModalOpen(true)
+                                  }}
+                                >
+                                  Remove
+                                </button>
                                 {/* </Dropdown> */}
                               </td>
                             </tr>

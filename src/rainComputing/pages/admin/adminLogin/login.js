@@ -28,7 +28,6 @@ import rainlogo from "assets/images/RainCom_Logo.webp"
 import { adminLogin } from "rainComputing/helpers/backend_helper"
 
 const AdminLogin = props => {
-
   const [loginError, setLoginError] = useState("")
   const [loading, setLoading] = useState(false)
   const validation = useFormik({
@@ -44,10 +43,10 @@ const AdminLogin = props => {
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: async values => {
-       setLoading(true)
+      setLoading(true)
       const res = await adminLogin(values)
       if (res.success) {
-        console.log("res",res);
+        console.log("res", res)
         localStorage.setItem("authAdmin", JSON.stringify(res))
         props.history.push("/admin-page")
       } else {
@@ -66,12 +65,12 @@ const AdminLogin = props => {
         <img src={rainlogo} height="50" />
       </div> */}
 
-<div className="home-btn d-none d-sm-block">
+      <div className="home-btn d-none d-sm-block">
         <Link to="/" className="text-dark">
           <i className="fas fa-home h2" />
         </Link>
       </div>
-      <div className="account-pages my-5 pt-sm-5">
+      <div className="account-pages">
         <Container>
           <Row className="justify-content-center">
             <Col md={8} lg={6} xl={5}>
@@ -106,21 +105,18 @@ const AdminLogin = props => {
                   </div>
                   <div className="p-2">
                     <Form
-                       className="form-horizontal"
-                       onSubmit={e => {
-                         e.preventDefault()
-                         validation.handleSubmit()
-                         return false
+                      className="form-horizontal"
+                      onSubmit={e => {
+                        e.preventDefault()
+                        validation.handleSubmit()
+                        return false
                       }}
                     >
-                     {loginError && (
-                          <Alert
-                            className="fw-bolder text-center"
-                            color="danger"
-                          >
-                            {loginError}
-                          </Alert>
-                        )}
+                      {loginError && (
+                        <Alert className="fw-bolder text-center" color="danger">
+                          {loginError}
+                        </Alert>
+                      )}
 
                       <div className="mb-3">
                         <Label className="form-label">User Name</Label>
@@ -133,11 +129,17 @@ const AdminLogin = props => {
                           onBlur={validation.handleBlur}
                           value={validation.values.username || ""}
                           invalid={
-                            validation.touched.username && validation.errors.username ? true : false
+                            validation.touched.username &&
+                            validation.errors.username
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.username && validation.errors.username ? (
-                          <FormFeedback type="invalid">{validation.errors.username}</FormFeedback>
+                        {validation.touched.username &&
+                        validation.errors.username ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.username}
+                          </FormFeedback>
                         ) : null}
                       </div>
 
@@ -151,32 +153,38 @@ const AdminLogin = props => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           invalid={
-                            validation.touched.password && validation.errors.password ? true : false
+                            validation.touched.password &&
+                            validation.errors.password
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.password && validation.errors.password ? (
-                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
+                        {validation.touched.password &&
+                        validation.errors.password ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.password}
+                          </FormFeedback>
                         ) : null}
                       </div>
 
                       <div className="mt-5 d-grid">
-                      {loading ? (
-                            <button
-                              type="button"
-                              className="btn btn-dark"
-                              style={{ cursor: "not-allowed" }}
-                            >
-                              <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
-                              Validating login...
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-primary btn-block"
-                              type="submit"
-                            >
-                              Log In
-                            </button>
-                          )}
+                        {loading ? (
+                          <button
+                            type="button"
+                            className="btn btn-dark"
+                            style={{ cursor: "not-allowed" }}
+                          >
+                            <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
+                            Validating login...
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-block"
+                            type="submit"
+                          >
+                            Log In
+                          </button>
+                        )}
                       </div>
                     </Form>
                   </div>
@@ -191,6 +199,6 @@ const AdminLogin = props => {
 }
 
 AdminLogin.propTypes = {
-    history: PropTypes.object,
-  }
+  history: PropTypes.object,
+}
 export default withRouter(AdminLogin)
