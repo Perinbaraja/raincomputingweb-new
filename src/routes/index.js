@@ -75,8 +75,12 @@ import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
 // import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
 // import emailForgetPassword from "rainComputing/pages/auth/emailForgetPassword"
 
+import AdminLogin from "rainComputing/pages/admin/adminLogin/login"
+import Admin from "rainComputing/pages/admin/Admin"
+import usersList from "rainComputing/pages/admin/usersList"
+import attorneysList from "rainComputing/pages/admin/attorneysList"
+
 const authProtectedRoutes = [
-  //Crypto
 
   //chat
   { path: "/chat", component: Chat },
@@ -112,6 +116,8 @@ const authProtectedRoutes = [
 const publicRoutes = [
   { path: "/logout", component: Logout },
   { path: "/popup", component: Popup },
+  
+  { path: "/admin", component: AdminLogin },
   // { path: "/forgot-password", component: ForgetPwd },
   // { path: "/verifyemail", component: VerifyEmailPage },
   // { path: "/emailforgotPwd", component: emailForgetPassword },
@@ -138,5 +144,13 @@ const publicRoutes = [
   { path: "/register", component: RainRegister },
   { path: "/login", component: RainLogin },
 ]
+const adminRoutes = [
+   //Admin Page
 
-export { authProtectedRoutes, publicRoutes }
+   { path: "/admin-page", component: Admin },
+   { path: "/userlist-page", component: usersList },
+   { path: "/attorneylist-page", component: attorneysList },
+ 
+]
+
+export { authProtectedRoutes, publicRoutes,adminRoutes }

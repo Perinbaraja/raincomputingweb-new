@@ -215,9 +215,9 @@ const AttorneyDetails = () => {
                             </Col>
                           </Row>
                         </Form>
-                        <Button color="primary" type="submit">
+                        {/* <Button color="primary" type="submit">
                           SUBMIT
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </Form>

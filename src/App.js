@@ -5,7 +5,7 @@ import { Switch, BrowserRouter as Router, Route } from "react-router-dom"
 import { connect } from "react-redux"
 
 // Import Routes all
-import { authProtectedRoutes, publicRoutes } from "./routes"
+import { authProtectedRoutes, publicRoutes,adminRoutes } from "./routes"
 
 // Import all middleware
 import Authmiddleware from "./routes/route"
@@ -30,6 +30,7 @@ import { ChatProvider } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ContactsGrid from "pages/Contacts/contacts-grid"
 import LandingGrid from "rainComputing/pages/landing/LandingGrid"
+import Admin from "rainComputing/pages/admin/Admin"
 
 const App = () => {
   const { socket } = useSocket()
@@ -67,6 +68,18 @@ const App = () => {
                 component={route.component}
                 key={idx}
                 isAuthProtected={true}
+                exact
+              />
+            ))}
+
+
+            {adminRoutes.map((route, idx) => (
+              <Authmiddleware
+                path={route.path}
+                layout={VerticalLayout}
+                component={route.component}
+                key={idx}
+                isAuthProtected={false}
                 exact
               />
             ))}
