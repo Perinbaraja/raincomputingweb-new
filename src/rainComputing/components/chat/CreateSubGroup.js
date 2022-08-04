@@ -70,8 +70,8 @@ const CreateSubGroup = ({
       size="lg"
       backdrop={"static"}
     >
-      <ModalHeader className="bg-black  text-white ">
-        <div className="bg-black d-flex text-white gap-2">
+      <ModalHeader className="bg-primary  text-white ">
+        <div className="bg-primary d-flex text-white gap-2">
           <i
             className="mdi mdi-keyboard-backspace mdi-24px text-white pointer"
             onClick={() => handleClose()}
@@ -92,7 +92,7 @@ const CreateSubGroup = ({
       </ModalHeader>
       <ModalBody>
         <Row>
-          <Col xs={6} className="px-3 border-end border-dark">
+          <Col xs={6} className="px-3 border-end border-info">
             <span className="text-muted">Case Member</span>
             <div className="d-flex flex-wrap gap-4 my-2">
               {caseMembers &&

@@ -33,7 +33,7 @@ const SubGroups = ({ groups, caseMembers, currentCaseId, getSubGroups }) => {
               className="rounded text-nowrap"
               style={{ minWidth: 220 }}
             >
-              <CardTitle className="bg-black text-white px-2 pt-3 pb-2 ">
+              <CardTitle className="bg-primary text-white px-2 pt-3 pb-2 ">
                 {sub.groupName}
               </CardTitle>
               <CardBody className="p-2 my-2 text-nowrap">

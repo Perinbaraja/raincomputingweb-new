@@ -56,6 +56,174 @@ const ProjectDetail = ({ project }) => {
             {project.l4}
           </p>
         </div>
+        <div>
+          {""}
+          <h5 className="font-size-16 mt-4">Technical Expertise :</h5>
+          <p className="text-muted mb-1">
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l5}
+          </p>
+          <p className="text-muted mb-1">
+            {/* {" "} */}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l6}
+          </p>
+          <p className="text-muted mb-1">
+            {/* {" "} */}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l7}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l8}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l9}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l10}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l11}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l12}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l13}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l14}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l15}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l16}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l17}
+          </p>
+          <p className="text-muted mb-1">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l18}
+          </p>
+        </div>
+        <div>
+          {" "}
+          <h5 className="font-size-16 mt-4">Legal Experience :</h5>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l19}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project?.l20}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l21}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l22}
+          </p>
+          <p className="text-muted ">
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l23}
+          </p>
+          <p className="text-muted ">
+            {/* {" "} */}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l24}
+          </p>
+          <p className="text-muted ">
+            {/* {" "} */}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l25}
+          </p>
+          <p className="text-muted ">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l26}
+          </p>
+        </div>
+        <div>
+          {" "}
+          <h5 className="font-size-16 mt-4">Practice Admissions :</h5>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l27}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project?.l28}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l29}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l30}
+          </p>
+          <p className="text-muted ">
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l31}
+          </p>
+          <p className="text-muted ">
+            {/* {" "} */}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l32}
+          </p>
+        </div>
+        <div>
+          {" "}
+          <h5 className="font-size-16 mt-4">Recognition :</h5>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l33}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project?.l34}
+          </p>
+          <p className="text-muted">
+            {" "}
+            <i className="mdi mdi-chevron-right text-primary me-1" />
+            {project.l35}
+          </p>
+        </div>
 
         <h5 className="font-size-16 mt-4">Attorney Address :</h5>
         <p> </p>

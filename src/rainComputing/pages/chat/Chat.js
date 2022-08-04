@@ -162,9 +162,13 @@ const ChatRc = () => {
     const chatMember = members.filter(
       member => member.id?._id !== currentUser.userID
     )
-    if (chatMember.length > 0) return chatMember[0].id?.profilePic
+    console.log("chatMember", chatMember)
+    if (chatMember.length > 0)
+      return chatMember[0].id?.profilePic
+        ? chatMember[0].id?.profilePic
+        : profile
 
-    return "profile"
+    return profile
   }
 
   //getting 1vs1 chat sender name
@@ -482,10 +486,10 @@ const ChatRc = () => {
                                       <img
                                         src={
                                           chat.isGroup
-                                            ? getChatProfilePic(
+                                            ? profile
+                                            : getChatProfilePic(
                                                 chat.groupMembers
                                               )
-                                            : profile
                                         }
                                         className="rounded-circle  avatar-sm  "
                                         alt=""

@@ -11,7 +11,7 @@ const CaseMembers = ({ members }) => {
       <CardImg
         top
         className="avatar-lg  align-self-center rounded-circle "
-        src={profile}
+        src={member?.id?.profilepic ? member?.id?.profilepic : profile}
         alt="members"
       />
       <CardBody className="text-center px-4 text-nowrap ">
