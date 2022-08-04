@@ -122,6 +122,12 @@ const UserProfile = props => {
             <Col lg="12">
               {updateError && <Alert color="danger">{updateError}</Alert>}
               {updateSuccess && <Alert color="success">{updateSuccess}</Alert>}
+              {/* {profileUpdateError && (
+                <Alert color="danger">{profileUpdateError}</Alert>
+              )}
+              {profileUpdateSuccess && (
+                <Alert color="success">{profileUpdateSuccess}</Alert>
+              )} */}
 
               <Card>
                 <CardBody>

@@ -175,7 +175,7 @@ const ChatRc = () => {
 
   const getSenderOneChat = senderId => {
     const chatMember = currentChat?.groupMembers.find(
-      member => member.id?._id !== senderId
+      member => member.id?._id === senderId
     )
     if (chatMember)
       return chatMember.id?.firstname + " " + chatMember.id?.lastname
