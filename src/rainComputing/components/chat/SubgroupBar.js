@@ -11,6 +11,7 @@ const SubgroupBar = ({
   subGroupColors,
   subGroupIndex,
   setSubGroupindex,
+  openSubGroupmodel,
 }) => {
   const [isShowMenu, setIsShowMenu] = useState(false)
   const itemStyle = index => {
@@ -57,7 +58,10 @@ const SubgroupBar = ({
         </Col>
         {isShowMenu && (
           <Col xs={1}>
-            <i className="bx bx-dots-vertical-rounded font-size-17 mt-1 pointer" />
+            <i
+              className="bx bx-dots-vertical-rounded font-size-17 mt-1 pointer"
+              onClick={() => openSubGroupmodel(true)}
+            />
           </Col>
         )}
       </Row>
@@ -71,6 +75,7 @@ SubgroupBar.propTypes = {
   groups: PropTypes.array,
   subGroupIndex: PropTypes.number,
   setSubGroupindex: PropTypes.func,
+  openSubGroupmodel: PropTypes.func,
 }
 
 export default React.memo(SubgroupBar)

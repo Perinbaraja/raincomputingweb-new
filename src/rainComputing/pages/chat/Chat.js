@@ -51,6 +51,7 @@ import NoChat from "rainComputing/components/chat/NoChat"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
+const SubGroups = lazy(() => import("rainComputing/components/chat/SubGroups"))
 
 //Chat left sidebar nav items
 const sidebarNavItems = ["Chat", "Case", "Contact"]
@@ -63,6 +64,11 @@ const ChatRc = () => {
     toggleOpen: newCaseModelOpen,
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: subGroupModelOpen,
+    setToggleOpen: setSubGroupModelOpen,
+    toggleIt: togglesubGroupModelOpen,
   } = useToggle(false)
 
   const {
@@ -177,7 +183,6 @@ const ChatRc = () => {
     const allCasesRes = await getCasesByUserId({ userId: currentUser.userID })
     if (allCasesRes.success) {
       setAllCases(allCasesRes.cases)
-      console.log("Rendering ongetAllCases res", allCasesRes)
     } else {
       setAllCases([])
       console.log("Rendering ongetAllCases error", allCasesRes)
@@ -220,7 +225,6 @@ const ChatRc = () => {
         )
         const { data } = fileUploadRes
         if (data.success) {
-          console.log("setting a id")
           await data.files?.map(file =>
             attachmentsId.push({
               type: file.contentType,
@@ -234,7 +238,6 @@ const ChatRc = () => {
         }
       }
       payLoad.attachments = attachmentsId
-      console.log("message payLoad", payLoad)
       handleSendingMessage(payLoad)
       setAllFiles([])
       setcurMessage("")
@@ -279,32 +282,30 @@ const ChatRc = () => {
 
   useEffect(() => {
     if (Array.from(allFiles)?.length > 0) {
-      console.log("setting attachment true")
       setIsAttachment(true)
     }
   }, [allFiles])
-  console.log("selected files", allFiles)
   //Scroll to messages bottom on load & message arrives
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
   }, [messages])
 
+  //Fetching SubGroups
+  const onGettingSubgroups = async () => {
+    const payLoad = {
+      caseId: currentCase._id,
+      userId: currentUser.userID,
+    }
+    const subGroupsRes = await getGroupsByUserIdandCaseId(payLoad)
+    if (subGroupsRes.success) {
+      setAllgroups(subGroupsRes.groups)
+      setCurrentChat(subGroupsRes.groups[0])
+    }
+  }
+
   //SideEffect for fetching Subgroups after case selected
   useEffect(() => {
     if (currentCase) {
-      const onGettingSubgroups = async () => {
-        const payLoad = {
-          caseId: currentCase._id,
-          userId: currentUser.userID,
-        }
-        const subGroupsRes = await getGroupsByUserIdandCaseId(payLoad)
-        if (subGroupsRes.success) {
-          setAllgroups(subGroupsRes.groups)
-          setCurrentChat(subGroupsRes.groups[0])
-        }
-
-        console.log("Rendering subGroupsRes   :", subGroupsRes)
-      }
       onGettingSubgroups()
     }
   }, [currentCase])
@@ -312,17 +313,11 @@ const ChatRc = () => {
   //SideEffect of setting receivers after currentchat changes
   useEffect(() => {
     if (currentChat) {
-      currentChat?.isGroup
-        ? setReceivers(
-            currentChat.groupMembers
-              .filter(m => m.id !== currentUser.userID)
-              .map(r => r.id)
-          )
-        : setReceivers(
-            currentChat.groupMembers
-              .filter(m => m.id?._id !== currentUser.userID)
-              .map(r => r.id?._id)
-          )
+      setReceivers(
+        currentChat.groupMembers
+          .filter(m => m.id?._id !== currentUser.userID)
+          .map(r => r.id?._id)
+      )
       const onGettingGroupMessages = async () => {
         const payload = {
           groupId: currentChat?._id,
@@ -341,7 +336,6 @@ const ChatRc = () => {
   }, [currentChat])
 
   useEffect(() => {
-    // console.log("Rendering Fetching Contacts")
     const onGetContacts = async () => {
       const userRes = await getAllUsers({ userID: currentUser.userID })
       console.log("userres", userRes)
@@ -384,24 +378,25 @@ const ChatRc = () => {
             </DynamicModel>
 
             {/* Model for creating subgroup */}
-            {/* <DynamicModel
-              open={newCaseModelOpen}
-              toggle={toggleNewCaseModelOpen}
+            <DynamicModel
+              open={subGroupModelOpen}
+              toggle={togglesubGroupModelOpen}
+              modalTitle="Subgroup Setting"
+              modalSubtitle={`You have ${
+                allgroups.filter(a => !a.isParent)?.length || 0
+              } subgroups`}
+              footer={true}
               size="lg"
-              modalTitle="New Case"
-              footer={false}
             >
               <DynamicSuspense>
-                <CreateCase
-                  formValues={newCase}
-                  setFormValues={setNewCase}
-                  contacts={contacts}
-                  setModalOpen={setNewCaseModelOpen}
-                  getAllCases={ongetAllCases}
+                <SubGroups
+                  currentCaseId={currentCase?._id}
+                  caseMembers={currentCase?.caseMembers}
+                  groups={allgroups.filter(a => !a.isParent)}
+                  getSubGroups={onGettingSubgroups}
                 />
               </DynamicSuspense>
             </DynamicModel>
- */}
 
             <MetaTags>
               <title>Chat RC</title>
@@ -750,6 +745,7 @@ const ChatRc = () => {
                               subGroupColors={subGroupColors}
                               subGroupIndex={currentSubGroupIndex}
                               setSubGroupindex={setCurrentSubGroupIndex}
+                              openSubGroupmodel={setSubGroupModelOpen}
                             />
                           )}
                           <div className="p-2 chat-input-section">

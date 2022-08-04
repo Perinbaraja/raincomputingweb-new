@@ -91,6 +91,8 @@ const attorneyStatusUpdate = payload =>
   put(`${BASE_URL}/admin/attorneyStatus`, payload)
 const adminLogout = () => get(`${BASE_URL}/admin/signOut`)
 
+const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -136,4 +138,5 @@ export {
   removeAttorney,
   allReqAttorneyList,
   attorneyStatusUpdate,
+  createSubgroup,
 }
