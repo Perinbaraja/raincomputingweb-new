@@ -26,14 +26,22 @@ import Breadcrumb from "components/Common/Breadcrumb"
 
 import avatar from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { userUpdate } from "rainComputing/helpers/backend_helper"
+import {
+  userUpdate,
+  profilePicUpdate,
+} from "rainComputing/helpers/backend_helper"
+import profile from "store/auth/profile/reducer"
 
 const UserProfile = props => {
   const user = localStorage.getItem("authUser")
   const [updateSuccess, setUpdateSuccess] = useState("")
   const [updateError, setUpdateError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [proloading, setProLoading] = useState(false)
   const { currentUser, setCurrentUser } = useUser(user)
+  const [profilePic, setProfilePic] = useState("")
+  const [profileUpdateSuccess, setProfileUpateSuccess] = useState("")
+  const [profileUpdateError, setProfileUpateError] = useState("")
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -65,6 +73,41 @@ const UserProfile = props => {
     },
   })
 
+  const profilePicUpload = async e => {
+    setProLoading(true)
+    const file = e.target.files[0]
+
+    const res = await convertBase64(file)
+    await profilePicUpdate({ profilePic: res, email: currentUser?.email })
+
+    if (res.success) {
+      setProfileUpateError("")
+      localStorage.setItem("authUser", JSON.stringify(res))
+
+      setCurrentUser(res)
+      setProfileUpateSuccess("User Profile updated Successfully")
+    } else {
+      setProfileUpateSuccess("")
+
+      setProfileUpateError("Failed to update userProfile !!")
+    }
+
+    setProLoading(false)
+  }
+
+  const convertBase64 = file => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      }
+      fileReader.onerror = error => {
+        reject(error)
+      }
+    })
+  }
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -73,7 +116,7 @@ const UserProfile = props => {
         </MetaTags>
         <Container fluid>
           {/* Render Breadcrumb */}
-          <Breadcrumb title="Rain" breadcrumbItem="Profile" />
+          {/* <Breadcrumb title="Rain" breadcrumbItem="Profile" /> */}
 
           <Row>
             <Col lg="12">
@@ -84,10 +127,42 @@ const UserProfile = props => {
                 <CardBody>
                   <div className="d-flex">
                     <div className="ms-3">
-                      <img
-                        src={avatar}
-                        alt=""
-                        className="avatar-md rounded-circle img-thumbnail"
+                      <Label htmlFor="hidden-file">
+                        {proloading ? (
+                          <div>
+                            <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
+                          </div>
+                        ) : (
+                          <img
+                            src={
+                              currentUser.profilePic
+                                ? currentUser.profilePic
+                                : avatar
+                            }
+                            alt="profile"
+                            className="avatar-md rounded-circle img-thumbnail"
+                          />
+                        )}
+                        {/* <img
+                          src={
+                            currentUser.profilePic
+                              ? currentUser.profilePic
+                              : avatar
+                          }
+                          alt="profile"
+                          className="avatar-md rounded-circle img-thumbnail"
+                        /> */}
+                      </Label>
+
+                      <Input
+                        type="file"
+                        multiple={false}
+                        id="hidden-file"
+                        className="d-none"
+                        accept=".png, .jpg, .jpeg"
+                        onChange={e => {
+                          profilePicUpload(e)
+                        }}
                       />
                     </div>
                     <div className="flex-grow-1 align-self-center ms-3">

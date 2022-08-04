@@ -76,6 +76,11 @@ import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
 import emailForgetPassword from "rainComputing/pages/auth/emailForgetPassword"
 import ChatRc from "rainComputing/pages/chat/Chat"
 
+import AdminLogin from "rainComputing/pages/admin/adminLogin/login"
+import Admin from "rainComputing/pages/admin/Admin"
+import usersList from "rainComputing/pages/admin/usersList"
+import attorneysList from "rainComputing/pages/admin/attorneysList"
+
 const authProtectedRoutes = [
   //Crypto
 
@@ -138,6 +143,12 @@ const publicRoutes = [
   //CUSTOM COMPONENTS
   { path: "/register", component: RainRegister },
   { path: "/login", component: RainLogin },
+  { path: "/admin", component: AdminLogin },
 ]
-
-export { authProtectedRoutes, publicRoutes }
+const adminRoutes = [
+  //Admin Page
+  { path: "/admin-page", component: Admin },
+  { path: "/userlist-page", component: usersList },
+  { path: "/attorneylist-page", component: attorneysList },
+]
+export { authProtectedRoutes, publicRoutes, adminRoutes }

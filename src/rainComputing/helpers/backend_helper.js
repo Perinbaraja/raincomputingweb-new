@@ -75,6 +75,21 @@ const createOnevsOneChat = payload =>
 const getOnevsOneChat = payload => post(`${BASE_URL}/group/getChat`, payload)
 
 const getFileFromGFS = ({ id }) => get(`${SERVER_URL}/file/${id}`)
+const profilePicUpdate = payload =>
+  put(`${BASE_URL}/user/profilePicUpdate`, payload)
+
+//Admin
+const adminLogin = payload => post(`${BASE_URL}/admin/adminLogin`, payload)
+const allUsersList = () => get(`${BASE_URL}/admin/allUsersList`)
+const allAttorneysList = () => get(`${BASE_URL}/admin/allAttorneysList`)
+const allFirmsList = () => get(`${BASE_URL}/admin/allFirmsList`)
+const removeUser = payload => put(`${BASE_URL}/admin/removeUser`, payload)
+const removeAttorney = payload =>
+  put(`${BASE_URL}/admin/removeAttorney`, payload)
+const allReqAttorneyList = () => get(`${BASE_URL}/admin/allReqAttorneyList`)
+const attorneyStatusUpdate = payload =>
+  put(`${BASE_URL}/admin/attorneyStatus`, payload)
+const adminLogout = () => get(`${BASE_URL}/admin/signOut`)
 
 export {
   getAllAttorneys,
@@ -111,4 +126,14 @@ export {
   getFileFromGFS,
   createOnevsOneChat,
   getOnevsOneChat,
+  profilePicUpdate,
+  adminLogin,
+  adminLogout,
+  allUsersList,
+  allAttorneysList,
+  allFirmsList,
+  removeUser,
+  removeAttorney,
+  allReqAttorneyList,
+  attorneyStatusUpdate,
 }

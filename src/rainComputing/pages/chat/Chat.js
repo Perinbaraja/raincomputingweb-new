@@ -149,6 +149,18 @@ const ChatRc = () => {
     return "Guest Chat"
   }
 
+  //getting 1vs1 chat profilePic
+
+  const getChatProfilePic = members => {
+    console.log("member", members)
+    const chatMember = members.filter(
+      member => member.id?._id !== currentUser.userID
+    )
+    if (chatMember.length > 0) return chatMember[0].id?.profilePic
+
+    return "profile"
+  }
+
   //getting 1vs1 chat sender name
 
   const getSenderOneChat = senderId => {
@@ -332,6 +344,7 @@ const ChatRc = () => {
     // console.log("Rendering Fetching Contacts")
     const onGetContacts = async () => {
       const userRes = await getAllUsers({ userID: currentUser.userID })
+      console.log("userres", userRes)
       if (userRes.success) {
         setContacts(userRes.users)
       } else {
@@ -400,7 +413,11 @@ const ChatRc = () => {
                     <div className="d-flex">
                       <div className="align-self-center me-3">
                         <img
-                          src={profile}
+                          src={
+                            currentUser?.profilePic
+                              ? currentUser?.profilePic
+                              : profile
+                          }
                           className="avatar-sm rounded-circle"
                           alt=""
                         />
@@ -468,7 +485,13 @@ const ChatRc = () => {
                                         </div> */}
                                     <div className="align-self-center me-3">
                                       <img
-                                        src={profile}
+                                        src={
+                                          chat.isGroup
+                                            ? getChatProfilePic(
+                                                chat.groupMembers
+                                              )
+                                            : profile
+                                        }
                                         className="rounded-circle  avatar-sm  "
                                         alt=""
                                       />
@@ -542,7 +565,11 @@ const ChatRc = () => {
                                       <div className="d-flex justify-content-between">
                                         <div className="align-self-center d-flex align-items-center me-3">
                                           <img
-                                            src={profile}
+                                            src={
+                                              contact?.profilePic
+                                                ? contact?.profilePic
+                                                : profile
+                                            }
                                             className="avatar-xs rounded-circle"
                                             alt=""
                                           />
