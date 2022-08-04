@@ -22,10 +22,10 @@ const DynamicModel = ({
     >
       <ModalHeader>
         <div className="">
-          <h6 className="fw-medium" style={{ display: "block" }}>
+          <h5 className="fw-medium" style={{ display: "block" }}>
             {modalTitle}
-          </h6>
-          <span className="text-muted"> {modalSubtitle}</span>
+          </h5>
+          <h6 className="text-muted"> {modalSubtitle}</h6>
           {/* <button
             onClick={() => {
               toggle()

@@ -76,6 +76,8 @@ const getOnevsOneChat = payload => post(`${BASE_URL}/group/getChat`, payload)
 
 const getFileFromGFS = ({ id }) => get(`${SERVER_URL}/file/${id}`)
 
+const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -111,4 +113,5 @@ export {
   getFileFromGFS,
   createOnevsOneChat,
   getOnevsOneChat,
+  createSubgroup,
 }
