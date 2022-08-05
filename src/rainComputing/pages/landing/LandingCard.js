@@ -42,7 +42,10 @@ const LandingCard = props => {
           <CardFooter className="bg-transparent border-top">
             <div className="contact-links d-flex font-size-20">
               <div className="flex-fill">
-                <Link to={`/chat-rc`} id={"message" + user._id}>
+                <Link
+                  to={`/chat-rc?uid=${user.userid}`}
+                  id={"message" + user._id}
+                >
                   <i className="bx bx-message-square-dots" />
                   <UncontrolledTooltip
                     placement="bottom"

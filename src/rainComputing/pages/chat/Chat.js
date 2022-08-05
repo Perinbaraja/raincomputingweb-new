@@ -23,6 +23,7 @@ import UserDropdown from "rainComputing/components/chat/UserDropdown"
 import classNames from "classnames"
 import ChatboxSettingDropdown from "rainComputing/components/chat/ChatboxSettingDropdown"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import TextareaAutosize from "react-textarea-autosize"
 import {
   createOnevsOneChat,
   getAllUsers,
@@ -756,10 +757,13 @@ const ChatRc = () => {
                             <Row>
                               <Col>
                                 <div className="position-relative">
-                                  <input
+                                  <TextareaAutosize
                                     type="text"
                                     value={curMessage}
                                     onKeyPress={onKeyPress}
+                                    style={{
+                                      resize: "none",
+                                    }}
                                     onChange={e =>
                                       setcurMessage(e.target.value)
                                     }
