@@ -93,6 +93,8 @@ const adminLogout = () => get(`${BASE_URL}/admin/signOut`)
 
 const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
+const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -139,4 +141,5 @@ export {
   allReqAttorneyList,
   attorneyStatusUpdate,
   createSubgroup,
+  updateSubgroup,
 }

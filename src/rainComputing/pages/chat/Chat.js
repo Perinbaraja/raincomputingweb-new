@@ -95,7 +95,7 @@ const ChatRc = () => {
   const [currentCase, setCurrentCase] = useState(null)
   const [allgroups, setAllgroups] = useState([])
   // const [currentChat, setCurrentChat] = useState(null)
-  const [currentSubGroupIndex, setCurrentSubGroupIndex] = useState(0)
+  // const [currentSubGroupIndex, setCurrentSubGroupIndex] = useState(0)
   const [receivers, setReceivers] = useState([])
   const [curMessage, setcurMessage] = useState("")
   const [isAttachment, setIsAttachment] = useState(false)
@@ -159,11 +159,9 @@ const ChatRc = () => {
   //getting 1vs1 chat profilePic
 
   const getChatProfilePic = members => {
-    console.log("member", members)
     const chatMember = members.filter(
       member => member.id?._id !== currentUser.userID
     )
-    console.log("chatMember", chatMember)
     if (chatMember.length > 0)
       return chatMember[0].id?.profilePic
         ? chatMember[0].id?.profilePic
@@ -197,7 +195,6 @@ const ChatRc = () => {
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
-    setCurrentSubGroupIndex(0)
   }
 
   //Sending Message
@@ -603,14 +600,12 @@ const ChatRc = () => {
                                   ? currentCase?.caseName || "Case Chat"
                                   : getChatName(currentChat.groupMembers)}
                               </h5>
-                              {currentChat && (
+                              {currentChat?.isGroup && (
                                 <span
                                   style={{
-                                    color:
-                                      subGroupColors[
-                                        currentSubGroupIndex %
-                                          subGroupColors.length
-                                      ],
+                                    color: currentChat?.color
+                                      ? currentChat?.color
+                                      : "#0000FF",
                                   }}
                                 >
                                   {currentChat?.groupName}
@@ -676,10 +671,9 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              subGroupColors[
-                                                currentSubGroupIndex %
-                                                  subGroupColors.length
-                                              ] + "33",
+                                              currentChat?.color
+                                                ? currentChat?.color + "33"
+                                                : "#0000FF" + "33",
                                           }}
                                         >
                                           <div className="conversation-name">
@@ -716,10 +710,11 @@ const ChatRc = () => {
                                           className="ctext-wrap "
                                           style={{
                                             backgroundColor:
-                                              subGroupColors[
-                                                currentSubGroupIndex %
-                                                  subGroupColors.length
-                                              ] + "33",
+                                              msg.sender ==
+                                                currentUser.userID &&
+                                              currentChat?.color
+                                                ? currentChat?.color + "33"
+                                                : "#0000FF" + "33",
                                           }}
                                         >
                                           <div className="conversation-name">
@@ -748,9 +743,8 @@ const ChatRc = () => {
                               selectedGroup={currentChat}
                               setSelectedgroup={setCurrentChat}
                               subGroupColors={subGroupColors}
-                              subGroupIndex={currentSubGroupIndex}
-                              setSubGroupindex={setCurrentSubGroupIndex}
                               openSubGroupmodel={setSubGroupModelOpen}
+                              currentCase={currentCase}
                             />
                           )}
                           <div className="p-2 chat-input-section">
