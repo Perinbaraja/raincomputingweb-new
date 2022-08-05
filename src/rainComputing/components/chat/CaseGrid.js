@@ -44,7 +44,9 @@ const CaseGrid = ({
           toggle={toggleMembersModelOpen}
           size="lg"
           modalTitle=" Case Members Setting"
-          modalSubtitle="You have 5 Members in case"
+          modalSubtitle={`You have ${
+            caseData?.caseMembers?.length + 1
+          } Members`}
         >
           <CaseMembers members={caseData?.caseMembers} />
         </DynamicModel>
@@ -118,7 +120,7 @@ const CaseGrid = ({
               </span>
             </AccordionContainer> */}
           </div>
-          <div className="mb-2 pointer">
+          {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>
             <div className="d-flex justify-content-between me-3">
               <span className="text-muted">Message Notification</span>
@@ -127,7 +129,7 @@ const CaseGrid = ({
                 setNotify={setNotifyOn}
               />
             </div>
-          </div>
+          </div> */}
         </Collapse>
       </li>
     </>
