@@ -8,17 +8,18 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 const SubgroupBar = ({
   groups,
   setSelectedgroup,
-  subGroupColors,
-  subGroupIndex,
-  setSubGroupindex,
   openSubGroupmodel,
+  selectedGroup,
+  currentCase,
 }) => {
+  const { currentUser } = useUser()
   const [isShowMenu, setIsShowMenu] = useState(false)
-  const itemStyle = index => {
-    const color = subGroupColors[index % subGroupColors.length] || "#00ff00"
+  const itemStyle = sub => {
+    const color = sub?.color ? sub?.color : "#0000FF"
+
     return {
-      backgroundColor: subGroupIndex === index ? color : color + "22",
-      color: subGroupIndex === index ? "white" : color,
+      backgroundColor: selectedGroup?._id === sub?._id ? color : color + "22",
+      color: selectedGroup?._id === sub?._id ? "white" : color,
     }
   }
   return (
@@ -45,9 +46,8 @@ const SubgroupBar = ({
                 <div
                   key={s}
                   className="pointer sg-item text-nowrap "
-                  style={itemStyle(s)}
+                  style={itemStyle(sub)}
                   onClick={() => {
-                    setSubGroupindex(s)
                     setSelectedgroup(sub)
                   }}
                 >
@@ -56,7 +56,7 @@ const SubgroupBar = ({
               ))}
           </div>
         </Col>
-        {isShowMenu && (
+        {currentCase?.admins?.includes(currentUser?.userID) && isShowMenu && (
           <Col xs={1}>
             <i
               className="bx bx-dots-vertical-rounded font-size-17 mt-1 pointer"
@@ -70,12 +70,12 @@ const SubgroupBar = ({
 }
 
 SubgroupBar.propTypes = {
+  selectedGroup: PropTypes.object,
   setSelectedgroup: PropTypes.func,
   subGroupColors: PropTypes.any,
   groups: PropTypes.array,
-  subGroupIndex: PropTypes.number,
-  setSubGroupindex: PropTypes.func,
   openSubGroupmodel: PropTypes.func,
+  currentCase: PropTypes.any,
 }
 
 export default React.memo(SubgroupBar)

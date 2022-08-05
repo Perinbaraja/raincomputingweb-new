@@ -79,10 +79,14 @@ const CaseGrid = ({
             <span className="fw-medium font-size-11 ">Case Members</span>
             <AccordionContainer>
               <div className="members-container">
-                {caseData?.caseMembers.map((members, m) => (
+                {caseData?.caseMembers.map((member, m) => (
                   <div className="align-self-center me-1" key={m}>
                     <img
-                      src={profile}
+                      src={
+                        member?.id?.profilePic
+                          ? member?.id?.profilePic
+                          : profile
+                      }
                       className="avatar-xs rounded-circle"
                       alt=""
                     />

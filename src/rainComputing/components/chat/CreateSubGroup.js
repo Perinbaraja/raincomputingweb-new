@@ -17,6 +17,7 @@ const CreateSubGroup = ({
   const { currentUser } = useUser()
   const [subGroupName, setSubGroupName] = useState("Private Group")
   const [subGroupMembers, setSubGroupMembers] = useState([])
+  const [groupColor, setGroupColor] = useState("#0000ff")
 
   toastr.options = {
     progressBar: true,
@@ -46,9 +47,10 @@ const CreateSubGroup = ({
   const handleSubgroupCreation = async () => {
     const payload = {
       admin: currentUser?.userID,
-      members: subGroupMembers,
+      members: [currentUser?.userID, ...subGroupMembers],
       groupName: subGroupName,
       caseId: caseId,
+      color: groupColor,
     }
     const res = await createSubgroup(payload)
     if (res.success) {
@@ -59,9 +61,11 @@ const CreateSubGroup = ({
       await getSubGroups()
       handleClose()
     } else {
+      toastr.error(` ${subGroupName} ${res?.msg}`, "Failed to create Subgroup")
       console.log("subgroup create error :", res)
     }
   }
+
   return (
     <Modal
       isOpen={open}
@@ -70,8 +74,11 @@ const CreateSubGroup = ({
       size="lg"
       backdrop={"static"}
     >
-      <ModalHeader className="bg-primary  text-white ">
-        <div className="bg-primary d-flex text-white gap-2">
+      <ModalHeader
+        className="text-white "
+        style={{ backgroundColor: groupColor }}
+      >
+        <div className="d-flex text-white gap-2">
           <i
             className="mdi mdi-keyboard-backspace mdi-24px text-white pointer"
             onClick={() => handleClose()}
@@ -85,9 +92,16 @@ const CreateSubGroup = ({
               onChange={e => setSubGroupName(e.target.value)}
             />
             <small className="m-0 p-0" style={{ fontSize: 10 }}>
-              You have {subGroupMembers?.length || 0} members
+              You have {subGroupMembers?.length + 1 || 1} member
             </small>
           </div>
+          <input
+            type="color"
+            id="favcolor"
+            value={groupColor}
+            onChange={e => setGroupColor(e.target.value)}
+            className="pointer"
+          ></input>
         </div>
       </ModalHeader>
       <ModalBody>
@@ -98,6 +112,7 @@ const CreateSubGroup = ({
               {caseMembers &&
                 caseMembers
                   .filter(f => !subGroupMembers.some(g => g === f?.id?._id))
+                  .filter(a => a?.id?._id !== currentUser?.userID)
                   .map((member, m) => (
                     <div
                       key={m}
@@ -117,6 +132,12 @@ const CreateSubGroup = ({
           <Col xs={6} className="px-3">
             <span className="text-muted">Subgroup Member</span>
             <div className="d-flex flex-wrap gap-4 my-2">
+              <div className="bg-success px-2 py-1 rounded pointer">
+                <span>
+                  {currentUser?.firstname} {currentUser?.lastname}
+                </span>
+                <i className="mdi mdi-account-remove-outline pt-1 px-2" />
+              </div>
               {subGroupMembers &&
                 subGroupMembers.map((member, m) => (
                   <div
