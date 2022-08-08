@@ -53,6 +53,8 @@ import axios from "axios"
 import { SERVER_URL } from "rainComputing/helpers/configuration"
 import AttachmentViewer from "rainComputing/components/chat/AttachmentViewer"
 import NoChat from "rainComputing/components/chat/NoChat"
+import DeleteModal from "rainComputing/components/modals/DeleteModal"
+import { useModal } from "rainComputing/helpers/hooks/useModal"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -95,6 +97,7 @@ const ChatRc = () => {
 
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
 
+  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
@@ -225,6 +228,7 @@ const ChatRc = () => {
     } else {
       toastr.error("Failed to delete case", "Failed!!!")
     }
+    setModalOpen(false)
   }
 
   //Sending Message
@@ -429,6 +433,14 @@ const ChatRc = () => {
                 />
               </DynamicSuspense>
             </DynamicModel>
+
+            <DeleteModal
+              show={modalOpen}
+              onDeleteClick={()=>onDeletingCase()}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleModal}
+            />
 
             <MetaTags>
               <title>Chat RC</title>
@@ -663,7 +675,7 @@ const ChatRc = () => {
                                       {currentCase && (
                                         <DropdownItem
                                           href="#"
-                                          onClick={() => onDeletingCase()}
+                                          onClick={() => setModalOpen(true)}
                                         >
                                           Delete case
                                         </DropdownItem>
