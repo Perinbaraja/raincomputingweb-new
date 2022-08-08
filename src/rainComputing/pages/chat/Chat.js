@@ -5,6 +5,10 @@ import {
   Card,
   Col,
   Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Input,
   Label,
   Nav,
@@ -31,6 +35,7 @@ import {
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
   getOnevsOneChat,
+  updateCase,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { isEmpty, map } from "lodash"
@@ -71,7 +76,11 @@ const ChatRc = () => {
     setToggleOpen: setSubGroupModelOpen,
     toggleIt: togglesubGroupModelOpen,
   } = useToggle(false)
-
+  const {
+    toggleOpen: chatSettingOpen,
+    setToggleOpen: setChatSettingOpen,
+    toggleIt: toggleChatSettingOpen,
+  } = useToggle(false)
   const {
     chats,
     setChats,
@@ -195,6 +204,27 @@ const ChatRc = () => {
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
+  }
+
+  //Deleting Case
+
+  const onDeletingCase = async () => {
+    const payload = {
+      id: currentCase?._id,
+      deleteIt: true,
+    }
+    const res = await updateCase(payload)
+    if (res.success) {
+      toastr.success(
+        `Case ${res?.caseId} has been Deleted successfully`,
+        "Success"
+      )
+      setCurrentCase(null)
+      await ongetAllChatRooms()
+      await ongetAllCases()
+    } else {
+      toastr.error("Failed to delete case", "Failed!!!")
+    }
   }
 
   //Sending Message
@@ -615,7 +645,31 @@ const ChatRc = () => {
                             <Col md="8" xs="3">
                               <ul className="list-inline user-chat-nav text-end mb-0">
                                 <li className="list-inline-item align-middle">
-                                  <ChatboxSettingDropdown />
+                                  <Dropdown
+                                    isOpen={chatSettingOpen}
+                                    toggle={() => toggleChatSettingOpen(!open)}
+                                    className="float-end me-2"
+                                  >
+                                    <DropdownToggle
+                                      className="btn nav-btn"
+                                      tag="i"
+                                    >
+                                      <i className="bx bx-cog" />
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      <DropdownItem href="#">
+                                        Manage Group
+                                      </DropdownItem>
+                                      {currentCase && (
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => onDeletingCase()}
+                                        >
+                                          Delete case
+                                        </DropdownItem>
+                                      )}
+                                    </DropdownMenu>
+                                  </Dropdown>
                                 </li>
                               </ul>
                             </Col>
