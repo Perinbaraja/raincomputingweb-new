@@ -5,6 +5,10 @@ import {
   Card,
   Col,
   Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Input,
   Label,
   Nav,
@@ -31,6 +35,7 @@ import {
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
   getOnevsOneChat,
+  updateCase,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { isEmpty, map } from "lodash"
@@ -48,6 +53,8 @@ import axios from "axios"
 import { SERVER_URL } from "rainComputing/helpers/configuration"
 import AttachmentViewer from "rainComputing/components/chat/AttachmentViewer"
 import NoChat from "rainComputing/components/chat/NoChat"
+import DeleteModal from "rainComputing/components/modals/DeleteModal"
+import { useModal } from "rainComputing/helpers/hooks/useModal"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -71,7 +78,11 @@ const ChatRc = () => {
     setToggleOpen: setSubGroupModelOpen,
     toggleIt: togglesubGroupModelOpen,
   } = useToggle(false)
-
+  const {
+    toggleOpen: chatSettingOpen,
+    setToggleOpen: setChatSettingOpen,
+    toggleIt: toggleChatSettingOpen,
+  } = useToggle(false)
   const {
     chats,
     setChats,
@@ -86,6 +97,7 @@ const ChatRc = () => {
 
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
 
+  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
@@ -101,7 +113,6 @@ const ChatRc = () => {
   const [isAttachment, setIsAttachment] = useState(false)
   const [allFiles, setAllFiles] = useState([])
   const [loading, setLoading] = useState(false)
-  const [chatLoading, setChatLoading] = useState(false)
 
   //Toaster settings
   toastr.options = {
@@ -123,12 +134,12 @@ const ChatRc = () => {
     }
     const createdChatRes = await createOnevsOneChat(payload)
     if (createdChatRes.success) {
-      // toastr.success(`Chat has been created successfully`, "Success")
+      toastr.success(`Chat has been created successfully`, "Success")
       await ongetAllChatRooms()
       setCurrentChat(createdChatRes.group)
       setactiveTab("1")
     } else {
-      // toastr.error(`Failed to create chat`, "Failed!!!")
+      toastr.error(`Failed to create chat`, "Failed!!!")
       console.log("Failed to create 1vs1 chat ", createdChatRes)
     }
   }
@@ -196,6 +207,28 @@ const ChatRc = () => {
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
+  }
+
+  //Deleting Case
+
+  const onDeletingCase = async () => {
+    const payload = {
+      id: currentCase?._id,
+      deleteIt: true,
+    }
+    const res = await updateCase(payload)
+    if (res.success) {
+      toastr.success(
+        `Case ${res?.caseId} has been Deleted successfully`,
+        "Success"
+      )
+      setCurrentCase(null)
+      await ongetAllChatRooms()
+      await ongetAllCases()
+    } else {
+      toastr.error("Failed to delete case", "Failed!!!")
+    }
+    setModalOpen(false)
   }
 
   //Sending Message
@@ -401,6 +434,14 @@ const ChatRc = () => {
               </DynamicSuspense>
             </DynamicModel>
 
+            <DeleteModal
+              show={modalOpen}
+              onDeleteClick={() => onDeletingCase()}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleModal}
+            />
+
             <MetaTags>
               <title>Chat RC</title>
             </MetaTags>
@@ -468,10 +509,8 @@ const ChatRc = () => {
                                 <Link
                                   to="#"
                                   onClick={() => {
-                                    setChatLoading(true)
                                     setCurrentCase(null)
                                     setCurrentChat(chat)
-                                    setChatLoading(false)
                                   }}
                                 >
                                   <div className="d-flex">
@@ -592,272 +631,262 @@ const ChatRc = () => {
                   </div>
                 </Col>
                 <Col xs="12" lg="7" className="align-self-center">
-                  {chatLoading ? (
-                    <div>loading</div>
-                  ) : (
-                    <div className="w-100 ">
-                      {currentChat ? (
-                        <Card>
-                          <div className="py-2 px-3 border-bottom">
-                            <Row>
-                              <Col md="4" xs="9">
-                                <h5 className="font-size-15 mb-1">
-                                  {currentChat.isGroup
-                                    ? currentCase?.caseName || "Case Chat"
-                                    : getChatName(currentChat.groupMembers)}
-                                </h5>
-                                {currentChat?.isGroup && (
-                                  <span
-                                    style={{
-                                      color: currentChat?.color
-                                        ? currentChat?.color
-                                        : "#0000FF",
-                                    }}
+                  <div className="w-100 ">
+                    {currentChat ? (
+                      <Card>
+                        <div className="py-2 px-3 border-bottom">
+                          <Row>
+                            <Col md="4" xs="9">
+                              <h5 className="font-size-15 mb-1">
+                                {currentChat.isGroup
+                                  ? currentCase?.caseName || "Case Chat"
+                                  : getChatName(currentChat.groupMembers)}
+                              </h5>
+                              {currentChat?.isGroup && (
+                                <span
+                                  style={{
+                                    color: currentChat?.color
+                                      ? currentChat?.color
+                                      : "#0000FF",
+                                  }}
+                                >
+                                  {currentChat?.groupName}
+                                </span>
+                              )}
+                            </Col>
+                            <Col md="8" xs="3">
+                              <ul className="list-inline user-chat-nav text-end mb-0">
+                                <li className="list-inline-item align-middle">
+                                  <Dropdown
+                                    isOpen={chatSettingOpen}
+                                    toggle={() => toggleChatSettingOpen(!open)}
+                                    className="float-end me-2"
                                   >
-                                    {currentChat?.groupName}
-                                  </span>
+                                    <DropdownToggle
+                                      className="btn nav-btn"
+                                      tag="i"
+                                    >
+                                      <i className="bx bx-cog" />
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      <DropdownItem href="#">
+                                        Manage Group
+                                      </DropdownItem>
+                                      {currentCase && (
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => setModalOpen(true)}
+                                        >
+                                          Delete case
+                                        </DropdownItem>
+                                      )}
+                                    </DropdownMenu>
+                                  </Dropdown>
+                                </li>
+                              </ul>
+                            </Col>
+                          </Row>
+                        </div>
+                        <div>
+                          <div className="chat-conversation p-3">
+                            <ul className="list-unstyled">
+                              <PerfectScrollbar
+                                style={{ height: "320px" }}
+                                containerRef={ref => setMessageBox(ref)}
+                              >
+                                {messages &&
+                                  messages.map((msg, m) => (
+                                    <li
+                                      key={"test_k" + m}
+                                      className={
+                                        msg.sender === currentUser.userID
+                                          ? "right"
+                                          : ""
+                                      }
+                                    >
+                                      <div
+                                        className="conversation-list"
+                                        style={{ maxWidth: "80%" }}
+                                      >
+                                        <div
+                                          className="ctext-wrap "
+                                          style={{
+                                            backgroundColor:
+                                              msg.sender ==
+                                                currentUser.userID &&
+                                              currentChat?.color
+                                                ? currentChat?.color + "33"
+                                                : "#0000FF" + "33",
+                                          }}
+                                        >
+                                          <div className="conversation-name">
+                                            {currentChat.isGroup
+                                              ? getMemberName(msg.sender)
+                                              : getSenderOneChat(msg.sender)}
+                                          </div>
+                                          <div className="mb-1">
+                                            {msg.isAttachment ? (
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
+                                            ) : (
+                                              msg.messageData
+                                            )}
+                                          </div>
+                                          <p className="chat-time mb-0">
+                                            <i className="bx bx-comment-check align-middle me-1" />
+                                            {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                                            {moment(msg.createdAt).format(
+                                              "DD-MM-YY hh:mm"
+                                            )}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </li>
+                                  ))}
+                                {messageStack?.length > 0 &&
+                                  messageStack.map((msg, m) => (
+                                    <li key={"test_k" + m} className="right">
+                                      <div className="conversation-list">
+                                        <div
+                                          className="ctext-wrap "
+                                          style={{
+                                            backgroundColor:
+                                              msg.sender ==
+                                                currentUser.userID &&
+                                              currentChat?.color
+                                                ? currentChat?.color + "33"
+                                                : "#0000FF" + "33",
+                                          }}
+                                        >
+                                          <div className="conversation-name">
+                                            {currentUser?.firstname +
+                                              currentUser?.lastname}
+                                          </div>
+                                          <div className="mb-1">
+                                            {msg.messageData}
+                                          </div>
+                                          <p className="chat-time mb-0">
+                                            <i className="bx bx-loader bx-spin  align-middle me-1" />
+                                            {moment(msg.createdAt).format(
+                                              "DD-MM-YY hh:mm"
+                                            )}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </li>
+                                  ))}
+                              </PerfectScrollbar>
+                            </ul>
+                          </div>
+                          {currentChat?.isGroup && (
+                            <SubgroupBar
+                              groups={allgroups}
+                              selectedGroup={currentChat}
+                              setSelectedgroup={setCurrentChat}
+                              subGroupColors={subGroupColors}
+                              openSubGroupmodel={setSubGroupModelOpen}
+                              currentCase={currentCase}
+                            />
+                          )}
+                          <div className="p-2 chat-input-section">
+                            <Row>
+                              <Col>
+                                <div className="position-relative">
+                                  <TextareaAutosize
+                                    type="text"
+                                    value={curMessage}
+                                    onKeyPress={onKeyPress}
+                                    style={{
+                                      resize: "none",
+                                    }}
+                                    onChange={e =>
+                                      setcurMessage(e.target.value)
+                                    }
+                                    className="form-control chat-input"
+                                    placeholder="Enter Message..."
+                                  />
+
+                                  <div className="chat-input-links">
+                                    <ul className="list-inline mb-0">
+                                      <li className="list-inline-item">
+                                        <div>
+                                          <Input
+                                            type="file"
+                                            name="file"
+                                            multiple={true}
+                                            id="hidden-file"
+                                            className="d-none"
+                                            accept=".png, .jpg, .jpeg,.pdf"
+                                            onChange={e => {
+                                              handleFileChange(e)
+                                            }}
+                                          />
+
+                                          <Label
+                                            htmlFor="hidden-file"
+                                            style={{ margin: 0 }}
+                                          >
+                                            <i
+                                              className="mdi mdi-file-image-outline "
+                                              style={{
+                                                color: "#556EE6",
+                                                fontSize: 16,
+                                              }}
+                                            />
+                                          </Label>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+
+                                {Array.from(allFiles)?.length > 0 && (
+                                  <div className="d-flex gap-2 flex-wrap mt-2 ">
+                                    {Array.from(allFiles)?.map((att, a) => (
+                                      <span
+                                        className="badge badge-soft-primary font-size-13"
+                                        key={a}
+                                      >
+                                        {att.name}
+                                      </span>
+                                    ))}
+                                  </div>
                                 )}
                               </Col>
-                              <Col md="8" xs="3">
-                                <ul className="list-inline user-chat-nav text-end mb-0">
-                                  <li className="list-inline-item align-middle">
-                                    <ChatboxSettingDropdown />
-                                  </li>
-                                </ul>
+                              <Col className="col-auto">
+                                {loading ? (
+                                  <Button
+                                    type="button"
+                                    className="btn btn-primary btn-rounded chat-send w-md "
+                                    color="primary"
+                                    style={{ cursor: "not-allowed" }}
+                                  >
+                                    <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    type="button"
+                                    color="primary"
+                                    onClick={() => handleSendMessage()}
+                                    className="btn btn-primary btn-rounded chat-send w-md "
+                                  >
+                                    <span className="d-none d-sm-inline-block me-2">
+                                      Send
+                                    </span>
+                                    <i className="mdi mdi-send" />
+                                  </Button>
+                                )}
                               </Col>
                             </Row>
                           </div>
-                          <div>
-                            <div className="chat-conversation p-3">
-                              <ul className="list-unstyled">
-                                <PerfectScrollbar
-                                  style={{ height: "320px" }}
-                                  containerRef={ref => setMessageBox(ref)}
-                                >
-                                  {messages &&
-                                    messages.map((msg, m) => (
-                                      <li
-                                        key={"test_k" + m}
-                                        className={
-                                          msg.sender === currentUser.userID
-                                            ? "right"
-                                            : ""
-                                        }
-                                      >
-                                        <div
-                                          className="conversation-list"
-                                          style={{ maxWidth: "80%" }}
-                                        >
-                                          {/* <UncontrolledDropdown>
-                                        <DropdownToggle
-                                          href="#"
-                                          className="btn nav-btn"
-                                          tag="i"
-                                        >
-                                          <i className="bx bx-dots-vertical-rounded" />
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                          <DropdownItem href="#">
-                                            Copy
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Save
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Forward
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Delete
-                                          </DropdownItem>
-                                        </DropdownMenu>
-                                      </UncontrolledDropdown> */}
-                                          <div
-                                            className="ctext-wrap "
-                                            style={{
-                                              backgroundColor:
-                                                msg.sender ==
-                                                  currentUser.userID &&
-                                                currentChat?.color
-                                                  ? currentChat?.color + "33"
-                                                  : "#0000FF" + "33",
-                                            }}
-                                          >
-                                            <div className="conversation-name">
-                                              {currentChat.isGroup
-                                                ? getMemberName(msg.sender)
-                                                : getSenderOneChat(msg.sender)}
-                                            </div>
-                                            <div className="mb-1">
-                                              {msg.isAttachment ? (
-                                                <>
-                                                  <AttachmentViewer
-                                                    attachments={
-                                                      msg.attachments
-                                                    }
-                                                    text={msg.messageData}
-                                                  />
-                                                  <div className="mt-1">
-                                                    {msg.messageData}
-                                                  </div>
-                                                </>
-                                              ) : (
-                                                msg.messageData
-                                              )}
-                                            </div>
-                                            <p className="chat-time mb-0">
-                                              <i className="bx bx-comment-check align-middle me-1" />
-                                              {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                              {moment(msg.createdAt).format(
-                                                "DD-MM-YY hh:mm"
-                                              )}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </li>
-                                    ))}
-                                  {messageStack?.length > 0 &&
-                                    messageStack.map((msg, m) => (
-                                      <li key={"test_k" + m} className="right">
-                                        <div className="conversation-list">
-                                          <div
-                                            className="ctext-wrap "
-                                            style={{
-                                              backgroundColor:
-                                                msg.sender ==
-                                                  currentUser.userID &&
-                                                currentChat?.color
-                                                  ? currentChat?.color + "33"
-                                                  : "#0000FF" + "33",
-                                            }}
-                                          >
-                                            <div className="conversation-name">
-                                              {currentUser?.firstname +
-                                                currentUser?.lastname}
-                                            </div>
-                                            <div className="mb-1">
-                                              {msg.messageData}
-                                            </div>
-                                            <p className="chat-time mb-0">
-                                              <i className="bx bx-loader bx-spin  align-middle me-1" />
-                                              {moment(msg.createdAt).format(
-                                                "DD-MM-YY hh:mm"
-                                              )}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </li>
-                                    ))}
-                                </PerfectScrollbar>
-                              </ul>
-                            </div>
-                            {currentChat?.isGroup && (
-                              <SubgroupBar
-                                groups={allgroups}
-                                selectedGroup={currentChat}
-                                setSelectedgroup={setCurrentChat}
-                                subGroupColors={subGroupColors}
-                                openSubGroupmodel={setSubGroupModelOpen}
-                                currentCase={currentCase}
-                              />
-                            )}
-                            <div className="p-2 chat-input-section">
-                              <Row>
-                                <Col>
-                                  <div className="position-relative">
-                                    <TextareaAutosize
-                                      type="text"
-                                      value={curMessage}
-                                      onKeyPress={onKeyPress}
-                                      style={{
-                                        resize: "none",
-                                      }}
-                                      onChange={e =>
-                                        setcurMessage(e.target.value)
-                                      }
-                                      className="form-control chat-input"
-                                      placeholder="Enter Message..."
-                                    />
-
-                                    <div className="chat-input-links">
-                                      <ul className="list-inline mb-0">
-                                        <li className="list-inline-item">
-                                          <div>
-                                            <Input
-                                              type="file"
-                                              name="file"
-                                              multiple={true}
-                                              id="hidden-file"
-                                              className="d-none"
-                                              accept=".png, .jpg, .jpeg,.pdf"
-                                              onChange={e => {
-                                                handleFileChange(e)
-                                              }}
-                                            />
-
-                                            <Label
-                                              htmlFor="hidden-file"
-                                              style={{ margin: 0 }}
-                                            >
-                                              <i
-                                                className="mdi mdi-file-image-outline "
-                                                style={{
-                                                  color: "#556EE6",
-                                                  fontSize: 16,
-                                                }}
-                                              />
-                                            </Label>
-                                          </div>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-
-                                  {Array.from(allFiles)?.length > 0 && (
-                                    <div className="d-flex gap-2 flex-wrap mt-2 ">
-                                      {Array.from(allFiles)?.map((att, a) => (
-                                        <span
-                                          className="badge badge-soft-primary font-size-13"
-                                          key={a}
-                                        >
-                                          {att.name}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                </Col>
-                                <Col className="col-auto">
-                                  {loading ? (
-                                    <Button
-                                      type="button"
-                                      className="btn btn-primary btn-rounded chat-send w-md "
-                                      color="primary"
-                                      style={{ cursor: "not-allowed" }}
-                                    >
-                                      <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      type="button"
-                                      color="primary"
-                                      onClick={() => handleSendMessage()}
-                                      className="btn btn-primary btn-rounded chat-send w-md "
-                                    >
-                                      <span className="d-none d-sm-inline-block me-2">
-                                        Send
-                                      </span>
-                                      <i className="mdi mdi-send" />
-                                    </Button>
-                                  )}
-                                </Col>
-                              </Row>
-                            </div>
-                          </div>
-                        </Card>
-                      ) : (
-                        <NoChat />
-                      )}
-                    </div>
-                  )}
+                        </div>
+                      </Card>
+                    ) : (
+                      <NoChat />
+                    )}
+                  </div>
                 </Col>
               </Row>
             </Container>
