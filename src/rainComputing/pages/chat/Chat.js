@@ -5,10 +5,6 @@ import {
   Card,
   Col,
   Container,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Input,
   Label,
   Nav,
@@ -35,7 +31,6 @@ import {
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
   getOnevsOneChat,
-  updateCase,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { isEmpty, map } from "lodash"
@@ -53,8 +48,6 @@ import axios from "axios"
 import { SERVER_URL } from "rainComputing/helpers/configuration"
 import AttachmentViewer from "rainComputing/components/chat/AttachmentViewer"
 import NoChat from "rainComputing/components/chat/NoChat"
-import DeleteModal from "rainComputing/components/modals/DeleteModal"
-import { useModal } from "rainComputing/helpers/hooks/useModal"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -78,11 +71,7 @@ const ChatRc = () => {
     setToggleOpen: setSubGroupModelOpen,
     toggleIt: togglesubGroupModelOpen,
   } = useToggle(false)
-  const {
-    toggleOpen: chatSettingOpen,
-    setToggleOpen: setChatSettingOpen,
-    toggleIt: toggleChatSettingOpen,
-  } = useToggle(false)
+
   const {
     chats,
     setChats,
@@ -97,7 +86,6 @@ const ChatRc = () => {
 
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
 
-  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
@@ -208,28 +196,6 @@ const ChatRc = () => {
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
-  }
-
-  //Deleting Case
-
-  const onDeletingCase = async () => {
-    const payload = {
-      id: currentCase?._id,
-      deleteIt: true,
-    }
-    const res = await updateCase(payload)
-    if (res.success) {
-      toastr.success(
-        `Case ${res?.caseId} has been Deleted successfully`,
-        "Success"
-      )
-      setCurrentCase(null)
-      await ongetAllChatRooms()
-      await ongetAllCases()
-    } else {
-      toastr.error("Failed to delete case", "Failed!!!")
-    }
-    setModalOpen(false)
   }
 
   //Sending Message
@@ -434,14 +400,6 @@ const ChatRc = () => {
                 />
               </DynamicSuspense>
             </DynamicModel>
-
-            <DeleteModal
-              show={modalOpen}
-              onDeleteClick={()=>onDeletingCase()}
-              confirmText="Yes,Remove"
-              cancelText="Cancel"
-              onCloseClick={toggleModal}
-            />
 
             <MetaTags>
               <title>Chat RC</title>
@@ -676,7 +634,6 @@ const ChatRc = () => {
                                   style={{ height: "320px" }}
                                   containerRef={ref => setMessageBox(ref)}
                                 >
-<<<<<<< HEAD
                                   {messages &&
                                     messages.map((msg, m) => (
                                       <li
@@ -686,65 +643,6 @@ const ChatRc = () => {
                                             ? "right"
                                             : ""
                                         }
-=======
-                                  {currentChat?.groupName}
-                                </span>
-                              )}
-                            </Col>
-                            <Col md="8" xs="3">
-                              <ul className="list-inline user-chat-nav text-end mb-0">
-                                <li className="list-inline-item align-middle">
-                                  <Dropdown
-                                    isOpen={chatSettingOpen}
-                                    toggle={() => toggleChatSettingOpen(!open)}
-                                    className="float-end me-2"
-                                  >
-                                    <DropdownToggle
-                                      className="btn nav-btn"
-                                      tag="i"
-                                    >
-                                      <i className="bx bx-cog" />
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      <DropdownItem href="#">
-                                        Manage Group
-                                      </DropdownItem>
-                                      {currentCase && (
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() => setModalOpen(true)}
-                                        >
-                                          Delete case
-                                        </DropdownItem>
-                                      )}
-                                    </DropdownMenu>
-                                  </Dropdown>
-                                </li>
-                              </ul>
-                            </Col>
-                          </Row>
-                        </div>
-                        <div>
-                          <div className="chat-conversation p-3">
-                            <ul className="list-unstyled">
-                              <PerfectScrollbar
-                                style={{ height: "320px" }}
-                                containerRef={ref => setMessageBox(ref)}
-                              >
-                                {messages &&
-                                  messages.map((msg, m) => (
-                                    <li
-                                      key={"test_k" + m}
-                                      className={
-                                        msg.sender === currentUser.userID
-                                          ? "right"
-                                          : ""
-                                      }
-                                    >
-                                      <div
-                                        className="conversation-list"
-                                        style={{ maxWidth: "80%" }}
->>>>>>> d781ca78ce5ca6dd562f9b66b261107868cc680c
                                       >
                                         <div
                                           className="conversation-list"
