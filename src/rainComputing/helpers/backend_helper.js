@@ -95,6 +95,8 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 
+const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -142,4 +144,5 @@ export {
   attorneyStatusUpdate,
   createSubgroup,
   updateSubgroup,
+  updateCase,
 }
