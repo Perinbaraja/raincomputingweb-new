@@ -84,7 +84,7 @@ const UserProfile = props => {
       setProfileUpateError("")
       localStorage.setItem("authUser", JSON.stringify(res))
 
-      setCurrentUser(res)
+      // setCurrentUser(res)
       setProfileUpateSuccess("User Profile updated Successfully")
     } else {
       setProfileUpateSuccess("")
@@ -146,7 +146,7 @@ const UserProfile = props => {
                                 : avatar
                             }
                             alt="profile"
-                            className="avatar-md rounded-circle img-thumbnail"
+                            className="avatar-lg rounded-circle img-thumbnail"
                           />
                         )}
                         {/* <img
