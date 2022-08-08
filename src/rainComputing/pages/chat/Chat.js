@@ -726,10 +726,15 @@ const ChatRc = () => {
                                           </div>
                                           <div className="mb-1">
                                             {msg.isAttachment ? (
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
+                                              <>
+                                                <AttachmentViewer
+                                                  attachments={msg.attachments}
+                                                  text={msg.messageData}
+                                                />
+                                                <div className="mt-1">
+                                                  {msg.messageData}
+                                                </div>
+                                              </>
                                             ) : (
                                               msg.messageData
                                             )}
