@@ -708,29 +708,7 @@ const ChatRc = () => {
                                         className="conversation-list"
                                         style={{ maxWidth: "80%" }}
                                       >
-                                        {/* <UncontrolledDropdown>
-                                        <DropdownToggle
-                                          href="#"
-                                          className="btn nav-btn"
-                                          tag="i"
-                                        >
-                                          <i className="bx bx-dots-vertical-rounded" />
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                          <DropdownItem href="#">
-                                            Copy
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Save
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Forward
-                                          </DropdownItem>
-                                          <DropdownItem href="#">
-                                            Delete
-                                          </DropdownItem>
-                                        </DropdownMenu>
-                                      </UncontrolledDropdown> */}
+                                       
                                         <div
                                           className="ctext-wrap "
                                           style={{
