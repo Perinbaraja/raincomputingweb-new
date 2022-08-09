@@ -134,12 +134,12 @@ const ChatRc = () => {
     }
     const createdChatRes = await createOnevsOneChat(payload)
     if (createdChatRes.success) {
-      toastr.success(`Chat has been created successfully`, "Success")
+      // toastr.success(`Chat has been created successfully`, "Success")
       await ongetAllChatRooms()
       setCurrentChat(createdChatRes.group)
       setactiveTab("1")
     } else {
-      toastr.error(`Failed to create chat`, "Failed!!!")
+      // toastr.error(`Failed to create chat`, "Failed!!!")
       console.log("Failed to create 1vs1 chat ", createdChatRes)
     }
   }
