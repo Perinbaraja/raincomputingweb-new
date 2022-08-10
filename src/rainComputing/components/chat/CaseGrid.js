@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
-import { Col, Collapse, Row } from "reactstrap"
+import { Col, Collapse, Row, Tooltip } from "reactstrap"
 import "./style/case-grid.scss"
 import Chevron from "assets/icon/chevron-down.svg"
 import profile from "assets/images/avatar-defult.jpg"
@@ -17,12 +17,18 @@ const CaseGrid = ({
   onAccordionButtonClick,
   handleSelectingCase,
   selected,
+  notifyCountforCase,
 }) => {
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const {
     toggleOpen: membersModelOpen,
     setToggleOpen: setMembersModelOpen,
     toggleIt: toggleMembersModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: toolTipOpen,
+    setToggleOpen: setToolTipOpen,
+    toggleIt: toggleToolTipOpen,
   } = useToggle(false)
   const AccordionContainer = ({ children }) => (
     <Row
@@ -43,18 +49,19 @@ const CaseGrid = ({
           open={membersModelOpen}
           toggle={toggleMembersModelOpen}
           size="lg"
-          modalTitle=" Case Members Setting"
-          modalSubtitle={`You have ${
-            caseData?.caseMembers?.length + 1
-          } Members`}
+          modalTitle=" Case Members"
+          modalSubtitle={`You have ${caseData?.caseMembers?.length} Members`}
         >
-          <CaseMembers members={caseData?.caseMembers} />
+          <CaseMembers
+            members={caseData?.caseMembers}
+            admins={caseData?.admins}
+          />
         </DynamicModel>
       </>
       <li className={classNames("px-3 py-2", selected && "active-case-bg")}>
         <Row className="align-middle py-1" style={{ maxWidth: "100%" }}>
           <Col
-            xs={11}
+            xs={10}
             className="pointer"
             onClick={() => handleSelectingCase(caseData)}
           >
@@ -62,6 +69,11 @@ const CaseGrid = ({
             <span className="text-muted font-size-12 ms-2">
               {caseData.caseName}
             </span>
+          </Col>
+          <Col xs={1} style={{ padding: 2 }}>
+            {notifyCountforCase(caseData?._id) && (
+              <i className="bx bx-bell bx-tada text-danger" />
+            )}
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
             <img
@@ -89,7 +101,7 @@ const CaseGrid = ({
                           ? member?.id?.profilePic
                           : profile
                       }
-                      className="avatar-xs rounded-circle"
+                      className="avatar-xs rounded-circle "
                       alt=""
                     />
                     {/* <span className="d-flex fw-medium">
@@ -144,6 +156,7 @@ CaseGrid.propTypes = {
   handleSelectingCase: PropTypes.func,
   children: PropTypes.any,
   selected: PropTypes.bool,
+  notifyCountforCase: PropTypes.func,
 }
 
 export default CaseGrid

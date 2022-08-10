@@ -11,6 +11,7 @@ const SubgroupBar = ({
   openSubGroupmodel,
   selectedGroup,
   currentCase,
+  notifyCount,
 }) => {
   const { currentUser } = useUser()
   const [isShowMenu, setIsShowMenu] = useState(false)
@@ -31,27 +32,22 @@ const SubgroupBar = ({
       >
         <Col xs={11} className="">
           <div className="sg-container">
-            {/* <div
-              className="pointer sg-item text-nowrap "
-              style={itemStyle(0)}
-              onClick={() => {
-                setSelectedgroup(0), setSlectedSubGroup(parentRoom)
-              }}
-              // style={{ backgroundColor: colors[s % colors.length] }}
-            >
-              Everyone
-            </div> */}
             {groups &&
               groups.map((sub, s) => (
                 <div
                   key={s}
-                  className="pointer sg-item text-nowrap "
+                  className="pointer sg-item text-nowrap position-relative"
                   style={itemStyle(sub)}
                   onClick={() => {
                     setSelectedgroup(sub)
                   }}
                 >
                   {sub.groupName} ({sub.groupMembers?.length})
+                  {notifyCount(sub?._id) > 0 && (
+                    <div className="badge bg-danger font-size-11 ">
+                      {notifyCount(sub?._id)}
+                    </div>
+                  )}
                 </div>
               ))}
           </div>
@@ -72,10 +68,10 @@ const SubgroupBar = ({
 SubgroupBar.propTypes = {
   selectedGroup: PropTypes.object,
   setSelectedgroup: PropTypes.func,
-  subGroupColors: PropTypes.any,
   groups: PropTypes.array,
   openSubGroupmodel: PropTypes.func,
   currentCase: PropTypes.any,
+  notifyCount: PropTypes.func,
 }
 
 export default React.memo(SubgroupBar)

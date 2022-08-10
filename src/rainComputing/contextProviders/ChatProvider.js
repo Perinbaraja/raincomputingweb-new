@@ -77,9 +77,12 @@ export function ChatProvider({ socket, children }) {
     if (currentRoom) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
-        console.log("Received message : ", msgData)
         if (msgData?.groupId === currentRoom._id) {
+          console.log("Received message : ", msgData)
           setMessages([...messages, msgData])
+        } else {
+          console.log("Received message for notifications 1: ", msgData)
+          setNotifications([msgData, ...notifications])
         }
       })
       socket.off("s_s").once("s_s", async msgData => {
@@ -91,6 +94,7 @@ export function ChatProvider({ socket, children }) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
         console.log("Received message for notifications: ", msgData)
+        setNotifications([msgData, ...notifications])
       })
     }
   }, [socket, handleSendingMessage])

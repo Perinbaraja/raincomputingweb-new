@@ -1,4 +1,11 @@
-import React, { useEffect, useState, Suspense, lazy, useCallback } from "react"
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+  useCallback,
+  useRef,
+} from "react"
 import { MetaTags } from "react-meta-tags"
 import {
   Button,
@@ -22,6 +29,7 @@ import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock"
 import profile from "assets/images/avatar-defult.jpg"
 import UserDropdown from "rainComputing/components/chat/UserDropdown"
 import classNames from "classnames"
@@ -43,7 +51,6 @@ import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import { initialNewCaseValues } from "rainComputing/helpers/initialFormValues"
-import { FakeCases } from "../FakeData"
 import CaseGrid from "rainComputing/components/chat/CaseGrid"
 import useAccordian from "rainComputing/helpers/hooks/useAccordian"
 import SubgroupBar from "rainComputing/components/chat/SubgroupBar"
@@ -54,19 +61,22 @@ import { SERVER_URL } from "rainComputing/helpers/configuration"
 import AttachmentViewer from "rainComputing/components/chat/AttachmentViewer"
 import NoChat from "rainComputing/components/chat/NoChat"
 import DeleteModal from "rainComputing/components/modals/DeleteModal"
-import { useModal } from "rainComputing/helpers/hooks/useModal"
+import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
+import { useQuery } from "rainComputing/helpers/hooks/useQuery"
+import ChatLoader from "rainComputing/components/chat/ChatLoader"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
 const SubGroups = lazy(() => import("rainComputing/components/chat/SubGroups"))
 
+const EditCase = lazy(() => import("rainComputing/components/chat/EditCase"))
+
 //Chat left sidebar nav items
 const sidebarNavItems = ["Chat", "Case", "Contact"]
-//Chat subGroupColors
-const subGroupColors = ["#0000ff", "#ffa500", "#ffc0cb", "#87ceeb"]
 
 const ChatRc = () => {
+  let query = useQuery()
   const { currentUser } = useUser()
   const {
     toggleOpen: newCaseModelOpen,
@@ -94,12 +104,25 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+  const { notifications, setNotifications } = useNotifications()
 
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
+  const {
+    toggleOpen: caseDeleteModalOpen,
+    setToggleOpen: setCaseDeleteModalOpen,
+    toggleIt: toggleCaseDeleteModal,
+  } = useToggle(false)
+  const {
+    toggleOpen: caseEditModalOpen,
+    setToggleOpen: setCaseEditModalOpen,
+    toggleIt: toggleCaseEditModal,
+  } = useToggle(false)
+  const [isChatScroll, setIsChatScroll] = useState(false)
 
-  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
+  const [contactScroll, setContactScroll] = useState(null)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
+  const [chatLoader, setChatLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
   const [contacts, setContacts] = useState([])
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -113,6 +136,8 @@ const ChatRc = () => {
   const [isAttachment, setIsAttachment] = useState(false)
   const [allFiles, setAllFiles] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [contactPage, setContactPage] = useState(1)
 
   //Toaster settings
   toastr.options = {
@@ -120,11 +145,26 @@ const ChatRc = () => {
     closeButton: true,
   }
 
+  //Handle Body Scrolling
+  isChatScroll ? disableBodyScroll(document) : enableBodyScroll(document)
+
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setactiveTab(tab)
     }
+  }
+
+  //Getting Notofication Count
+  const getNotificationCount = id => {
+    const notiCount = notifications.filter(c => c.groupId === id)
+    return notiCount ? notiCount.length : 0
+  }
+
+  //Getting Notofication for Case
+  const notifyCountforCase = id => {
+    const notiCount = notifications.find(c => c.caseId === id)
+    return notiCount ? true : false
   }
 
   //Creating New ChatRoom
@@ -156,6 +196,7 @@ const ChatRc = () => {
     } else {
       setChats([])
     }
+    setChatLoader(false)
   }
 
   //Getting 1vs1 chat name
@@ -169,7 +210,6 @@ const ChatRc = () => {
   }
 
   //getting 1vs1 chat profilePic
-
   const getChatProfilePic = members => {
     const chatMember = members.filter(
       member => member.id?._id !== currentUser.userID
@@ -183,7 +223,6 @@ const ChatRc = () => {
   }
 
   //getting 1vs1 chat sender name
-
   const getSenderOneChat = senderId => {
     const chatMember = currentChat?.groupMembers.find(
       member => member.id?._id === senderId
@@ -194,10 +233,13 @@ const ChatRc = () => {
   }
 
   //Getting all the cases
-  const ongetAllCases = async () => {
+  const ongetAllCases = async ({ isSet = false }) => {
     const allCasesRes = await getCasesByUserId({ userId: currentUser.userID })
     if (allCasesRes.success) {
       setAllCases(allCasesRes.cases)
+      if (isSet) {
+        setCurrentCase(allCasesRes?.cases[0])
+      }
     } else {
       setAllCases([])
       console.log("Rendering ongetAllCases error", allCasesRes)
@@ -224,11 +266,11 @@ const ChatRc = () => {
       )
       setCurrentCase(null)
       await ongetAllChatRooms()
-      await ongetAllCases()
+      await ongetAllCases({ isSet: false })
     } else {
       toastr.error("Failed to delete case", "Failed!!!")
     }
-    setModalOpen(false)
+    setCaseDeleteModalOpen(false)
   }
 
   //Sending Message
@@ -314,20 +356,9 @@ const ChatRc = () => {
     setAllFiles(e.target.files)
   }
 
-  //SideEffect for setting isAttachment
-
-  useEffect(() => {
-    if (Array.from(allFiles)?.length > 0) {
-      setIsAttachment(true)
-    }
-  }, [allFiles])
-  //Scroll to messages bottom on load & message arrives
-  useEffect(() => {
-    if (!isEmpty(messages)) scrollToBottom()
-  }, [messages])
-
   //Fetching SubGroups
   const onGettingSubgroups = async () => {
+    setChatLoader(true)
     const payLoad = {
       caseId: currentCase._id,
       userId: currentUser.userID,
@@ -337,7 +368,26 @@ const ChatRc = () => {
       setAllgroups(subGroupsRes.groups)
       setCurrentChat(subGroupsRes.groups[0])
     }
+    setChatLoader(false)
   }
+  //Resetting page whiule changing Tab
+  useEffect(() => {
+    setContactPage(1)
+    if (activeTab === "3" && contactPage !== 1)
+      onGetContacts({ isSearch: true })
+  }, [activeTab])
+
+  //SideEffect for setting isAttachment
+  useEffect(() => {
+    if (Array.from(allFiles)?.length > 0) {
+      setIsAttachment(true)
+    }
+  }, [allFiles])
+
+  //Scroll to messages bottom on load & message arrives
+  useEffect(() => {
+    if (!isEmpty(messages)) scrollToBottom()
+  }, [messages])
 
   //SideEffect for fetching Subgroups after case selected
   useEffect(() => {
@@ -348,13 +398,19 @@ const ChatRc = () => {
 
   //SideEffect of setting receivers after currentchat changes
   useEffect(() => {
+    console.log("setting chat loader")
     if (currentChat) {
       setReceivers(
         currentChat.groupMembers
           .filter(m => m.id?._id !== currentUser.userID)
           .map(r => r.id?._id)
       )
+      setNotifications(
+        notifications.filter(n => n.groupId !== currentChat?._id)
+      )
       const onGettingGroupMessages = async () => {
+        setChatLoader(true)
+
         const payload = {
           groupId: currentChat?._id,
           userId: currentUser?.userID,
@@ -365,33 +421,82 @@ const ChatRc = () => {
         } else {
           console.log("Failed to fetch Group message", res)
         }
+        setChatLoader(false)
       }
-
       onGettingGroupMessages()
     }
   }, [currentChat])
 
+  //Contacts infiniteScroll
   useEffect(() => {
-    const onGetContacts = async () => {
-      const userRes = await getAllUsers({ userID: currentUser.userID })
-      console.log("userres", userRes)
-      if (userRes.success) {
-        setContacts(userRes.users)
-      } else {
-        setContacts([])
-      }
+    if (contactScroll) {
+      contactScroll.addEventListener("scroll", e => {
+        if (
+          contactScroll.clientHeight + contactScroll.scrollTop + 1 >=
+          contactScroll.scrollHeight
+        ) {
+          setContactPage(prevState => prevState + 1)
+        }
+      })
     }
-    onGetContacts()
+  }, [contactScroll])
+
+  //Fetching Contacts
+  const onGetContacts = async ({ isSearch = false }) => {
+    const userRes = await getAllUsers({
+      userID: currentUser.userID,
+      page: isSearch ? 1 : contactPage,
+      searchText,
+    })
+    if (userRes.success) {
+      if (!isSearch) {
+        setContacts([...contacts, ...userRes.users])
+      } else {
+        setContacts(userRes?.users)
+      }
+    } else {
+      setContacts([])
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === "3" && contactPage !== 1) {
+      onGetContacts({ isSearch: false })
+    }
+    if (activeTab === "3" && contactPage === 1) {
+      onGetContacts({ isSearch: true })
+    }
+  }, [contactPage])
+
+  useEffect(() => {
+    if (searchText === "") {
+      setContactPage(1)
+    }
+    if (activeTab === "3") {
+      onGetContacts({ isSearch: true })
+    }
+  }, [searchText])
+
+  useEffect(() => {
+    const userid = query.get("uid")
+    if (userid && userid !== currentUser?.userID) {
+      const onCreateOneonOneChat = async () => {
+        await handleCreateChatRoom(userid)
+      }
+      onCreateOneonOneChat()
+    }
+
+    onGetContacts({ isSearch: false })
     ongetAllChatRooms()
-    ongetAllCases()
+    ongetAllCases({ isSet: false })
     setPageLoader(false)
   }, [])
-
+  console.log("ChatLoader :", chatLoader)
   return (
     <div className="page-content">
       <>
         {pageLoader ? (
-          <>Loadinggg....</>
+          <ChatLoader />
         ) : (
           <>
             {/* Model for creating case*/}
@@ -434,12 +539,24 @@ const ChatRc = () => {
               </DynamicSuspense>
             </DynamicModel>
 
+            {/* Modal for Editing Case*/}
+            <DynamicSuspense>
+              <EditCase
+                open={caseEditModalOpen}
+                setOpen={setCaseEditModalOpen}
+                toggleOpen={toggleCaseEditModal}
+                currentCase={currentCase}
+                getAllCases={ongetAllCases}
+                getSubGroups={onGettingSubgroups}
+              />
+            </DynamicSuspense>
+            {/* Modal for deleting Case*/}
             <DeleteModal
-              show={modalOpen}
+              show={caseDeleteModalOpen}
               onDeleteClick={() => onDeletingCase()}
               confirmText="Yes,Remove"
               cancelText="Cancel"
-              onCloseClick={toggleModal}
+              onCloseClick={toggleCaseDeleteModal}
             />
 
             <MetaTags>
@@ -449,7 +566,7 @@ const ChatRc = () => {
               <Row>
                 <Col xs="12" lg="5">
                   <div className="pb-2 border-bottom">
-                    <div className="d-flex">
+                    <Link className="d-flex" to="/profile">
                       <div className="align-self-center me-3">
                         <img
                           src={
@@ -470,8 +587,19 @@ const ChatRc = () => {
                           Active
                         </p>
                       </div>
-                      <UserDropdown />
-                    </div>
+                      {/* <UserDropdown /> */}
+                    </Link>
+                  </div>
+                  <div className="mx-2 mt-2  border-bottom">
+                    <input
+                      className="form-control"
+                      type="text"
+                      id="user-search-text"
+                      placeholder="Search here"
+                      value={searchText}
+                      name="searchText"
+                      onChange={e => setSearchText(e.target.value)}
+                    />
                   </div>
                   <div className="my-1">
                     <Nav pills justified>
@@ -514,14 +642,6 @@ const ChatRc = () => {
                                   }}
                                 >
                                   <div className="d-flex">
-                                    {/* <div className="align-self-center me-3">
-                                          {getNotificationCount(chat._id) >
-                                            0 && (
-                                            <span className="badge bg-danger rounded-pill">
-                                              {getNotificationCount(chat._id)}
-                                            </span>
-                                          )}
-                                        </div> */}
                                     <div className="align-self-center me-3">
                                       <img
                                         src={
@@ -547,8 +667,15 @@ const ChatRc = () => {
                                       </p>
                                     </div>
                                     <div className="font-size-11">
-                                      {moment(chat.updatedAt).format(
-                                        "DD-MM-YY hh:mm"
+                                      <div>
+                                        {moment(chat.updatedAt).format(
+                                          "DD-MM-YY hh:mm"
+                                        )}
+                                      </div>
+                                      {getNotificationCount(chat._id) > 0 && (
+                                        <div className="badge bg-danger  font-size-14 my-1">
+                                          {getNotificationCount(chat._id)}
+                                        </div>
                                       )}
                                     </div>
                                   </div>
@@ -583,6 +710,7 @@ const ChatRc = () => {
                                   }
                                   handleSelectingCase={onSelectingCase}
                                   selected={currentCase?._id === ca?._id}
+                                  notifyCountforCase={notifyCountforCase}
                                 />
                               ))}
                           </ul>
@@ -590,7 +718,10 @@ const ChatRc = () => {
                       </TabPane>
                       <TabPane tabId="3">
                         <div className="my-2">
-                          <PerfectScrollbar style={{ height: "300px" }}>
+                          <PerfectScrollbar
+                            style={{ height: "300px" }}
+                            containerRef={ref => setContactScroll(ref)}
+                          >
                             {contacts &&
                               contacts.map((contact, i) => (
                                 <ul key={i} className="list-unstyled chat-list">
@@ -633,261 +764,295 @@ const ChatRc = () => {
                 <Col xs="12" lg="7" className="align-self-center">
                   <div className="w-100 ">
                     {currentChat ? (
-                      <Card>
-                        <div className="py-2 px-3 border-bottom">
-                          <Row>
-                            <Col md="4" xs="9">
-                              <h5 className="font-size-15 mb-1">
-                                {currentChat.isGroup
-                                  ? currentCase?.caseName || "Case Chat"
-                                  : getChatName(currentChat.groupMembers)}
-                              </h5>
-                              {currentChat?.isGroup && (
-                                <span
-                                  style={{
-                                    color: currentChat?.color
-                                      ? currentChat?.color
-                                      : "#0000FF",
-                                  }}
-                                >
-                                  {currentChat?.groupName}
-                                </span>
-                              )}
-                            </Col>
-                            <Col md="8" xs="3">
-                              <ul className="list-inline user-chat-nav text-end mb-0">
-                                <li className="list-inline-item align-middle">
-                                  <Dropdown
-                                    isOpen={chatSettingOpen}
-                                    toggle={() => toggleChatSettingOpen(!open)}
-                                    className="float-end me-2"
-                                  >
-                                    <DropdownToggle
-                                      className="btn nav-btn"
-                                      tag="i"
-                                    >
-                                      <i className="bx bx-cog" />
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      <DropdownItem href="#">
-                                        Manage Group
-                                      </DropdownItem>
-                                      {currentCase && (
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() => setModalOpen(true)}
-                                        >
-                                          Delete case
-                                        </DropdownItem>
-                                      )}
-                                    </DropdownMenu>
-                                  </Dropdown>
-                                </li>
-                              </ul>
-                            </Col>
-                          </Row>
-                        </div>
-                        <div>
-                          <div className="chat-conversation p-3">
-                            <ul className="list-unstyled">
-                              <PerfectScrollbar
-                                style={{ height: "320px" }}
-                                containerRef={ref => setMessageBox(ref)}
-                              >
-                                {messages &&
-                                  messages.map((msg, m) => (
-                                    <li
-                                      key={"test_k" + m}
-                                      className={
-                                        msg.sender === currentUser.userID
-                                          ? "right"
-                                          : ""
-                                      }
-                                    >
-                                      <div
-                                        className="conversation-list"
-                                        style={{ maxWidth: "80%" }}
-                                      >
-                                        <div
-                                          className="ctext-wrap "
-                                          style={{
-                                            backgroundColor:
-                                              msg.sender ==
-                                                currentUser.userID &&
-                                              currentChat?.color
-                                                ? currentChat?.color + "33"
-                                                : "#0000FF" + "33",
-                                          }}
-                                        >
-                                          <div className="conversation-name">
-                                            {currentChat.isGroup
-                                              ? getMemberName(msg.sender)
-                                              : getSenderOneChat(msg.sender)}
-                                          </div>
-                                          <div className="mb-1">
-                                            {msg.isAttachment ? (
-                                              <>
-                                                <AttachmentViewer
-                                                  attachments={msg.attachments}
-                                                  text={msg.messageData}
-                                                />
-                                                <div className="mt-1">
-                                                  {msg.messageData}
-                                                </div>
-                                              </>
-                                            ) : (
-                                              msg.messageData
-                                            )}
-                                          </div>
-                                          <p className="chat-time mb-0">
-                                            <i className="bx bx-comment-check align-middle me-1" />
-                                            {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                            {moment(msg.createdAt).format(
-                                              "DD-MM-YY hh:mm"
-                                            )}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </li>
-                                  ))}
-                                {messageStack?.length > 0 &&
-                                  messageStack.map((msg, m) => (
-                                    <li key={"test_k" + m} className="right">
-                                      <div className="conversation-list">
-                                        <div
-                                          className="ctext-wrap "
-                                          style={{
-                                            backgroundColor:
-                                              msg.sender ==
-                                                currentUser.userID &&
-                                              currentChat?.color
-                                                ? currentChat?.color + "33"
-                                                : "#0000FF" + "33",
-                                          }}
-                                        >
-                                          <div className="conversation-name">
-                                            {currentUser?.firstname +
-                                              currentUser?.lastname}
-                                          </div>
-                                          <div className="mb-1">
-                                            {msg.messageData}
-                                          </div>
-                                          <p className="chat-time mb-0">
-                                            <i className="bx bx-loader bx-spin  align-middle me-1" />
-                                            {moment(msg.createdAt).format(
-                                              "DD-MM-YY hh:mm"
-                                            )}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </li>
-                                  ))}
-                              </PerfectScrollbar>
-                            </ul>
-                          </div>
-                          {currentChat?.isGroup && (
-                            <SubgroupBar
-                              groups={allgroups}
-                              selectedGroup={currentChat}
-                              setSelectedgroup={setCurrentChat}
-                              subGroupColors={subGroupColors}
-                              openSubGroupmodel={setSubGroupModelOpen}
-                              currentCase={currentCase}
-                            />
-                          )}
-                          <div className="p-2 chat-input-section">
+                      chatLoader ? (
+                        <ChatLoader />
+                      ) : (
+                        <Card className="chat-card">
+                          <div className="py-2 px-3 border-bottom">
                             <Row>
-                              <Col>
-                                <div className="position-relative">
-                                  <TextareaAutosize
-                                    type="text"
-                                    value={curMessage}
-                                    onKeyPress={onKeyPress}
+                              <Col md="4" xs="9">
+                                <h5 className="font-size-15 mb-1">
+                                  {currentChat.isGroup
+                                    ? currentCase?.caseName || "Case Chat"
+                                    : getChatName(currentChat.groupMembers)}
+                                </h5>
+                                {currentChat?.isGroup && (
+                                  <span
                                     style={{
-                                      resize: "none",
+                                      color: currentChat?.color
+                                        ? currentChat?.color
+                                        : "#0000FF",
                                     }}
-                                    onChange={e =>
-                                      setcurMessage(e.target.value)
-                                    }
-                                    className="form-control chat-input"
-                                    placeholder="Enter Message..."
-                                  />
-
-                                  <div className="chat-input-links">
-                                    <ul className="list-inline mb-0">
-                                      <li className="list-inline-item">
-                                        <div>
-                                          <Input
-                                            type="file"
-                                            name="file"
-                                            multiple={true}
-                                            id="hidden-file"
-                                            className="d-none"
-                                            accept=".png, .jpg, .jpeg,.pdf"
-                                            onChange={e => {
-                                              handleFileChange(e)
-                                            }}
-                                          />
-
-                                          <Label
-                                            htmlFor="hidden-file"
-                                            style={{ margin: 0 }}
-                                          >
-                                            <i
-                                              className="mdi mdi-file-image-outline "
-                                              style={{
-                                                color: "#556EE6",
-                                                fontSize: 16,
-                                              }}
-                                            />
-                                          </Label>
-                                        </div>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-
-                                {Array.from(allFiles)?.length > 0 && (
-                                  <div className="d-flex gap-2 flex-wrap mt-2 ">
-                                    {Array.from(allFiles)?.map((att, a) => (
-                                      <span
-                                        className="badge badge-soft-primary font-size-13"
-                                        key={a}
-                                      >
-                                        {att.name}
-                                      </span>
-                                    ))}
-                                  </div>
+                                  >
+                                    {currentChat?.groupName}
+                                  </span>
                                 )}
                               </Col>
-                              <Col className="col-auto">
-                                {loading ? (
-                                  <Button
-                                    type="button"
-                                    className="btn btn-primary btn-rounded chat-send w-md "
-                                    color="primary"
-                                    style={{ cursor: "not-allowed" }}
-                                  >
-                                    <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    type="button"
-                                    color="primary"
-                                    onClick={() => handleSendMessage()}
-                                    className="btn btn-primary btn-rounded chat-send w-md "
-                                  >
-                                    <span className="d-none d-sm-inline-block me-2">
-                                      Send
-                                    </span>
-                                    <i className="mdi mdi-send" />
-                                  </Button>
-                                )}
+                              <Col md="8" xs="3">
+                                <ul className="list-inline user-chat-nav text-end mb-0">
+                                  <li className="list-inline-item align-middle">
+                                    <Dropdown
+                                      isOpen={chatSettingOpen}
+                                      toggle={() =>
+                                        toggleChatSettingOpen(!open)
+                                      }
+                                      className="float-end me-2"
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i className="bx bx-cog" />
+                                      </DropdownToggle>
+
+                                      {currentCase?.admins?.includes(
+                                        currentUser?.userID
+                                      ) ? (
+                                        <DropdownMenu>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              setCaseEditModalOpen(true)
+                                            }
+                                          >
+                                            Manage Case
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              setCaseDeleteModalOpen(true)
+                                            }
+                                          >
+                                            Delete case
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      ) : (
+                                        currentChat &&
+                                        currentChat?.admins?.includes(
+                                          currentUser?.userID
+                                        ) && (
+                                          <DropdownMenu>
+                                            <DropdownItem href="#">
+                                              Manage chat
+                                            </DropdownItem>
+                                            <DropdownItem href="#">
+                                              Delete chat
+                                            </DropdownItem>
+                                          </DropdownMenu>
+                                        )
+                                      )}
+                                    </Dropdown>
+                                  </li>
+                                </ul>
                               </Col>
                             </Row>
                           </div>
-                        </div>
-                      </Card>
+                          <div>
+                            <div className="chat-conversation p-3">
+                              <ul className="list-unstyled">
+                                <PerfectScrollbar
+                                  style={{ height: "320px" }}
+                                  containerRef={ref => setMessageBox(ref)}
+                                  onMouseEnter={() => setIsChatScroll(true)}
+                                  onMouseLeave={() => setIsChatScroll(false)}
+                                >
+                                  {messages &&
+                                    messages.map((msg, m) => (
+                                      <li
+                                        key={"test_k" + m}
+                                        className={
+                                          msg.sender === currentUser.userID
+                                            ? "right"
+                                            : ""
+                                        }
+                                      >
+                                        <div
+                                          className="conversation-list"
+                                          style={{ maxWidth: "80%" }}
+                                        >
+                                          <div
+                                            className="ctext-wrap "
+                                            style={{
+                                              backgroundColor:
+                                                msg.sender ==
+                                                  currentUser.userID &&
+                                                currentChat?.color
+                                                  ? currentChat?.color + "33"
+                                                  : "#0000FF" + "33",
+                                            }}
+                                          >
+                                            <div className="conversation-name">
+                                              {currentChat.isGroup
+                                                ? getMemberName(msg.sender)
+                                                : getSenderOneChat(msg.sender)}
+                                            </div>
+                                            <div className="mb-1">
+                                              {msg.isAttachment ? (
+                                                <>
+                                                  <AttachmentViewer
+                                                    attachments={
+                                                      msg.attachments
+                                                    }
+                                                    text={msg.messageData}
+                                                  />
+                                                  <div className="mt-1">
+                                                    {msg.messageData}
+                                                  </div>
+                                                </>
+                                              ) : (
+                                                msg.messageData
+                                              )}
+                                            </div>
+                                            <p className="chat-time mb-0">
+                                              <i className="bx bx-comment-check align-middle me-1" />
+                                              {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                                              {moment(msg.createdAt).format(
+                                                "DD-MM-YY hh:mm"
+                                              )}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </li>
+                                    ))}
+                                  {messageStack?.length > 0 &&
+                                    messageStack.map((msg, m) => (
+                                      <li key={"test_k" + m} className="right">
+                                        <div className="conversation-list">
+                                          <div
+                                            className="ctext-wrap "
+                                            style={{
+                                              backgroundColor:
+                                                msg.sender ==
+                                                  currentUser.userID &&
+                                                currentChat?.color
+                                                  ? currentChat?.color + "33"
+                                                  : "#0000FF" + "33",
+                                            }}
+                                          >
+                                            <div className="conversation-name">
+                                              {currentUser?.firstname +
+                                                currentUser?.lastname}
+                                            </div>
+                                            <div className="mb-1">
+                                              {msg.messageData}
+                                            </div>
+                                            <p className="chat-time mb-0">
+                                              <i className="bx bx-loader bx-spin  align-middle me-1" />
+                                              {moment(msg.createdAt).format(
+                                                "DD-MM-YY hh:mm"
+                                              )}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </li>
+                                    ))}
+                                </PerfectScrollbar>
+                              </ul>
+                            </div>
+                            {currentChat?.isGroup && (
+                              <SubgroupBar
+                                groups={allgroups}
+                                selectedGroup={currentChat}
+                                setSelectedgroup={setCurrentChat}
+                                openSubGroupmodel={setSubGroupModelOpen}
+                                currentCase={currentCase}
+                                notifyCount={getNotificationCount}
+                              />
+                            )}
+                            <div className="p-2 chat-input-section">
+                              <Row>
+                                <Col>
+                                  <div className="position-relative">
+                                    <TextareaAutosize
+                                      type="text"
+                                      value={curMessage}
+                                      onKeyPress={onKeyPress}
+                                      style={{
+                                        resize: "none",
+                                      }}
+                                      onChange={e =>
+                                        setcurMessage(e.target.value)
+                                      }
+                                      className="form-control chat-input"
+                                      placeholder="Enter Message..."
+                                    />
+
+                                    <div className="chat-input-links">
+                                      <ul className="list-inline mb-0">
+                                        <li className="list-inline-item">
+                                          <div>
+                                            <Input
+                                              type="file"
+                                              name="file"
+                                              multiple={true}
+                                              id="hidden-file"
+                                              className="d-none"
+                                              accept=".png, .jpg, .jpeg,.pdf"
+                                              onChange={e => {
+                                                handleFileChange(e)
+                                              }}
+                                            />
+
+                                            <Label
+                                              htmlFor="hidden-file"
+                                              style={{ margin: 0 }}
+                                            >
+                                              <i
+                                                className="mdi mdi-file-image-outline "
+                                                style={{
+                                                  color: "#556EE6",
+                                                  fontSize: 16,
+                                                }}
+                                              />
+                                            </Label>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+
+                                  {Array.from(allFiles)?.length > 0 && (
+                                    <div className="d-flex gap-2 flex-wrap mt-2 ">
+                                      {Array.from(allFiles)?.map((att, a) => (
+                                        <span
+                                          className="badge badge-soft-primary font-size-13"
+                                          key={a}
+                                        >
+                                          {att.name}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </Col>
+                                <Col className="col-auto">
+                                  {loading ? (
+                                    <Button
+                                      type="button"
+                                      className="btn btn-primary btn-rounded chat-send w-md "
+                                      color="primary"
+                                      style={{ cursor: "not-allowed" }}
+                                    >
+                                      <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      type="button"
+                                      color="primary"
+                                      onClick={() => handleSendMessage()}
+                                      className="btn btn-primary btn-rounded chat-send w-md "
+                                    >
+                                      <span className="d-none d-sm-inline-block me-2">
+                                        Send
+                                      </span>
+                                      <i className="mdi mdi-send" />
+                                    </Button>
+                                  )}
+                                </Col>
+                              </Row>
+                            </div>
+                          </div>
+                        </Card>
+                      )
                     ) : (
                       <NoChat />
                     )}

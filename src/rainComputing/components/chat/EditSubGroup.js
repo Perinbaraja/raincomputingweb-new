@@ -111,7 +111,6 @@ const EditSubGroup = ({
 
   return (
     <>
-      {" "}
       <DeleteModal
         show={deleteModalOpen}
         onDeleteClick={handleDeleteSubGroup}
@@ -153,7 +152,7 @@ const EditSubGroup = ({
               value={groupColor}
               onChange={e => setGroupColor(e.target.value)}
               className="pointer"
-            ></input>
+            />
           </div>
         </ModalHeader>
         <ModalBody>

@@ -21,7 +21,8 @@
 
 body {
   max-width: 1440px;
-    margin: 0 auto;
+  margin: 0 auto;
+
   * {
     outline: none;
   }
@@ -42,22 +43,27 @@ body {
 .leaflet-pane {
   z-index: 1;
 }
-svg > rect:first-child {
+
+svg>rect:first-child {
   fill-opacity: 0 !important;
 }
+
 .dataTables_filter,
 .dataTables_paginate {
   float: right;
 }
+
 .rdw-editor-main {
   border: 1px solid $gray-300;
   height: 239px;
   padding-left: 15px;
 }
+
 .dz-message {
   text-align: center;
   padding: 30px;
 }
+
 // kanban board
 .react-kanban-column {
   height: 100%;
@@ -69,43 +75,54 @@ svg > rect:first-child {
   margin: 5px;
   vertical-align: top;
 }
+
 .fcYNFc,
 .sc-AxmLO.gmtmqV {
-  background-color: $card-bg !important;
+  background-color: $card-bg  !important;
   margin: 0 20px 0 0 !important;
 }
+
 .task-box {
   border: 1px solid $border-color;
 }
+
 .react-datepicker-wrapper {
   width: 100% !important;
 }
+
 .ReactModal__Overlay {
   z-index: 1001 !important;
 }
+
 .external-event {
   &:hover {
     cursor: pointer;
   }
 }
+
 a:hover {
   cursor: pointer;
 }
+
 .rating-container {
   background-color: transparent !important;
 }
+
 .input-group-append {
   z-index: 0;
 }
+
 .input-color {
-  color: $input-color !important;
+  color: $input-color  !important;
 }
+
 .sketch-picker {
   position: absolute;
   z-index: 1;
 }
+
 .rangeslider__fill {
-  background-color: $primary !important;
+  background-color: $primary  !important;
 }
 
 .dropdown-menu-end {
@@ -114,22 +131,27 @@ a:hover {
 }
 
 .flatpickr-months .flatpickr-month {
-  background: $primary !important;
+  background: $primary  !important;
 }
+
 .flatpickr-weekdays {
-  background: $primary !important;
+  background: $primary  !important;
 }
+
 span.flatpickr-weekday {
-  background: $primary !important;
+  background: $primary  !important;
 }
+
 .flatpickr-current-month .flatpickr-monthDropdown-months {
-  background: $primary !important;
+  background: $primary  !important;
 }
+
 span.flatpickr-weekday {
-  color: $white !important;
+  color: $white  !important;
 }
+
 .flatpickr-day.selected {
-  background: $primary !important;
+  background: $primary  !important;
 }
 
 .bs-select select {
@@ -155,10 +177,12 @@ span.flatpickr-weekday {
     display: none !important;
   }
 }
+
 .carousel {
   .control-dots {
     margin: -5px 0px;
   }
+
   .dot {
     background: #556ee6 !important;
     width: 9px !important;
@@ -235,6 +259,7 @@ span.flatpickr-weekday {
   .fc-toolbar {
     display: block !important;
     text-align: center;
+
     .fc-left,
     .fc-right,
     .fc-center {
@@ -244,15 +269,17 @@ span.flatpickr-weekday {
       margin: 10px 0;
     }
   }
+
   .fc {
     .fc-toolbar {
-      > * {
-        > * {
+      >* {
+        >* {
           float: none;
         }
       }
     }
   }
+
   .fc-today-button {
     display: none;
   }
@@ -262,13 +289,13 @@ span.flatpickr-weekday {
 .ps__rail-y {
   z-index: 999999 !important;
 }
+
 .close {
   background: transparent;
   border: 0;
   font-size: 10px;
   padding: 1.35rem 1.25rem;
-  background: transparent escape-svg($btn-close-bg) center / $btn-close-width
-    auto no-repeat;
+  background: transparent escape-svg($btn-close-bg) center / $btn-close-width auto no-repeat;
   position: absolute;
   top: 0;
   right: 0;
@@ -276,6 +303,7 @@ span.flatpickr-weekday {
   width: 1em;
   height: 1em;
   z-index: 2;
+
   span {
     display: none;
   }
@@ -308,10 +336,12 @@ span.flatpickr-weekday {
   z-index: 9999;
   background: #fff;
 }
+
 .drawer-main-menu {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
 .drawer-menu a i {
   min-width: 2rem;
   display: inline-block;
@@ -323,6 +353,7 @@ span.flatpickr-weekday {
   color: #7f8387;
   transition: all 0.4s;
 }
+
 .drawer-menu a {
   display: block;
   padding: 0.625rem 1.5rem;
@@ -331,23 +362,29 @@ span.flatpickr-weekday {
   font-size: 13px;
   transition: all 0.4s;
 }
+
 .drawer-close {
   padding: 0.5rem 0.5rem;
   margin: -0.5rem -0.5rem -0.5rem auto;
 }
+
 .ReactModal__Overlay {
   z-index: 5000 !important;
 }
+
 .rangeslider__handle:focus {
   outline: none;
 }
+
 // React Table next css
 .react-bootstrap-table-page-btns-ul {
   float: right !important;
 }
+
 .search-label {
   float: right;
 }
+
 .react-drawer-overlay {
   z-index: 9999;
 }
@@ -363,6 +400,7 @@ span.flatpickr-weekday {
     }
   }
 }
+
 .rightbar-title .right-bar-toggle {
   background-color: #444c54 !important;
   height: 24px !important;
@@ -378,6 +416,39 @@ span.flatpickr-weekday {
 .css-sourceMap-modules-importLoaders-1-localIdentName-animate__animated___2O131 {
   animation-duration: 0.6s !important;
 }
+
 .css-sourceMap-modules-importLoaders-1-localIdentName-ReactDrawer__overlay___2QFmC-sass {
   background: rgba(0, 0, 0, 0.15) !important;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  /* Remove scrollbar space */
+  background: transparent;
+  /* Optional: just make scrollbar invisible */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: transparent;
+  margin: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: blue;
+  border-radius: 100vh;
+  border: 2px solid #f6f7ed;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: blue;
+}
+
+.chat-card {
+  transition: height 2s linear;
 }

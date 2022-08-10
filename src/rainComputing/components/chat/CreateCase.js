@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import { Button, Row } from "reactstrap"
+import { Button, Col, Row } from "reactstrap"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { initialNewCaseValues } from "rainComputing/helpers/initialFormValues"
-import { createNewCase } from "rainComputing/helpers/backend_helper"
+import {
+  createNewCase,
+  getAllUsers,
+} from "rainComputing/helpers/backend_helper"
 
 const CreateCase = ({
   formValues,
   setFormValues,
-  contacts,
   setModalOpen,
   getAllCases,
 }) => {
   const { currentUser } = useUser()
 
   const [loading, setloading] = useState(false)
+  const [contacts, setContacts] = useState([])
+  const [searchText, setSearchText] = useState("")
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -27,9 +31,11 @@ const CreateCase = ({
     setFormValues(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const handleAddingGroupMembers = id => {
-    if (formValues.members.includes(id)) {
-      const membersAfterRemove = formValues.members.filter(m => m !== id)
+  const handleAddingGroupMembers = member => {
+    if (formValues.members.includes(member)) {
+      const membersAfterRemove = formValues.members.filter(
+        m => m._id !== member?._id
+      )
 
       setFormValues(prevState => ({
         ...prevState,
@@ -38,9 +44,19 @@ const CreateCase = ({
     } else {
       setFormValues(prevState => ({
         ...prevState,
-        members: [...prevState.members, id],
+        members: [...prevState.members, member],
       }))
     }
+  }
+
+  const isDisabled = () => {
+    if (
+      !formValues?.caseName ||
+      !formValues?.caseId ||
+      formValues?.members?.length < 1
+    )
+      return true
+    return false
   }
 
   const handleCaseCreationCancel = () => {
@@ -49,28 +65,51 @@ const CreateCase = ({
   }
 
   const handleCreatingCase = async () => {
-    const caseRes = await createNewCase(formValues)
+    setloading(true)
+    const filteredMembers = formValues?.members.map(m => m?._id)
+    const payLoad = {
+      admin: currentUser?.userID,
+      caseId: formValues?.caseId,
+      caseName: formValues?.caseName,
+      members: [currentUser?.userID, ...filteredMembers],
+    }
+    const caseRes = await createNewCase(payLoad)
     if (caseRes.success) {
       toastr.success(
         `Case ${formValues?.caseId} has been created successfully`,
         "Case creation success"
       )
-      await getAllCases()
+      await getAllCases({ isSet: false })
       handleCaseCreationCancel()
     } else {
       console.log("Case Creation Erron :", caseRes)
-      toastr.error(`Failed to create case`, "Case creation failed!!!")
+      toastr.error(
+        ` ${caseRes?.msg} Failed to create case `,
+        "Case creation failed!!!"
+      )
     }
+    setloading(false)
   }
 
   useEffect(() => {
-    setFormValues(prevState => ({
-      ...prevState,
-      admin: currentUser?.userID,
-      members: [currentUser?.userID],
-    }))
-    return () => {}
-  }, [])
+    const handleFetchingContacts = async () => {
+      const contactRes = await getAllUsers({
+        userID: currentUser.userID,
+        searchText,
+      })
+      if (contactRes.success) {
+        setContacts(contactRes.users)
+      } else {
+        toastr.error(
+          `Failed to fetch contacts ${contactRes?.msg}`,
+          "Failed on fetching contacts"
+        )
+        setContacts([])
+      }
+    }
+    handleFetchingContacts()
+  }, [searchText])
+
   return (
     <>
       <Row>
@@ -110,29 +149,84 @@ const CreateCase = ({
         </div>
       </Row>
       <Row className="my-3">
-        <p className="fw-medium">Select Members</p>
-        <div
-          className="px-1 d-flex overflow-auto"
-          style={{ height: "max-content" }}
+        <label
+          htmlFor="user-search-text"
+          className="col-md-3 col-lg-2 col-form-label"
         >
-          {contacts.map((contact, c) => (
-            <Button
-              key={c}
-              color={
-                formValues.members.includes(contact._id) ? "success" : "light"
-              }
-              className="btn mx-1 mb-2"
-              onClick={() => handleAddingGroupMembers(contact._id)}
-            >
-              <div className="d-flex ">
-                {contact.firstname} {contact.lastname}
-              </div>
-
-              <div className="font-size-0 text-body ">{contact.email}</div>
-            </Button>
-          ))}
+          Select members
+        </label>
+        <div className="col-md-8">
+          <input
+            className="form-control"
+            type="text"
+            id="user-search-text"
+            placeholder="Search by name,email"
+            value={searchText}
+            name="searchText"
+            onChange={e => setSearchText(e.target.value)}
+          />
         </div>
       </Row>
+
+      <Row>
+        <Col xs={6} className="px-3 border-end border-info">
+          <span className="text-muted">Members</span>
+          <div className="d-flex flex-wrap gap-2 my-2">
+            {contacts &&
+              contacts
+                .filter(f => !formValues.members.some(g => g?._id === f?._id))
+                .filter(a => a?._id !== currentUser?.userID)
+                .map((contact, c) => (
+                  <Button
+                    key={c}
+                    color={
+                      formValues.members.includes(contact._id)
+                        ? "success"
+                        : "light"
+                    }
+                    className="btn mx-1 mb-2"
+                    onClick={() => handleAddingGroupMembers(contact)}
+                  >
+                    <div className="d-flex ">
+                      {contact.firstname} {contact.lastname}
+                    </div>
+
+                    <div className="font-size-0 text-body ">
+                      {contact.email}
+                    </div>
+                  </Button>
+                ))}
+          </div>
+        </Col>
+        <Col xs={6} className="px-3">
+          <span className="text-muted">Case Members</span>
+          <div className="d-flex flex-wrap gap-2 my-2">
+            <Button color="success" className="btn mx-1 mb-2">
+              <div className="d-flex ">
+                {currentUser?.firstname} {currentUser?.lastname}
+              </div>
+
+              <div className="font-size-0 text-body ">{currentUser?.email}</div>
+            </Button>
+            {formValues?.members &&
+              formValues?.members.map((member, m) => (
+                <Button
+                  key={m}
+                  color="success"
+                  className="btn mx-1 mb-2"
+                  onClick={() => handleAddingGroupMembers(member)}
+                >
+                  <div className="d-flex ">
+                    {member?.firstname + " " + member?.lastname}
+                  </div>
+
+                  <div className="font-size-0 text-body ">{member?.email}</div>
+                </Button>
+              ))}
+          </div>
+        </Col>
+      </Row>
+
       <Row>
         <div className="modal-footer">
           {!loading && (
@@ -157,6 +251,7 @@ const CreateCase = ({
               type="button"
               className="btn btn-primary"
               onClick={() => handleCreatingCase()}
+              disabled={isDisabled()}
             >
               Create Case
             </button>
@@ -170,7 +265,6 @@ const CreateCase = ({
 CreateCase.propTypes = {
   formValues: PropTypes.object,
   setFormValues: PropTypes.func,
-  contacts: PropTypes.array,
   setModalOpen: PropTypes.func,
   getAllCases: PropTypes.func,
 }

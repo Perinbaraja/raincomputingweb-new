@@ -45,7 +45,10 @@ const SubGroups = ({ groups, caseMembers, currentCaseId, getSubGroups }) => {
         )}
       </DynamicSuspense>
 
-      <div className="mt-1 d-flex gap-5 p-2" style={{ overflowX: "auto" }}>
+      <div
+        className="mt-1 d-flex gap-5 p-2 custom-scrollbar"
+        style={{ overflowX: "auto" }}
+      >
         {groups &&
           groups.map((sub, i) => (
             <Card
@@ -61,6 +64,7 @@ const SubGroups = ({ groups, caseMembers, currentCaseId, getSubGroups }) => {
                 }}
               >
                 {sub.groupName}
+                <i className="bx bx-pencil font-size-14 align-middle mx-2"></i>
               </CardTitle>
               <CardBody className="p-2 my-2 text-nowrap">
                 <PerfectScrollbar style={{ height: 180 }}>

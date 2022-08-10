@@ -40,3 +40,21 @@ $active-bg: #ECF2FE;
     transform: translateY(-2px);
     transition: all 0.4s;
 }
+
+.tooltip-parent {
+    position: relative;
+}
+
+.tooltip-item {
+    position: absolute;
+    z-index: 2;
+    top: 100%;
+    left: 50%;
+    margin-left: -50%;
+    text-align: center;
+    padding: 3px;
+}
+
+.tooltip-parent:hover .tooltip-item {
+    visibility: visible;
+}

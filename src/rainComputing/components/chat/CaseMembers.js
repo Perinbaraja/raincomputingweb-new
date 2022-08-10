@@ -4,7 +4,7 @@ import { Card, CardBody, CardImg, CardText, CardTitle } from "reactstrap"
 import profile from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 
-const CaseMembers = ({ members }) => {
+const CaseMembers = ({ members, admins }) => {
   const { currentUser } = useUser()
   const MembersCard = ({ member }) => (
     <Card className="pointer member-card ">
@@ -32,15 +32,28 @@ const CaseMembers = ({ members }) => {
 
   return (
     <>
-      <div className="mt-5 d-flex gap-5 p-2" style={{ overflowX: "auto" }}>
+      <div
+        className="mt-5 d-flex gap-5 p-2 custom-scrollbar"
+        style={{ overflowX: "auto" }}
+      >
         {members.map((member, m) => (
           <div key={m} className="position-relative " style={{ width: 240 }}>
             <MembersCard member={member} />
-            <span style={{ position: "absolute", top: 10, right: 10 }}>
-              <i className="bx bx-message-alt-minus bg-danger font-size-16 rounded-circle text-white fw-medium" />
-            </span>
+            {/* {admins?.includes(currentUser?.userID) && (
+              <span style={{ position: "absolute", top: 10, right: 10 }}>
+                <i className="bx bx-message-alt-minus bg-danger font-size-16 rounded-circle text-white fw-medium" />
+              </span>
+            )} */}
           </div>
         ))}
+        {/* {admins?.includes(currentUser?.userID) && (
+          <Card
+            className="rounded border border-light d-flex flex-column text-black-50 justify-content-center align-items-center"
+            style={{ minWidth: 240 }}
+          >
+            <i className="mdi mdi-plus-circle-outline mdi-48px pointer" />
+          </Card>
+        )} */}
       </div>
     </>
   )
@@ -48,6 +61,7 @@ const CaseMembers = ({ members }) => {
 
 CaseMembers.propTypes = {
   members: PropTypes.array,
+  admins: PropTypes.array,
   member: PropTypes.object,
 }
 
