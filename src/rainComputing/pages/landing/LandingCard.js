@@ -43,7 +43,7 @@ const LandingCard = props => {
             <div className="contact-links d-flex font-size-20">
               <div className="flex-fill">
                 <Link
-                  to={`/chat-rc?uid=62de8f3c0b2476367fcaf889`}
+                  to={`/chat-rc?uid=62ec8de74fde4cb410073cc0`}
                   id={"message" + user._id}
                 >
                   <i className="bx bx-message-square-dots" />
