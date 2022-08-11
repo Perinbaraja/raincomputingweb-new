@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <React.Fragment>
       <footer className="footer">
-        <Container>
+        <Container fluid>
           <Row>
             <div className="col-md-3 col-sm-10">
               <ul className="list-unstyled ">
