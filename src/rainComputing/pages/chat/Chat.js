@@ -30,6 +30,8 @@ import "react-perfect-scrollbar/dist/css/styles.css"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock"
+import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 import profile from "assets/images/avatar-defult.jpg"
 import UserDropdown from "rainComputing/components/chat/UserDropdown"
 import classNames from "classnames"
@@ -40,13 +42,14 @@ import {
   createOnevsOneChat,
   getAllUsers,
   getCasesByUserId,
+  getCounts,
   getGroupsByUserIdandCaseId,
   getMessagesByUserIdandGroupId,
   getOnevsOneChat,
   updateCase,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
-import { isEmpty, map } from "lodash"
+import { isEmpty, map, now } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
@@ -74,6 +77,12 @@ const EditCase = lazy(() => import("rainComputing/components/chat/EditCase"))
 
 //Chat left sidebar nav items
 const sidebarNavItems = ["Chat", "Case", "Contact"]
+
+const initialPageCount = {
+  chats: 3,
+  cases: 3,
+  users: 3,
+}
 
 const ChatRc = () => {
   let query = useQuery()
@@ -118,7 +127,6 @@ const ChatRc = () => {
     toggleIt: toggleCaseEditModal,
   } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
-
   const [contactScroll, setContactScroll] = useState(null)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
@@ -137,6 +145,7 @@ const ChatRc = () => {
   const [allFiles, setAllFiles] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchText, setSearchText] = useState("")
+  const [totalPages, setTotalPages] = useState(initialPageCount)
   const [contactPage, setContactPage] = useState(1)
 
   //Toaster settings
@@ -245,6 +254,38 @@ const ChatRc = () => {
       console.log("Rendering ongetAllCases error", allCasesRes)
     }
   }
+  //Fetching user,case,group count
+  const ongetCounts = async () => {
+    const countRes = await getCounts({ userId: currentUser?.userID })
+    if (countRes?.success) {
+      const limit = 10
+      const { userCount, chatCount, caseCount } = countRes
+      setTotalPages({
+        ...totalPages,
+        chats: Math.ceil(chatCount / limit),
+        users: Math.ceil(userCount / limit),
+        cases: Math.ceil(caseCount / limit),
+      })
+    }
+  }
+
+  //Fetching Contacts
+  const onGetContacts = async ({ isSearch = false }) => {
+    const userRes = await getAllUsers({
+      userID: currentUser.userID,
+      page: isSearch ? 1 : contactPage,
+      searchText,
+    })
+    if (userRes.success) {
+      if (!isSearch) {
+        setContacts([...contacts, ...userRes.users])
+      } else {
+        setContacts(userRes?.users)
+      }
+    } else {
+      setContacts([])
+    }
+  }
 
   //Selecting current case
   const onSelectingCase = cas => {
@@ -252,7 +293,6 @@ const ChatRc = () => {
   }
 
   //Deleting Case
-
   const onDeletingCase = async () => {
     const payload = {
       id: currentCase?._id,
@@ -271,6 +311,15 @@ const ChatRc = () => {
       toastr.error("Failed to delete case", "Failed!!!")
     }
     setCaseDeleteModalOpen(false)
+  }
+
+  //Textbox empty or spaces
+  const isEmptyOrSpaces = () => {
+    if (isAttachment) {
+      return false
+    }
+
+    return curMessage === null || curMessage.match(/^ *$/) !== null
   }
 
   //Sending Message
@@ -341,7 +390,7 @@ const ChatRc = () => {
       ?.caseMembers?.find(member => member?.id?._id === id)
     if (memberName)
       return memberName?.id?.firstname + " " + memberName?.id?.lastname
-    return "Guest"
+    return id
   }
 
   //Scrolling to bottom of message
@@ -370,6 +419,86 @@ const ChatRc = () => {
     }
     setChatLoader(false)
   }
+
+  //Archieve Chat
+  const onArchievingChat = () => {
+    setChatLoader(true)
+    const doc = new jsPDF()
+    const header = [
+      ["Sender", "message", "Time", "Group name", "Case name", "Attachments"],
+    ]
+    let rows = []
+    const caseName = currentCase?.caseName ? currentCase?.caseName : "-"
+    const groupName = currentChat?.isGroup
+      ? currentChat?.groupName
+      : getChatName(currentChat?.groupMembers)
+    messages.map(m => {
+      const sender = m?.caseId
+        ? getMemberName(m?.sender)
+        : getSenderOneChat(m?.sender)
+      const message = m?.messageData
+      const time = moment(m?.createdAt).format("DD-MM-YY hh:mm")
+      const attachments = m.isAttachment ? m.attachments?.length : "-"
+      const tempRow = [sender, message, time, groupName, caseName, attachments]
+
+      rows.push(tempRow)
+    })
+    // doc.autoTable(col, rows, { startY: 10 })
+    autoTable(doc, {
+      bodyStyles: { valign: "top" },
+      margin: {
+        top: 30,
+      },
+      head: header,
+      body: rows,
+      theme: "grid",
+      columnStyles: { 5: { halign: "center" } },
+      headStyles: {
+        fillColor: [0, 0, 230],
+        fontSize: 12,
+        fontStyle: "bold",
+        font: "courier",
+        halign: "center",
+      },
+      willDrawCell: data => {
+        if (
+          data.section === "body" &&
+          data.column.index === 5 &&
+          data.cell.raw !== "-"
+        ) {
+          data.doc.setFillColor("green")
+          data.doc.setTextColor("black")
+        }
+      },
+      didDrawPage: data => {
+        doc.setFontSize(20)
+        doc.setTextColor(40)
+        doc.text(
+          `${
+            currentCase?.caseName ? currentCase?.caseName : "Private Chat"
+          }-${groupName}`,
+          data.settings.margin.left,
+          20
+        )
+      },
+    })
+    const docName = `${
+      currentCase?.caseName ? currentCase?.caseName : "Private Chat"
+    }-${groupName}-${moment(Date.now()).format("DD-MM-YY hh:mm")}`
+    doc.save(docName)
+    setChatLoader(false)
+  }
+
+  //Contacts infiniteScroll
+  const handleContactScroll = t => {
+    if (
+      t.clientHeight + t.scrollTop + 1 >= t.scrollHeight &&
+      contactPage <= totalPages?.users
+    ) {
+      setContactPage(contactPage + 1)
+    }
+  }
+
   //Resetting page whiule changing Tab
   useEffect(() => {
     setContactPage(1)
@@ -381,6 +510,8 @@ const ChatRc = () => {
   useEffect(() => {
     if (Array.from(allFiles)?.length > 0) {
       setIsAttachment(true)
+    } else {
+      setIsAttachment(false)
     }
   }, [allFiles])
 
@@ -398,7 +529,6 @@ const ChatRc = () => {
 
   //SideEffect of setting receivers after currentchat changes
   useEffect(() => {
-    console.log("setting chat loader")
     if (currentChat) {
       setReceivers(
         currentChat.groupMembers
@@ -427,40 +557,12 @@ const ChatRc = () => {
     }
   }, [currentChat])
 
-  //Contacts infiniteScroll
   useEffect(() => {
-    if (contactScroll) {
-      contactScroll.addEventListener("scroll", e => {
-        if (
-          contactScroll.clientHeight + contactScroll.scrollTop + 1 >=
-          contactScroll.scrollHeight
-        ) {
-          setContactPage(prevState => prevState + 1)
-        }
-      })
-    }
-  }, [contactScroll])
-
-  //Fetching Contacts
-  const onGetContacts = async ({ isSearch = false }) => {
-    const userRes = await getAllUsers({
-      userID: currentUser.userID,
-      page: isSearch ? 1 : contactPage,
-      searchText,
-    })
-    if (userRes.success) {
-      if (!isSearch) {
-        setContacts([...contacts, ...userRes.users])
-      } else {
-        setContacts(userRes?.users)
-      }
-    } else {
-      setContacts([])
-    }
-  }
-
-  useEffect(() => {
-    if (activeTab === "3" && contactPage !== 1) {
+    if (
+      activeTab === "3" &&
+      contactPage !== 1 &&
+      contactPage <= totalPages?.users
+    ) {
       onGetContacts({ isSearch: false })
     }
     if (activeTab === "3" && contactPage === 1) {
@@ -485,13 +587,12 @@ const ChatRc = () => {
       }
       onCreateOneonOneChat()
     }
-
+    ongetCounts()
     onGetContacts({ isSearch: false })
     ongetAllChatRooms()
     ongetAllCases({ isSet: false })
     setPageLoader(false)
   }, [])
-  console.log("ChatLoader :", chatLoader)
   return (
     <div className="page-content">
       <>
@@ -721,6 +822,7 @@ const ChatRc = () => {
                           <PerfectScrollbar
                             style={{ height: "300px" }}
                             containerRef={ref => setContactScroll(ref)}
+                            onScroll={e => handleContactScroll(e?.target)}
                           >
                             {contacts &&
                               contacts.map((contact, i) => (
@@ -811,6 +913,12 @@ const ChatRc = () => {
                                         <DropdownMenu>
                                           <DropdownItem
                                             href="#"
+                                            onClick={() => onArchievingChat()}
+                                          >
+                                            Archive Chat
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
                                             onClick={() =>
                                               setCaseEditModalOpen(true)
                                             }
@@ -832,6 +940,12 @@ const ChatRc = () => {
                                           currentUser?.userID
                                         ) && (
                                           <DropdownMenu>
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() => onArchievingChat()}
+                                            >
+                                              Archive Chat
+                                            </DropdownItem>
                                             <DropdownItem href="#">
                                               Manage chat
                                             </DropdownItem>
@@ -1039,7 +1153,8 @@ const ChatRc = () => {
                                       type="button"
                                       color="primary"
                                       onClick={() => handleSendMessage()}
-                                      className="btn btn-primary btn-rounded chat-send w-md "
+                                      className="btn btn-primary btn-rounded chat-send w-md"
+                                      disabled={isEmptyOrSpaces()}
                                     >
                                       <span className="d-none d-sm-inline-block me-2">
                                         Send

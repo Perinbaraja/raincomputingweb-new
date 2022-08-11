@@ -78,22 +78,22 @@ export function ChatProvider({ socket, children }) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
         if (msgData?.groupId === currentRoom._id) {
-          console.log("Received message : ", msgData)
+          // console.log("Received message : ", msgData)
           setMessages([...messages, msgData])
         } else {
-          console.log("Received message for notifications 1: ", msgData)
+          // console.log("Received message for notifications 1: ", msgData)
           setNotifications([msgData, ...notifications])
         }
       })
       socket.off("s_s").once("s_s", async msgData => {
-        console.log("Message send successfully : ", msgData)
+        // console.log("Message send successfully : ", msgData)
         setMessageStack([])
         setMessages([...messages, msgData])
       })
     } else {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
-        console.log("Received message for notifications: ", msgData)
+        // console.log("Received message for notifications: ", msgData)
         setNotifications([msgData, ...notifications])
       })
     }
