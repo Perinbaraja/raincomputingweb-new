@@ -72,7 +72,7 @@ const CaseGrid = ({
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
             {notifyCountforCase(caseData?._id) && (
-              <i className="bx bx-bell bx-tada text-danger" />
+              <i className="bx bxs-bell bx-tada text-danger" />
             )}
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
