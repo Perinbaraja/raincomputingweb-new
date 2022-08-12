@@ -21,11 +21,11 @@ export function SocketProvider({ children }) {
     socket.once("connect", () => {
       // USER IS ONLINE
       socket.on("online", userId => {
-        console.log(userId, "Is Online!") // update online status
+        // console.log(userId, "Is Online!") // update online status
       })
       // USER IS OFFLINE
       socket.on("offline", userId => {
-        console.log(userId, "Is Offline!") // update offline status
+        // console.log(userId, "Is Offline!") // update offline status
       })
     })
   }

@@ -16,7 +16,6 @@ export function UserProvider({ children }) {
     if (currentUser) {
       const handleFetching = async () => {
         const res = await getAttorneyByUserID({ userID: currentUser.userID })
-        console.log("currentAttorney Res : ",res)
         if (res.success) {
           setCurrentAttorney(res.attorney)
         }

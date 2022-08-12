@@ -127,7 +127,6 @@ const ChatRc = () => {
     toggleIt: toggleCaseEditModal,
   } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
-  const [contactScroll, setContactScroll] = useState(null)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
@@ -147,6 +146,7 @@ const ChatRc = () => {
   const [searchText, setSearchText] = useState("")
   const [totalPages, setTotalPages] = useState(initialPageCount)
   const [contactPage, setContactPage] = useState(1)
+  const [casePage, setCasePage] = useState(1)
 
   //Toaster settings
   toastr.options = {
@@ -242,10 +242,18 @@ const ChatRc = () => {
   }
 
   //Getting all the cases
-  const ongetAllCases = async ({ isSet = false }) => {
-    const allCasesRes = await getCasesByUserId({ userId: currentUser.userID })
+  const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
+    const allCasesRes = await getCasesByUserId({
+      userId: currentUser.userID,
+      page: isSearch ? 1 : casePage,
+      searchText,
+    })
     if (allCasesRes.success) {
-      setAllCases(allCasesRes.cases)
+      if (!isSearch) {
+        setAllCases([...allCases, ...allCasesRes.cases])
+      } else {
+        setAllCases(allCasesRes.cases)
+      }
       if (isSet) {
         setCurrentCase(allCasesRes?.cases[0])
       }
@@ -378,7 +386,8 @@ const ChatRc = () => {
   //Detecting Enter key Press in textbox
   const onKeyPress = e => {
     const { key } = e
-    if (key === "Enter") {
+    if (key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
       handleSendMessage()
     }
   }
@@ -499,11 +508,22 @@ const ChatRc = () => {
     }
   }
 
+  //Cases infiniteScroll
+  const handleCaseScroll = t => {
+    if (
+      t.clientHeight + t.scrollTop + 1 >= t.scrollHeight &&
+      casePage <= totalPages?.cases
+    ) {
+      setCasePage(casePage + 1)
+    }
+  }
+
   //Resetting page whiule changing Tab
   useEffect(() => {
     setContactPage(1)
     if (activeTab === "3" && contactPage !== 1)
       onGetContacts({ isSearch: true })
+    if (activeTab === "2" && casePage !== 1) ongetAllCases({ isSearch: true })
   }, [activeTab])
 
   //SideEffect for setting isAttachment
@@ -557,6 +577,7 @@ const ChatRc = () => {
     }
   }, [currentChat])
 
+  //SideEffect while contact page changes
   useEffect(() => {
     if (
       activeTab === "3" &&
@@ -570,12 +591,28 @@ const ChatRc = () => {
     }
   }, [contactPage])
 
+  //SideEffect while case page changes
+  useEffect(() => {
+    if (activeTab === "2" && casePage !== 1 && casePage <= totalPages?.cases) {
+      // onGetContacts({ isSearch: false })
+      ongetAllCases({ isSearch: false })
+    }
+    if (activeTab === "3" && casePage === 1) {
+      // onGetContacts({ isSearch: true })
+      ongetAllCases({ isSearch: true })
+    }
+  }, [casePage])
+
   useEffect(() => {
     if (searchText === "") {
-      setContactPage(1)
+      if (activeTab === "3") setContactPage(1)
+      if (activeTab === "2") setCasePage(1)
     }
     if (activeTab === "3") {
       onGetContacts({ isSearch: true })
+    }
+    if (activeTab === "2") {
+      ongetAllCases({ isSet: false, isSearch: true })
     }
   }, [searchText])
 
@@ -590,7 +627,7 @@ const ChatRc = () => {
     ongetCounts()
     onGetContacts({ isSearch: false })
     ongetAllChatRooms()
-    ongetAllCases({ isSet: false })
+    ongetAllCases({ isSet: false, isSearch: false })
     setPageLoader(false)
   }, [])
   return (
@@ -691,17 +728,19 @@ const ChatRc = () => {
                       {/* <UserDropdown /> */}
                     </Link>
                   </div>
-                  <div className="mx-2 mt-2  border-bottom">
-                    <input
-                      className="form-control"
-                      type="text"
-                      id="user-search-text"
-                      placeholder="Search here"
-                      value={searchText}
-                      name="searchText"
-                      onChange={e => setSearchText(e.target.value)}
-                    />
-                  </div>
+                  {activeTab !== "1" && (
+                    <div className="mx-2 mt-2  border-bottom">
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="user-search-text"
+                        placeholder="Search here"
+                        value={searchText}
+                        name="searchText"
+                        onChange={e => setSearchText(e.target.value)}
+                      />
+                    </div>
+                  )}
                   <div className="my-1">
                     <Nav pills justified>
                       {sidebarNavItems.map((navItem, n) => (
@@ -797,7 +836,11 @@ const ChatRc = () => {
                             <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                           </button>
                         </div>
-                        <PerfectScrollbar style={{ height: "300px" }}>
+
+                        <PerfectScrollbar
+                          style={{ height: "300px" }}
+                          onScroll={e => handleCaseScroll(e?.target)}
+                        >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
                               allCases.map((ca, j) => (
@@ -821,7 +864,6 @@ const ChatRc = () => {
                         <div className="my-2">
                           <PerfectScrollbar
                             style={{ height: "300px" }}
-                            containerRef={ref => setContactScroll(ref)}
                             onScroll={e => handleContactScroll(e?.target)}
                           >
                             {contacts &&
@@ -1009,14 +1051,30 @@ const ChatRc = () => {
                                                     }
                                                     text={msg.messageData}
                                                   />
-                                                  <div className="mt-1">
+                                                  <div
+                                                    className="mt-1"
+                                                    style={{
+                                                      whiteSpace: "pre",
+                                                    }}
+                                                  >
                                                     {msg.messageData}
                                                   </div>
                                                 </>
                                               ) : (
-                                                msg.messageData
+                                                <div
+                                                  style={{ whiteSpace: "pre" }}
+                                                >
+                                                  {msg.messageData}
+                                                </div>
+                                                // <div
+                                                //   style={{ whiteSpace: "pre" }}
+                                                //   dangerouslySetInnerHTML={{
+                                                //     __html: msg?.messageData,
+                                                //   }}
+                                                // />
                                               )}
                                             </div>
+
                                             <p className="chat-time mb-0">
                                               <i className="bx bx-comment-check align-middle me-1" />
                                               {/* <i className="bx bx-time-five align-middle me-1" /> */}

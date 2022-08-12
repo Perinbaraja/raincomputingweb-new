@@ -19,6 +19,7 @@
 // @import "./rtl/structure-rtl";
 // @import "./rtl/text-rtl";
 
+
 body {
   max-width: 1440px;
   margin: 0 auto;
@@ -447,6 +448,21 @@ span.flatpickr-weekday {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: blue;
+}
+
+/*For perfect scrollbar*/
+// .ps__rail-y {
+//   opacity: 0.6;
+// }
+
+.ps__thumb-y {
+  background-color: #556ee6;
+}
+
+.ps__rail-y:hover>.ps__thumb-y,
+.ps__rail-y:focus>.ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #556ee6;
 }
 
 .chat-card {

@@ -96,6 +96,10 @@ export function ChatProvider({ socket, children }) {
         // console.log("Received message for notifications: ", msgData)
         setNotifications([msgData, ...notifications])
       })
+      socket.off("u_l").once("u_l", async msgData => {
+        // console.log("Received message for notifications: ", msgData)
+        setNotifications([...msgData, ...notifications])
+      })
     }
   }, [socket, handleSendingMessage])
   return (
