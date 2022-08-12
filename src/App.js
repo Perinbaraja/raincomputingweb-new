@@ -1,5 +1,6 @@
 import PropTypes from "prop-types"
 import React from "react"
+import LogRocket from "logrocket"
 
 import { Switch, BrowserRouter as Router, Route } from "react-router-dom"
 import { connect } from "react-redux"
@@ -30,8 +31,23 @@ import { ChatProvider } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ContactsGrid from "pages/Contacts/contacts-grid"
 import LandingGrid from "rainComputing/pages/landing/LandingGrid"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const App = () => {
+  const { currentUser } = useUser()
+  // LogRocket.init("jk2db1/demo", {
+  //   dom: {
+  //     textSanitizer: true,
+  //     inputSanitizer: true,
+  //   },
+  // })
+  // if (currentUser?.userID) {
+  //   LogRocket.identify(currentUser?.userID, {
+  //     name: currentUser?.firstname + " " + currentUser?.lastname,
+  //     email: currentUser?.email,
+  //   })
+  // }
+
   const { socket } = useSocket()
 
   return (

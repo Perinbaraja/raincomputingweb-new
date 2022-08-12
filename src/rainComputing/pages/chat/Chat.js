@@ -259,6 +259,9 @@ const ChatRc = () => {
       }
     } else {
       setAllCases([])
+      setCurrentCase(null)
+      setAllgroups(null)
+      setCurrentChat(null)
       console.log("Rendering ongetAllCases error", allCasesRes)
     }
   }
@@ -333,7 +336,9 @@ const ChatRc = () => {
   //Sending Message
   const handleSendMessage = async () => {
     setLoading(true)
-    if (isAttachment || curMessage) {
+    if (isEmptyOrSpaces()) {
+      console.log("You can't send empty message")
+    } else {
       let attachmentsId = []
       let payLoad = {
         caseId: currentCase?._id,
@@ -377,8 +382,6 @@ const ChatRc = () => {
       setAllFiles([])
       setcurMessage("")
       setIsAttachment(false)
-    } else {
-      console.log("You can't send empty message")
     }
     setLoading(false)
   }
@@ -521,9 +524,9 @@ const ChatRc = () => {
   //Resetting page whiule changing Tab
   useEffect(() => {
     setContactPage(1)
-    if (activeTab === "3" && contactPage !== 1)
-      onGetContacts({ isSearch: true })
-    if (activeTab === "2" && casePage !== 1) ongetAllCases({ isSearch: true })
+    setCasePage(1)
+    if (activeTab === "3") onGetContacts({ isSearch: true })
+    if (activeTab === "2") ongetAllCases({ isSearch: true })
   }, [activeTab])
 
   //SideEffect for setting isAttachment
@@ -612,7 +615,7 @@ const ChatRc = () => {
       onGetContacts({ isSearch: true })
     }
     if (activeTab === "2") {
-      ongetAllCases({ isSet: false, isSearch: true })
+      ongetAllCases({ isSet: true, isSearch: true })
     }
   }, [searchText])
 
@@ -657,25 +660,27 @@ const ChatRc = () => {
             </DynamicModel>
 
             {/* Model for creating subgroup */}
-            <DynamicModel
-              open={subGroupModelOpen}
-              toggle={togglesubGroupModelOpen}
-              modalTitle="Subgroup Setting"
-              modalSubtitle={`You have ${
-                allgroups.filter(a => !a.isParent)?.length || 0
-              } subgroups`}
-              footer={true}
-              size="lg"
-            >
-              <DynamicSuspense>
-                <SubGroups
-                  currentCaseId={currentCase?._id}
-                  caseMembers={currentCase?.caseMembers}
-                  groups={allgroups.filter(a => !a.isParent)}
-                  getSubGroups={onGettingSubgroups}
-                />
-              </DynamicSuspense>
-            </DynamicModel>
+            {allgroups && (
+              <DynamicModel
+                open={subGroupModelOpen}
+                toggle={togglesubGroupModelOpen}
+                modalTitle="Subgroup Setting"
+                modalSubtitle={`You have ${
+                  allgroups.filter(a => !a.isParent)?.length || 0
+                } subgroups`}
+                footer={true}
+                size="lg"
+              >
+                <DynamicSuspense>
+                  <SubGroups
+                    currentCaseId={currentCase?._id}
+                    caseMembers={currentCase?.caseMembers}
+                    groups={allgroups.filter(a => !a.isParent)}
+                    getSubGroups={onGettingSubgroups}
+                  />
+                </DynamicSuspense>
+              </DynamicModel>
+            )}
 
             {/* Modal for Editing Case*/}
             <DynamicSuspense>

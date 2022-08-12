@@ -78,13 +78,15 @@ const UserProfile = props => {
     const file = e.target.files[0]
 
     const res = await convertBase64(file)
-    await profilePicUpdate({ profilePic: res, email: currentUser?.email })
+    const updateRes = await profilePicUpdate({
+      profilePic: res,
+      email: currentUser?.email,
+    })
 
-    if (res.success) {
+    if (updateRes.success) {
       setProfileUpateError("")
-      localStorage.setItem("authUser", JSON.stringify(res))
-
-      // setCurrentUser(res)
+      localStorage.setItem("authUser", JSON.stringify(updateRes))
+      setCurrentUser(updateRes)
       setProfileUpateSuccess("User Profile updated Successfully")
     } else {
       setProfileUpateSuccess("")
@@ -122,12 +124,12 @@ const UserProfile = props => {
             <Col lg="12">
               {updateError && <Alert color="danger">{updateError}</Alert>}
               {updateSuccess && <Alert color="success">{updateSuccess}</Alert>}
-              {/* {profileUpdateError && (
+              {profileUpdateError && (
                 <Alert color="danger">{profileUpdateError}</Alert>
               )}
               {profileUpdateSuccess && (
                 <Alert color="success">{profileUpdateSuccess}</Alert>
-              )} */}
+              )}
 
               <Card>
                 <CardBody>
