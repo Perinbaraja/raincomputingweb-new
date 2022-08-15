@@ -1059,7 +1059,7 @@ const ChatRc = () => {
                                                   <div
                                                     className="mt-1"
                                                     style={{
-                                                      whiteSpace: "pre",
+                                                      whiteSpace: "pre-wrap",
                                                     }}
                                                   >
                                                     {msg.messageData}
@@ -1067,7 +1067,9 @@ const ChatRc = () => {
                                                 </>
                                               ) : (
                                                 <div
-                                                  style={{ whiteSpace: "pre" }}
+                                                  style={{
+                                                    whiteSpace: "pre-wrap",
+                                                  }}
                                                 >
                                                   {msg.messageData}
                                                 </div>
@@ -1175,7 +1177,7 @@ const ChatRc = () => {
                                               style={{ margin: 0 }}
                                             >
                                               <i
-                                                className="mdi mdi-file-image-outline "
+                                                className="mdi mdi-attachment mdi-rotate-315"
                                                 style={{
                                                   color: "#556EE6",
                                                   fontSize: 16,
