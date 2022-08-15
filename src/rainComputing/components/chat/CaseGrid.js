@@ -9,6 +9,7 @@ import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import OnOffSwitch from "../switch/OnOffSwitch"
 import DynamicModel from "../modals/DynamicModal"
 import CaseMembers from "./CaseMembers"
+import CaseFilesGrid from "./CaseFilesGrid"
 
 const CaseGrid = ({
   caseData,
@@ -26,14 +27,15 @@ const CaseGrid = ({
     toggleIt: toggleMembersModelOpen,
   } = useToggle(false)
   const {
-    toggleOpen: toolTipOpen,
-    setToggleOpen: setToolTipOpen,
-    toggleIt: toggleToolTipOpen,
+    toggleOpen: filesModelOpen,
+    setToggleOpen: setFilesModelOpen,
+    toggleIt: toggleFilesModelOpen,
   } = useToggle(false)
-  const AccordionContainer = ({ children }) => (
+  const AccordionContainer = ({ children, handleAccordionClick }) => (
     <Row
-      className="align-items-baseline my-2 text-muted"
+      className="align-items-baseline my-2 text-muted pointer"
       style={{ maxWidth: "100%" }}
+      onClick={() => handleAccordionClick()}
     >
       <Col xs={11}>{children}</Col>
       <Col xs={1} style={{ padding: 0 }}>
@@ -45,6 +47,18 @@ const CaseGrid = ({
   return (
     <>
       <>
+        {/*Case files Model*/}
+        <DynamicModel
+          open={filesModelOpen}
+          toggle={toggleFilesModelOpen}
+          size="xl"
+          modalTitle="Shared Files"
+          isClose={true}
+        >
+          <CaseFilesGrid caseId={caseData?._id} />
+        </DynamicModel>
+
+        {/*Case members Model*/}
         <DynamicModel
           open={membersModelOpen}
           toggle={toggleMembersModelOpen}
@@ -86,12 +100,11 @@ const CaseGrid = ({
         </Row>
 
         <Collapse isOpen={index === active} className="accordion-collapse">
-          <div
-            className="mb-4 pointer"
-            onClick={() => setMembersModelOpen(true)}
-          >
+          <div className="mb-4 pointer">
             <span className="fw-medium font-size-11 ">Case Members</span>
-            <AccordionContainer>
+            <AccordionContainer
+              handleAccordionClick={() => setMembersModelOpen(true)}
+            >
               <div className="members-container">
                 {caseData?.caseMembers.map((member, m) => (
                   <div className="align-self-center me-1" key={m}>
@@ -112,7 +125,7 @@ const CaseGrid = ({
               </div>
             </AccordionContainer>
           </div>
-          <div className="mb-4 pointer">
+          <div className="mb-4 ">
             <span className="fw-medium font-size-11">
               Saved Messages & Files
             </span>
@@ -126,11 +139,11 @@ const CaseGrid = ({
                 Pending Messages <span>(1)</span>
               </span>
             </AccordionContainer> */}
-            {/* <AccordionContainer>
-              <span>
-                Shared Files <span>({caseData?.files?.length})</span>
-              </span>
-            </AccordionContainer> */}
+            <AccordionContainer
+              handleAccordionClick={() => setFilesModelOpen(true)}
+            >
+              <span>Shared Files</span>
+            </AccordionContainer>
           </div>
           {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>
@@ -157,6 +170,7 @@ CaseGrid.propTypes = {
   children: PropTypes.any,
   selected: PropTypes.bool,
   notifyCountforCase: PropTypes.func,
+  handleAccordionClick: PropTypes.func,
 }
 
 export default CaseGrid

@@ -67,13 +67,12 @@ import DeleteModal from "rainComputing/components/modals/DeleteModal"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 import ChatLoader from "rainComputing/components/chat/ChatLoader"
+import EditCase from "rainComputing/components/chat/EditCase"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
 const SubGroups = lazy(() => import("rainComputing/components/chat/SubGroups"))
-
-const EditCase = lazy(() => import("rainComputing/components/chat/EditCase"))
 
 //Chat left sidebar nav items
 const sidebarNavItems = ["Chat", "Case", "Contact"]
@@ -128,16 +127,16 @@ const ChatRc = () => {
   } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
   const [messageBox, setMessageBox] = useState(null)
-  const [pageLoader, setPageLoader] = useState(true)
+  const [pageLoader, setPageLoader] = useState(false)
   const [chatLoader, setChatLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
   const [contacts, setContacts] = useState([])
+  const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
+  const [caseLoading, setCaseLoading] = useState(false)
   const [currentCase, setCurrentCase] = useState(null)
   const [allgroups, setAllgroups] = useState([])
-  // const [currentChat, setCurrentChat] = useState(null)
-  // const [currentSubGroupIndex, setCurrentSubGroupIndex] = useState(0)
   const [receivers, setReceivers] = useState([])
   const [curMessage, setcurMessage] = useState("")
   const [isAttachment, setIsAttachment] = useState(false)
@@ -243,6 +242,7 @@ const ChatRc = () => {
 
   //Getting all the cases
   const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
+    setCaseLoading(true)
     const allCasesRes = await getCasesByUserId({
       userId: currentUser.userID,
       page: isSearch ? 1 : casePage,
@@ -264,6 +264,7 @@ const ChatRc = () => {
       setCurrentChat(null)
       console.log("Rendering ongetAllCases error", allCasesRes)
     }
+    setCaseLoading(false)
   }
   //Fetching user,case,group count
   const ongetCounts = async () => {
@@ -282,6 +283,7 @@ const ChatRc = () => {
 
   //Fetching Contacts
   const onGetContacts = async ({ isSearch = false }) => {
+    setContactsLoading(true)
     const userRes = await getAllUsers({
       userID: currentUser.userID,
       page: isSearch ? 1 : contactPage,
@@ -296,6 +298,7 @@ const ChatRc = () => {
     } else {
       setContacts([])
     }
+    setContactsLoading(false)
   }
 
   //Selecting current case
@@ -375,6 +378,8 @@ const ChatRc = () => {
               aflag: true,
             })
           )
+        } else {
+          setLoading(false)
         }
       }
       payLoad.attachments = attachmentsId
@@ -449,7 +454,7 @@ const ChatRc = () => {
         ? getMemberName(m?.sender)
         : getSenderOneChat(m?.sender)
       const message = m?.messageData
-      const time = moment(m?.createdAt).format("DD-MM-YY hh:mm")
+      const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
       const attachments = m.isAttachment ? m.attachments?.length : "-"
       const tempRow = [sender, message, time, groupName, caseName, attachments]
 
@@ -496,7 +501,7 @@ const ChatRc = () => {
     })
     const docName = `${
       currentCase?.caseName ? currentCase?.caseName : "Private Chat"
-    }-${groupName}-${moment(Date.now()).format("DD-MM-YY hh:mm")}`
+    }-${groupName}-${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     doc.save(docName)
     setChatLoader(false)
   }
@@ -525,8 +530,8 @@ const ChatRc = () => {
   useEffect(() => {
     setContactPage(1)
     setCasePage(1)
-    if (activeTab === "3") onGetContacts({ isSearch: true })
-    if (activeTab === "2") ongetAllCases({ isSearch: true })
+    // if (activeTab === "3") onGetContacts({ isSearch: true })
+    // if (activeTab === "2") ongetAllCases({ isSearch: true })
   }, [activeTab])
 
   //SideEffect for setting isAttachment
@@ -627,11 +632,15 @@ const ChatRc = () => {
       }
       onCreateOneonOneChat()
     }
-    ongetCounts()
-    onGetContacts({ isSearch: false })
-    ongetAllChatRooms()
-    ongetAllCases({ isSet: false, isSearch: false })
-    setPageLoader(false)
+    const handleAllAsyncReq = async () => {
+      setPageLoader(true)
+      await ongetCounts()
+      await onGetContacts({ isSearch: false })
+      await ongetAllChatRooms()
+      await ongetAllCases({ isSet: false, isSearch: false })
+      setPageLoader(false)
+    }
+    handleAllAsyncReq()
   }, [])
   return (
     <div className="page-content">
@@ -683,16 +692,14 @@ const ChatRc = () => {
             )}
 
             {/* Modal for Editing Case*/}
-            <DynamicSuspense>
-              <EditCase
-                open={caseEditModalOpen}
-                setOpen={setCaseEditModalOpen}
-                toggleOpen={toggleCaseEditModal}
-                currentCase={currentCase}
-                getAllCases={ongetAllCases}
-                getSubGroups={onGettingSubgroups}
-              />
-            </DynamicSuspense>
+            <EditCase
+              open={caseEditModalOpen}
+              setOpen={setCaseEditModalOpen}
+              toggleOpen={toggleCaseEditModal}
+              currentCase={currentCase}
+              getAllCases={ongetAllCases}
+              getSubGroups={onGettingSubgroups}
+            />
             {/* Modal for deleting Case*/}
             <DeleteModal
               show={caseDeleteModalOpen}
@@ -814,7 +821,7 @@ const ChatRc = () => {
                                     <div className="font-size-11">
                                       <div>
                                         {moment(chat.updatedAt).format(
-                                          "DD-MM-YY hh:mm"
+                                          "DD-MM-YY HH:mm"
                                         )}
                                       </div>
                                       {getNotificationCount(chat._id) > 0 && (
@@ -841,29 +848,32 @@ const ChatRc = () => {
                             <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                           </button>
                         </div>
-
-                        <PerfectScrollbar
-                          style={{ height: "300px" }}
-                          onScroll={e => handleCaseScroll(e?.target)}
-                        >
-                          <ul className="list-unstyled chat-list ">
-                            {allCases.length > 0 &&
-                              allCases.map((ca, j) => (
-                                <CaseGrid
-                                  caseData={ca}
-                                  index={j}
-                                  key={j}
-                                  active={activeAccordian}
-                                  onAccordionButtonClick={
-                                    handleSettingActiveAccordion
-                                  }
-                                  handleSelectingCase={onSelectingCase}
-                                  selected={currentCase?._id === ca?._id}
-                                  notifyCountforCase={notifyCountforCase}
-                                />
-                              ))}
-                          </ul>
-                        </PerfectScrollbar>
+                        {caseLoading ? (
+                          <ChatLoader />
+                        ) : (
+                          <PerfectScrollbar
+                            style={{ height: "300px" }}
+                            onScroll={e => handleCaseScroll(e?.target)}
+                          >
+                            <ul className="list-unstyled chat-list ">
+                              {allCases.length > 0 &&
+                                allCases.map((ca, j) => (
+                                  <CaseGrid
+                                    caseData={ca}
+                                    index={j}
+                                    key={j}
+                                    active={activeAccordian}
+                                    onAccordionButtonClick={
+                                      handleSettingActiveAccordion
+                                    }
+                                    handleSelectingCase={onSelectingCase}
+                                    selected={currentCase?._id === ca?._id}
+                                    notifyCountforCase={notifyCountforCase}
+                                  />
+                                ))}
+                            </ul>
+                          </PerfectScrollbar>
+                        )}
                       </TabPane>
                       <TabPane tabId="3">
                         <div className="my-2">
@@ -1059,7 +1069,8 @@ const ChatRc = () => {
                                                   <div
                                                     className="mt-1"
                                                     style={{
-                                                      whiteSpace: "pre-wrap",
+                                                      whiteSpace:
+                                                        "break-spaces",
                                                     }}
                                                   >
                                                     {msg.messageData}
@@ -1068,7 +1079,7 @@ const ChatRc = () => {
                                               ) : (
                                                 <div
                                                   style={{
-                                                    whiteSpace: "pre-wrap",
+                                                    whiteSpace: "break-spaces",
                                                   }}
                                                 >
                                                   {msg.messageData}
@@ -1086,7 +1097,7 @@ const ChatRc = () => {
                                               <i className="bx bx-comment-check align-middle me-1" />
                                               {/* <i className="bx bx-time-five align-middle me-1" /> */}
                                               {moment(msg.createdAt).format(
-                                                "DD-MM-YY hh:mm"
+                                                "DD-MM-YY HH:mm"
                                               )}
                                             </p>
                                           </div>
@@ -1118,7 +1129,7 @@ const ChatRc = () => {
                                             <p className="chat-time mb-0">
                                               <i className="bx bx-loader bx-spin  align-middle me-1" />
                                               {moment(msg.createdAt).format(
-                                                "DD-MM-YY hh:mm"
+                                                "DD-MM-YY HH:mm"
                                               )}
                                             </p>
                                           </div>
