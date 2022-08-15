@@ -11,6 +11,7 @@ const DynamicModel = ({
   modalSubtitle,
   children,
   footer = true,
+  isClose = false,
 }) => {
   return (
     <Modal
@@ -26,17 +27,19 @@ const DynamicModel = ({
             {modalTitle}
           </h5>
           <h6 className="text-muted"> {modalSubtitle}</h6>
-          {/* <button
-            onClick={() => {
-              toggle()
-            }}
-            type="button"
-            className="close"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button> */}
+          {isClose && (
+            <button
+              onClick={() => {
+                toggle()
+              }}
+              type="button"
+              className="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          )}
         </div>
       </ModalHeader>
       <ModalBody className="p-3" style={{ backgroundColor: "#fdfdfd" }}>
@@ -61,6 +64,7 @@ DynamicModel.propTypes = {
   open: PropTypes.bool,
   footer: PropTypes.bool,
   toggle: PropTypes.func,
+  isClose: PropTypes.bool,
 }
 
 export default DynamicModel

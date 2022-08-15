@@ -105,6 +105,11 @@ const EditCase = ({
         })
       )
     }
+    return () => {
+      setCaseName("")
+      setCaseId("")
+      setCaseMembers([])
+    }
   }, [currentCase])
 
   return (

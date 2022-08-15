@@ -74,7 +74,8 @@ const createOnevsOneChat = payload =>
 
 const getOnevsOneChat = payload => post(`${BASE_URL}/group/getChat`, payload)
 
-const getFileFromGFS = ({ id }) => get(`${SERVER_URL}/file/${id}`)
+const getFileFromGFS = ({ id }, config) =>
+  get(`${SERVER_URL}/file/${id}`, config)
 const profilePicUpdate = payload =>
   put(`${BASE_URL}/user/profilePicUpdate`, payload)
 
@@ -96,6 +97,7 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
+const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 
 export {
   getAllAttorneys,
@@ -146,4 +148,5 @@ export {
   updateSubgroup,
   updateCase,
   getCounts,
+  getCaseFiles,
 }
