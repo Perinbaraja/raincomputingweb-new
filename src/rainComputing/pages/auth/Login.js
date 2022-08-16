@@ -60,9 +60,9 @@ const RainLogin = props => {
       setLoading(true)
       const res = await userLogin(values)
       if (res.success) {
+        setSocket(res.userID)
         localStorage.setItem("authUser", JSON.stringify(res))
         setCurrentUser(res)
-        setSocket(res.userID)
         props.history.push("/")
       } else {
         setLoginError(res?.msg)

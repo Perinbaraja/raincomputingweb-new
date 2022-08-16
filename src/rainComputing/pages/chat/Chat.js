@@ -156,6 +156,11 @@ const ChatRc = () => {
   //Handle Body Scrolling
   isChatScroll ? disableBodyScroll(document) : enableBodyScroll(document)
 
+  //Scroll to messages bottom on load & message arrives
+  useEffect(() => {
+    if (!isEmpty(messages)) scrollToBottom()
+  }, [messages])
+
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
     if (activeTab !== tab) {
@@ -175,23 +180,6 @@ const ChatRc = () => {
     return notiCount ? true : false
   }
 
-  //Creating New ChatRoom
-  const handleCreateChatRoom = async id => {
-    const payload = {
-      members: [currentUser?.userID, id],
-    }
-    const createdChatRes = await createOnevsOneChat(payload)
-    if (createdChatRes.success) {
-      // toastr.success(`Chat has been created successfully`, "Success")
-      await ongetAllChatRooms()
-      setCurrentChat(createdChatRes.group)
-      setactiveTab("1")
-    } else {
-      // toastr.error(`Failed to create chat`, "Failed!!!")
-      console.log("Failed to create 1vs1 chat ", createdChatRes)
-    }
-  }
-
   //Getting all 1vs1 chats
   const ongetAllChatRooms = async () => {
     const chatRoomsRes = await getOnevsOneChat({ userId: currentUser.userID })
@@ -205,6 +193,25 @@ const ChatRc = () => {
       setChats([])
     }
     setChatLoader(false)
+  }
+
+  //Creating New ChatRoom
+  const handleCreateChatRoom = async id => {
+    setPageLoader(true)
+    const payload = {
+      members: [currentUser?.userID, id],
+    }
+    const createdChatRes = await createOnevsOneChat(payload)
+    if (createdChatRes.success) {
+      // toastr.success(`Chat has been created successfully`, "Success")
+      await ongetAllChatRooms()
+      setCurrentChat(createdChatRes.group)
+      setactiveTab("1")
+    } else {
+      // toastr.error(`Failed to create chat`, "Failed!!!")
+      console.log("Failed to create 1vs1 chat ", createdChatRes)
+    }
+    setPageLoader(false)
   }
 
   //Getting 1vs1 chat name
@@ -543,11 +550,6 @@ const ChatRc = () => {
     }
   }, [allFiles])
 
-  //Scroll to messages bottom on load & message arrives
-  useEffect(() => {
-    if (!isEmpty(messages)) scrollToBottom()
-  }, [messages])
-
   //SideEffect for fetching Subgroups after case selected
   useEffect(() => {
     if (currentCase) {
@@ -568,7 +570,6 @@ const ChatRc = () => {
       )
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
-
         const payload = {
           groupId: currentChat?._id,
           userId: currentUser?.userID,
@@ -635,12 +636,18 @@ const ChatRc = () => {
     const handleAllAsyncReq = async () => {
       setPageLoader(true)
       await ongetCounts()
-      await onGetContacts({ isSearch: false })
       await ongetAllChatRooms()
-      await ongetAllCases({ isSet: false, isSearch: false })
       setPageLoader(false)
+      await onGetContacts({ isSearch: false })
+      await ongetAllCases({ isSet: false, isSearch: false })
     }
     handleAllAsyncReq()
+
+    return () => {
+      setChats([])
+      setCurrentChat(null)
+      setMessages([])
+    }
   }, [])
   return (
     <div className="page-content">
@@ -692,14 +699,16 @@ const ChatRc = () => {
             )}
 
             {/* Modal for Editing Case*/}
-            <EditCase
-              open={caseEditModalOpen}
-              setOpen={setCaseEditModalOpen}
-              toggleOpen={toggleCaseEditModal}
-              currentCase={currentCase}
-              getAllCases={ongetAllCases}
-              getSubGroups={onGettingSubgroups}
-            />
+            {currentCase && (
+              <EditCase
+                open={caseEditModalOpen}
+                setOpen={setCaseEditModalOpen}
+                toggleOpen={toggleCaseEditModal}
+                currentCase={currentCase}
+                getAllCases={ongetAllCases}
+                getSubGroups={onGettingSubgroups}
+              />
+            )}
             {/* Modal for deleting Case*/}
             <DeleteModal
               show={caseDeleteModalOpen}
@@ -877,44 +886,52 @@ const ChatRc = () => {
                       </TabPane>
                       <TabPane tabId="3">
                         <div className="my-2">
-                          <PerfectScrollbar
-                            style={{ height: "300px" }}
-                            onScroll={e => handleContactScroll(e?.target)}
-                          >
-                            {contacts &&
-                              contacts.map((contact, i) => (
-                                <ul key={i} className="list-unstyled chat-list">
-                                  <li>
-                                    <Link
-                                      to="#"
-                                      onClick={() => {
-                                        handleCreateChatRoom(contact._id)
-                                      }}
-                                    >
-                                      <div className="d-flex justify-content-between">
-                                        <div className="align-self-center d-flex align-items-center me-3">
-                                          <img
-                                            src={
-                                              contact?.profilePic
-                                                ? contact?.profilePic
-                                                : profile
-                                            }
-                                            className="avatar-xs rounded-circle"
-                                            alt=""
-                                          />
-                                          <h5 className="font-size-14 mb-0 ms-2">
-                                            {contact.firstname}{" "}
-                                            {contact.lastname}
-                                          </h5>
-                                        </div>
+                          {contactsLoading ? (
+                            <ChatLoader />
+                          ) : (
+                            <PerfectScrollbar
+                              style={{ height: "300px" }}
+                              onScroll={e => handleContactScroll(e?.target)}
+                            >
+                              {contacts &&
+                                contacts.map((contact, i) => (
+                                  <ul
+                                    key={i}
+                                    className="list-unstyled chat-list"
+                                  >
+                                    <li>
+                                      <Link
+                                        to="#"
+                                        onClick={() => {
+                                          setCurrentCase(null)
+                                          handleCreateChatRoom(contact._id)
+                                        }}
+                                      >
+                                        <div className="d-flex justify-content-between">
+                                          <div className="align-self-center d-flex align-items-center me-3">
+                                            <img
+                                              src={
+                                                contact?.profilePic
+                                                  ? contact?.profilePic
+                                                  : profile
+                                              }
+                                              className="avatar-xs rounded-circle"
+                                              alt=""
+                                            />
+                                            <h5 className="font-size-14 mb-0 ms-2">
+                                              {contact.firstname}{" "}
+                                              {contact.lastname}
+                                            </h5>
+                                          </div>
 
-                                        <i className="font-size-24 bx bxl-messenger me-2" />
-                                      </div>
-                                    </Link>
-                                  </li>
-                                </ul>
-                              ))}
-                          </PerfectScrollbar>
+                                          <i className="font-size-24 bx bxl-messenger me-2" />
+                                        </div>
+                                      </Link>
+                                    </li>
+                                  </ul>
+                                ))}
+                            </PerfectScrollbar>
+                          )}
                         </div>
                       </TabPane>
                     </TabContent>

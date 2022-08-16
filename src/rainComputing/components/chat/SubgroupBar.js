@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Col, Row } from "reactstrap"
 import "./style/subgroup-bar.scss"
-import { getSubgroups } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const SubgroupBar = ({
@@ -23,6 +22,7 @@ const SubgroupBar = ({
       color: selectedGroup?._id === sub?._id ? "white" : color,
     }
   }
+
   return (
     <div className="sg-wrapper">
       <Row
