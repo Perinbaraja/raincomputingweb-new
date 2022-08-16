@@ -55,6 +55,7 @@ const ProfileMenu = props => {
               className="rounded-circle header-profile-user"
               src={currentUser.profilePic ? currentUser.profilePic : user1}
               alt="profile pic"
+              style={{ objectFit: "cover" }}
             />
             <span className="d-none d-xl-inline-block ms-2 me-1 fw-bolder font-size-16">
               {currentUser?.firstname + " " + currentUser?.lastname}

@@ -13,6 +13,7 @@ const CaseMembers = ({ members, admins }) => {
         className="avatar-lg  align-self-center rounded-circle "
         src={member?.id?.profilePic ? member?.id?.profilePic : profile}
         alt="members"
+        style={{ objectFit: "cover" }}
       />
       <CardBody className="text-center px-4 text-nowrap ">
         <CardTitle className="mt-0">

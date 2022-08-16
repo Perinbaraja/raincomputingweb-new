@@ -116,6 +116,7 @@ const CaseGrid = ({
                       }
                       className="avatar-xs rounded-circle "
                       alt=""
+                      style={{ objectFit: "cover" }}
                     />
                     {/* <span className="d-flex fw-medium">
                       {members?.id?.firstname}{" "}

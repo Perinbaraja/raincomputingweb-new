@@ -735,6 +735,7 @@ const ChatRc = () => {
                           }
                           className="avatar-sm rounded-circle"
                           alt=""
+                          style={{ objectFit: "cover" }}
                         />
                       </div>
                       <div className="flex-grow-1">
@@ -814,6 +815,7 @@ const ChatRc = () => {
                                         }
                                         className="rounded-circle  avatar-sm  "
                                         alt=""
+                                        style={{ objectFit: "cover" }}
                                       />
                                     </div>
 
@@ -917,6 +919,7 @@ const ChatRc = () => {
                                               }
                                               className="avatar-xs rounded-circle"
                                               alt=""
+                                              style={{ objectFit: "cover" }}
                                             />
                                             <h5 className="font-size-14 mb-0 ms-2">
                                               {contact.firstname}{" "}

@@ -49,23 +49,23 @@ const ProjectsOverview = props => {
           {!isEmpty(projectDetail) && (
             <>
               <Row>
-                <Col lg="8">
+                <Col>
                   <ProjectDetail project={projectDetail} />
                 </Col>
-                <Col lg="4">
+                {/* <Col lg="4">
                   <TeamMembers team={projectDetail.team} />
-                </Col>
+                </Col> */}
               </Row>
               <Row>
-                <Col lg="4">
+                {/* <Col lg="4">
                   <OverviewChart options={options} series={series} />
-                </Col>
-                <Col lg="4">
+                </Col> */}
+                {/* <Col lg="4">
                   <AttachedFiles files={projectDetail.files} />
-                </Col>
-                <Col lg="4">
+                </Col> */}
+                {/* <Col lg="4">
                   <Comments comments={projectDetail.comments} />
-                </Col>
+                </Col> */}
               </Row>
             </>
           )}

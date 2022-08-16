@@ -15,7 +15,7 @@ const ProjectDetail = ({ project }) => {
           <img
             src={project.img ? project.img : attImages[imgIndex].url}
             alt=""
-            className="avatar-md rounded-circle me-4"
+            className="avatar-lg rounded-circle me-4"
           />
           {/* src={user.img ? user.img : attImages[imgIndex].url} */}
           <div className="flex-grow-1 overflow-hidden">
@@ -247,16 +247,16 @@ const ProjectDetail = ({ project }) => {
         </div>
 
         <Row className="task-dates">
-          <Col sm="4" xs="6">
+          {/* <Col sm="4" xs="6">
             <div className="mt-4">
               <h5 className="font-size-14">
                 <i className="bx bx-calendar me-1 text-primary" /> Start Date
               </h5>
               <p className="text-muted mb-0">{project.startDate}</p>
             </div>
-          </Col>
+          </Col> */}
 
-          <Col sm="4" xs="6">
+          {/* <Col sm="4" xs="6">
             <div className="mt-4">
               <h5 className="font-size-14">
                 <i className="bx bx-calendar-check me-1 text-primary" /> Due
@@ -264,7 +264,7 @@ const ProjectDetail = ({ project }) => {
               </h5>
               <p className="text-muted mb-0">{project.dueDate}</p>
             </div>
-          </Col>
+          </Col> */}
         </Row>
       </CardBody>
     </Card>

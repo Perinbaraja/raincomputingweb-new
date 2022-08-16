@@ -149,6 +149,7 @@ const UserProfile = props => {
                             }
                             alt="profile"
                             className="avatar-lg rounded-circle img-thumbnail"
+                            style={{ objectFit: "cover" }}
                           />
                         )}
                         {/* <img
