@@ -99,6 +99,15 @@ const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 
+//Appoinments
+
+const appointmentRequest = payload =>
+  post(`${BASE_URL}/appointment/appointmentrequest`, payload)
+const getAllAppointmentRequestById = payload =>
+  post(`${BASE_URL}/appointment/getAllAppointmentRequestByUserId`, payload)
+
+const appointmentStatusUpdate = payload =>
+  put(`${BASE_URL}/appointment/appointmentStatus`, payload)
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -149,4 +158,7 @@ export {
   updateCase,
   getCounts,
   getCaseFiles,
+  appointmentRequest,
+  getAllAppointmentRequestById,
+  appointmentStatusUpdate,
 }

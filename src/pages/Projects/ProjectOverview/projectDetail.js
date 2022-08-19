@@ -1,253 +1,324 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { map, get, attempt } from "lodash"
-import { Card, CardBody, Col, Row, Label } from "reactstrap"
+import {
+  Card,
+  CardBody,
+  Col,
+  Row,
+  Label,
+  Button,
+  Input,
+  Form,
+  FormGroup,
+  FormFeedback,
+} from "reactstrap"
 import img1 from "../../../assets/images/img1m.png"
-
+import * as Yup from "yup"
+import { useFormik } from "formik"
+import PerfectScrollbar from "react-perfect-scrollbar"
 import { attImages } from "../../../helpers/mockData"
+import ReactTextareaAutosize from "react-textarea-autosize"
+import { appointmentRequest } from "rainComputing/helpers/backend_helper"
+import { useHistory } from "react-router-dom"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 
 const ProjectDetail = ({ project }) => {
+  const history = useHistory()
+  const { currentUser, setCurrentUser } = useUser()
   const imgIndex = Math.floor(Math.random() * 8)
+  const [loading, setLoading] = useState(false)
+  const [allFiles, setAllFiles] = useState([])
+  toastr.options = {
+    progressBar: true,
+    closeButton: true,
+  }
+
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      caseData: "",
+    },
+    validationSchema: Yup.object({
+      caseData: Yup.string().required("Please Enter Your case detail"),
+    }),
+    onSubmit: values => {
+      handleAppointmentRequest({
+        caseData: values.caseData,
+        attorney: "62ea747fcb38a4cf8a42d7d4",
+        User: currentUser.userID,
+        status: "request",
+      })
+    },
+  })
+  const handleAppointmentRequest = async payload => {
+    console.log("req value: ", payload)
+    const res = await appointmentRequest(payload)
+    if (res.success) {
+      toastr.success(`Appointment request send successfully `, "Success")
+      localStorage.setItem("authUser", JSON.stringify(res))
+      setCurrentUser(res)
+      // history.push("/")
+    } else {
+      toastr.error(`you have already send reqest`, "Failed!!!")
+      console.log("Failed to send request", res)
+    }
+  }
+  //Handling File change
+  const handleFileChange = e => {
+    setAllFiles(e.target.files)
+  }
+  const onKeyPress = e => {
+    const { key } = e
+    if (key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
   return (
     <Card>
       <CardBody>
-        <div className="d-flex">
-          <img
-            src={project.img ? project.img : attImages[imgIndex].url}
-            alt=""
-            className="avatar-lg rounded-circle me-4"
-          />
-          {/* src={user.img ? user.img : attImages[imgIndex].url} */}
-          <div className="flex-grow-1 overflow-hidden">
-            <h5 className="text-truncate font-size-16">
-              {project.firstname} {project.lastname}
-            </h5>
-            <p className="text-muted font-size-14">{project.firm}</p>
-            <p className="text-muted font-size-14">{project.type}</p>
+        <PerfectScrollbar style={{ height: "320px" }}>
+          <div className="d-flex">
+            <img
+              src={project.img ? project.img : attImages[imgIndex].url}
+              alt=""
+              className="avatar-lg rounded-circle me-4"
+            />
+            {/* src={user.img ? user.img : attImages[imgIndex].url} */}
+            <div className="flex-grow-1 overflow-hidden">
+              <h5 className="text-truncate font-size-16">
+                {project.firstname} {project.lastname}
+              </h5>
+              <p className="text-muted font-size-14">{project.firm}</p>
+              <p className="text-muted font-size-14">{project.type}</p>
+            </div>
           </div>
-        </div>
 
-        <div>
-          {" "}
-          <h5 className="font-size-16 mt-4">Biography :</h5>
-          <p className="text-muted">{project.bio ? project.bio : null}</p>
-        </div>
-        <div>
-          {" "}
-          <h5 className="font-size-16 mt-4">Education :</h5>
-          <p className="text-muted">
+          <div>
             {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l1 ? project.l1 : null}
-          </p>
-          <p className="text-muted">
+            <h5 className="font-size-16 mt-4">Biography :</h5>
+            <p className="text-muted">{project.bio ? project.bio : null}</p>
+          </div>
+          <div>
             {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project?.l2}
-          </p>
-          <p className="text-muted">
+            <h5 className="font-size-16 mt-4">Education :</h5>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l1 ? project.l1 : null}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project?.l2}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l3}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l4}
+            </p>
+          </div>
+          <div>
+            {""}
+            <h5 className="font-size-16 mt-4">Technical Expertise :</h5>
+            <p className="text-muted mb-1">
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l5}
+            </p>
+            <p className="text-muted mb-1">
+              {/* {" "} */}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l6}
+            </p>
+            <p className="text-muted mb-1">
+              {/* {" "} */}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l7}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l8}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l9}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l10}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l11}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l12}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l13}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l14}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l15}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l16}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l17}
+            </p>
+            <p className="text-muted mb-1">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l18}
+            </p>
+          </div>
+          <div>
             {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l3}
-          </p>
-          <p className="text-muted">
+            <h5 className="font-size-16 mt-4">Legal Experience :</h5>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l19}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project?.l20}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l21}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l22}
+            </p>
+            <p className="text-muted ">
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l23}
+            </p>
+            <p className="text-muted ">
+              {/* {" "} */}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l24}
+            </p>
+            <p className="text-muted ">
+              {/* {" "} */}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l25}
+            </p>
+            <p className="text-muted ">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l26}
+            </p>
+          </div>
+          <div>
             {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l4}
-          </p>
-        </div>
-        <div>
-          {""}
-          <h5 className="font-size-16 mt-4">Technical Expertise :</h5>
-          <p className="text-muted mb-1">
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l5}
-          </p>
-          <p className="text-muted mb-1">
-            {/* {" "} */}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l6}
-          </p>
-          <p className="text-muted mb-1">
-            {/* {" "} */}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l7}
-          </p>
-          <p className="text-muted mb-1">
+            <h5 className="font-size-16 mt-4">Practice Admissions :</h5>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l27}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project?.l28}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l29}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l30}
+            </p>
+            <p className="text-muted ">
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l31}
+            </p>
+            <p className="text-muted ">
+              {/* {" "} */}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l32}
+            </p>
+          </div>
+          <div>
             {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l8}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l9}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l10}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l11}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l12}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l13}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l14}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l15}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l16}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l17}
-          </p>
-          <p className="text-muted mb-1">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l18}
-          </p>
-        </div>
-        <div>
-          {" "}
-          <h5 className="font-size-16 mt-4">Legal Experience :</h5>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l19}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project?.l20}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l21}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l22}
-          </p>
-          <p className="text-muted ">
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l23}
-          </p>
-          <p className="text-muted ">
-            {/* {" "} */}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l24}
-          </p>
-          <p className="text-muted ">
-            {/* {" "} */}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l25}
-          </p>
-          <p className="text-muted ">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l26}
-          </p>
-        </div>
-        <div>
-          {" "}
-          <h5 className="font-size-16 mt-4">Practice Admissions :</h5>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l27}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project?.l28}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l29}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l30}
-          </p>
-          <p className="text-muted ">
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l31}
-          </p>
-          <p className="text-muted ">
-            {/* {" "} */}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l32}
-          </p>
-        </div>
-        <div>
-          {" "}
-          <h5 className="font-size-16 mt-4">Recognition :</h5>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l33}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project?.l34}
-          </p>
-          <p className="text-muted">
-            {" "}
-            <i className="mdi mdi-chevron-right text-primary me-1" />
-            {project.l35}
-          </p>
-        </div>
+            <h5 className="font-size-16 mt-4">Recognition :</h5>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l33}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project?.l34}
+            </p>
+            <p className="text-muted">
+              {" "}
+              <i className="mdi mdi-chevron-right text-primary me-1" />
+              {project.l35}
+            </p>
+          </div>
 
-        <h5 className="font-size-16 mt-4">Attorney Address :</h5>
-        <p> </p>
-        <p className="text-muted ">
-          {project.address1}, {project.address2}{" "}
-        </p>
-        <p className="text-muted ">{project.city}</p>
-        <p className="text-muted ">{project.country}</p>
-        <p className="text-muted ">{project.phone}</p>
+          <h5 className="font-size-16 mt-4">Attorney Address :</h5>
+          <p> </p>
+          <p className="text-muted ">
+            {project.address1}, {project.address2}{" "}
+          </p>
+          <p className="text-muted ">{project.city}</p>
+          <p className="text-muted ">{project.country}</p>
+          <p className="text-muted ">{project.phone}</p>
 
-        {/* {get(project, "projectDetails.description")} */}
+          {/* {get(project, "projectDetails.description")} */}
 
-        <div className="text-muted mt-4">
-          {project.projectDetails &&
-            map(project.projectDetails.points, (point, index) => (
-              <p key={index}>
-                <i className="mdi mdi-chevron-right text-primary me-1" />{" "}
-                {point}
-              </p>
-            ))}
-        </div>
+          <div className="text-muted mt-4">
+            {project.projectDetails &&
+              map(project.projectDetails.points, (point, index) => (
+                <p key={index}>
+                  <i className="mdi mdi-chevron-right text-primary me-1" />{" "}
+                  {point}
+                </p>
+              ))}
+          </div>
 
-        <Row className="task-dates">
-          {/* <Col sm="4" xs="6">
+          <Row className="task-dates">
+            {/* <Col sm="4" xs="6">
             <div className="mt-4">
               <h5 className="font-size-14">
                 <i className="bx bx-calendar me-1 text-primary" /> Start Date
@@ -256,7 +327,7 @@ const ProjectDetail = ({ project }) => {
             </div>
           </Col> */}
 
-          {/* <Col sm="4" xs="6">
+            {/* <Col sm="4" xs="6">
             <div className="mt-4">
               <h5 className="font-size-14">
                 <i className="bx bx-calendar-check me-1 text-primary" /> Due
@@ -265,8 +336,116 @@ const ProjectDetail = ({ project }) => {
               <p className="text-muted mb-0">{project.dueDate}</p>
             </div>
           </Col> */}
-        </Row>
+          </Row>
+        </PerfectScrollbar>
       </CardBody>
+      <Form
+        className="needs-validation"
+        onSubmit={e => {
+          e.preventDefault()
+          console.log("values")
+          validation.handleSubmit()
+        }}
+      >
+        <div className="p-2 chat-input-section pt-2">
+          <Row>
+            <Col>
+              <FormGroup className="mb-3">
+                <div className="position-relative">
+                  <ReactTextareaAutosize
+                    type="text"
+                    onKeyPress={onKeyPress}
+                    name="caseData"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.caseData || ""}
+                    invalid={
+                      validation.touched.caseData && validation.errors.caseData
+                        ? true
+                        : false
+                    }
+                    style={{
+                      resize: "none",
+                    }}
+                    minRows={5}
+                    className="form-control "
+                    placeholder="Enter case details..."
+                  />
+                  {validation.touched.caseData && validation.errors.caseData ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.caseData}
+                    </FormFeedback>
+                  ) : null}
+                  <div className="chat-input-links">
+                    <ul className="list-inline mb-0">
+                      <li className="list-inline-item">
+                        <div>
+                          <Input
+                            type="file"
+                            name="file"
+                            multiple={true}
+                            id="hidden-file"
+                            className="d-none"
+                            accept=".png, .jpg, .jpeg,.pdf"
+                            onChange={e => {
+                              handleFileChange(e)
+                            }}
+                          />
+
+                          <Label htmlFor="hidden-file" style={{ margin: 0 }}>
+                            <i
+                              className="mdi mdi-attachment mdi-rotate-315 mdi-24px"
+                              style={{
+                                color: "#556EE6",
+                                fontSize: 16,
+                              }}
+                            />
+                          </Label>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </FormGroup>
+              {Array.from(allFiles)?.length > 0 && (
+                <div className="d-flex gap-2 flex-wrap mt-2 ">
+                  {Array.from(allFiles)?.map((att, a) => (
+                    <span
+                      className="badge badge-soft-primary font-size-13"
+                      key={a}
+                    >
+                      {att.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </Col>
+            <Col className="col-auto">
+              {loading ? (
+                <Button
+                  type="submit"
+                  className="btn btn-primary btn-rounded chat-send w-md  "
+                  color="primary"
+                  style={{ cursor: "not-allowed" }}
+                >
+                  <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  color="primary"
+                  className="btn btn-primary chat-send w-md "
+                >
+                  <span className="d-none d-sm-inline-block me-4">
+                    Submit for Appointment
+                  </span>
+                  <i className="mdi mdi-send-clock" />
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </div>
+      </Form>
     </Card>
   )
 }

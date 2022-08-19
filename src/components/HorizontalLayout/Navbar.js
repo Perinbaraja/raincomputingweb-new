@@ -9,27 +9,10 @@ import { withTranslation } from "react-i18next"
 
 import { connect } from "react-redux"
 
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+
 const Navbar = props => {
-  const [dashboard, setdashboard] = useState(false)
-  const [ui, setui] = useState(false)
-  const [app, setapp] = useState(false)
-  const [email, setemail] = useState(false)
-  const [ecommerce, setecommerce] = useState(false)
-  const [crypto, setcrypto] = useState(false)
-  const [project, setproject] = useState(false)
-  const [task, settask] = useState(false)
-  const [contact, setcontact] = useState(false)
-  const [blog, setBlog] = useState(false)
-  const [component, setcomponent] = useState(false)
-  const [form, setform] = useState(false)
-  const [table, settable] = useState(false)
-  const [chart, setchart] = useState(false)
-  const [icon, seticon] = useState(false)
-  const [map, setmap] = useState(false)
-  const [extra, setextra] = useState(false)
-  const [invoice, setinvoice] = useState(false)
-  const [auth, setauth] = useState(false)
-  const [utility, setutility] = useState(false)
+  const { currentAttorney } = useUser()
 
   useEffect(() => {
     var matchingMenuItem = null
@@ -101,6 +84,17 @@ const Navbar = props => {
                     {props.t("Chat")} {props.menuOpen}
                   </Link>
                 </li>
+                {currentAttorney && currentAttorney?.status === "approved" && (
+                  <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/req-user"
+                    >
+                      <i className="bx bx-git-pull-request me-2"></i>
+                      {props.t("Requests")} {props.menuOpen}
+                    </Link>
+                  </li>
+                )}
               </ul>
             </Collapse>
           </nav>

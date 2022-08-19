@@ -81,6 +81,8 @@ import Admin from "rainComputing/pages/admin/Admin"
 import usersList from "rainComputing/pages/admin/usersList"
 import attorneysList from "rainComputing/pages/admin/attorneysList"
 
+import RequestUser from "rainComputing/pages/user/AppointmentLanding/ReqUser"
+
 const authProtectedRoutes = [
   //Crypto
 
@@ -107,9 +109,11 @@ const authProtectedRoutes = [
   { path: "/firmcreate", component: FirmCreate },
   { path: "/firmlanding", component: FirmLanding },
   { path: "/reqattorney", component: AttorneyLanding },
+
   { path: "/attorneydetail", component: AttorneyDetails },
   { path: "/firminfo", component: FirmInfo },
   { path: "/chat-rc", component: ChatRc },
+  { path: "/req-user", component: RequestUser },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

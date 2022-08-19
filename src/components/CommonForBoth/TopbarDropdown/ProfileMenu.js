@@ -97,6 +97,22 @@ const ProfileMenu = props => {
               </Link>
             )}
 
+            {!currentUser?.appointmentStatus && (
+              <DropdownItem tag="a" href="/appointmentstatus">
+                <i className="bx bx-group font-size-16 align-middle me-1" />
+                {props.t("Appointment status")}
+                {currentUser?.appointmentStatus === "requested" && (
+                  <i className="bx bx-loader  bx-spin font-size-16 align-middle ms-2  text-primary float-end" />
+                )}
+                {currentUser?.appointmentStatus === "approved" && (
+                  <i className="bx bx-comment-error  font-size-16 align-middle ms-2 text-success  float-end" />
+                )}
+                {currentUser?.appointmentStatus === "rejected" && (
+                  <i className="bx bx-x  font-size-16 align-middle ms-2 text-danger float-end" />
+                )}
+              </DropdownItem>
+            )}
+
             {/* <DropdownItem tag="a" href="#">
               <span className="badge bg-success float-end"></span>
               <i className="bx bx-wrench font-size-16 align-middle me-1" />

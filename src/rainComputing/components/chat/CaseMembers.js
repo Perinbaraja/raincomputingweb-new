@@ -25,7 +25,7 @@ const CaseMembers = ({ members, admins }) => {
           Added by{" "}
           {member?.addedBy?._id === currentUser?.userID
             ? "You"
-            : member?.addedBy?.firstname + member?.addedBy?.lastname}
+            : member?.addedBy?.firstname + " " + member?.addedBy?.lastname}
         </CardText>
       </CardBody>
     </Card>
