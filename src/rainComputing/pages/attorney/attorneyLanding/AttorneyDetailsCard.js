@@ -22,7 +22,7 @@ import { useFormik } from "formik"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { regAttorneyDetails } from "rainComputing/helpers/backend_helper"
 
-const AttorneyDetails = () => {
+const AttorneyDetailsCard = () => {
   const { currentUser, setCurrentUser } = useUser()
   const [attorneyDetail, setAttorneyDetail] = useState({})
   const { currentAttorney } = useUser()
@@ -233,4 +233,4 @@ const AttorneyDetails = () => {
 // AttorneyDetails.propTypes = {
 //   currentAttorney: PropTypes.object,
 // }
-export default AttorneyDetails
+export default AttorneyDetailsCard

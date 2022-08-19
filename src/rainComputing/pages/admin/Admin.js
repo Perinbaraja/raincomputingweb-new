@@ -230,6 +230,7 @@ const Admin = () => {
               <Col xl="12">
               <Row>
               <h5>Requested Attorneys List :</h5>
+              {allReqAttorney && allReqAttorney.length > 0 ? (
               <Card>
                 <CardBody>
                   <Form>
@@ -292,6 +293,9 @@ const Admin = () => {
                   </Form>
                 </CardBody>
               </Card>
+              ):(
+                <p className="text-center">You Don&apos;t have any Request Attorneys</p>
+              )}
               </Row>
             </Col>
         

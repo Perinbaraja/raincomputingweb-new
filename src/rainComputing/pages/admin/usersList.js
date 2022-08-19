@@ -1,144 +1,228 @@
-import React, { useState, useEffect } from "react"
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Form,
-  Table,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap"
+import React, { useEffect, useState } from "react"
+import { Row, Col, Card, CardBody, Button } from "reactstrap"
+import MetaTags from "react-meta-tags"
 import { Link } from "react-router-dom"
+// datatable related plugins
+import BootstrapTable from "react-bootstrap-table-next"
+import paginationFactory, {
+  PaginationProvider,
+  PaginationListStandalone,
+  SizePerPageDropdownStandalone,
+} from "react-bootstrap-table2-paginator"
+import ToolkitProvider, { Search } from "react-bootstrap-table2-toolkit"
 //Import Breadcrumb
-import Breadcrumb from "components/Common/Breadcrumb"
+import Breadcrumbs from "../../../components/Common/Breadcrumb"
+import "../../components/chat/style/datatables.scss"
+import ChatLoader from "../../components/chat/ChatLoader"
 import { allUsersList } from "rainComputing/helpers/backend_helper"
-import { removeUser } from "rainComputing/helpers/backend_helper"
-import DeleteModal from "rainComputing/components/modals/DeleteModal"
-import { useModal } from "rainComputing/helpers/hooks/useModal"
 
-function usersList() {
-  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
-  const [allUsers, setAllUsers] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [action, setAction] = useState(false)
+const UserList = () => {
+  const [loading, setLoading] = useState(false)
+  const [userData, setUserData] = useState([])
+
+  const idFormatter = (cell, row, rowIndex) => {
+    return rowIndex + 1
+  }
+  const firstnameFormatter = (cell, row) => {
+    return row?.firstname
+  }
+  const lastnameFormatter = (cell, row) => {
+    return row?.lastname
+  }
+  const emailFormatter = (cell, row) => {
+    return row?.email
+  }
+  const statusFormatter = (cell, row) => {
+    return (
+      <span className={`label ${row?.aflag ? "text-success" : "text-danger"}`}>
+        {row?.aflag ? "Active" : "DeActive"}
+      </span>
+    )
+  }
+  const detailsFormatter = (cell, row) => {
+    return (
+      <Link to={`/user-Detail?id=${row?._id}`}>
+        <button type="button" className="btn btn-primary">
+          View
+        </button>
+      </Link>
+    )
+  }
+
+  const columns = [
+    {
+      dataField: "_id",
+      text: "S.NO",
+      sort: true,
+      formatter: idFormatter,
+    },
+    {
+      dataField: "firstname",
+      text: "First Name",
+      sort: true,
+      formatter: firstnameFormatter,
+    },
+    {
+      dataField: "lastname",
+      text: "Last Name",
+      sort: true,
+      formatter: lastnameFormatter,
+    },
+    {
+      dataField: "email",
+      text: "Email",
+      sort: true,
+      formatter: emailFormatter,
+    },
+    {
+      dataField: "status",
+      text: "Status",
+      sort: true,
+      formatter: statusFormatter,
+    },
+    {
+      dataField: "details",
+      text: "Details",
+      sort: true,
+      formatter: detailsFormatter,
+    },
+  ]
+
+  const defaultSorted = [
+    {
+      dataField: "_id",
+      order: "asc",
+    },
+  ]
+
+  const pageOptions = {
+    sizePerPage: 5,
+    totalSize: userData.length, // replace later with size(customers),
+    custom: true,
+  }
+
+  // Custom Pagination Toggle
+  const sizePerPageList = [
+    { text: "5", value: 5 },
+    { text: "10", value: 10 },
+    { text: "15", value: 15 },
+    { text: "20", value: 20 },
+    { text: "25", value: 25 },
+    { text: "All", value: userData.length },
+  ]
+
+  const { SearchBar } = Search
 
   const getAllUsers = async () => {
+    setLoading(true)
     const res = await allUsersList({})
-    // console.log("res" ,res);
+    console.log("res", res)
     if (res.success) {
-      setAllUsers(res.users)
+      setUserData(res.users)
     }
+    setLoading(false)
   }
-  const handleRemovingUser = async () => {
-    const payload = {
-      userID: [selectedUser?._id],
-    }
-    const res = await removeUser(payload)
-    if (res.success) {
-      console.log(res)
-      await getAllUsers()
-    } else {
-      console.log("Error : ", res?.msg || "error")
-    }
-    setModalOpen(false)
-  }
+
   useEffect(() => {
     getAllUsers()
   }, [])
+
   return (
     <React.Fragment>
-      <DeleteModal
-        show={modalOpen}
-        onDeleteClick={handleRemovingUser}
-        confirmText="Yes,Remove"
-        cancelText="Cancel"
-        onCloseClick={toggleModal}
-      />
       <div className="page-content">
-        <Container fluid>
-          <Link to="/admin-page">
-            <Breadcrumb title="Rain" breadcrumbItem=" Users List" />
-          </Link>
-          <Card>
-            <CardBody>
-              <Form>
-                <Row>
-                  <Col>
-                    <div className="table-responsive">
-                      <Table className="table table-striped mb-0">
-                        <thead>
-                          <tr>
-                            <th scope="col">S No</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
-                            <th scope="col">Email</th>
+        <MetaTags>
+          <title>User List | Rain - Admin & Dashboard Template</title>
+        </MetaTags>
+        {loading ? (
+          <ChatLoader />
+        ) : userData && userData.length > 0 ? (
+          <div className="container-fluid">
+            <Link to="/admin-page">
+              <Breadcrumbs title="Admin" breadcrumbItem="Users List" />
+            </Link>
+            <Row>
+              <Col className="col-12">
+                <Card>
+                  <CardBody>
+                    <PaginationProvider
+                      pagination={paginationFactory(pageOptions)}
+                      keyField="_id"
+                      columns={columns}
+                      data={userData}
+                    >
+                      {({ paginationProps, paginationTableProps }) => (
+                        <ToolkitProvider
+                          keyField="_id"
+                          columns={columns}
+                          data={userData}
+                          search
+                        >
+                          {toolkitProps => (
+                            <React.Fragment>
+                              <Row className="mb-2">
+                                <Col md="4">
+                                  <div className="search-box me-2 mb-2 d-inline-block">
+                                    <div className="position-relative">
+                                      <SearchBar
+                                        {...toolkitProps.searchProps}
+                                      />
+                                      <i className="bx bx-search-alt search-icon" />
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
 
-                            <th scope="col">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {allUsers.map((user, j) => (
-                            <tr key={j}>
-                              <td>{j + 1} </td>
-                              <td>{user.firstname} </td>
-                              <td> {user.lastname}</td>
-                              <td> {user.email}</td>
+                              <Row>
+                                <Col xl="12">
+                                  <div className="table-responsive">
+                                    <BootstrapTable
+                                      keyField={"_id"}
+                                      responsive
+                                      bordered={false}
+                                      striped={false}
+                                      defaultSorted={defaultSorted}
+                                      // selectRow={selectRow}
+                                      classes={
+                                        "table align-middle table-nowrap"
+                                      }
+                                      headerWrapperClasses={"thead-light"}
+                                      {...toolkitProps.baseProps}
+                                      {...paginationTableProps}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
 
-                              <td>
-                                {/* <Dropdown
-                                  isOpen={action}
-                                  toggle={() => setAction(!action)}
-                                  className="d-inline-block"
-                                >
-                                  <DropdownToggle 
-                                    className="btn arrow-down"
-                                    id="dropdown"
-                                    tag="span"
-                                  >
-                                    Status
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setSelectedUser(user)
-                                        setModalOpen(true)
-                                      }}
-                                    >
-                                      Enable
-                                    </DropdownItem>
-                                    <DropdownItem >Disable</DropdownItem>
-                                  </DropdownMenu> */}
-
-                                <button
-                                  type="button"
-                                  className="btn btn-primary"
-                                  onClick={() => {
-                                    setSelectedUser(user)
-                                    setModalOpen(true)
-                                  }}
-                                >
-                                  Remove
-                                </button>
-                                {/* </Dropdown> */}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </CardBody>
-          </Card>
-        </Container>
+                              <Row className="align-items-md-center mt-30">
+                                <Col className="inner-custom-pagination d-flex">
+                                  <div className="d-inline">
+                                    <SizePerPageDropdownStandalone
+                                      {...paginationProps}
+                                    />
+                                  </div>
+                                  <div className="text-md-right ms-auto">
+                                    <PaginationListStandalone
+                                      {...paginationProps}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
+                            </React.Fragment>
+                          )}
+                        </ToolkitProvider>
+                      )}
+                    </PaginationProvider>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        ) : (
+          <p className="text-center">You Don&apos;t have any Users</p>
+        )}
       </div>
     </React.Fragment>
   )
 }
 
-export default usersList
+export default UserList

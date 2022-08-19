@@ -77,7 +77,7 @@ const Header = props => {
           <div className="d-flex">
             <LanguageDropdown />
             <div className="dropdown d-none d-lg-inline-block ms-1"></div>
-            <div className="mt-3">
+            <div className="mt-4">
               <Link
                 to="/"
                 className="dropdown-item"

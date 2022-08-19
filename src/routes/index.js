@@ -69,7 +69,7 @@ import AttorneyRegister from "rainComputing/pages/user/AttorneyRegister"
 import FirmLanding from "rainComputing/pages/attorney/FirmLanding"
 import FirmCreate from "rainComputing/pages/user/FirmCreate"
 import AttorneyLanding from "rainComputing/pages/attorney/AttorneyLanding"
-import AttorneyDetails from "rainComputing/pages/attorney/attorneyLanding/AttorneyDetailsCard"
+import AttorneyDetailsCard from "rainComputing/pages/attorney/attorneyLanding/AttorneyDetailsCard"
 import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
 import ForgetPwd from "rainComputing/pages/auth/forgetPassword"
 import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
@@ -80,6 +80,8 @@ import AdminLogin from "rainComputing/pages/admin/adminLogin/login"
 import Admin from "rainComputing/pages/admin/Admin"
 import usersList from "rainComputing/pages/admin/usersList"
 import attorneysList from "rainComputing/pages/admin/attorneysList"
+import UserDetails from "rainComputing/pages/admin/UserDetails"
+import AttorneyDetails from "rainComputing/pages/admin/AttorneyDetails"
 
 import RequestUser from "rainComputing/pages/user/AppointmentLanding/ReqUser"
 
@@ -111,6 +113,7 @@ const authProtectedRoutes = [
   { path: "/reqattorney", component: AttorneyLanding },
 
   { path: "/attorneydetail", component: AttorneyDetails },
+  { path: "/attorneydetail", component: AttorneyDetailsCard},
   { path: "/firminfo", component: FirmInfo },
   { path: "/chat-rc", component: ChatRc },
   { path: "/req-user", component: RequestUser },
@@ -154,5 +157,7 @@ const adminRoutes = [
   { path: "/admin-page", component: Admin },
   { path: "/userlist-page", component: usersList },
   { path: "/attorneylist-page", component: attorneysList },
+  { path: "/user-Detail", component: UserDetails },
+  { path: "/attorney-Detail", component: AttorneyDetails },
 ]
 export { authProtectedRoutes, publicRoutes, adminRoutes }
