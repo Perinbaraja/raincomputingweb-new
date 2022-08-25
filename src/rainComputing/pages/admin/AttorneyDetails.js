@@ -10,118 +10,91 @@ import DeleteModal from "rainComputing/components/modals/DeleteModal"
 import { useModal } from "rainComputing/helpers/hooks/useModal"
 
 const AttorneyDetails = () => {
-
-    const [modalOpen, setModalOpen, toggleModal] = useModal(false)
+  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
 
   return (
     <React.Fragment>
-         <DeleteModal
-          show={modalOpen}
+      <DeleteModal
+        show={modalOpen}
         //   onDeleteClick={handleRemovingUser}
-          confirmText="Yes,DeActive"
-          cancelText="Cancel"
-          onCloseClick={toggleModal}
-        />
+        confirmText="Yes,DeActive"
+        cancelText="Cancel"
+        onCloseClick={toggleModal}
+      />
       <div className="page-content">
         <MetaTags>
           <title>Attorney Deatails | Rain - Admin & Dashboard Template</title>
         </MetaTags>
         <Container fluid>
-          <Link to = "/attorneylist-page">
-          <Breadcrumb title="Rain" breadcrumbItem="Attorney Details" />
+          <Link to="/attorneylist-page">
+            <Breadcrumb title="Rain" breadcrumbItem="Attorney Details" />
           </Link>
           <Row>
             <Col lg="12">
               <Card>
                 <CardBody>
                   <Row>
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-5 col-lg-2 col-form-label"
-                    >
+                    <label className="col-md-5 col-lg-2 col-form-label">
                       Attorney Name
                     </label>
-                    <div className="col-md-5">
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="example-text-input"
-                        placeholder="User Name"
-                        value={""}
-                        name="userName"
-                        // onChange={e => setCaseName(e.target.value)}
-                      />
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder"></label>
                     </div>
                   </Row>
                   <Row className="my-md-3">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-5 col-lg-2 col-form-label"
-                    >
+                    <label className="col-md-5 col-lg-2 col-form-label">
                       Bar Number
                     </label>
-                    <div className="col-md-5">
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="example-text-input"
-                        placeholder="Bar Number"
-                        value={""}
-                        name="barNumber"
-                        // onChange={e => setCaseName(e.target.value)}
-                      />
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder text-primary"></label>
                     </div>
                   </Row>
                   <Row className="my-md-3">
-                    <label
-                      htmlFor="email"
-                      className="col-md-5 col-lg-2 col-form-label"
-                    >
+                    <label className="col-md-5 col-lg-2 col-form-label">
                       Email
                     </label>
-                    <div className="col-md-5">
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="email"
-                        placeholder="xxx@rain.com"
-                        value={""}
-                        // onChange={e => setCaseId(e.target.value)}
-                      />
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder"></label>
                     </div>
                   </Row>
                   <Row>
-                    <span className="text-muted">Bio</span>
-                    <div className="d-flex flex-wrap gap-2 my-2"></div>
+                    <label className="col-md-5 col-lg-2 col-form-label">
+                      Bio
+                    </label>
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder"></label>
+                    </div>
                   </Row>
-                  <Row>
-                  <div className="d-flex flex-wrap gap-5 my-4">
-                    <span className="text-muted">Number Of Cases</span>
-                    {/* <i className="mdi mdi-download text-primary mdi-24px" /> */}
+                  <Row className="my-md-3">
+                    <label className="col-md-5 col-lg-2 col-form-label">
+                      Number Of Cases
+                    </label>
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder"></label>
                     </div>
                   </Row>
                   <Row>
                     <div className="modal-footer">
-                      <Link to ="/attorneylist-page">
-                      <button
-                        type="button"
-                        // onClick={() => {
-                        //   handleClose()
-                        // }}
-                        className="btn btn-primary "
-                        data-dismiss="modal"
-                      >
-                        Close
-                      </button>
+                      <Link to="/attorneylist-page">
+                        <button
+                          type="button"
+                          // onClick={() => {
+                          //   handleClose()
+                          // }}
+                          className="btn btn-primary "
+                          data-dismiss="modal"
+                        >
+                          Close
+                        </button>
                       </Link>
 
                       <button
                         type="button"
                         className="btn btn-danger"
                         onClick={() => {
-                            // setSelectedUser(user)
-                            setModalOpen(true)
-                          }}
+                          // setSelectedUser(user)
+                          setModalOpen(true)
+                        }}
                       >
                         DeActivate
                       </button>

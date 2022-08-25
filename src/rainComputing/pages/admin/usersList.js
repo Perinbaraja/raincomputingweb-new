@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, Button } from "reactstrap"
 import MetaTags from "react-meta-tags"
 import { Link } from "react-router-dom"
+import PropTypes from "prop-types"
 // datatable related plugins
 import BootstrapTable from "react-bootstrap-table-next"
 import paginationFactory, {
@@ -16,7 +17,7 @@ import "../../components/chat/style/datatables.scss"
 import ChatLoader from "../../components/chat/ChatLoader"
 import { allUsersList } from "rainComputing/helpers/backend_helper"
 
-const UserList = () => {
+const UserList = (userId) => {
   const [loading, setLoading] = useState(false)
   const [userData, setUserData] = useState([])
 
@@ -41,7 +42,7 @@ const UserList = () => {
   }
   const detailsFormatter = (cell, row) => {
     return (
-      <Link to={`/user-Detail?id=${row?._id}`}>
+      <Link to={`/user-Detail?id=${userId}`}>
         <button type="button" className="btn btn-primary">
           View
         </button>
@@ -116,7 +117,7 @@ const UserList = () => {
   const getAllUsers = async () => {
     setLoading(true)
     const res = await allUsersList({})
-    console.log("res", res)
+    // console.log("res", res)
     if (res.success) {
       setUserData(res.users)
     }
@@ -126,7 +127,7 @@ const UserList = () => {
   useEffect(() => {
     getAllUsers()
   }, [])
-
+  
   return (
     <React.Fragment>
       <div className="page-content">
@@ -225,4 +226,7 @@ const UserList = () => {
   )
 }
 
+UserList.propTypes = {
+  userId: PropTypes.string,
+}
 export default UserList

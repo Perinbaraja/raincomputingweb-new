@@ -24,6 +24,9 @@ import {
   Row,
   TabContent,
   TabPane,
+  Form,
+  FormGroup,
+  InputGroup,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
@@ -146,6 +149,9 @@ const ChatRc = () => {
   const [totalPages, setTotalPages] = useState(initialPageCount)
   const [contactPage, setContactPage] = useState(1)
   const [casePage, setCasePage] = useState(1)
+  const [search_Menu, setsearch_Menu] = useState(false)
+  const [searchMessageText, setSearchMessagesText] = useState("")
+  const [searchedMessages, setSearchedMessages] = useState([])
 
   //Toaster settings
   toastr.options = {
@@ -166,6 +172,11 @@ const ChatRc = () => {
     if (activeTab !== tab) {
       setactiveTab(tab)
     }
+  }
+
+  //Toggle Chat Box Menus
+  const toggleSearch = () => {
+    setsearch_Menu(!search_Menu)
   }
 
   //Getting Notofication Count
@@ -290,22 +301,28 @@ const ChatRc = () => {
 
   //Fetching Contacts
   const onGetContacts = async ({ isSearch = false }) => {
-    setContactsLoading(true)
-    const userRes = await getAllUsers({
-      userID: currentUser.userID,
-      page: isSearch ? 1 : contactPage,
-      searchText,
-    })
-    if (userRes.success) {
-      if (!isSearch) {
-        setContacts([...contacts, ...userRes.users])
-      } else {
-        setContacts(userRes?.users)
-      }
-    } else {
+    if(searchText===""){
       setContacts([])
     }
-    setContactsLoading(false)
+    else{
+      setContactsLoading(true)
+      const userRes = await getAllUsers({
+        userID: currentUser.userID,
+        page: isSearch ? 1 : contactPage,
+        searchText,
+      })
+      if (userRes.success) {
+        if (!isSearch) {
+          setContacts([...contacts, ...userRes.users])
+        } else {
+          setContacts(userRes?.users)
+        }
+      } else {
+        setContacts([])
+      }
+      setContactsLoading(false)
+    }
+    
   }
 
   //Selecting current case
@@ -533,6 +550,36 @@ const ChatRc = () => {
     }
   }
 
+  //Message search
+  useEffect(() => {
+    if (searchMessageText) {
+      setSearchedMessages(
+        messages?.filter(m =>
+          m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
+        )
+      )
+    } else {
+      setSearchedMessages([])
+    }
+    return () => {
+      setSearchedMessages([])
+    }
+  }, [searchMessageText])
+
+//Text Convert into Link URL
+  const stringFormatter = (txt) => {
+    if (txt.includes('http'||'www')) {
+      const firstIndex = txt.indexOf('http');
+      const linkEnd = txt.indexOf(' ', firstIndex); //find the end of link
+      const firstTextSection = txt.slice(0, firstIndex);
+      const linkSection = txt.slice(firstIndex, linkEnd !== -1 ? linkEnd :txt.length);
+      const secondSection = txt.slice(linkEnd !== -1 ? linkEnd :txt.length);
+      return <p>{firstTextSection} <a href={linkSection}>{linkSection}</a>{secondSection}</p>
+    } else {
+      return <p>{txt}</p>
+    }
+  }
+
   //Resetting page whiule changing Tab
   useEffect(() => {
     setContactPage(1)
@@ -638,7 +685,7 @@ const ChatRc = () => {
       await ongetCounts()
       await ongetAllChatRooms()
       setPageLoader(false)
-      await onGetContacts({ isSearch: false })
+      // await onGetContacts({ isSearch: false })
       await ongetAllCases({ isSet: false, isSearch: false })
     }
     handleAllAsyncReq()
@@ -740,7 +787,7 @@ const ChatRc = () => {
                       </div>
                       <div className="flex-grow-1">
                         <h5 className="font-size-14 mt-0 mb-1">
-                          {currentUser?.firstname + " " + currentUser.lastname}
+                          {currentUser?.firstname + " " + currentUser?.lastname}
                         </h5>
                         <p className="text-muted mb-0">
                           <i className="mdi mdi-circle text-success align-middle me-1" />
@@ -969,6 +1016,56 @@ const ChatRc = () => {
                               </Col>
                               <Col md="8" xs="3">
                                 <ul className="list-inline user-chat-nav text-end mb-0">
+                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                    <Dropdown
+                                      isOpen={search_Menu}
+                                      toggle={toggleSearch}
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i className="bx bx-search-alt-2" />
+                                      </DropdownToggle>
+                                      <DropdownMenu className="dropdown-menu-md">
+                                        {searchMessageText &&
+                                        searchedMessages?.length > 1 ? (
+                                          <span>
+                                            {searchedMessages?.length} results
+                                            found
+                                          </span>
+                                        ) : (
+                                          ""
+                                        )}
+                                        <Form className="p-3">
+                                          <FormGroup className="m-0">
+                                            <InputGroup>
+                                              <Input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Search ..."
+                                                aria-label="Recipient's username"
+                                                value={searchMessageText}
+                                                onChange={e =>
+                                                  setSearchMessagesText(
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                              {/* <InputGroupAddon addonType="append"> */}
+                                              <Button
+                                                color="primary"
+                                                type="submit"
+                                              >
+                                                <i className="mdi mdi-magnify" />
+                                              </Button>
+                                              {/* </InputGroupAddon> */}
+                                            </InputGroup>
+                                          </FormGroup>
+                                        </Form>
+                                      </DropdownMenu>
+                                    </Dropdown>
+                                  </li>
                                   <li className="list-inline-item align-middle">
                                     <Dropdown
                                       isOpen={chatSettingOpen}
@@ -1059,7 +1156,12 @@ const ChatRc = () => {
                                       >
                                         <div
                                           className="conversation-list"
-                                          style={{ maxWidth: "80%" }}
+                                          style={{
+                                            maxWidth: "80%",
+                                            backgroundColor:
+                                              searchedMessages?.includes(msg) &&
+                                              "black",
+                                          }}
                                         >
                                           <div
                                             className="ctext-wrap "
@@ -1093,7 +1195,7 @@ const ChatRc = () => {
                                                         "break-spaces",
                                                     }}
                                                   >
-                                                    {msg.messageData}
+                                                    {stringFormatter(msg.messageData)}
                                                   </div>
                                                 </>
                                               ) : (
@@ -1102,7 +1204,7 @@ const ChatRc = () => {
                                                     whiteSpace: "break-spaces",
                                                   }}
                                                 >
-                                                  {msg.messageData}
+                                                  {stringFormatter(msg.messageData)}
                                                 </div>
                                                 // <div
                                                 //   style={{ whiteSpace: "pre" }}
@@ -1197,8 +1299,7 @@ const ChatRc = () => {
                                               multiple={true}
                                               id="hidden-file"
                                               className="d-none"
-                                              accept=".png, .jpg, .jpeg,.pdf"
-                                              onChange={e => {
+                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx"                                              onChange={e => {
                                                 handleFileChange(e)
                                               }}
                                             />

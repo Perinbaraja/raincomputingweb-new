@@ -11,6 +11,8 @@
     "@fullcalendar/interaction": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
     "@lourenci/react-kanban": "^2.1.0",
+    "@stripe/react-stripe-js": "^1.10.0",
+    "@stripe/stripe-js": "^1.35.0",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

@@ -91,6 +91,7 @@ const allReqAttorneyList = () => get(`${BASE_URL}/admin/allReqAttorneyList`)
 const attorneyStatusUpdate = payload =>
   put(`${BASE_URL}/admin/attorneyStatus`, payload)
 const adminLogout = () => get(`${BASE_URL}/admin/signOut`)
+const getUserById = payload => post(`${BASE_URL}/admin/getUserById`, payload)
 
 const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
@@ -146,6 +147,7 @@ export {
   profilePicUpdate,
   adminLogin,
   adminLogout,
+  getUserById,
   allUsersList,
   allAttorneysList,
   allFirmsList,

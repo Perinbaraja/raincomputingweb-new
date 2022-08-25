@@ -84,6 +84,9 @@ import UserDetails from "rainComputing/pages/admin/UserDetails"
 import AttorneyDetails from "rainComputing/pages/admin/AttorneyDetails"
 
 import RequestUser from "rainComputing/pages/user/AppointmentLanding/ReqUser"
+import Payment from "rainComputing/pages/user/AppointmentLanding/PaymentPage/Payment"
+import PaymentVia from "rainComputing/pages/user/AppointmentLanding/Paymentvia"
+import PaymentStatus from "rainComputing/pages/user/AppointmentLanding/PaymentStatus"
 
 const authProtectedRoutes = [
   //Crypto
@@ -117,6 +120,9 @@ const authProtectedRoutes = [
   { path: "/firminfo", component: FirmInfo },
   { path: "/chat-rc", component: ChatRc },
   { path: "/req-user", component: RequestUser },
+  { path: "/payment-page", component: Payment },
+  { path: "/payment-status", component: PaymentStatus },
+  { path: "/payment-via", component: PaymentVia },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

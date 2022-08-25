@@ -13,6 +13,7 @@ import {
   FormGroup,
   FormFeedback,
 } from "reactstrap"
+import { Link } from "react-router-dom"
 import img1 from "../../../assets/images/img1m.png"
 import * as Yup from "yup"
 import { useFormik } from "formik"
@@ -47,9 +48,9 @@ const ProjectDetail = ({ project }) => {
     onSubmit: values => {
       handleAppointmentRequest({
         caseData: values.caseData,
-        attorney: "62ea747fcb38a4cf8a42d7d4",
+        attorney: "62d2a70586e7821195591d80",
         User: currentUser.userID,
-        status: "request",
+        appointmentstatus: "request",
       })
     },
   })
@@ -60,7 +61,7 @@ const ProjectDetail = ({ project }) => {
       toastr.success(`Appointment request send successfully `, "Success")
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
-      // history.push("/")
+      history.push("/payment-via")
     } else {
       toastr.error(`you have already send reqest`, "Failed!!!")
       console.log("Failed to send request", res)
@@ -81,7 +82,7 @@ const ProjectDetail = ({ project }) => {
   return (
     <Card>
       <CardBody>
-        <PerfectScrollbar style={{ height: "320px" }}>
+        <PerfectScrollbar style={{ height: "400px" }}>
           <div className="d-flex">
             <img
               src={project.img ? project.img : attImages[imgIndex].url}
@@ -339,113 +340,15 @@ const ProjectDetail = ({ project }) => {
           </Row>
         </PerfectScrollbar>
       </CardBody>
-      <Form
-        className="needs-validation"
-        onSubmit={e => {
-          e.preventDefault()
-          console.log("values")
-          validation.handleSubmit()
-        }}
-      >
-        <div className="p-2 chat-input-section pt-2">
-          <Row>
-            <Col>
-              <FormGroup className="mb-3">
-                <div className="position-relative">
-                  <ReactTextareaAutosize
-                    type="text"
-                    onKeyPress={onKeyPress}
-                    name="caseData"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.caseData || ""}
-                    invalid={
-                      validation.touched.caseData && validation.errors.caseData
-                        ? true
-                        : false
-                    }
-                    style={{
-                      resize: "none",
-                    }}
-                    minRows={5}
-                    className="form-control "
-                    placeholder="Enter case details..."
-                  />
-                  {validation.touched.caseData && validation.errors.caseData ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.caseData}
-                    </FormFeedback>
-                  ) : null}
-                  <div className="chat-input-links">
-                    <ul className="list-inline mb-0">
-                      <li className="list-inline-item">
-                        <div>
-                          <Input
-                            type="file"
-                            name="file"
-                            multiple={true}
-                            id="hidden-file"
-                            className="d-none"
-                            accept=".png, .jpg, .jpeg,.pdf"
-                            onChange={e => {
-                              handleFileChange(e)
-                            }}
-                          />
-
-                          <Label htmlFor="hidden-file" style={{ margin: 0 }}>
-                            <i
-                              className="mdi mdi-attachment mdi-rotate-315 mdi-24px"
-                              style={{
-                                color: "#556EE6",
-                                fontSize: 16,
-                              }}
-                            />
-                          </Label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </FormGroup>
-              {Array.from(allFiles)?.length > 0 && (
-                <div className="d-flex gap-2 flex-wrap mt-2 ">
-                  {Array.from(allFiles)?.map((att, a) => (
-                    <span
-                      className="badge badge-soft-primary font-size-13"
-                      key={a}
-                    >
-                      {att.name}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </Col>
-            <Col className="col-auto">
-              {loading ? (
-                <Button
-                  type="submit"
-                  className="btn btn-primary btn-rounded chat-send w-md  "
-                  color="primary"
-                  style={{ cursor: "not-allowed" }}
-                >
-                  <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  color="primary"
-                  className="btn btn-primary chat-send w-md "
-                >
-                  <span className="d-none d-sm-inline-block me-4">
-                    Submit for Appointment
-                  </span>
-                  <i className="mdi mdi-send-clock" />
-                </Button>
-              )}
-            </Col>
-          </Row>
+      <Row>
+        <div className="d-flex justify-content-center ">
+          <Link to="/payment-via">
+            <button type="button" className="btn btn-primary ms-3 w-lg ">
+              Get Appointment
+            </button>
+          </Link>
         </div>
-      </Form>
+      </Row>
     </Card>
   )
 }

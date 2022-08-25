@@ -40,7 +40,7 @@ const RequestUser = () => {
   }
   const handleAppointmentAccept = async ({ id }) => {
     const payload = {
-      status: "approved",
+      appointmentstatus: "approved",
       appointmentID: id,
     }
     const res = await appointmentStatusUpdate(payload)
@@ -55,7 +55,7 @@ const RequestUser = () => {
   }
   const handleAppointmentReject = async ({ id }) => {
     const payload = {
-      status: "reject",
+      appointmentstatus: "reject",
       appointmentID: id,
     }
     const res = await appointmentStatusUpdate(payload)

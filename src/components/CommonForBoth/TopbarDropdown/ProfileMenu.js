@@ -97,7 +97,7 @@ const ProfileMenu = props => {
               </Link>
             )}
 
-            {!currentUser?.appointmentStatus && (
+            {/* {!currentUser?.appointmentStatus && (
               <DropdownItem tag="a" href="/appointmentstatus">
                 <i className="bx bx-group font-size-16 align-middle me-1" />
                 {props.t("Appointment status")}
@@ -111,7 +111,7 @@ const ProfileMenu = props => {
                   <i className="bx bx-x  font-size-16 align-middle ms-2 text-danger float-end" />
                 )}
               </DropdownItem>
-            )}
+            )} */}
 
             {/* <DropdownItem tag="a" href="#">
               <span className="badge bg-success float-end"></span>
