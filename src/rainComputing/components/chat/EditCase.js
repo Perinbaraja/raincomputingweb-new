@@ -72,6 +72,9 @@ const EditCase = ({
 
   useEffect(() => {
     const handleFetchingContacts = async () => {
+      if (searchText === "") {
+        setContacts([])
+      } else {
       const contactRes = await getAllUsers({
         userID: currentUser.userID,
         searchText,
@@ -85,6 +88,7 @@ const EditCase = ({
         )
         setContacts([])
       }
+    }
     }
     handleFetchingContacts()
   }, [searchText])

@@ -69,6 +69,7 @@ const CaseGrid = ({
           <CaseMembers
             members={caseData?.caseMembers}
             admins={caseData?.admins}
+            caseId={caseData?._id}
           />
         </DynamicModel>
       </>

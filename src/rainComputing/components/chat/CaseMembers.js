@@ -1,11 +1,35 @@
-import React from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
-import { Card, CardBody, CardImg, CardText, CardTitle } from "reactstrap"
+import {
+  Card,
+  CardBody,
+  CardImg,
+  CardText,
+  CardTitle,
+  UncontrolledTooltip,
+} from "reactstrap"
 import profile from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import { addAdmin } from "rainComputing/helpers/backend_helper"
+import toastr from "toastr"
 
-const CaseMembers = ({ members, admins }) => {
+const CaseMembers = ({ members, admins, caseId }) => {
   const { currentUser } = useUser()
+
+  toastr.options = {
+    progressBar: true,
+    closeButton: true,
+  }
+
+  const onAddingAdmin = async id => {
+    const payload = {
+      caseId,
+      admin: id,
+    }
+    const res = await addAdmin(payload)
+    toastr.success(`You has been Added Admin successfully`, "Success")
+    console.log("add admin response : ", res)
+  }
   const MembersCard = ({ member }) => (
     <Card className="pointer member-card ">
       <CardImg
@@ -40,11 +64,18 @@ const CaseMembers = ({ members, admins }) => {
         {members.map((member, m) => (
           <div key={m} className="position-relative " style={{ width: 240 }}>
             <MembersCard member={member} />
-            {/* {admins?.includes(currentUser?.userID) && (
-              <span style={{ position: "absolute", top: 10, right: 10 }}>
-                <i className="bx bx-message-alt-minus bg-danger font-size-16 rounded-circle text-white fw-medium" />
-              </span>
-            )} */}
+            {admins?.includes(currentUser?.userID) &&
+              !admins?.includes(member?.id?._id) && (
+                <span
+                  style={{ position: "absolute", top: 10, right: 10 }}
+                  onClick={() => onAddingAdmin(member?.id?._id)}
+                >
+                  <i className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium " id="Admin" />
+                  <UncontrolledTooltip placement="bottom" target={"Admin"}>
+                    Make a Admin
+                  </UncontrolledTooltip>
+                </span>
+              )}
           </div>
         ))}
         {/* {admins?.includes(currentUser?.userID) && (
@@ -64,6 +95,7 @@ CaseMembers.propTypes = {
   members: PropTypes.array,
   admins: PropTypes.array,
   member: PropTypes.object,
+  caseId: PropTypes.string,
 }
 
 export default CaseMembers

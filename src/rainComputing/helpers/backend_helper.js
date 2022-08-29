@@ -97,6 +97,7 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
+const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 
@@ -152,6 +153,7 @@ export {
   allAttorneysList,
   allFirmsList,
   removeUser,
+  addAdmin,
   removeAttorney,
   allReqAttorneyList,
   attorneyStatusUpdate,

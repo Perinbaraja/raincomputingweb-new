@@ -301,10 +301,9 @@ const ChatRc = () => {
 
   //Fetching Contacts
   const onGetContacts = async ({ isSearch = false }) => {
-    if(searchText===""){
+    if (searchText === "") {
       setContacts([])
-    }
-    else{
+    } else {
       setContactsLoading(true)
       const userRes = await getAllUsers({
         userID: currentUser.userID,
@@ -322,7 +321,6 @@ const ChatRc = () => {
       }
       setContactsLoading(false)
     }
-    
   }
 
   //Selecting current case
@@ -566,15 +564,26 @@ const ChatRc = () => {
     }
   }, [searchMessageText])
 
-//Text Convert into Link URL
-  const stringFormatter = (txt) => {
-    if (txt.includes('http'||'www')) {
-      const firstIndex = txt.indexOf('http');
-      const linkEnd = txt.indexOf(' ', firstIndex); //find the end of link
-      const firstTextSection = txt.slice(0, firstIndex);
-      const linkSection = txt.slice(firstIndex, linkEnd !== -1 ? linkEnd :txt.length);
-      const secondSection = txt.slice(linkEnd !== -1 ? linkEnd :txt.length);
-      return <p>{firstTextSection} <a href={linkSection}>{linkSection}</a>{secondSection}</p>
+  //Text Convert into Link URL
+  const stringFormatter = txt => {
+    if (txt.includes("http" || "www")) {
+      const firstIndex = txt.indexOf("http")
+      const linkEnd = txt.indexOf(" ", firstIndex) //find the end of link
+      const firstTextSection = txt.slice(0, firstIndex)
+      const linkSection = txt.slice(
+        firstIndex,
+        linkEnd !== -1 ? linkEnd : txt.length
+      )
+      const secondSection = txt.slice(linkEnd !== -1 ? linkEnd : txt.length)
+      return (
+        <p>
+          {firstTextSection}{" "}
+          <a href={linkSection} target="_blank" rel="noreferrer">
+            {linkSection}
+          </a>
+          {secondSection}
+        </p>
+      )
     } else {
       return <p>{txt}</p>
     }
@@ -1195,7 +1204,9 @@ const ChatRc = () => {
                                                         "break-spaces",
                                                     }}
                                                   >
-                                                    {stringFormatter(msg.messageData)}
+                                                    {stringFormatter(
+                                                      msg.messageData
+                                                    )}
                                                   </div>
                                                 </>
                                               ) : (
@@ -1204,7 +1215,9 @@ const ChatRc = () => {
                                                     whiteSpace: "break-spaces",
                                                   }}
                                                 >
-                                                  {stringFormatter(msg.messageData)}
+                                                  {stringFormatter(
+                                                    msg.messageData
+                                                  )}
                                                 </div>
                                                 // <div
                                                 //   style={{ whiteSpace: "pre" }}
@@ -1299,7 +1312,8 @@ const ChatRc = () => {
                                               multiple={true}
                                               id="hidden-file"
                                               className="d-none"
-                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx"                                              onChange={e => {
+                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx"
+                                              onChange={e => {
                                                 handleFileChange(e)
                                               }}
                                             />

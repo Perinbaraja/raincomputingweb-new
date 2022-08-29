@@ -43,7 +43,7 @@ const AttachmentViewer = ({ attachments, text }) => {
               ) : (
                 <div className="aligner_item">
                   <i
-                    className="mdi mdi-download text-primary mdi-24px"
+                    className="mdi mdi-file-document-multiple text-success mdi-36px"
                     onClick={() =>
                       handleFileDownload({
                         id: att?.id,
