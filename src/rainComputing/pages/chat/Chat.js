@@ -1312,7 +1312,7 @@ const ChatRc = () => {
                                               multiple={true}
                                               id="hidden-file"
                                               className="d-none"
-                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx"
+                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip"
                                               onChange={e => {
                                                 handleFileChange(e)
                                               }}

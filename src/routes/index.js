@@ -86,7 +86,10 @@ import AttorneyDetails from "rainComputing/pages/admin/AttorneyDetails"
 import RequestUser from "rainComputing/pages/user/AppointmentLanding/ReqUser"
 import Payment from "rainComputing/pages/user/AppointmentLanding/PaymentPage/Payment"
 import PaymentVia from "rainComputing/pages/user/AppointmentLanding/Paymentvia"
-import PaymentStatus from "rainComputing/pages/user/AppointmentLanding/PaymentStatus"
+// import PaymentStatus from "rainComputing/pages/user/AppointmentLanding/PaymentStatus"
+import AppointmentCard from "rainComputing/pages/user/AppointmentLanding/AppointmentStatus"
+import PSwrapper from "rainComputing/pages/user/AppointmentLanding/PSwrapper"
+import PaymentTranaction from "rainComputing/pages/admin/adminLogin/TransactionDetails"
 
 const authProtectedRoutes = [
   //Crypto
@@ -121,8 +124,9 @@ const authProtectedRoutes = [
   { path: "/chat-rc", component: ChatRc },
   { path: "/req-user", component: RequestUser },
   { path: "/payment-page", component: Payment },
-  { path: "/payment-status", component: PaymentStatus },
+  { path: "/payment-status", component: PSwrapper },
   { path: "/payment-via", component: PaymentVia },
+  { path: "/appointment-status", component: AppointmentCard },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
@@ -165,5 +169,6 @@ const adminRoutes = [
   { path: "/attorneylist-page", component: attorneysList },
   { path: "/user-Detail", component: UserDetails },
   { path: "/attorney-Detail", component: AttorneyDetails },
+  { path: "/payment-Detail", component: PaymentTranaction },
 ]
 export { authProtectedRoutes, publicRoutes, adminRoutes }

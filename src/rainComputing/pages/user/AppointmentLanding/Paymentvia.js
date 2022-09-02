@@ -14,6 +14,8 @@ import {
   FormFeedback,
 } from "reactstrap"
 import { useHistory } from "react-router-dom"
+import axios from "axios"
+import { SERVER_URL } from "rainComputing/helpers/configuration"
 import { Link } from "react-router-dom"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
@@ -32,6 +34,7 @@ const PaymentVia = () => {
   const imgIndex = Math.floor(Math.random() * 8)
   const [loading, setLoading] = useState(false)
   const [allFiles, setAllFiles] = useState([])
+  const [isAttachments, setIsAttachments] = useState(false)
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -39,7 +42,14 @@ const PaymentVia = () => {
   const handleCancelClick = () => {
     history.push("/")
   }
-
+  //SideEffect for setting isAttachments
+  useEffect(() => {
+    if (Array.from(allFiles)?.length > 0) {
+      setIsAttachments(true)
+    } else {
+      setIsAttachments(false)
+    }
+  }, [allFiles])
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -51,24 +61,59 @@ const PaymentVia = () => {
     onSubmit: values => {
       handleAppointmentRequest({
         caseData: values.caseData,
-        attorney: "62ec8de74fde4cb410073cc0",
+        attorney: "631202e3879cd1751698643c",
         User: currentUser.userID,
+        isAttachments,
         appointmentstatus: "request",
       })
     },
   })
   const handleAppointmentRequest = async payload => {
-    console.log("req value: ", payload)
-    const res = await appointmentRequest(payload)
-    if (res.success) {
-      toastr.success(`Appointment request send successfully `, "Success")
-      localStorage.setItem("authUser", JSON.stringify(res))
-      setCurrentUser(res)
-      history.push("/payment-page")
-    } else {
-      toastr.error(`you have already send reqest`, "Failed!!!")
-      console.log("Failed to send request", res)
-    }
+    setLoading(true)
+    let attachmentsId = []
+    if (isAttachments) {
+      const formData = new FormData()
+      for (var i = 0; i < allFiles.length; i++) {
+        formData.append("file", allFiles[i])
+      }
+
+      const fileUploadRes = await axios.post(`${SERVER_URL}/upload`, formData, {
+        headers: {
+          "Content-Type": `multipart/form-data`,
+        },
+      })
+      const { data } = fileUploadRes
+      if (data.success) {
+        await data.files?.map(file =>
+          attachmentsId.push({
+            type: file.contentType,
+            size: file.size,
+            id: file.id,
+            name: file.originalname,
+            dbName: file.filename,
+            aflag: true,
+          })
+        )
+      } else {
+        setLoading(false)
+      }
+      }
+      payload.attachments = attachmentsId
+
+      console.log("req value: ", payload)
+      const res = await appointmentRequest(payload)
+      if (res.success) {
+        toastr.success(`Appointment request send successfully `, "Success")
+        localStorage.setItem("authUser", JSON.stringify(res))
+        history.push("/payment-page")
+      } else {
+        toastr.error(`you have already send reqest`, "Failed!!!")
+        console.log("Failed to send request", res)
+      }
+      setAllFiles([])
+      //setCurrentUser(res)
+      setIsAttachments(false)
+    setLoading(false)
   }
   //Handling File change
   const handleFileChange = e => {
@@ -78,7 +123,7 @@ const PaymentVia = () => {
     const { key } = e
     if (key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      handleSendMessage()
+     // handleSendMessage()
     }
   }
   return (
@@ -171,7 +216,7 @@ const PaymentVia = () => {
                                             multiple={true}
                                             id="hidden-file"
                                             className="d-none"
-                                            accept=".png, .jpg, .jpeg,.pdf"
+                                            accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip"
                                             onChange={e => {
                                               handleFileChange(e)
                                             }}

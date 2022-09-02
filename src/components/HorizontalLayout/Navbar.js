@@ -13,6 +13,7 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const Navbar = props => {
   const { currentAttorney } = useUser()
+  const { currentUser } = useUser()
 
   useEffect(() => {
     var matchingMenuItem = null
@@ -95,6 +96,17 @@ const Navbar = props => {
                     </Link>
                   </li>
                 )}
+                 {currentUser && !currentAttorney && (
+                 <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/appointment-status"
+                    >
+                      <i className="mdi mdi-connection me-2"></i>
+                      {props.t("Connection")} {props.menuOpen}
+                    </Link>
+                  </li>
+                   )} 
               </ul>
             </Collapse>
           </nav>

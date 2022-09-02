@@ -22,6 +22,7 @@ import {
   allReqAttorneyList,
   attorneyStatusUpdate,
 } from "rainComputing/helpers/backend_helper"
+import PaymentTranaction from "./adminLogin/TransactionDetails"
 
 const Admin = () => {
   const [allUsers, setAllUsers] = useState([])
@@ -32,7 +33,7 @@ const Admin = () => {
 
   const getReqAttorneys = async () => {
     const res = await allReqAttorneyList({})
-    console.log("res", res)
+    // console.log("res", res)
     if (res.success) {
       setAllReqAttorney(res.reqAttorney)
     }
@@ -46,7 +47,7 @@ const Admin = () => {
     }
     const res = await attorneyStatusUpdate(payload)
     if (res.success) {
-      console.log(res)
+      // console.log(res)
       await getReqAttorneys()
     } else {
       console.log("Error : ", res)
@@ -61,7 +62,7 @@ const Admin = () => {
       }
     const res = await attorneyStatusUpdate(payload)
     if (res.success) {
-      console.log(res)
+      // console.log(res)
       await getReqAttorneys()
     } else {
       console.log("Error : ", res)
@@ -298,88 +299,11 @@ const Admin = () => {
               )}
               </Row>
             </Col>
-        
-
-          {/* <Row>
-            <Col xl="4">
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Admin Control</CardTitle>
-                  <div className="text-center">
-                    <p className="font-16 text-muted mb-2"></p>
-                    <h5>Users</h5>
-                  </div>
-                  <Row className="mt-4">
-                    <Col xs="4">
-                      <div>
-                        <Button color="primary" type="view">
-                          View
-                        </Button>
-                      </div>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
+          <Row>
+            <Col xl="12">
+             <PaymentTranaction/>
             </Col>
-            <Col xl="4">
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Admin Control</CardTitle>
-                  <div className="text-center">
-                    <p className="font-16 text-muted mb-2"></p>
-                    <h5>Attorneys</h5>
-                  </div>
-                  <Row className="mt-4">
-                    <Col xs="4">
-                      <div>
-                        {" "}
-                        <Button color="primary" type="view">
-                          View
-                        </Button>
-                      </div>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
-            </Col>
-
-            <Col xl="4">
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Admin Control</CardTitle>
-                  <div className="text-center">
-                    <p className="font-16 text-muted mb-2"></p>
-                    <h5>Payment</h5>
-                  </div>
-                  <Row className="mt-4">
-                    <Col xs="4">
-                      <div>
-                        {" "}
-                        <Button color="primary" type="view">
-                          View
-                        </Button>
-                      </div>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row> */}
-
-          {/* <Row>
-            <Col lg="12">
-              <Card>
-                <CardBody>
-                  <div className="mb-4 h4 card-title">Latest Transaction</div>
-                  <Row>
-                    <Col xl="12">
-                      <div className="table-responsive"></div>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row> */}
+          </Row>
         </Container>
       </div>
     </React.Fragment>

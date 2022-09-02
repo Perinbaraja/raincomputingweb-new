@@ -9,13 +9,15 @@ import {
   getAllAppointmentRequestById,
   appointmentStatusUpdate,
 } from "rainComputing/helpers/backend_helper"
+import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
+import fileDownload from "js-file-download"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-
+import { Link } from "react-router-dom"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
 
 const RequestUser = () => {
-  const { currentUser } = useUser()
+  const { currentAttorney } = useUser()
   const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [selectedAppointmentReq, setSelectedAppointmentReq] = useState(null)
   toastr.options = {
@@ -23,13 +25,23 @@ const RequestUser = () => {
     closeButton: true,
   }
   const [appointmentReq, setAppointmentReq] = useState([])
+  const handleFileDownload = async ({ id, filename }) => {
+    getFileFromGFS(
+      { id },
+      {
+        responseType: "blob",
+      }
+    ).then(res => {
+      fileDownload(res, filename)
+    })
+  }
 
   useEffect(() => {
     onGetAllAppointmentRequest()
   }, [])
   const onGetAllAppointmentRequest = async () => {
     const RequestRes = await getAllAppointmentRequestById({
-      userID: currentUser.userID,
+      userID: currentAttorney._id,
     })
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
@@ -83,9 +95,11 @@ const RequestUser = () => {
           <title>Request User | Rain - Admin & Dashboard Template</title>
         </MetaTags>
         <Container fluid>
-          {appointmentReq && appointmentReq.length > 0 ? (
-            <>
+          <>
+            <Link to="/">
               <Breadcrumb title="Rain" breadcrumbItem="Request User" />
+            </Link>
+            {appointmentReq && appointmentReq.length > 0 ? (
               <Row>
                 <Col lg="12">
                   {appointmentReq &&
@@ -131,7 +145,25 @@ const RequestUser = () => {
                               </label>
                               <div className="col-md-5">
                                 <label>
-                                  <i className="mdi mdi-download text-primary mdi-24px" />
+                                  {appointment?.isAttachments ? (
+                                    <div className="att_wrapper">
+                                      {appointment?.attachments?.map(
+                                        (att, a) => (
+                                          <div key={a} className="att_item">
+                                            <i
+                                              className="mdi mdi-download text-primary mdi-24px"
+                                              onClick={() =>
+                                                handleFileDownload({
+                                                  id: att?.id,
+                                                  filename: att?.name,
+                                                })
+                                              }
+                                            />
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  ) : null}
                                 </label>
                               </div>
                             </Row>
@@ -172,12 +204,12 @@ const RequestUser = () => {
                     ))}
                 </Col>
               </Row>
-            </>
-          ) : (
-            <p className="text-center">
-              You Don&apos;t have any Appointment Request
-            </p>
-          )}
+            ) : (
+              <p className="text-center">
+                You Don&apos;t have any Appointment Request
+              </p>
+            )}
+          </>
         </Container>
       </div>
     </React.Fragment>

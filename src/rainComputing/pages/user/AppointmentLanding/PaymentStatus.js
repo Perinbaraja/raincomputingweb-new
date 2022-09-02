@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import MetaTags from "react-meta-tags"
 import { Container, Row, Col, Card, CardBody, Button } from "reactstrap"
 import classnames from "classnames"
@@ -9,13 +9,59 @@ import Breadcrumbs from "../../../../components/Common/Breadcrumb"
 //Import images
 import paymentImg from "../../../../assets/images/paymentsuccess.png"
 import { useHistory } from "react-router-dom"
+import { getPaymentId } from "rainComputing/helpers/backend_helper"
+import { useQuery } from "rainComputing/helpers/hooks/useQuery"
+import { useStripe } from "@stripe/react-stripe-js"
 
 const PaymentStatus = () => {
   const history = useHistory()
+  let query = useQuery()
+  const stripe = useStripe();
+  const [message, setMessage] = useState(null)
 
   const handleClick = () => {
-    history.push("/")
+    history.push("/appointment-status")
   }
+   useEffect(() => {
+    if (!stripe) {
+      return;
+    }
+
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret",
+    );
+
+    if (!clientSecret) {
+      return;
+    }
+
+    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      console.log("paymentIntent : ",paymentIntent)
+      switch (paymentIntent.status) {
+        case "succeeded":
+          setMessage("Payment succeeded!");
+          break;
+        case "processing":
+          setMessage("Your payment is processing.");
+          break;
+        case "requires_payment_method":
+          setMessage("Your payment was not successful, please try again.");
+          break;
+        default:
+          setMessage("Something went wrong.");
+          break;
+      }
+    });
+  }, [stripe]);
+
+  useEffect(() => {
+    console.log("Getting payment")
+    const getUserPaymentData = async () => {
+      const res = await getPaymentId({ pi: query.get("payment_intent") })
+      // console.log("Got payment",res)
+    }
+    getUserPaymentData()
+  }, [])
 
   return (
     <React.Fragment>
@@ -41,7 +87,8 @@ const PaymentStatus = () => {
                           Your payment is successful ! Attorney{" "}
                           <p className="text-primary">
                             {"Hsuanyeh Chang, PhD, Esq."}
-                          </p>will Review Your Case and Get Back To You.
+                          </p>
+                          will Review Your Case and Get Back To You.
                         </p>
 
                         <div className="mt-4">
@@ -57,10 +104,17 @@ const PaymentStatus = () => {
                       </Col>
                     </Row>
 
-                    <Row className="justify-content-center mt-5 mb-2">
+                    <Row className="justify-content-center mt-1 mb-2">
                       <Col sm="6" xs="8">
                         <div>
                           <img src={paymentImg} alt="" className="img-fluid" />
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row className="justify-content-center mb-2">
+                      <Col sm="6" xs="8">
+                        <div>
+                          {message && <div id="payment-message">{message}</div>}
                         </div>
                       </Col>
                     </Row>
