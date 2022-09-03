@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
-import {
-  PaymentElement,
-  useStripe,
-  useElements
-} from "@stripe/react-stripe-js";
+import React, { useEffect, useState } from "react"
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { SERVER_URL } from "../../../../helpers/configuration"
 
 export default function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
+  const stripe = useStripe()
+  const elements = useElements()
 
-  const [message, setMessage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   // useEffect(() => {
   //   if (!stripe) {
@@ -45,25 +41,24 @@ export default function CheckoutForm() {
   //   });
   // }, [stripe]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async e => {
+    e.preventDefault()
 
     if (!stripe || !elements) {
       // Stripe.js has not yet loaded.
       // Make sure to disable form submission until Stripe.js has loaded.
-      return;
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        // return_url: "http://localhost:3000/payment-status",
-        return_url: (`${SERVER_URL}/payment-status`),
+        return_url: "https://raincomputing1.azurewebsites.net/payment-status",
       },
-    });
+    })
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
@@ -72,24 +67,28 @@ export default function CheckoutForm() {
     // redirected to the `return_url`.
     // console.log('error :',error)
     if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
+      setMessage(error.message)
     } else {
-      setMessage("An unexpected error occurred.");
+      setMessage("An unexpected error occurred.")
     }
 
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   return (
     <form id="paymentform" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
       <button disabled={isLoading || !stripe || !elements} id="paymentbutton">
         <span id="button-text">
-          {isLoading ? <div className="paymentspinner" id="paymentspinner"></div> : "Pay now $200"}
+          {isLoading ? (
+            <div className="paymentspinner" id="paymentspinner"></div>
+          ) : (
+            "Pay now $200"
+          )}
         </span>
       </button>
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>
-  );
+  )
 }
