@@ -16,43 +16,43 @@ import { useStripe } from "@stripe/react-stripe-js"
 const PaymentStatus = () => {
   const history = useHistory()
   let query = useQuery()
-  const stripe = useStripe();
+  const stripe = useStripe()
   const [message, setMessage] = useState(null)
 
   const handleClick = () => {
     history.push("/appointment-status")
   }
-   useEffect(() => {
+  useEffect(() => {
     if (!stripe) {
-      return;
+      return
     }
 
     const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret",
-    );
+      "payment_intent_client_secret"
+    )
 
     if (!clientSecret) {
-      return;
+      return
     }
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      console.log("paymentIntent : ",paymentIntent)
+      // console.log("paymentIntent : ",paymentIntent)
       switch (paymentIntent.status) {
         case "succeeded":
-          setMessage("Payment succeeded!");
-          break;
+          setMessage("Payment succeeded!")
+          break
         case "processing":
-          setMessage("Your payment is processing.");
-          break;
+          setMessage("Your payment is processing.")
+          break
         case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
+          setMessage("Your payment was not successful, please try again.")
+          break
         default:
-          setMessage("Something went wrong.");
-          break;
+          setMessage("Something went wrong.")
+          break
       }
-    });
-  }, [stripe]);
+    })
+  }, [stripe])
 
   useEffect(() => {
     console.log("Getting payment")
@@ -83,6 +83,9 @@ const PaymentStatus = () => {
                         <h4 className="mt-4 font-weight-semibold">
                           Thank You For Your Payment !
                         </h4>
+                        <h7 className="text-primary">
+                          Transaction ID {query.get("payment_intent")}
+                        </h7>
                         <p className="text-muted mt-3">
                           Your payment is successful ! Attorney{" "}
                           <p className="text-primary">

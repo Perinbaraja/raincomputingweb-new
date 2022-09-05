@@ -43,6 +43,7 @@ const CaseMembers = ({ members, admins, caseId }) => {
         <CardTitle className="mt-0">
           {member?.id?.firstname} {member?.id?.lastname}
         </CardTitle>
+        <CardText className="my-1">{member?.id?.email}</CardText>
         <CardText className="m-0">Rain Computing</CardText>
         <CardText className="">Attorney</CardText>
         <CardText className="text-muted">

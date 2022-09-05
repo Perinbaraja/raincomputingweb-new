@@ -35,6 +35,7 @@ const PaymentVia = () => {
   const [loading, setLoading] = useState(false)
   const [allFiles, setAllFiles] = useState([])
   const [isAttachments, setIsAttachments] = useState(false)
+  const [caseData, setCaseData] = useState("")
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -59,47 +60,57 @@ const PaymentVia = () => {
       caseData: Yup.string().required("Please Enter Your case detail"),
     }),
     onSubmit: values => {
-      handleAppointmentRequest({
-        caseData: values.caseData,
+    },
+  })
+  
+  //Textbox empty or spaces
+  const isEmptyOrSpaces = () => {
+    return caseData === null || caseData.match(/^ *$/) !== null
+  }
+  const handleAppointmentRequest = async () => {
+    setLoading(true)
+    if (isEmptyOrSpaces()) {
+      // console.log("You can't send empty Case Details")
+    } else {
+      let attachmentsId = []
+      let payload = {
+        caseData: caseData,
         attorney: "631202e3879cd1751698643c",
         User: currentUser.userID,
         isAttachments,
         appointmentstatus: "request",
-      })
-    },
-  })
-  const handleAppointmentRequest = async payload => {
-    setLoading(true)
-    let attachmentsId = []
-    if (isAttachments) {
-      const formData = new FormData()
-      for (var i = 0; i < allFiles.length; i++) {
-        formData.append("file", allFiles[i])
       }
-
-      const fileUploadRes = await axios.post(`${SERVER_URL}/upload`, formData, {
-        headers: {
-          "Content-Type": `multipart/form-data`,
-        },
-      })
-      const { data } = fileUploadRes
-      if (data.success) {
-        await data.files?.map(file =>
-          attachmentsId.push({
-            type: file.contentType,
-            size: file.size,
-            id: file.id,
-            name: file.originalname,
-            dbName: file.filename,
-            aflag: true,
-          })
+      if (isAttachments) {
+        const formData = new FormData()
+        for (var i = 0; i < allFiles.length; i++) {
+          formData.append("file", allFiles[i])
+        }
+        const fileUploadRes = await axios.post(
+          `${SERVER_URL}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": `multipart/form-data`,
+            },
+          }
         )
-      } else {
-        setLoading(false)
-      }
+        const { data } = fileUploadRes
+        if (data.success) {
+          await data.files?.map(file =>
+            attachmentsId.push({
+              type: file.contentType,
+              size: file.size,
+              id: file.id,
+              name: file.originalname,
+              dbName: file.filename,
+              aflag: true,
+            })
+          )
+        } else {
+          setLoading(false)
+        }
       }
       payload.attachments = attachmentsId
-
       console.log("req value: ", payload)
       const res = await appointmentRequest(payload)
       if (res.success) {
@@ -111,8 +122,9 @@ const PaymentVia = () => {
         console.log("Failed to send request", res)
       }
       setAllFiles([])
-      //setCurrentUser(res)
+      setCaseData("")
       setIsAttachments(false)
+    }
     setLoading(false)
   }
   //Handling File change
@@ -123,7 +135,7 @@ const PaymentVia = () => {
     const { key } = e
     if (key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-     // handleSendMessage()
+      // handleSendMessage()
     }
   }
   return (
@@ -144,23 +156,26 @@ const PaymentVia = () => {
                     <div>
                       <Row>
                         <label className="fw-bolder col-md-5 col-lg-2 col-form-label">
-                          Attorney 
+                          Attorney
                         </label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
-                          <label className="fw-bolder">{"Hsuanyeh Chang, PhD, Esq."} </label>
+                          <label className="fw-bolder">
+                            {"Hsuanyeh Chang, PhD, Esq."}{" "}
+                          </label>
                         </div>
-                        </Row>
-                        <Row className= "mb-5">
-                        <label className="col-md-5 col-lg-2 col-form-label">
-                        </label>
+                      </Row>
+                      <Row className="mb-5">
+                        <label className="col-md-5 col-lg-2 col-form-label"></label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
-                          <label className="text-muted">{"PATENT ATTORNEY & ATTORNEY AT LAW"} </label>
+                          <label className="text-muted">
+                            {"PATENT ATTORNEY & ATTORNEY AT LAW"}{" "}
+                          </label>
                         </div>
-                        </Row>
-                      
+                      </Row>
+
                       <Row>
                         <label className="fw-bolder col-md-5 col-lg-2 col-form-label">
-                         Consultation Fees
+                          Consultation Fees
                         </label>
                         <div className="col-md-5 col-lg-2 col-form-label ">
                           <label className="fw-bolder text-danger">$ 200</label>
@@ -184,9 +199,11 @@ const PaymentVia = () => {
                                     type="text"
                                     onKeyPress={onKeyPress}
                                     name="caseData"
-                                    onChange={validation.handleChange}
+                                    // onChange={validation.handleChange}
+                                    onChange={e => setCaseData(e.target.value)}
                                     onBlur={validation.handleBlur}
-                                    value={validation.values.caseData || ""}
+                                    // value={validation.values.caseData || ""}
+                                    value={caseData}
                                     invalid={
                                       validation.touched.caseData &&
                                       validation.errors.caseData
@@ -253,12 +270,15 @@ const PaymentVia = () => {
                                 </div>
                               )}
                             </Col>
-                           
+
                             <div className="modal-footer d-flex justify-content-center ">
                               <Button
-                                type="submit"
+                                // type="submit"
+                                type="button"
                                 color="primary"
                                 className="btn btn-primary ms-3 w-lg "
+                                disabled={isEmptyOrSpaces()}
+                                onClick={() => handleAppointmentRequest()}
                               >
                                 Payment
                               </Button>

@@ -139,34 +139,30 @@ const RequestUser = () => {
                                 </label>
                               </div>
                             </Row>
-                            <Row>
-                              <label className="col-md-5 col-lg-2 col-form-label">
-                                Case Document
-                              </label>
-                              <div className="col-md-5">
-                                <label>
-                                  {appointment?.isAttachments ? (
-                                    <div className="att_wrapper">
-                                      {appointment?.attachments?.map(
-                                        (att, a) => (
-                                          <div key={a} className="att_item">
-                                            <i
-                                              className="mdi mdi-download text-primary mdi-24px"
-                                              onClick={() =>
-                                                handleFileDownload({
-                                                  id: att?.id,
-                                                  filename: att?.name,
-                                                })
-                                              }
-                                            />
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                  ) : null}
+                            {appointment?.isAttachments ? (
+                              <Row>
+                                <label className="col-md-5 col-lg-2 col-form-label">
+                                  Case Document
                                 </label>
-                              </div>
-                            </Row>
+                                <div className="col-md-5">
+                                  <label>
+                                    {appointment?.attachments?.map((att, a) => (
+                                      <div key={a} className="att_item">
+                                        <i
+                                          className="mdi mdi-file-document-multiple text-primary mdi-24px"
+                                          onClick={() =>
+                                            handleFileDownload({
+                                              id: att?.id,
+                                              filename: att?.name,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    ))}
+                                  </label>
+                                </div>
+                              </Row>
+                            ) :  null}
 
                             <Row>
                               {/* <div className="text-center mt-3"> */}

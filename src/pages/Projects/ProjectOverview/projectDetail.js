@@ -82,7 +82,7 @@ const ProjectDetail = ({ project }) => {
   return (
     <Card>
       <CardBody>
-        <PerfectScrollbar style={{ height: "400px" }}>
+        <PerfectScrollbar style={{ height: "330px" }}>
           <div className="d-flex">
             <img
               src={project.img ? project.img : attImages[imgIndex].url}

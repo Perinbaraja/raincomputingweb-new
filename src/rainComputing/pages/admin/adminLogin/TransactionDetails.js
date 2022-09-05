@@ -13,6 +13,7 @@ import ToolkitProvider from "react-bootstrap-table2-toolkit"
 import "../../../components/chat/style/datatables.scss"
 import ChatLoader from "../../../components/chat/ChatLoader"
 import { allPaymentData } from "rainComputing/helpers/backend_helper"
+import moment from "moment"
 
 const PaymentTranaction = () => {
   const [loading, setLoading] = useState(false)
@@ -21,11 +22,11 @@ const PaymentTranaction = () => {
   const idFormatter = (cell, row, rowIndex) => {
     return rowIndex + 1
   }
-  const usernameFormatter = (cell, row) => {
-    return row?.consumerId
+  const consumerFormatter = (cell, row) => {
+    return row?.consumerId?.firstname +" "+ row?.consumerId?.lastname
   }
-  const attorneynameFormatter = (cell, row) => {
-    return row?.attorneyId
+  const attorneyFormatter = (cell, row) => {
+    return row?.attorneyId?.regUser?.firstname +" "+row?.attorneyId?.regUser?.lastname
   }
   const paymentFormatter = (cell, row) => {
     return row?.payAmount
@@ -40,6 +41,9 @@ const PaymentTranaction = () => {
   const transactionidFormatter = (cell, row) => {
     return row?.transactionId
   }
+  const dateFormatter = (cell, row) => {
+    return  moment(row?.createdAt).format("DD-MM-YY HH:mm")
+  }
 
   const columns = [
     {
@@ -49,16 +53,16 @@ const PaymentTranaction = () => {
       formatter: idFormatter,
     },
     {
-      dataField: "username",
-      text: "User Name",
+      dataField: "consumer",
+      text: "Consumer",
       sort: true,
-      formatter: usernameFormatter,
+      formatter: consumerFormatter,
     },
     {
-      dataField: "attorneyname",
-      text: "Attorney Name",
+      dataField: "attorney",
+      text: "Attorney",
       sort: true,
-      formatter: attorneynameFormatter,
+      formatter: attorneyFormatter,
     },
     {
       dataField: "payment",
@@ -78,12 +82,18 @@ const PaymentTranaction = () => {
       sort: true,
       formatter: transactionidFormatter,
     },
+    {
+      dataField: "date",
+      text: "Date",
+      sort: true,
+      formatter: dateFormatter,
+    },
   ]
 
   const defaultSorted = [
     {
       dataField: "_id",
-      order: "asc",
+      order: "desc",
     },
   ]
 

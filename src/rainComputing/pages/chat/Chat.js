@@ -235,6 +235,16 @@ const ChatRc = () => {
     return "Guest Chat"
   }
 
+  //Getting 1vs1 chat name
+  const getChatEmail = members => {
+    const chatMember = members.find(
+      member => member.id?._id !== currentUser.userID
+    )
+    if (chatMember)
+      return chatMember.id?.email
+    return "Guest Chat"
+  }
+
   //getting 1vs1 chat profilePic
   const getChatProfilePic = members => {
     const chatMember = members.filter(
@@ -1010,6 +1020,10 @@ const ChatRc = () => {
                                   {currentChat.isGroup
                                     ? currentCase?.caseName || "Case Chat"
                                     : getChatName(currentChat.groupMembers)}
+                                    </h5>
+                                    <h5 className="font-size-12 mb-1 text-primary">
+                                   {!currentChat.isGroup
+                                    &&  getChatEmail(currentChat.groupMembers)}
                                 </h5>
                                 {currentChat?.isGroup && (
                                   <span
@@ -1180,7 +1194,7 @@ const ChatRc = () => {
                                                   currentUser.userID &&
                                                 currentChat?.color
                                                   ? currentChat?.color + "33"
-                                                  : "#0000FF" + "33",
+                                                  : "#00EE00" + "33",
                                             }}
                                           >
                                             <div className="conversation-name">
@@ -1251,7 +1265,7 @@ const ChatRc = () => {
                                                   currentUser.userID &&
                                                 currentChat?.color
                                                   ? currentChat?.color + "33"
-                                                  : "#0000FF" + "33",
+                                                  : "#00EE00" + "33",
                                             }}
                                           >
                                             <div className="conversation-name">
