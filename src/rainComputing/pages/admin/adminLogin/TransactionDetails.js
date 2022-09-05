@@ -118,7 +118,7 @@ const PaymentTranaction = () => {
   const getAllPaymentData = async () => {
     setLoading(true)
     const res = await allPaymentData({})
-    console.log("paymentres :", res)
+    // console.log("paymentres :", res)
     if (res.success) {
       setPaymentData(res.paymentIntent)
     }
