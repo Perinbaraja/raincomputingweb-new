@@ -6,7 +6,7 @@ const ImageViewer = ({ imgData }) => {
   return (
     <a
       href={`${SERVER_URL}/file/${imgData?.id}`}
-      download
+      download={imgData?.name}
       target="_blank"
       rel="noopener noreferrer"
       className="att_file"

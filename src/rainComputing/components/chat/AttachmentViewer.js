@@ -27,7 +27,7 @@ const AttachmentViewer = ({ attachments, text }) => {
               {att.type.includes("pdf") ? (
                 <a
                   href={`${SERVER_URL}/file/${att?.id}`}
-                  download
+                  download={att?.name}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="att_file aligner"
