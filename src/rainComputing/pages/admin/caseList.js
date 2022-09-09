@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, Button } from "reactstrap"
 import MetaTags from "react-meta-tags"
+import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 // datatable related plugins
 import BootstrapTable from "react-bootstrap-table-next"
@@ -16,36 +17,33 @@ import ToolkitProvider, { Search } from "react-bootstrap-table2-toolkit"
 import Breadcrumbs from "../../../components/Common/Breadcrumb"
 import "../../components/chat/style/datatables.scss"
 import ChatLoader from "../../components/chat/ChatLoader"
-import { allAttorneysList } from "rainComputing/helpers/backend_helper"
+import { allCasesData } from "rainComputing/helpers/backend_helper"
 
-const AttorneyList = () => {
+const CasesList = caseid => {
   const [loading, setLoading] = useState(false)
-  const [attorneyData, setAttorneyData] = useState([])
+  const [caseData, setCaseData] = useState([])
+  // const { cases } = props
 
   const idFormatter = (cell, row, rowIndex) => {
     return rowIndex + 1
   }
 
-  const nameFormatter = (cell, row) => {
+  const casenameFormatter = (cell, row) => {
     console.log("row", row)
-    return row?.regUser?.firstname + " " + row?.regUser?.lastname
+    return row?.caseName
   }
 
-  const barNumberFormatter = (cell, row) => {
-    return row?.barNumber
+  const caseidFormatter = (cell, row) => {
+    return row?.caseId
   }
 
-  const emailFormatter = (cell, row) => {
-    return row?.regUser?.email
+  const memcountFormatter = (cell, row) => {
+    return row?.caseMembers?.length
   }
 
   const statusFormatter = (cell, row) => {
     return (
-      <span
-        className={`label ${
-          row?.regUser?.aflag ? "text-success" : "text-danger"
-        }`}
-      >
+      <span className={`label ${row?.aflag ? "text-success" : "text-danger"}`}>
         {row?.aflag ? "Active" : "DeActive"}
       </span>
     )
@@ -53,7 +51,8 @@ const AttorneyList = () => {
 
   const detailsFormatter = (cell, row) => {
     return (
-      <Link to={`/attorney-Detail?id=${row?.regUser?._id}`}>
+      //<Link to="/case-Detail">
+      <Link to={`/case-Detail?id=${row?._id}`}>
         <button type="button" className="btn btn-primary">
           View
         </button>
@@ -69,22 +68,22 @@ const AttorneyList = () => {
       formatter: idFormatter,
     },
     {
-      dataField: "name",
-      text: "Name",
+      dataField: "casename",
+      text: "Case Name",
       sort: true,
-      formatter: nameFormatter,
+      formatter: casenameFormatter,
     },
     {
-      dataField: "barNumber",
-      text: "Bar Number",
+      dataField: "caseid",
+      text: "Case ID",
       sort: true,
-      formatter: barNumberFormatter,
+      formatter: caseidFormatter,
     },
     {
-      dataField: "email",
-      text: "Email",
+      dataField: "memcount",
+      text: "Members Count",
       sort: true,
-      formatter: emailFormatter,
+      formatter: memcountFormatter,
     },
     {
       dataField: "status",
@@ -109,7 +108,7 @@ const AttorneyList = () => {
 
   const pageOptions = {
     sizePerPage: 5,
-    totalSize: attorneyData.length, // replace later with size(customers),
+    totalSize: caseData.length,
     custom: true,
   }
 
@@ -120,23 +119,24 @@ const AttorneyList = () => {
     { text: "15", value: 15 },
     { text: "20", value: 20 },
     { text: "25", value: 25 },
-    { text: "All", value: attorneyData.length },
+    { text: "All", value: caseData.length },
   ]
 
   const { SearchBar } = Search
 
-  const getAllAttorneys = async () => {
+  const getAllCases = async () => {
     setLoading(true)
-    const res = await allAttorneysList({})
-    // console.log("res", res)
+    const res = await allCasesData({})
+    //console.log("res", res)
     if (res.success) {
-      setAttorneyData(res.attorneys)
+      setCaseData(res.cases)
+    } else {
     }
     setLoading(false)
   }
 
   useEffect(() => {
-    getAllAttorneys()
+    getAllCases()
   }, [])
 
   return (
@@ -147,10 +147,10 @@ const AttorneyList = () => {
         </MetaTags>
         {loading ? (
           <ChatLoader />
-        ) : attorneyData && attorneyData.length > 0 ? (
+        ) : caseData && caseData.length > 0 ? (
           <div className="container-fluid">
             <Link to="/admin-page">
-              <Breadcrumbs title="Admin" breadcrumbItem="Attorney List" />
+              <Breadcrumbs title="Admin" breadcrumbItem="Case Details" />
             </Link>
             <Row>
               <Col className="col-12">
@@ -160,13 +160,13 @@ const AttorneyList = () => {
                       pagination={paginationFactory(pageOptions)}
                       keyField="_id"
                       columns={columns}
-                      data={attorneyData}
+                      data={caseData}
                     >
                       {({ paginationProps, paginationTableProps }) => (
                         <ToolkitProvider
                           keyField="_id"
                           columns={columns}
-                          data={attorneyData}
+                          data={caseData}
                           search={{
                             searchFormatted: true,
                           }}
@@ -238,5 +238,7 @@ const AttorneyList = () => {
     </React.Fragment>
   )
 }
-
-export default AttorneyList
+CasesList.propTypes = {
+  caseid: PropTypes.string,
+}
+export default CasesList

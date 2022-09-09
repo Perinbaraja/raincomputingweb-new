@@ -9,32 +9,76 @@ import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 import DeleteModal from "rainComputing/components/modals/DeleteModal"
 import { useModal } from "rainComputing/helpers/hooks/useModal"
 import { getUserById } from "rainComputing/helpers/backend_helper"
+import { getPaymentId } from "rainComputing/helpers/backend_helper"
 import { success } from "toastr"
+import { set } from "lodash"
+import { allPaymentData } from "rainComputing/helpers/backend_helper"
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
+import { removeUser } from "rainComputing/helpers/backend_helper"
+import { getAllUsers } from "rainComputing/helpers/backend_helper"
 
 const UserDetails = () => {
   const query = useQuery()
   const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [getUser, setGetUser] = useState(null)
+  const [getPayment, setGetPayment] = useState(null)
+  const [paymentData, setPaymentData] = useState([])
 
-  // const getUserId = async () => {
-  //   console.log("res", res)
-  //   const res = await getUserById({
-  //     userId: query.get("id"),
-  //   })
-  //   if (res.success) {
-  //     setGetUser(res.User)
-  //   }
-  // }
+  const getUserId = async () => {
+    const res = await getUserById({
+      userId: query.get("id"),
+    })
+    if (res.success) {
+      setGetUser(res.User)
+      console.log("res", res)
+    }
+    //console.log("el", res)
+  }
 
-  // useEffect(() => {
-  //   getUserId()
-  // }, [])
+  useEffect(() => {
+    getUserId()
+  }, [])
 
+  const getAllPaymentData = async () => {
+    //setLoading(true)
+    const res = await allPaymentData({})
+    // console.log("paymentres :", res)
+    if (res.success) {
+      setPaymentData(res.paymentIntent)
+      console.log("pay", res)
+      console.log(paymentData)
+    }
+    // setLoading(false)
+  }
+
+  useEffect(() => {
+    getAllPaymentData()
+  }, [])
+  const getPaymentStatus = p => {
+    const Paid = p.find(i => i._id === getUser._id)
+    return Paid ? "Paid" : "LA"
+  }
+  const handleRemovingUser = async () => {
+    const payload = {
+      userID: [getUser?._id],
+    }
+    const res = await removeUser(payload)
+    if (res.success) {
+      console.log(res)
+      toastr.success(`User has been Deactivated successfully`, "Success")
+
+      await getAllUsers()
+    } else {
+      console.log("Error : ", res?.msg || "error")
+    }
+    setModalOpen(false)
+  }
   return (
     <React.Fragment>
       <DeleteModal
         show={modalOpen}
-        //   onDeleteClick={handleRemovingUser}
+        onDeleteClick={handleRemovingUser}
         confirmText="Yes,DeActive"
         cancelText="Cancel"
         onCloseClick={toggleModal}
@@ -56,7 +100,9 @@ const UserDetails = () => {
                       User Name
                     </label>
                     <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder"></label>
+                      <label className="fw-bolder">
+                        {getUser?.firstname + " " + getUser?.lastname}
+                      </label>
                     </div>
                   </Row>
                   <Row className="my-md-3">
@@ -64,25 +110,39 @@ const UserDetails = () => {
                       Email
                     </label>
                     <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder text-primary"></label>
+                      <label className="fw-bolder text-primary">
+                        {getUser?.email}
+                      </label>
                     </div>
                   </Row>
                   <Row className="my-md-3">
                     <label className="col-md-5 col-lg-2 col-form-label">
                       Payment
                     </label>
-                    <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder fw-bolder"></label>
-                    </div>
+                    {paymentData
+                      .filter(f => f?.consumerId === query.get("id"))
+                      .map((p, i) => (
+                        <div
+                          className="col-md-5 col-lg-2 col-form-label "
+                          key={i}
+                        >
+                          <label className="fw-bolder fw-bolder">
+                            {p?.firstname}
+                            {/* {paymentData?.consumerId?.firstname} */}
+                            {/* {getPaymentStatus(p)} */}
+                          </label>
+                        </div>
+                      ))}
+                    {/* ))} */}
                   </Row>
-                  <Row className="my-md-3">
+                  {/* <Row className="my-md-3">
                     <label className="col-md-5 col-lg-2 col-form-label">
                       Activity
                     </label>
                     <div className="col-md-5 col-lg-2 col-form-label ">
                       <label className="fw-bolder fw-bolder"></label>
                     </div>
-                  </Row>
+                  </Row> */}
                   <Row>
                     <div className="modal-footer">
                       <Link to="/userlist-page">

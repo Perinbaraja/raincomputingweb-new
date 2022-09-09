@@ -2,142 +2,106 @@ import MetaTags from "react-meta-tags"
 import React, { useState, useEffect } from "react"
 import { Container, Row, Col, Card, CardBody, Button } from "reactstrap"
 import { Link } from "react-router-dom"
+import { getCasesById } from "rainComputing/helpers/backend_helper"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
-import { removeAttorney } from "rainComputing/helpers/backend_helper"
-import toastr from "toastr"
-import "toastr/build/toastr.min.css"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
 
 import DeleteModal from "rainComputing/components/modals/DeleteModal"
 import { useModal } from "rainComputing/helpers/hooks/useModal"
-import { getAttorneyByUserID } from "rainComputing/helpers/backend_helper"
-import { getAllAttorneys } from "rainComputing/helpers/backend_helper"
-const AttorneyDetails = () => {
-  const query = useQuery()
-  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
-  const [attorneyDetail, setAttorneyDetail] = useState(null)
-  //Toaster settings
-  toastr.options = {
-    progressBar: true,
-    closeButton: true,
-  }
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
-  const getAttorneys = async () => {
-    const res = await getAttorneyByUserID({
-      userID: query.get("id"),
+const CaseDetails = () => {
+  const [modalOpen, setModalOpen, toggleModal] = useModal(false)
+  const query = useQuery()
+  const [loading, setLoading] = useState(false)
+  const [caseDetail, setCaseDetail] = useState(null)
+
+  const getCases = async () => {
+    const res = await getCasesById({
+      caseid: query.get("id"),
     })
     if (res.success) {
-      setAttorneyDetail(res.attorney)
-      console.log("attorneyDetail", attorneyDetail)
-    } else {
-      console.log("Failed to Deactivate", res)
+      console.log("r", res)
+      setCaseDetail(res.cases)
     }
   }
 
   useEffect(() => {
-    getAttorneys()
+    getCases()
   }, [])
-  const handleRemovingAttorney = async () => {
-    const payload = {
-      regUser: [attorneyDetail?._id],
-    }
-    const res = await removeAttorney(payload)
-    if (res.success) {
-      console.log(res)
-      toastr.success(`Attorney has been Deactivated successfully`, "Success")
-      await getAllAttorneys()
-    } else {
-      toastr.error("Failed to Deactivate Attorney", "Failed!!!")
-      console.log("Error : ", res?.msg || "error")
-    }
-    setModalOpen(false)
-  }
   return (
     <React.Fragment>
       <DeleteModal
         show={modalOpen}
-        onDeleteClick={handleRemovingAttorney}
+        //   onDeleteClick={handleRemovingUser}
         confirmText="Yes,DeActive"
         cancelText="Cancel"
         onCloseClick={toggleModal}
       />
       <div className="page-content">
         <MetaTags>
-          <title>Attorney Details | Rain - Admin & Dashboard Template</title>
+          <title>Case Details | Rain - Admin & Dashboard Template</title>
         </MetaTags>
         <Container fluid>
           <Link to="/attorneylist-page">
-            <Breadcrumb title="Rain" breadcrumbItem="Attorney Details" />
+            <Breadcrumb title="Rain" breadcrumbItem="Case Details" />
           </Link>
+
           <Row>
             <Col lg="12">
               <Card>
                 <CardBody>
                   <Row>
                     <label className="col-md-5 col-lg-2 col-form-label">
-                      Attorney Name
+                      Case Name
                     </label>
-                    {/* {attorneyDetail?regUser.map((ad, i) => ( */}
-                    {/* {attorneyDetail.map((cd, i) => ( */}
-                    <div className="col-md-5 col-lg-2 col-form-label">
+                    <div className="col-md-5 col-lg-2 col-form-label ">
                       <label className="fw-bolder">
-                        {/* {} */}
-                        {attorneyDetail?.regUser?.firstname +
-                          " " +
-                          attorneyDetail?.regUser?.lastname}
+                        {caseDetail?.caseName}
                       </label>
                     </div>
-                    {/* ))} */}
                   </Row>
                   <Row className="my-md-3">
                     <label className="col-md-5 col-lg-2 col-form-label">
-                      Bar Number
+                      Case ID
                     </label>
                     <div className="col-md-5 col-lg-2 col-form-label ">
                       <label className="fw-bolder text-primary">
-                        {" "}
-                        {attorneyDetail?.barNumber}
+                        {caseDetail?.caseId}
                       </label>
                     </div>
                   </Row>
                   <Row className="my-md-3">
                     <label className="col-md-5 col-lg-2 col-form-label">
-                      Email
+                      Number of Members
                     </label>
                     <div className="col-md-5 col-lg-2 col-form-label ">
                       <label className="fw-bolder">
-                        {attorneyDetail?.regUser?.email}
+                        {caseDetail?.caseMembers?.length}
                       </label>
+                    </div>
+                  </Row>
 
-                      {/* <label className="fw-bolder">{ad?.regUser?.email}</label> */}
-                    </div>
-                  </Row>
-                  <Row>
-                    <label className="col-md-5 col-lg-2 col-form-label">
-                      Phone Number
-                    </label>
-                    <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder">
-                        {attorneyDetail?.phoneNumber}
-                      </label>
-                      {/* <label className="fw-bolder">{ad?.phoneNumber}</label> */}
-                    </div>
-                  </Row>
                   <Row className="my-md-3">
                     <label className="col-md-5 col-lg-2 col-form-label">
-                      Address
+                      Case Members
                     </label>
-                    <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder">
-                        {attorneyDetail?.address}
-                      </label>
-                      {/* <label className="fw-bolder">{ad?.address}</label> */}
-                    </div>
+                    {caseDetail?.caseMembers.map((cd, i) => (
+                      <div
+                        className="col-md-5 col-lg-2 col-form-label "
+                        key={i}
+                      >
+                        <label className="fw-bolder">
+                          {/* {admins?.firstname} */}
+                          {cd?.id?.firstname + " " + cd?.id?.lastname}
+                        </label>
+                      </div>
+                    ))}
                   </Row>
                   <Row>
                     <div className="modal-footer">
-                      <Link to="/attorneylist-page">
+                      <Link to="/caselist-page">
                         <button
                           type="button"
                           // onClick={() => {
@@ -162,8 +126,6 @@ const AttorneyDetails = () => {
                       </button>
                     </div>
                   </Row>
-                  {/* </li>
-                  ))} */}
                 </CardBody>
               </Card>
             </Col>
@@ -174,4 +136,4 @@ const AttorneyDetails = () => {
   )
 }
 
-export default AttorneyDetails
+export default CaseDetails

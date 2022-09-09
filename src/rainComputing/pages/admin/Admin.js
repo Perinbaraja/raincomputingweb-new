@@ -41,7 +41,7 @@ const Admin = () => {
 
   const handleApprovedAttorney = async () => {
     const payload = {
-      status : "approved",
+      status: "approved",
       attorneyID: [selectedReqAttorney?._id],
       userID: [selectedReqAttorney?._id],
     }
@@ -56,10 +56,10 @@ const Admin = () => {
 
   const handleRejectAttorney = async () => {
     const payload = {
-        status : "rejected",
-        attorneyID: [selectedReqAttorney?._id],
-        userID: [selectedReqAttorney?._id],
-      }
+      status: "rejected",
+      attorneyID: [selectedReqAttorney?._id],
+      userID: [selectedReqAttorney?._id],
+    }
     const res = await attorneyStatusUpdate(payload)
     if (res.success) {
       // console.log(res)
@@ -113,10 +113,7 @@ const Admin = () => {
           <title>Admin Page | Rain - Admin & Dashboard Template</title>
         </MetaTags>
         <Container fluid>
-          <Breadcrumbs
-            title={"Rain"}
-            breadcrumbItem={"Admin Dashboard"}
-          />
+          <Breadcrumbs title={"Rain"} breadcrumbItem={"Admin Dashboard"} />
           {/* <h5>Admin Dashboard</h5> */}
 
           <Row>
@@ -165,11 +162,10 @@ const Admin = () => {
                   </Row>
                 </CardBody>
               </Card>
-
             </Col>
             <Col xl="8">
               <Row>
-                <Col md="6">
+                <Col md="3">
                   <Card className="overflow-hidden p-4">
                     <CardBody>
                       <div className="d-flex">
@@ -196,7 +192,7 @@ const Admin = () => {
                     </CardBody>
                   </Card>
                 </Col>
-                <Col md="6">
+                <Col md="4">
                   <Card className="overflow-hidden p-4">
                     <CardBody>
                       <div className="d-flex">
@@ -225,83 +221,114 @@ const Admin = () => {
                     </CardBody>
                   </Card>
                 </Col>
-              </Row>
-              </Col>
-              </Row>
-              <Col xl="12">
-              <Row>
-              <h5>Requested Attorneys List :</h5>
-              {allReqAttorney && allReqAttorney.length > 0 ? (
-              <Card>
-                <CardBody>
-                  <Form>
-                    <Row>
-                      <Col>
-                        <div className="table-responsive">
-                          <Table className="table table-striped mb-0">
-                            <thead>
-                              <tr>
-                                <th scope="col">S No</th>
-                                <th scope="col">Attorney Name</th>
-                                <th scope="col">Bar Number</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Action</th>
-                                <th scope="col"></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {allReqAttorney.map((attorneys, j) => (
-                                <tr key={j}>
-                                  <td>{j + 1} </td>
-                                  <td>
-                                    {" "}
-                                    {attorneys?.regUser?.firstname}{" "}
-                                    {attorneys?.regUser?.lastname}
-                                  </td>
-                                  <td> {attorneys.barNumber}</td>
-                                  <td> {attorneys?.regUser?.email}</td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      className="btn btn-primary"
-                                      onClick={() => {
-                                        setSelectedReqAttorney(attorneys)
-                                        handleApprovedAttorney(attorneys)
-                                      }}
-                                    >
-                                      Approve
-                                    </button>
-                                  </td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      className="btn btn-primary"
-                                      onClick={() => {
-                                        setSelectedReqAttorney(attorneys)
-                                        handleRejectAttorney(attorneys)
-                                      }}
-                                    >
-                                      Reject
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
+                <Col md="3">
+                  <Card className="overflow-hidden p-4">
+                    <CardBody>
+                      <div className="d-flex">
+                        <div className="flex-grow-1">
+                          <h5 className="fw-medium mt-2">Cases List</h5>
+                          <Link to="/caselist-page">
+                            <Button
+                              color="primary"
+                              type="view"
+                              className="mt-4"
+                            >
+                              View
+                            </Button>
+                          </Link>
                         </div>
-                      </Col>
-                    </Row>
-                  </Form>
-                </CardBody>
-              </Card>
-              ):(
-                <p className="text-center">You Don&apos;t have any Request Attorneys</p>
-              )}
+                        <div className="avatar-sm rounded-circle bg-primary align-self-top mini-stat-icon">
+                          <span className="avatar-title rounded-circle bg-primary">
+                            <i
+                              className={
+                                "bx" + " bx bx-user-circle " + " font-size-24"
+                              }
+                            ></i>
+                          </span>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Col>
               </Row>
             </Col>
+          </Row>
+          <Col xl="12">
+            <Row>
+              <h5>Requested Attorneys List :</h5>
+              {allReqAttorney && allReqAttorney.length > 0 ? (
+                <Card>
+                  <CardBody>
+                    <Form>
+                      <Row>
+                        <Col>
+                          <div className="table-responsive">
+                            <Table className="table table-striped mb-0">
+                              <thead>
+                                <tr>
+                                  <th scope="col">S No</th>
+                                  <th scope="col">Attorney Name</th>
+                                  <th scope="col">Bar Number</th>
+                                  <th scope="col">Email</th>
+                                  <th scope="col">Action</th>
+                                  <th scope="col"></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {allReqAttorney.map((attorneys, j) => (
+                                  <tr key={j}>
+                                    <td>{j + 1} </td>
+                                    <td>
+                                      {" "}
+                                      {attorneys?.regUser?.firstname}{" "}
+                                      {attorneys?.regUser?.lastname}
+                                    </td>
+                                    <td> {attorneys.barNumber}</td>
+                                    <td> {attorneys?.regUser?.email}</td>
+                                    <td>
+                                      <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                          setSelectedReqAttorney(attorneys)
+                                          handleApprovedAttorney(attorneys)
+                                        }}
+                                      >
+                                        Approve
+                                      </button>
+                                    </td>
+                                    <td>
+                                      <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                          setSelectedReqAttorney(attorneys)
+                                          handleRejectAttorney(attorneys)
+                                        }}
+                                      >
+                                        Reject
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </CardBody>
+                </Card>
+              ) : (
+                <p className="text-center">
+                  You Don&apos;t have any Request Attorneys
+                </p>
+              )}
+            </Row>
+          </Col>
           <Row>
             <Col xl="12">
-             <PaymentTranaction/>
+              <PaymentTranaction />
             </Col>
           </Row>
         </Container>

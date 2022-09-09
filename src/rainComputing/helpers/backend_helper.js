@@ -85,6 +85,8 @@ const allUsersList = () => get(`${BASE_URL}/admin/allUsersList`)
 const allAttorneysList = () => get(`${BASE_URL}/admin/allAttorneysList`)
 const allFirmsList = () => get(`${BASE_URL}/admin/allFirmsList`)
 const allPaymentData = () => get(`${BASE_URL}/admin/allPaymentDetails`)
+const allCasesData = () => get(`${BASE_URL}/admin/allCaseDetails`)
+const getCasesById = payload => post(`${BASE_URL}/admin/getCaseById`, payload)
 const removeUser = payload => put(`${BASE_URL}/admin/removeUser`, payload)
 const removeAttorney = payload =>
   put(`${BASE_URL}/admin/removeAttorney`, payload)
@@ -112,10 +114,10 @@ const getAllAppointmentRequestById = payload =>
 const appointmentStatusUpdate = payload =>
   put(`${BASE_URL}/appointment/appointmentStatus`, payload)
 
-  const appointmentUserStatus = payload =>
+const appointmentUserStatus = payload =>
   post(`${BASE_URL}/appointment/getAppointmentStatusById`, payload)
 
-  const getPaymentId = payload =>
+const getPaymentId = payload =>
   post(`${BASE_URL}/payment/getPaymentId`, payload)
 export {
   getAllAttorneys,
@@ -157,9 +159,11 @@ export {
   adminLogout,
   getUserById,
   allUsersList,
+  getCasesById,
   allAttorneysList,
   allFirmsList,
   allPaymentData,
+  allCasesData,
   removeUser,
   addAdmin,
   removeAttorney,

@@ -17,7 +17,7 @@ import "../../components/chat/style/datatables.scss"
 import ChatLoader from "../../components/chat/ChatLoader"
 import { allUsersList } from "rainComputing/helpers/backend_helper"
 
-const UserList = (userId) => {
+const UserList = userId => {
   const [loading, setLoading] = useState(false)
   const [userData, setUserData] = useState([])
 
@@ -42,7 +42,7 @@ const UserList = (userId) => {
   }
   const detailsFormatter = (cell, row) => {
     return (
-      <Link to={`/user-Detail?id=${userId}`}>
+      <Link to={`/user-Detail?id=${row?._id}`}>
         <button type="button" className="btn btn-primary">
           View
         </button>
@@ -127,7 +127,7 @@ const UserList = (userId) => {
   useEffect(() => {
     getAllUsers()
   }, [])
-  
+
   return (
     <React.Fragment>
       <div className="page-content">
