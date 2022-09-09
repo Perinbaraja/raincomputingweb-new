@@ -80,8 +80,10 @@ import AdminLogin from "rainComputing/pages/admin/adminLogin/login"
 import Admin from "rainComputing/pages/admin/Admin"
 import usersList from "rainComputing/pages/admin/usersList"
 import attorneysList from "rainComputing/pages/admin/attorneysList"
+import caseList from "rainComputing/pages/admin/caseList"
 import UserDetails from "rainComputing/pages/admin/UserDetails"
 import AttorneyDetails from "rainComputing/pages/admin/AttorneyDetails"
+import CaseDetails from "rainComputing/pages/admin/CaseDetails"
 
 import RequestUser from "rainComputing/pages/user/AppointmentLanding/ReqUser"
 import Payment from "rainComputing/pages/user/AppointmentLanding/PaymentPage/Payment"
@@ -119,7 +121,7 @@ const authProtectedRoutes = [
   { path: "/reqattorney", component: AttorneyLanding },
 
   { path: "/attorneydetail", component: AttorneyDetails },
-  { path: "/attorneydetail", component: AttorneyDetailsCard},
+  { path: "/attorneydetail", component: AttorneyDetailsCard },
   { path: "/firminfo", component: FirmInfo },
   { path: "/chat-rc", component: ChatRc },
   { path: "/req-user", component: RequestUser },
@@ -167,6 +169,8 @@ const adminRoutes = [
   { path: "/admin-page", component: Admin },
   { path: "/userlist-page", component: usersList },
   { path: "/attorneylist-page", component: attorneysList },
+  { path: "/caselist-page", component: caseList },
+  { path: "/case-Detail", component: CaseDetails },
   { path: "/user-Detail", component: UserDetails },
   { path: "/attorney-Detail", component: AttorneyDetails },
   { path: "/payment-Detail", component: PaymentTranaction },
