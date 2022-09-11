@@ -44,9 +44,12 @@ const SubgroupBar = ({
                 >
                   {sub.groupName} ({sub.groupMembers?.length})
                   {notifyCount(sub?._id) > 0 && (
-                    <div className="badge bg-danger font-size-11 ">
+                    // <div className="badge bg-danger font-size-11 ">
+                    //   {notifyCount(sub?._id)}
+                    // </div>
+                    <i className="bx bxs-bell bx-tada text-danger">
                       {notifyCount(sub?._id)}
-                    </div>
+                    </i>
                   )}
                 </div>
               ))}

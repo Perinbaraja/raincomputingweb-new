@@ -78,7 +78,7 @@ const PaymentVia = () => {
         attorney: "631202e3879cd1751698643c",
         User: currentUser.userID,
         isAttachments,
-        appointmentstatus: "request",
+        appointmentstatus: "requested",
       }
       if (isAttachments) {
         const formData = new FormData()

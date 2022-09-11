@@ -73,6 +73,7 @@
     "react-input-mask": "^2.0.4",
     "react-jvectormap": "^0.0.16",
     "react-leaflet": "^2.7.0",
+    "react-mentions": "^4.4.7",
     "react-meta-tags": "^1.0.1",
     "react-modal-video": "^1.2.7",
     "react-native-inline-datepicker": "^1.2.0",

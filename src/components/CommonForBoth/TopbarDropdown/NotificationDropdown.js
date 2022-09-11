@@ -32,13 +32,13 @@ const NotificationDropdown = props => {
           id="page-header-notifications-dropdown"
         >
           <i className="bx bx-bell" />
-          {notifications.length > 0 && (
+          {notifications?.length > 0 && (
             <span className="badge bg-danger rounded-pill">
-              {notifications.length}
+              {notifications?.length}
             </span>
           )}
         </DropdownToggle>
-        {notifications.length > 0 && (
+        {notifications?.length > 0 && (
           <DropdownMenu className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
             <div className="p-3">
               <Row className="align-items-center">
@@ -69,7 +69,7 @@ const NotificationDropdown = props => {
                     <div className="font-size-12 text-muted">
                       <p className="mb-1">
                         {/* {props.t("If several languages coalesce the grammar")} */}
-                        {props.t(`${notifications.length} messages in chat`)}
+                        {props.t(`${notifications?.length} messages in chat`)}
                       </p>
                       <p className="mb-0">
                         <i className="mdi mdi-clock-outline" />{" "}

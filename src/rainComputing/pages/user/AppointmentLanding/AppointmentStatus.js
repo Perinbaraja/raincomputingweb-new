@@ -18,6 +18,7 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 const AppointmentCard = () => {
   const [statusUpdate, setStatusUpdate] = useState(null)
   const { currentUser, setCurrentUser } = useUser()
+  const chatid= "62ebc2854fde4cb41007350a"
 
   useEffect(() => {
     // if (currentUser?._id) {
@@ -84,6 +85,10 @@ const AppointmentCard = () => {
                           <i className="mdi mdi-cash-usd-outline mdi-24px me-2" />
                           {"$ 200"}
                         </li>
+                       { statusUpdate && att?.appointmentstatus === "approved" &&(
+                        <Link
+                        to={`/chat-rc?uid=${chatid}`}
+                             >
                         <li className="list-inline-item me-3" id="chat">
                           <i className="mdi mdi-chat-outline mdi-24px me-1" /> {""}
                           <UncontrolledTooltip
@@ -93,6 +98,8 @@ const AppointmentCard = () => {
                             Chat
                           </UncontrolledTooltip>
                         </li>
+                        </Link>
+                       )}
                       </ul>
                     </div>
                   </Card>

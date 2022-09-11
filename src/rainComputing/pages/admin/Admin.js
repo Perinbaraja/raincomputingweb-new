@@ -165,7 +165,7 @@ const Admin = () => {
             </Col>
             <Col xl="8">
               <Row>
-                <Col md="3">
+                <Col md="4">
                   <Card className="overflow-hidden p-4">
                     <CardBody>
                       <div className="d-flex">
@@ -197,7 +197,7 @@ const Admin = () => {
                     <CardBody>
                       <div className="d-flex">
                         <div className="flex-grow-1">
-                          <h5 className="fw-medium mt-2">Attorneys List</h5>
+                          <h5 className="fw-medium mt-2">Attorneys</h5>
                           <Link to="/attorneylist-page">
                             <Button
                               color="primary"
@@ -221,7 +221,7 @@ const Admin = () => {
                     </CardBody>
                   </Card>
                 </Col>
-                <Col md="3">
+                <Col md="4">
                   <Card className="overflow-hidden p-4">
                     <CardBody>
                       <div className="d-flex">
@@ -241,7 +241,7 @@ const Admin = () => {
                           <span className="avatar-title rounded-circle bg-primary">
                             <i
                               className={
-                                "bx" + " bx bx-user-circle " + " font-size-24"
+                                "bx" + " bx bx bxs-briefcase " + " font-size-24"
                               }
                             ></i>
                           </span>

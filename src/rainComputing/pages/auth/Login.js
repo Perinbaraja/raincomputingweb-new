@@ -238,8 +238,20 @@ const RainLogin = props => {
                             </button>
                           )}
                         </div>
+                        <div className="mt-5 text-center">
+                          <p>
+                            Don&#39;t have an account ?{" "}
+                            <Link
+                              to="/register"
+                              className="fw-medium text-primary"
+                            >
+                              {" "}
+                              Signup now{" "}
+                            </Link>{" "}
+                          </p>
+                        </div>
 
-                        <div className="mt-3 text-center">
+                        {/* <div className="mt-3 text-center">
                           <h5 className="font-size-14 mb-3">Sign in with</h5>
 
                           <ul className="list-inline">
@@ -292,7 +304,7 @@ const RainLogin = props => {
                               </Link>
                             </li>
                           </ul>
-                        </div>
+                        </div> */}
 
                         <div className="mt-4 text-center">
                           <Link to="/emailforgotPwd" className="text-muted">
@@ -304,15 +316,6 @@ const RainLogin = props => {
                     </div>
                   </CardBody>
                 </Card>
-                <div className="mt-3 text-center">
-                  <p>
-                    Don&#39;t have an account ?{" "}
-                    <Link to="/register" className="fw-medium text-primary">
-                      {" "}
-                      Signup now{" "}
-                    </Link>{" "}
-                  </p>
-                </div>
               </Col>
             </Row>
           </Container>

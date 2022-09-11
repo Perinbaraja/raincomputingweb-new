@@ -15,6 +15,7 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Link } from "react-router-dom"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
+import ReqUserAppointmentDetails from "./ReqUserAppDetails"
 
 const RequestUser = () => {
   const { currentAttorney } = useUser()
@@ -38,16 +39,14 @@ const RequestUser = () => {
 
   useEffect(() => {
     onGetAllAppointmentRequest()
-  }, [])
+  }, [currentAttorney])
   const onGetAllAppointmentRequest = async () => {
     const RequestRes = await getAllAppointmentRequestById({
       userID: currentAttorney._id,
     })
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
-    } else {
-      setAppointmentReq([])
-    }
+    } 
     console.log("appointment", RequestRes)
   }
   const handleAppointmentAccept = async ({ id }) => {
@@ -67,7 +66,7 @@ const RequestUser = () => {
   }
   const handleAppointmentReject = async ({ id }) => {
     const payload = {
-      appointmentstatus: "reject",
+      appointmentstatus: "rejected",
       appointmentID: id,
     }
     const res = await appointmentStatusUpdate(payload)
@@ -103,101 +102,107 @@ const RequestUser = () => {
               <Row>
                 <Col lg="12">
                   {appointmentReq &&
-                    appointmentReq.map((appointment, i) => (
-                      <Card key={i}>
-                        <CardBody>
-                          <div>
-                            <Row>
-                              <label className="col-md-5 col-lg-2 col-form-label">
-                                User Name
-                              </label>
-                              <div className="col-md-5 col-lg-2 col-form-label ">
-                                <label className="fw-bolder">
-                                  {appointment?.User?.firstname +
-                                    " " +
-                                    appointment?.User?.lastname}
-                                </label>
-                              </div>
-                            </Row>
-                            <Row>
-                              <label className="col-md-5 col-lg-2 col-form-label">
-                                Email
-                              </label>
-                              <div className="col-md-5 col-lg-2 col-form-label ">
-                                <label className="fw-bolder text-primary">
-                                  {appointment?.User?.email}
-                                </label>
-                              </div>
-                            </Row>
-                            <Row>
-                              <label className="col-md-5 col-lg-2 col-form-label">
-                                Case Details
-                              </label>
-                              <div className="col-md-5  ">
-                                <label className="text-normal">
-                                  {appointment?.caseData}
-                                </label>
-                              </div>
-                            </Row>
-                            {appointment?.isAttachments ? (
-                              <Row>
-                                <label className="col-md-5 col-lg-2 col-form-label">
-                                  Case Document
-                                </label>
-                                <div className="col-md-5">
-                                  <label>
-                                    {appointment?.attachments?.map((att, a) => (
-                                      <div key={a} className="att_item">
-                                        <i
-                                          className="mdi mdi-file-document-multiple text-primary mdi-24px"
-                                          onClick={() =>
-                                            handleFileDownload({
-                                              id: att?.id,
-                                              filename: att?.name,
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                    ))}
+                    appointmentReq.map(
+                      (appointment, i) =>
+                        appointment?.appointmentstatus === "requested" && (
+                          <Card key={i}>
+                            <CardBody>
+                              <div>
+                                <Row>
+                                  <label className="col-md-5 col-lg-2 col-form-label">
+                                    User Name
                                   </label>
-                                </div>
-                              </Row>
-                            ) :  null}
+                                  <div className="col-md-5 col-lg-2 col-form-label ">
+                                    <label className="fw-bolder">
+                                      {appointment?.User?.firstname +
+                                        " " +
+                                        appointment?.User?.lastname}
+                                    </label>
+                                  </div>
+                                </Row>
+                                <Row>
+                                  <label className="col-md-5 col-lg-2 col-form-label">
+                                    Email
+                                  </label>
+                                  <div className="col-md-5 col-lg-2 col-form-label ">
+                                    <label className="fw-bolder text-primary">
+                                      {appointment?.User?.email}
+                                    </label>
+                                  </div>
+                                </Row>
+                                <Row>
+                                  <label className="col-md-5 col-lg-2 col-form-label">
+                                    Case Details
+                                  </label>
+                                  <div className="col-md-5  ">
+                                    <label className="text-normal">
+                                      {appointment?.caseData}
+                                    </label>
+                                  </div>
+                                </Row>
+                                {appointment?.isAttachments ? (
+                                  <Row>
+                                    <label className="col-md-5 col-lg-2 col-form-label">
+                                      Case Document
+                                    </label>
+                                    <div className="col-md-5">
+                                      <label>
+                                        {appointment?.attachments?.map(
+                                          (att, a) => (
+                                            <div key={a} className="att_item">
+                                              <i
+                                                className="mdi mdi-file-document-multiple text-primary mdi-24px"
+                                                onClick={() =>
+                                                  handleFileDownload({
+                                                    id: att?.id,
+                                                    filename: att?.name,
+                                                  })
+                                                }
+                                              />
+                                            </div>
+                                          )
+                                        )}
+                                      </label>
+                                    </div>
+                                  </Row>
+                                ) : null}
 
-                            <Row>
-                              {/* <div className="text-center mt-3"> */}
-                              <div className="modal-footer">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    handleAppointmentAccept({
-                                      id: appointment?._id,
-                                    })
-                                  }}
-                                  className="btn btn-primary ms-3 w-lg "
-                                  data-dismiss="modal"
-                                >
-                                  Accept
-                                </button>
+                                <Row>
+                                  {/* <div className="text-center mt-3"> */}
+                                  <div className="modal-footer">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        handleAppointmentAccept({
+                                          id: appointment?._id,
+                                        })
+                                      }}
+                                      className="btn btn-primary ms-3 w-lg "
+                                      data-dismiss="modal"
+                                    >
+                                      Accept
+                                    </button>
 
-                                <button
-                                  type="button"
-                                  className="btn btn-danger ms-3 w-lg"
-                                  onClick={() => {
-                                    // setModalOpen(true)
-                                    handleAppointmentReject({
-                                      id: appointment?._id,
-                                    })
-                                  }}
-                                >
-                                  Reject
-                                </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-danger ms-3 w-lg"
+                                      onClick={() => {
+                                        // setModalOpen(true)
+                                        handleAppointmentReject({
+                                          id: appointment?._id,
+                                        })
+                                      }}
+                                    >
+                                      Reject
+                                    </button>
+                                  </div>
+                                </Row>
                               </div>
-                            </Row>
-                          </div>
-                        </CardBody>
-                      </Card>
-                    ))}
+                            </CardBody>
+                          </Card>
+                        )
+                    )}
+                  <ReqUserAppointmentDetails />
                 </Col>
               </Row>
             ) : (

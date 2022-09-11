@@ -71,6 +71,7 @@ import { useNotifications } from "rainComputing/contextProviders/NotificationsPr
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 import ChatLoader from "rainComputing/components/chat/ChatLoader"
 import EditCase from "rainComputing/components/chat/EditCase"
+import { Mention, MentionsInput } from "react-mentions"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -152,6 +153,7 @@ const ChatRc = () => {
   const [search_Menu, setsearch_Menu] = useState(false)
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
+  const [mentionsArray, setMentionsArray] = useState([])
 
   //Toaster settings
   toastr.options = {
@@ -240,8 +242,7 @@ const ChatRc = () => {
     const chatMember = members.find(
       member => member.id?._id !== currentUser.userID
     )
-    if (chatMember)
-      return chatMember.id?.email
+    if (chatMember) return chatMember.id?.email
     return "Guest Chat"
   }
 
@@ -307,6 +308,35 @@ const ChatRc = () => {
         cases: Math.ceil(caseCount / limit),
       })
     }
+  }
+
+  //Viewing Message
+  const prettifyMsg = comment => {
+    let regex = /@\[.+?\]\(.+?\)/gm
+    let displayRegex = /@\[.+?\]/g
+    let idRegex = /\(.+?\)/g
+    let matches = comment.match(regex)
+    let arr = []
+    matches &&
+      matches.forEach(m => {
+        let id = m.match(idRegex)[0].replace("(", "").replace(")", "")
+        let display = m
+          .match(displayRegex)[0]
+          .replace("@[", "")
+          .replace("]", "")
+
+        arr.push({ id: id, display: display })
+      })
+    let newComment = comment.split(regex)
+    let output = ""
+    for (let i = 0; i < newComment.length; i++) {
+      const c = newComment[i]
+      if (i === newComment.length - 1) {
+        output += c
+      } else {output += c + `${arr[i].display}`
+      }  
+    }
+    return output
   }
 
   //Fetching Contacts
@@ -626,11 +656,19 @@ const ChatRc = () => {
   //SideEffect of setting receivers after currentchat changes
   useEffect(() => {
     if (currentChat) {
+      setcurMessage("")
+      setMentionsArray(
+        currentChat.groupMembers.map(m => ({
+          id: m?.id?._id,
+          display: m?.id?.firstname + " " + m?.id?.lastname,
+        }))
+      )
       setReceivers(
         currentChat.groupMembers
           .filter(m => m.id?._id !== currentUser.userID)
           .map(r => r.id?._id)
       )
+
       setNotifications(
         notifications.filter(n => n.groupId !== currentChat?._id)
       )
@@ -1020,10 +1058,10 @@ const ChatRc = () => {
                                   {currentChat.isGroup
                                     ? currentCase?.caseName || "Case Chat"
                                     : getChatName(currentChat.groupMembers)}
-                                    </h5>
-                                    <h5 className="font-size-12 mb-1 text-primary">
-                                   {!currentChat.isGroup
-                                    &&  getChatEmail(currentChat.groupMembers)}
+                                </h5>
+                                <h5 className="font-size-12 mb-1 text-primary">
+                                  {!currentChat.isGroup &&
+                                    getChatEmail(currentChat.groupMembers)}
                                 </h5>
                                 {currentChat?.isGroup && (
                                   <span
@@ -1218,9 +1256,9 @@ const ChatRc = () => {
                                                         "break-spaces",
                                                     }}
                                                   >
-                                                    {stringFormatter(
+                                                    {/* {stringFormatter(
                                                       msg.messageData
-                                                    )}
+                                                    )} */}
                                                   </div>
                                                 </>
                                               ) : (
@@ -1229,9 +1267,10 @@ const ChatRc = () => {
                                                     whiteSpace: "break-spaces",
                                                   }}
                                                 >
-                                                  {stringFormatter(
-                                                    msg.messageData
-                                                  )}
+                                                  {stringFormatter( prettifyMsg(
+                                                        msg.messageData
+                                                      )
+                                                      )}
                                                 </div>
                                                 // <div
                                                 //   style={{ whiteSpace: "pre" }}
@@ -1302,7 +1341,7 @@ const ChatRc = () => {
                               <Row>
                                 <Col>
                                   <div className="position-relative">
-                                    <TextareaAutosize
+                                    <MentionsInput
                                       type="text"
                                       value={curMessage}
                                       onKeyPress={onKeyPress}
@@ -1314,7 +1353,12 @@ const ChatRc = () => {
                                       }
                                       className="form-control chat-input"
                                       placeholder="Enter Message..."
-                                    />
+                                    >
+                                      <Mention
+                                        trigger="@"
+                                        data={mentionsArray}
+                                      />
+                                    </MentionsInput>
 
                                     <div className="chat-input-links">
                                       <ul className="list-inline mb-0">

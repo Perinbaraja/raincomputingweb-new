@@ -118,6 +118,12 @@ const SidebarContent = props => {
               </Link>
             </li>
             <li>
+              <Link to="/caselist-page" className="">
+                <i className="bx bxs-briefcase"></i>
+                <span>{props.t("Cases")}</span>
+              </Link>
+            </li>
+            <li>
               <Link to="/admin-page" className="">
                 <i className="bx bx-loader-circle"></i>
                 <span>{props.t("Pending Request")}</span>
