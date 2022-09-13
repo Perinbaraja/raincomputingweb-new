@@ -1,7 +1,9 @@
 import MetaTags from "react-meta-tags"
+import PropTypes from "prop-types"
 import React, { useState, useEffect } from "react"
 import { Container, Row, Col, Card, CardBody, Button } from "reactstrap"
 import { Link } from "react-router-dom"
+import subGroupUserGrid from "./subGroupUserGrid"
 
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
@@ -17,13 +19,25 @@ import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { removeUser } from "rainComputing/helpers/backend_helper"
 import { getAllUsers } from "rainComputing/helpers/backend_helper"
+import { allCasesData } from "rainComputing/helpers/backend_helper"
+import {
+  getGroupsByUserIdandCaseId,
+  getCasesByUserId,
+  getGroupsByCaseId,
+} from "rainComputing/helpers/backend_helper"
 
 const UserDetails = () => {
   const query = useQuery()
   const [modalOpen, setModalOpen, toggleModal] = useModal(false)
   const [getUser, setGetUser] = useState(null)
+  const [getGroups, setGetGroups] = useState([])
   const [getPayment, setGetPayment] = useState(null)
   const [paymentData, setPaymentData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [caseData, setCaseData] = useState([])
+  const [caseByID, setCaseByID] = useState([])
+  const [count, setCount] = useState([])
+  const [subGroups, setSubgroups] = useState([])
 
   const getUserId = async () => {
     const res = await getUserById({
@@ -39,6 +53,23 @@ const UserDetails = () => {
   useEffect(() => {
     getUserId()
   }, [])
+  // const onGettingSubgroups = async () => {
+  //   const payLoad = {
+  //     caseId: caseData._id,
+  //     userId: caseData.admins,
+  //   }
+  //   const subGroupsRes = await getGroupsByUserIdandCaseId(payLoad)
+  //   if (subGroupsRes.success) {
+  //     console.log("groups", subGroupsRes.groups)
+  //     setAllgroups(subGroupsRes.groups)
+  //     // setCurrentChat(subGroupsRes.groups[0])
+  //   }
+  // }
+  // useEffect(() => {
+  //   if (caseData) {
+  //     onGettingSubgroups()
+  //   }
+  // }, [caseData])
 
   const getAllPaymentData = async () => {
     //setLoading(true)
@@ -55,9 +86,14 @@ const UserDetails = () => {
   useEffect(() => {
     getAllPaymentData()
   }, [])
-  const getPaymentStatus = p => {
-    const Paid = p.find(i => i._id === getUser._id)
-    return Paid ? "Paid" : "LA"
+  const getPaymentStatus = () => {
+    //setLoading(true)
+    const Paid = paymentData?.find(i => i.consumerId._id === getUser._id)
+    // const Paid = paymentData?.consumerId.find(p => p._id === getUser._id)
+    //setLoading(false)
+    console.log("paid", Paid)
+    return Paid ? "Paid" : "Not Paid"
+    //setLoading(false)
   }
   const handleRemovingUser = async () => {
     const payload = {
@@ -74,6 +110,69 @@ const UserDetails = () => {
     }
     setModalOpen(false)
   }
+  const getAllCases = async () => {
+    setLoading(true)
+    const res = await allCasesData({})
+    console.log("case", res)
+    if (res.success) {
+      setCaseData(res.cases)
+      // setCount(
+      //   caseData.caseMembers
+      //     .filter(m => m._id === query.get("id"))
+      //     .map(r => r._id)
+      // )
+    } else {
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    getAllCases()
+  }, [])
+  const getCasesCount = () => {
+    const CaseCount = caseData?.caseMembers?.find(c => c._id === getUser._id)
+    console.log("count", CaseCount)
+    return CaseCount ? CaseCount.length : 0
+  }
+  const getCaseById = async () => {
+    const res = await getCasesByUserId({
+      userId: query.get("id"),
+    })
+    if (res.success) {
+      setCaseByID(res.cases)
+      console.log("usercase", res)
+    }
+    //console.log("el", res)
+  }
+  useEffect(() => {
+    getCaseById()
+  }, [])
+  const getGroupsName = async cs => {
+    const res = await getGroupsByUserIdandCaseId({
+      caseId: cs,
+      userId: query.get("id"),
+    })
+    if (res.success) {
+      setGetGroups(res.groups)
+      console.log("groups", res)
+    }
+    //console.log("el", res)
+  }
+
+  const getSubGroupsName = async () => {
+    const res = await getGroupsByCaseId({
+      caseId: getGroups.caseId,
+    })
+    if (res.success) {
+      setSubgroups(res.subGroups)
+      console.log("subgroups", res)
+    }
+    //console.log("el", res)
+  }
+
+  useEffect(() => {
+    getSubGroupsName()
+  }, [])
   return (
     <React.Fragment>
       <DeleteModal
@@ -119,30 +218,90 @@ const UserDetails = () => {
                     <label className="col-md-5 col-lg-2 col-form-label">
                       Payment
                     </label>
-                    {paymentData
-                      .filter(f => f?.consumerId === query.get("id"))
-                      .map((p, i) => (
+                    {/* {paymentData
+                      // .filter(f => f?.consumerId === query.get("id"))
+                      .map((p, i) => ( */}
+                    <div
+                      className="col-md-5 col-lg-2 col-form-label "
+                      // key={i}
+                    >
+                      <label className="fw-bolder fw-bolder">
+                        {/* {p?.firstname} */}
+                        {/* {paymentData?.consumerId?.firstname} */}
+                        {getPaymentStatus()}
+                      </label>
+                    </div>
+                    {/* ))} */}
+                  </Row>
+                  <Row className="my-md-3">
+                    <div className="text-primary p-3">
+                      <h5 className="text-primary">CASES:</h5>
+                    </div>
+                  </Row>
+
+                  <Row className="my-md-3">
+                    <label className="col-md-5 col-lg-2 col-form-label">
+                      Cases Associated with
+                    </label>
+                    {/* {/* {caseData &&
+                      caseData
+                        .filter(f => f?.caseMembers._id === query.get("id"))
+                        .map((cs, i) => ( */}
+                    {/* {caseData &&
+                      caseData.map((cs, i) => ( */}
+                    <div
+                      className="col-md-5 col-lg-2 col-form-label "
+                      // key={i}
+                    >
+                      <label className="fw-bolder fw-bolder">
+                        {caseByID.length}
+                        {/* {cs.length} */}
+                      </label>
+                    </div>
+                    {/* ))} */}
+                  </Row>
+                  <Row>
+                    <label className="col-md-5 col-lg-2 col-form-label fw-bolder fw-bolder">
+                      Cases:
+                    </label>
+                    <div className="col-md-5 col-lg-2 col-form-label ">
+                      <label className="fw-bolder fw-bolder">SubGroups:</label>
+                    </div>
+                  </Row>
+                  <Row>
+                    {/* <label className="col-md-8 col-lg-2 col-form-label"></label> */}
+                    {caseByID &&
+                      caseByID.map((cs, i) => (
                         <div
-                          className="col-md-5 col-lg-2 col-form-label "
+                          // className="col-md-5 col-lg-2 col-form-label "
+                          key={i}
+                        >
+                          {/* <div className="fw-bolder fw-bolder"> */}
+                          <label className="col-md-col-lg-2 col-form-label  ">
+                            {cs?.caseName}
+                            <subGroupUserGrid
+                              caseId={cs?._id}
+                              userId={getUser._id}
+                            />
+                            {/* {JSON.stringify(getGroupsName(cs?._id))} */}
+                          </label>
+                        </div>
+                      ))}
+
+                    {getGroups &&
+                      getGroups.map((g, i) => (
+                        <div
+                          className="col-md-5 col-lg-2 col-form-label"
                           key={i}
                         >
                           <label className="fw-bolder fw-bolder">
-                            {p?.firstname}
-                            {/* {paymentData?.consumerId?.firstname} */}
-                            {/* {getPaymentStatus(p)} */}
+                            {g?.groupName}
                           </label>
                         </div>
                       ))}
                     {/* ))} */}
                   </Row>
-                  {/* <Row className="my-md-3">
-                    <label className="col-md-5 col-lg-2 col-form-label">
-                      Activity
-                    </label>
-                    <div className="col-md-5 col-lg-2 col-form-label ">
-                      <label className="fw-bolder fw-bolder"></label>
-                    </div>
-                  </Row> */}
+
                   <Row>
                     <div className="modal-footer">
                       <Link to="/userlist-page">
@@ -179,5 +338,7 @@ const UserDetails = () => {
     </React.Fragment>
   )
 }
-
+UserDetails.propTypes = {
+  caseId: PropTypes.string,
+}
 export default UserDetails

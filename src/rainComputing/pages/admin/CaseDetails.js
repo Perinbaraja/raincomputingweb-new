@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 import { Container, Row, Col, Card, CardBody, Button } from "reactstrap"
 import { Link } from "react-router-dom"
 import { getCasesById } from "rainComputing/helpers/backend_helper"
+import { getUserById } from "rainComputing/helpers/backend_helper"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 //Import Breadcrumb
 import Breadcrumb from "components/Common/Breadcrumb"
@@ -16,6 +17,7 @@ const CaseDetails = () => {
   const query = useQuery()
   const [loading, setLoading] = useState(false)
   const [caseDetail, setCaseDetail] = useState(null)
+  const [getUser, setGetUser] = useState(null)
 
   const getCases = async () => {
     const res = await getCasesById({
@@ -29,6 +31,21 @@ const CaseDetails = () => {
 
   useEffect(() => {
     getCases()
+  }, [])
+
+  const getUserId = async () => {
+    const res = await getUserById({
+      userId: caseDetail?.caseMembers?.addedBy,
+    })
+    if (res.success) {
+      setGetUser(res.User)
+      console.log("res", res)
+    }
+    //console.log("el", res)
+  }
+
+  useEffect(() => {
+    getUserId()
   }, [])
   return (
     <React.Fragment>
@@ -94,10 +111,30 @@ const CaseDetails = () => {
                       >
                         <label className="fw-bolder">
                           {/* {admins?.firstname} */}
-                          {cd?.id?.firstname + " " + cd?.id?.lastname}
+                          {cd?.id?.firstname + "  " + cd?.id?.lastname}
                         </label>
                       </div>
                     ))}
+                  </Row>
+                  <Row className="my-md-3">
+                    <label className="col-md-5 col-lg-2 col-form-label">
+                      Case Created By
+                    </label>
+                    {/* {caseDetail?.caseMembers[0] */}
+                    {/* .filter(i => i.id === caseDetail?.admins) */}
+                    {/* .map((m, i) => ( */}
+                    <div
+                      className="col-md-5 col-lg-2 col-form-label "
+                      // key={i}
+                    >
+                      <label className="fw-bolder">
+                        {caseDetail?.caseMembers[0]?.id?.firstname +
+                          "  " +
+                          caseDetail?.caseMembers[0]?.id?.lastname}
+                        {/* {getUser?.firstname + "  " + getUser?.lastname} */}
+                      </label>
+                    </div>
+                    {/* ))} */}
                   </Row>
                   <Row>
                     <div className="modal-footer">
@@ -114,7 +151,7 @@ const CaseDetails = () => {
                         </button>
                       </Link>
 
-                      <button
+                      {/* <button
                         type="button"
                         className="btn btn-danger"
                         onClick={() => {
@@ -123,7 +160,7 @@ const CaseDetails = () => {
                         }}
                       >
                         DeActivate
-                      </button>
+                      </button> */}
                     </div>
                   </Row>
                 </CardBody>
