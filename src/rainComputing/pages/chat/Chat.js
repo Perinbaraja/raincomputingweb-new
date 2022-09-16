@@ -322,7 +322,7 @@ const ChatRc = () => {
         let id = m.match(idRegex)[0].replace("(", "").replace(")", "")
         let display = m
           .match(displayRegex)[0]
-          .replace("@[", "")
+          .replace("[", "")
           .replace("]", "")
 
         arr.push({ id: id, display: display })
@@ -1249,6 +1249,10 @@ const ChatRc = () => {
                                                     }
                                                     text={msg.messageData}
                                                   />
+                                                  <div className="mt-3"> {stringFormatter( prettifyMsg(
+                                                        msg.messageData
+                                                      )
+                                                      )}</div>
                                                   <div
                                                     className="mt-1"
                                                     style={{
