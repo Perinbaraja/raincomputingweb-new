@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'raincomputing1'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DD30FAE79D0A44AEAF3C7D34FACCB8FD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9D72F1C4DDB42FD83FF5566C90C9DAE }}
           package: .
