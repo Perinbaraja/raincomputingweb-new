@@ -72,6 +72,7 @@ import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 import ChatLoader from "rainComputing/components/chat/ChatLoader"
 import EditCase from "rainComputing/components/chat/EditCase"
 import { Mention, MentionsInput } from "react-mentions"
+import { useDropzone } from "react-dropzone"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -452,6 +453,20 @@ const ChatRc = () => {
     }
     setLoading(false)
   }
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip",
+    onDrop: (acceptedFiles) => {
+      setAllFiles(
+        acceptedFiles.map((allFiles) =>
+          Object.assign(allFiles, {
+            preview: URL.createObjectURL(allFiles),
+          })
+        )
+      )
+      console.log("Result",getInputProps)
+    },
+  })
 
   //Detecting Enter key Press in textbox
   const onKeyPress = e => {
@@ -1342,9 +1357,9 @@ const ChatRc = () => {
                               />
                             )}
                             <div className="p-2 chat-input-section">
-                              <Row>
+                              <Row {...getRootProps()}>
                                 <Col>
-                                  <div className="position-relative">
+                                  <div className="position-relative"  >
                                     <MentionsInput
                                       type="text"
                                       value={curMessage}
@@ -1357,6 +1372,7 @@ const ChatRc = () => {
                                       }
                                       className="form-control chat-input"
                                       placeholder="Enter Message..."
+                                     
                                     >
                                       <Mention
                                         trigger="@"
@@ -1364,9 +1380,10 @@ const ChatRc = () => {
                                       />
                                     </MentionsInput>
 
-                                    <div className="chat-input-links">
+                                    <div className="chat-input-links" >
                                       <ul className="list-inline mb-0">
                                         <li className="list-inline-item">
+                                          <div >
                                           <div>
                                             <Input
                                               type="file"
@@ -1378,6 +1395,7 @@ const ChatRc = () => {
                                               onChange={e => {
                                                 handleFileChange(e)
                                               }}
+                                              {...getInputProps()}
                                             />
 
                                             <Label
@@ -1393,6 +1411,8 @@ const ChatRc = () => {
                                               />
                                             </Label>
                                           </div>
+                                          </div>
+
                                         </li>
                                       </ul>
                                     </div>
