@@ -69,6 +69,9 @@ const getGroupsByUserIdandCaseId = payload =>
 const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
 
+const postReplies = payload => post(`${BASE_URL}/message/reply`, payload)
+
+
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
 
@@ -179,4 +182,5 @@ export {
   appointmentStatusUpdate,
   appointmentUserStatus,
   getPaymentId,
+  postReplies
 }

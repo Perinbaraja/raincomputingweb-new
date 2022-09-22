@@ -27,6 +27,8 @@ import {
   Form,
   FormGroup,
   InputGroup,
+  UncontrolledDropdown,
+  Modal,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
@@ -51,6 +53,7 @@ import {
   getOnevsOneChat,
   updateCase,
 } from "rainComputing/helpers/backend_helper"
+import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { isEmpty, map, now } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
@@ -155,6 +158,9 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
+  const [replyMessage, setReplyMessage] = useState("")
+  const [curReplyMessageId, setCurReplyMessageId] = useState(null)
+  const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
 
   //Toaster settings
   toastr.options = {
@@ -321,10 +327,7 @@ const ChatRc = () => {
     matches &&
       matches.forEach(m => {
         let id = m.match(idRegex)[0].replace("(", "").replace(")", "")
-        let display = m
-          .match(displayRegex)[0]
-          .replace("[", "")
-          .replace("]", "")
+        let display = m.match(displayRegex)[0].replace("[", "").replace("]", "")
 
         arr.push({ id: id, display: display })
       })
@@ -334,8 +337,9 @@ const ChatRc = () => {
       const c = newComment[i]
       if (i === newComment.length - 1) {
         output += c
-      } else {output += c + `${arr[i].display}`
-      }  
+      } else {
+        output += c + `${arr[i].display}`
+      }
     }
     return output
   }
@@ -398,6 +402,33 @@ const ChatRc = () => {
 
     return curMessage === null || curMessage.match(/^ *$/) !== null
   }
+  //reply Message
+
+  const toggle_replyMsgModal = () => {
+    setCreateReplyMsgModal(!createReplyMsgModal)
+    document.body.classList.add("no_padding")
+  }
+
+  const handlereplyMsgCancel = () => {
+    setCreateReplyMsgModal(false)
+  }
+
+  const handleReplyMessage = async id => {
+    const payload = {
+      id,
+      sender: currentUser?.userID,
+      msg: replyMessage,
+    }
+
+    const res = await postReplies(payload)
+    setReplyMessage("")
+    const payloadMsg = {
+      groupId: currentChat?._id,
+      userId: currentUser?.userID,
+    }
+    await getMessagesByUserIdandGroupId(payloadMsg)
+    console.log("replies : ", res)
+  }
 
   //Sending Message
   const handleSendMessage = async () => {
@@ -456,15 +487,15 @@ const ChatRc = () => {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip",
-    onDrop: (acceptedFiles) => {
+    onDrop: acceptedFiles => {
       setAllFiles(
-        acceptedFiles.map((allFiles) =>
+        acceptedFiles.map(allFiles =>
           Object.assign(allFiles, {
             preview: URL.createObjectURL(allFiles),
           })
         )
       )
-      console.log("Result",getInputProps)
+      console.log("Result", getInputProps)
     },
   })
 
@@ -776,6 +807,81 @@ const ChatRc = () => {
         ) : (
           <>
             {/* Model for creating case*/}
+            <Modal
+              size="lg"
+              isOpen={createReplyMsgModal && curReplyMessageId}
+              toggle={() => {
+                toggle_replyMsgModal()
+              }}
+              backdrop={"static"}
+              id="staticBackdrop"
+              centered
+            >
+              <div className="modal-header">
+                <button
+                  onClick={() => {
+                    handlereplyMsgCancel()
+                  }}
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                {curReplyMessageId?.replies?.length && (
+                  <Row>
+                    <h5>Replies :</h5>
+                    {curReplyMessageId?.replies?.map((r, i) => (
+                      <p key={i} className="m-2">
+                        {r?.replyMsg}
+                      </p>
+                    ))}
+                  </Row>
+                )}
+                <Row>
+                  <Col>
+                    <div className="position-relative">
+                      <MentionsInput
+                        type="text"
+                        value={replyMessage}
+                        onKeyPress={onKeyPress}
+                        style={{
+                          resize: "none",
+                        }}
+                        onChange={e => setReplyMessage(e.target.value)}
+                        className="form-control chat-input"
+                        placeholder="Enter Message..."
+                      >
+                        <Mention trigger="@" data={mentionsArray} />
+                      </MentionsInput>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handlereplyMsgCancel()
+                  }}
+                  className="btn btn-secondary "
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => handleReplyMessage(curReplyMessageId?._id)}
+                >
+                  Send
+                </button>
+              </div>
+            </Modal>
             <DynamicModel
               open={newCaseModelOpen}
               toggle={toggleNewCaseModelOpen}
@@ -1239,6 +1345,29 @@ const ChatRc = () => {
                                               "black",
                                           }}
                                         >
+                                          <UncontrolledDropdown>
+                                            <DropdownToggle
+                                              href="#"
+                                              className="btn nav-btn"
+                                              tag="i"
+                                            >
+                                              <i className="bx bx-dots-vertical-rounded" />
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                              <DropdownItem href="#">
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-info btn-rounded"
+                                                  onClick={() => {
+                                                    setCurReplyMessageId(msg)
+                                                    toggle_replyMsgModal()
+                                                  }}
+                                                >
+                                                  Reply
+                                                </button>
+                                              </DropdownItem>
+                                            </DropdownMenu>
+                                          </UncontrolledDropdown>
                                           <div
                                             className="ctext-wrap "
                                             style={{
@@ -1264,10 +1393,14 @@ const ChatRc = () => {
                                                     }
                                                     text={msg.messageData}
                                                   />
-                                                  <div className="mt-3"> {stringFormatter( prettifyMsg(
+                                                  <div className="mt-3">
+                                                    {" "}
+                                                    {stringFormatter(
+                                                      prettifyMsg(
                                                         msg.messageData
                                                       )
-                                                      )}</div>
+                                                    )}
+                                                  </div>
                                                   <div
                                                     className="mt-1"
                                                     style={{
@@ -1286,10 +1419,9 @@ const ChatRc = () => {
                                                     whiteSpace: "break-spaces",
                                                   }}
                                                 >
-                                                  {stringFormatter( prettifyMsg(
-                                                        msg.messageData
-                                                      )
-                                                      )}
+                                                  {stringFormatter(
+                                                    prettifyMsg(msg.messageData)
+                                                  )}
                                                 </div>
                                                 // <div
                                                 //   style={{ whiteSpace: "pre" }}
@@ -1307,6 +1439,7 @@ const ChatRc = () => {
                                                 "DD-MM-YY HH:mm"
                                               )}
                                             </p>
+                                            {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
                                           </div>
                                         </div>
                                       </li>
@@ -1359,7 +1492,7 @@ const ChatRc = () => {
                             <div className="p-2 chat-input-section">
                               <Row {...getRootProps()}>
                                 <Col>
-                                  <div className="position-relative"  >
+                                  <div className="position-relative">
                                     <MentionsInput
                                       type="text"
                                       value={curMessage}
@@ -1372,7 +1505,6 @@ const ChatRc = () => {
                                       }
                                       className="form-control chat-input"
                                       placeholder="Enter Message..."
-                                     
                                     >
                                       <Mention
                                         trigger="@"
@@ -1380,39 +1512,38 @@ const ChatRc = () => {
                                       />
                                     </MentionsInput>
 
-                                    <div className="chat-input-links" >
+                                    <div className="chat-input-links">
                                       <ul className="list-inline mb-0">
                                         <li className="list-inline-item">
-                                          <div >
                                           <div>
-                                            <Input
-                                              type="file"
-                                              name="file"
-                                              multiple={true}
-                                              id="hidden-file"
-                                              className="d-none"
-                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip"
-                                              onChange={e => {
-                                                handleFileChange(e)
-                                              }}
-                                              {...getInputProps()}
-                                            />
-
-                                            <Label
-                                              htmlFor="hidden-file"
-                                              style={{ margin: 0 }}
-                                            >
-                                              <i
-                                                className="mdi mdi-attachment mdi-rotate-315"
-                                                style={{
-                                                  color: "#556EE6",
-                                                  fontSize: 16,
+                                            <div>
+                                              <Input
+                                                type="file"
+                                                name="file"
+                                                multiple={true}
+                                                id="hidden-file"
+                                                className="d-none"
+                                                accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip"
+                                                onChange={e => {
+                                                  handleFileChange(e)
                                                 }}
+                                                {...getInputProps()}
                                               />
-                                            </Label>
-                                          </div>
-                                          </div>
 
+                                              <Label
+                                                htmlFor="hidden-file"
+                                                style={{ margin: 0 }}
+                                              >
+                                                <i
+                                                  className="mdi mdi-attachment mdi-rotate-315"
+                                                  style={{
+                                                    color: "#556EE6",
+                                                    fontSize: 16,
+                                                  }}
+                                                />
+                                              </Label>
+                                            </div>
+                                          </div>
                                         </li>
                                       </ul>
                                     </div>
@@ -1474,5 +1605,4 @@ const ChatRc = () => {
     </div>
   )
 }
-
 export default ChatRc
