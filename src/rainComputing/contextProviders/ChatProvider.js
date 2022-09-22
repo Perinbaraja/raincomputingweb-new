@@ -78,23 +78,47 @@ export function ChatProvider({ socket, children }) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
         if (msgData?.groupId === currentRoom._id) {
-          // console.log("Received message : ", msgData)
+          console.log("Received message : ", msgData)
           setMessages([...messages, msgData])
         } else {
-          // console.log("Received message for notifications 1: ", msgData)
+          console.log("Received message for notifications 1: ", msgData)
           setNotifications([msgData, ...notifications])
+          const options = {
+            title: "Rain Computing",
+            body: `New Message From Rain Computing ${msgData?.messageData}`,
+            icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
+            dir: "ltr",
+            // tag: "tag",
+            href: "http://localhost:3000/chat-rc"
+          }
+          const notification = new Notification(
+            "Rain Computing Notification",
+            options
+          )
         }
       })
       socket.off("s_s").once("s_s", async msgData => {
-        // console.log("Message send successfully : ", msgData)
+        console.log("Message send successfully : ", msgData)
         setMessageStack([])
         setMessages([...messages, msgData])
       })
     } else {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
-        // console.log("Received message for notifications: ", msgData)
+        console.log("Received message for notifications: ", msgData)
         setNotifications([msgData, ...notifications])
+        const options = {
+          title: "Rain Computing",
+          body: `New Message From Rain Computing ${msgData?.messageData}`,
+          icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
+          dir: "ltr",
+          // tag: "tag",
+          href: "http://localhost:3000/chat-rc"
+        }
+        const notification = new Notification(
+          "Rain Computing Notification",
+          options
+        )
       })
     }
     socket.off("u_l").once("u_l", async msgData => {

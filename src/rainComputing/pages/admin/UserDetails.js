@@ -15,8 +15,11 @@ import { set } from "lodash"
 import { allPaymentData } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
-import { removeUser } from "rainComputing/helpers/backend_helper"
-import { getAllUsers } from "rainComputing/helpers/backend_helper"
+import {
+  removeUser,
+  getAllUsers,
+} from "rainComputing/helpers/backend_helper"
+import CaseGroupDetails from "./CGDetails"
 
 const UserDetails = () => {
   const query = useQuery()
@@ -33,7 +36,6 @@ const UserDetails = () => {
       setGetUser(res.User)
       console.log("res", res)
     }
-    //console.log("el", res)
   }
 
   useEffect(() => {
@@ -41,15 +43,10 @@ const UserDetails = () => {
   }, [])
 
   const getAllPaymentData = async () => {
-    //setLoading(true)
     const res = await allPaymentData({})
-    // console.log("paymentres :", res)
     if (res.success) {
       setPaymentData(res.paymentIntent)
-      console.log("pay", res)
-      console.log(paymentData)
     }
-    // setLoading(false)
   }
 
   useEffect(() => {
@@ -174,6 +171,7 @@ const UserDetails = () => {
               </Card>
             </Col>
           </Row>
+          < CaseGroupDetails />
         </Container>
       </div>
     </React.Fragment>
