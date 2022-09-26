@@ -89,7 +89,7 @@ export function ChatProvider({ socket, children }) {
             icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
             dir: "ltr",
             // tag: "tag",
-            href: "http://localhost:3000/chat-rc"
+            click_action: "http://localhost:3000/chat-rc"
           }
           const notification = new Notification(
             "Rain Computing Notification",
@@ -113,7 +113,8 @@ export function ChatProvider({ socket, children }) {
           icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
           dir: "ltr",
           // tag: "tag",
-          href: "http://localhost:3000/chat-rc"
+          href: "http://localhost:3000/chat-rc",
+          click_action: "http://localhost:3000/chat-rc"
         }
         const notification = new Notification(
           "Rain Computing Notification",
