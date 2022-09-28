@@ -53,6 +53,7 @@ import {
   getOnevsOneChat,
   getMessageById,
   updateCase,
+  deleteLastMsg,
 } from "rainComputing/helpers/backend_helper"
 import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
@@ -116,7 +117,7 @@ const ChatRc = () => {
     setToggleOpen: setForwardModalOpen,
     toggleIt: toggleForwardModal,
   } = useToggle(false)
- 
+
   const {
     chats,
     setChats,
@@ -135,6 +136,11 @@ const ChatRc = () => {
     toggleOpen: caseDeleteModalOpen,
     setToggleOpen: setCaseDeleteModalOpen,
     toggleIt: toggleCaseDeleteModal,
+  } = useToggle(false)
+  const {
+    toggleOpen: MsgDeleteModalOpen,
+    setToggleOpen: setMsgDeleteModalOpen,
+    toggleIt: toggleMsgDeleteModal,
   } = useToggle(false)
   const {
     toggleOpen: caseEditModalOpen,
@@ -169,7 +175,7 @@ const ChatRc = () => {
   const [replyMessage, setReplyMessage] = useState("")
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
-
+  const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -416,7 +422,26 @@ const ChatRc = () => {
     }
     setCaseDeleteModalOpen(false)
   }
-
+  //Deleting Last Message
+  const onDeletingMsg = async (msgid, createdAt) => {
+    const payload = {
+      id: msgid,
+      deleteIt: true,
+      createdAt: createdAt,
+    }
+    const res = await deleteLastMsg(payload)
+    if (res.success) {
+      setIsDeleteMsg(true)
+      toastr.success(`Message  has been Deleted successfully`, "Success")
+      setcurMessage("Message Deleted")
+      //setDelMsg()
+      await ongetAllChatRooms()
+      await getMessagesByUserIdandGroupId()
+    } else {
+      toastr.error("Unable to delete Message after 1 min", "Failed!!!")
+    }
+    setMsgDeleteModalOpen(false)
+  }
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
     if (isAttachment) {
@@ -502,6 +527,7 @@ const ChatRc = () => {
       }
       payLoad.attachments = attachmentsId
       handleSendingMessage(payLoad)
+      console.log("att", allFiles)
       setAllFiles([])
       setcurMessage("")
       setIsAttachment(false)
@@ -957,7 +983,6 @@ const ChatRc = () => {
                 getAllCases={ongetAllCases}
                 getSubGroups={onGettingSubgroups}
               />
-              
             )}
             {contacts && (
               <ForwardMsg
@@ -968,6 +993,7 @@ const ChatRc = () => {
                 // getAllCases={ongetAllCases}
               />
             )}
+
             {/* Modal for deleting Case*/}
             <DeleteModal
               show={caseDeleteModalOpen}
@@ -976,7 +1002,19 @@ const ChatRc = () => {
               cancelText="Cancel"
               onCloseClick={toggleCaseDeleteModal}
             />
-
+            {messages &&
+              messages.map(msg => (
+                <DeleteModal
+                  key={"" + msg}
+                  show={MsgDeleteModalOpen}
+                  onDeleteClick={() =>
+                    onDeletingMsg(msg._id, msg.createdAt, msg.messageData)
+                  }
+                  confirmText="Yes,Remove"
+                  cancelText="Cancel"
+                  onCloseClick={toggleMsgDeleteModal}
+                />
+              ))}
             <MetaTags>
               <title>Chat RC</title>
             </MetaTags>
@@ -1382,17 +1420,14 @@ const ChatRc = () => {
                                           <UncontrolledDropdown>
                                             <DropdownToggle
                                               href="#"
-                                              className="btn nav-btn  btn-rounded"
+                                              className="btn nav-btn  "
                                               tag="i"
                                             >
                                               <i className="bx bx-dots-vertical-rounded" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                            <DropdownItem
-                                                href="#">
-                                                <button
-                                                type="button"
-                                                className="btn btn-info btn-rounded"
+                                              <DropdownItem
+                                                href="#"
                                                 onClick={() =>
                                                   handleForwardMessage(
                                                     msg._id
@@ -1400,19 +1435,30 @@ const ChatRc = () => {
                                                 }
                                               >
                                                 Forward
-                                                </button>
                                               </DropdownItem>
-                                              <DropdownItem href="#">
-                                                <button
-                                                  type="button"
-                                                  className="btn btn-info btn-rounded"
-                                                  onClick={() => {
-                                                    setCurReplyMessageId(msg)
-                                                    toggle_replyMsgModal()
-                                                  }}
-                                                >
-                                                  Reply
-                                                </button>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  setCurReplyMessageId(msg)
+                                                  toggle_replyMsgModal()
+                                                }}
+                                              >
+                                                Reply
+                                              </DropdownItem>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  msg.sender ===
+                                                  currentUser.userID
+                                                    ? setMsgDeleteModalOpen(
+                                                        true
+                                                      )
+                                                    : toastr.info(
+                                                        "Unable to  delete other's message"
+                                                      )
+                                                }}
+                                              >
+                                                Delete
                                               </DropdownItem>
                                             </DropdownMenu>
                                           </UncontrolledDropdown>

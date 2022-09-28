@@ -65,18 +65,16 @@ const getCasesByUserId = payload =>
 
 const getGroupsByUserIdandCaseId = payload =>
   post(`${BASE_URL}/group/getByUserandCaseId`, payload)
-  const getMessageById = payload =>
+const getMessageById = payload =>
   post(`${BASE_URL}/message/getmsgById`, payload)
-
-  const getOnevsOneChatforward = payload =>
+const deleteLastMsg = payload => post(`${BASE_URL}/message/deletemsg`, payload)
+const getOnevsOneChatforward = payload =>
   post(`${BASE_URL}/group/getChatforward`, payload)
-
 
 const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
 
 const postReplies = payload => post(`${BASE_URL}/message/reply`, payload)
-
 
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
@@ -189,6 +187,7 @@ export {
   appointmentUserStatus,
   getPaymentId,
   getMessageById,
+  deleteLastMsg,
   getOnevsOneChatforward,
-  postReplies
+  postReplies,
 }
