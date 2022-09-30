@@ -112,9 +112,33 @@ const ForwardMsg = ({
     setCurrentChat(fcurrChat)
     console.log("fchat", currentChat)
   }
+  //Creating New ChatRoom
+  const handleCreateChatRoom = async id => {
+    //setPageLoader(true)
+    const payload = {
+      members: [currentUser?.userID, id],
+    }
+    const createdChatRes = await createOnevsOneChat(payload)
+    if (createdChatRes.success) {
+      // toastr.success(`Chat has been created successfully`, "Success")
+      await ongetAllChatRooms()
+      setCurrentChat(createdChatRes.group)
+      //setactiveTab("1")
+    } else {
+      // toastr.error(`Failed to create chat`, "Failed!!!")
+      console.log("Failed to create 1vs1 chat ", createdChatRes)
+    }
+    //setPageLoader(false)
+  }
   const handleForwardSendMessage = async rec => {
-    const fcurrChat = chats?.find(i => i?.groupMembers[1]?.id?._id === rec)
-    setCurrentChat(fcurrChat)
+    let fcurrChat = ""
+    fcurrChat = chats?.find(i => i?.groupMembers[1]?.id?._id === rec)
+    fcurrChat
+      ? setCurrentChat(fcurrChat)
+      : (await handleCreateChatRoom(rec)) &&
+        (fcurrChat =
+          chats?.find(i => i?.groupMembers[1]?.id?._id === rec) &&
+          setCurrentChat(fcurrChat))
     let attachmentsId = []
     let payLoad = {
       caseId: currentMsg?.caseId,

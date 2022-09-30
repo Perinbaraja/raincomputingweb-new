@@ -29,6 +29,7 @@ import {
   InputGroup,
   UncontrolledDropdown,
   Modal,
+  ModalHeader,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import "react-perfect-scrollbar/dist/css/styles.css"
@@ -176,6 +177,8 @@ const ChatRc = () => {
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
+  const [emailModal, setEmailModal] = useState(false)
+
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -456,6 +459,10 @@ const ChatRc = () => {
     setCreateReplyMsgModal(!createReplyMsgModal)
     document.body.classList.add("no_padding")
   }
+  const toggle_emailModal = () => {
+    setEmailModal(!emailModal)
+    document.body.classList.add("no_padding")
+  }
 
   const handlereplyMsgCancel = () => {
     setCreateReplyMsgModal(false)
@@ -469,13 +476,15 @@ const ChatRc = () => {
     }
 
     const res = await postReplies(payload)
-    setReplyMessage("")
     const payloadMsg = {
       groupId: currentChat?._id,
       userId: currentUser?.userID,
     }
     await getMessagesByUserIdandGroupId(payloadMsg)
     console.log("replies : ", res)
+    setReplyMessage("")
+    window.location.reload(false)
+    setCreateReplyMsgModal(false)
   }
 
   //Sending Message
@@ -662,6 +671,11 @@ const ChatRc = () => {
     }-${groupName}-${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     doc.save(docName)
     setChatLoader(false)
+  }
+
+  //Handl sending email
+  const onSendEmail = async () => {
+    console.log('onSendEmail')
   }
 
   //Contacts infiniteScroll
@@ -856,6 +870,54 @@ const ChatRc = () => {
           <ChatLoader />
         ) : (
           <>
+            {/*modal for Email*/}
+            <Modal
+              isOpen={emailModal}
+              centered
+              data-toggle="modal"
+              toggle={() => {
+                toggle_emailModal()
+              }}
+            >
+              <div>
+                <ModalHeader
+                  className="border-bottom-0"
+                  toggle={() => {
+                    setEmailModal(!emailModal)
+                  }}
+                ></ModalHeader>
+              </div>
+              <div className="modal-body">
+                <div className="text-center mb-4">
+                  <div className="avatar-md mx-auto mb-4">
+                    <div className="avatar-title bg-light  rounded-circle text-primary h1">
+                      <i className="mdi mdi-email-open"></i>
+                    </div>
+                  </div>
+
+                  <div className="row justify-content-center">
+                    <div className="col-xl-10">
+                      <h4 className="text-primary">Email !</h4>
+                      <div className="input-group rounded bg-light">
+                        <Input
+                          type="email"
+                          className="form-control bg-transparent border-0"
+                          placeholder="Enter Email address"
+                        />
+                        <Button
+                          color="primary"
+                          type="button"
+                          id="button-addon2"
+                          onClick={() => onSendEmail()}
+                        >
+                          <i className="bx bxs-paper-plane"></i>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Modal>
             {/* Model for creating case*/}
             <Modal
               size="lg"
@@ -881,7 +943,7 @@ const ChatRc = () => {
                 </button>
               </div>
               <div className="modal-body">
-                {curReplyMessageId?.replies?.length && (
+                {/* {curReplyMessageId?.replies?.length && (
                   <Row>
                     <h5>Replies :</h5>
                     {curReplyMessageId?.replies?.map((r, i) => (
@@ -890,7 +952,7 @@ const ChatRc = () => {
                       </p>
                     ))}
                   </Row>
-                )}
+                )} */}
                 <Row>
                   <Col>
                     <div className="position-relative">
@@ -1361,6 +1423,14 @@ const ChatRc = () => {
                                           >
                                             Delete case
                                           </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              toggle_emailModal(true)
+                                            }
+                                          >
+                                            Email
+                                          </DropdownItem>
                                         </DropdownMenu>
                                       ) : (
                                         currentChat &&
@@ -1379,6 +1449,14 @@ const ChatRc = () => {
                                             </DropdownItem>
                                             <DropdownItem href="#">
                                               Delete chat
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() =>
+                                                toggle_emailModal(true)
+                                              }
+                                            >
+                                              Email
                                             </DropdownItem>
                                           </DropdownMenu>
                                         )
@@ -1541,6 +1619,22 @@ const ChatRc = () => {
                                               {moment(msg.createdAt).format(
                                                 "DD-MM-YY HH:mm"
                                               )}
+                                              {msg?.replies?.map((r, i) => (
+                                                <div
+                                                  key={i}
+                                                  className=" mdi mdi-reply m-2"
+                                                >
+                                                  Replies:
+                                                  <div className="conversation-name">
+                                                    {currentChat.isGroup
+                                                      ? getMemberName(r?.sender)
+                                                      : getSenderOneChat(
+                                                          r?.sender
+                                                        )}
+                                                  </div>
+                                                  <p>{r?.replyMsg}</p>
+                                                </div>
+                                              ))}
                                             </p>
                                             {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
                                           </div>
