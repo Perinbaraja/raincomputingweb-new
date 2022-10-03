@@ -23,10 +23,7 @@ const ForwardMsg = ({
   setOpen,
   toggleOpen,
   currentMsg,
-  //   getAllCases,
-  //   getSubGroups,
-
-  //handleCreateChatRoom(contact._id)
+  
 }) => {
   const {
     chats,
@@ -103,32 +100,19 @@ const ForwardMsg = ({
     }
     handleFetchingContacts()
   }, [searchText])
-  const ongetChat = async rec => {
-    //await getAllChatRooms()
-    const fcurrChat = chats?.find(i => i?.groupMembers[1]?.id?._id === rec)
-    //return fcurrChat ? fcurrChat : "NA"
-    console.log("groupMem", rec)
-    console.log("cu", fcurrChat)
-    setCurrentChat(fcurrChat)
-    console.log("fchat", currentChat)
-  }
+ 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
-    //setPageLoader(true)
     const payload = {
       members: [currentUser?.userID, id],
     }
     const createdChatRes = await createOnevsOneChat(payload)
     if (createdChatRes.success) {
-      // toastr.success(`Chat has been created successfully`, "Success")
       await ongetAllChatRooms()
       setCurrentChat(createdChatRes.group)
-      //setactiveTab("1")
     } else {
-      // toastr.error(`Failed to create chat`, "Failed!!!")
       console.log("Failed to create 1vs1 chat ", createdChatRes)
     }
-    //setPageLoader(false)
   }
   const handleForwardSendMessage = async rec => {
     let fcurrChat = ""
@@ -179,7 +163,7 @@ const ForwardMsg = ({
       //await handleAttachment()
     }
     payLoad.attachments = attachmentsId
-    console.log("p", JSON.stringify(payLoad))
+  
     console.log("p", payLoad)
     handleSendingMessage(payLoad)
     //setIsForward(true)
@@ -430,6 +414,5 @@ ForwardMsg.propTypes = {
   setOpen: PropTypes.func,
   toggleOpen: PropTypes.func,
   currentMsg: PropTypes.object,
-  //isForward: PropTypes.bool,
 }
 export default React.memo(ForwardMsg)

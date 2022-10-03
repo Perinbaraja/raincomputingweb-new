@@ -110,6 +110,8 @@ const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
+const sentEmail = payload => post(`${BASE_URL}/message/mailChat`, payload)
+const getSenderNameById = payload => post(`${BASE_URL}/message/getsendernameById`, payload)
 
 //Appoinments
 
@@ -190,4 +192,6 @@ export {
   deleteLastMsg,
   getOnevsOneChatforward,
   postReplies,
+  sentEmail,
+  getSenderNameById,
 }

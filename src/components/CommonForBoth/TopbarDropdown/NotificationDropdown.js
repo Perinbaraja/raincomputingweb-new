@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from "reactstrap"
@@ -12,12 +12,26 @@ import avatar4 from "../../../assets/images/users/avatar-4.jpg"
 import { withTranslation } from "react-i18next"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 import moment from "moment"
+import {  getSenderNameById } from "rainComputing/helpers/backend_helper"
 
 const NotificationDropdown = props => {
   // Declare a new state variable, which we'll call "menu"
   const { notifications } = useNotifications()
   const [menu, setMenu] = useState(false)
-  console.log("notify:",notifications)
+  const [senderName, setSenderName] = useState(false)
+  // console.log("notify:",notifications)
+
+  useEffect(()=> {
+    const getSenderName = async () => {
+    const senderRes = await getSenderNameById({
+      sender: notifications[0]?.sender,
+    })
+    console.log("senderRes",senderRes)
+      const sender = senderRes?.senderDetails[0]?.sender;
+      setSenderName(`${sender?.firstname} ${sender?.lastname}`);
+  }
+  getSenderName()
+  },[])
 
   return (
     <React.Fragment>
@@ -66,21 +80,23 @@ const NotificationDropdown = props => {
                   <h6 className="mt-0 mb-1">
                   {props.t(`${notifications?.length} messages `)}
                   </h6>
-                  <div className="font-size-11 text-muted">
+                  {notifications && notifications?.map((notify,i) => (
+                  <div className="font-size-11 text-muted" key={i}>
                     <p className="mb-1">
                       {/* {props.t("If several languages coalesce the grammar")} */}
-                      {props.t(` New messages from ${notifications[0].sender}`)}
+                      {props.t(` New messages from ${senderName}`)}
                     </p>
                     <p className="text-primary">
-                    {props.t(`${notifications[0].messageData}`)}
+                    {props.t(`${notify?.messageData}`)}
                     </p>
                     <p className="mb-0">
                       <i className="mdi mdi-clock-outline" />{" "}
-                      {moment(notifications[0].createdAt).format(
+                      {moment(notify?.createdAt).format(
                         "DD-MM-YY hh:mm"
                       )}
                     </p>
                   </div>
+                  ))}
                 </div>
               </div>
             </Link>

@@ -55,6 +55,7 @@ import {
   getMessageById,
   updateCase,
   deleteLastMsg,
+  sentEmail,
 } from "rainComputing/helpers/backend_helper"
 import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
@@ -178,6 +179,7 @@ const ChatRc = () => {
   const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
+  const [email, setEmail] = useState("")
 
   //Toaster settings
   toastr.options = {
@@ -483,7 +485,6 @@ const ChatRc = () => {
     await getMessagesByUserIdandGroupId(payloadMsg)
     console.log("replies : ", res)
     setReplyMessage("")
-    window.location.reload(false)
     setCreateReplyMsgModal(false)
   }
 
@@ -673,10 +674,22 @@ const ChatRc = () => {
     setChatLoader(false)
   }
 
-  //Handl sending email
+  //Handle sending email
   const onSendEmail = async () => {
-    console.log('onSendEmail')
+    const payLoad = {
+      mail: email,
+      chatRoomId: currentChat?._id,
+      caseName: currentCase?.caseName ? currentCase?.caseName : "PrivateChat",
+      groupName:  currentChat?.isGroup
+      ? currentChat?.groupName
+      : getChatName(currentChat?.groupMembers)
+    }
+    const mailRes = await sentEmail (payLoad)
+    console.log ("mailRes :",mailRes);
+    setEmail(mailRes.true)
+    setEmailModal(false)
   }
+ 
 
   //Contacts infiniteScroll
   const handleContactScroll = t => {
@@ -903,7 +916,9 @@ const ChatRc = () => {
                           type="email"
                           className="form-control bg-transparent border-0"
                           placeholder="Enter Email address"
-                        />
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          />
                         <Button
                           color="primary"
                           type="button"
@@ -943,16 +958,7 @@ const ChatRc = () => {
                 </button>
               </div>
               <div className="modal-body">
-                {/* {curReplyMessageId?.replies?.length && (
-                  <Row>
-                    <h5>Replies :</h5>
-                    {curReplyMessageId?.replies?.map((r, i) => (
-                      <p key={i} className="m-2">
-                        {r?.replyMsg}
-                      </p>
-                    ))}
-                  </Row>
-                )} */}
+                <h5>Reply :</h5>
                 <Row>
                   <Col>
                     <div className="position-relative">
@@ -1052,7 +1058,7 @@ const ChatRc = () => {
                 setOpen={setForwardModalOpen}
                 toggleOpen={toggleForwardModal}
                 currentMsg={forwardMessages}
-                // getAllCases={ongetAllCases}
+                
               />
             )}
 
@@ -1065,9 +1071,9 @@ const ChatRc = () => {
               onCloseClick={toggleCaseDeleteModal}
             />
             {messages &&
-              messages.map(msg => (
+              messages.map((msg,m) => (
                 <DeleteModal
-                  key={"" + msg}
+                  key={ m }
                   show={MsgDeleteModalOpen}
                   onDeleteClick={() =>
                     onDeletingMsg(msg._id, msg.createdAt, msg.messageData)
@@ -1418,18 +1424,18 @@ const ChatRc = () => {
                                           <DropdownItem
                                             href="#"
                                             onClick={() =>
-                                              setCaseDeleteModalOpen(true)
-                                            }
-                                          >
-                                            Delete case
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() =>
                                               toggle_emailModal(true)
                                             }
                                           >
                                             Email
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              setCaseDeleteModalOpen(true)
+                                            }
+                                          >
+                                            Delete case
                                           </DropdownItem>
                                         </DropdownMenu>
                                       ) : (
@@ -1447,9 +1453,6 @@ const ChatRc = () => {
                                             <DropdownItem href="#">
                                               Manage chat
                                             </DropdownItem>
-                                            <DropdownItem href="#">
-                                              Delete chat
-                                            </DropdownItem>
                                             <DropdownItem
                                               href="#"
                                               onClick={() =>
@@ -1457,6 +1460,9 @@ const ChatRc = () => {
                                               }
                                             >
                                               Email
+                                            </DropdownItem>
+                                            <DropdownItem href="#">
+                                              Delete chat
                                             </DropdownItem>
                                           </DropdownMenu>
                                         )
