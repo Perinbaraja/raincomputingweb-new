@@ -4,37 +4,20 @@ import { Link } from "react-router-dom"
 import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from "reactstrap"
 import SimpleBar from "simplebar-react"
 
-//Import images
-import avatar3 from "../../../assets/images/users/avatar-3.jpg"
-import avatar4 from "../../../assets/images/users/avatar-4.jpg"
 
 //i18n
 import { withTranslation } from "react-i18next"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
-import moment from "moment"
-import {  getSenderNameById } from "rainComputing/helpers/backend_helper"
+import PrivateMsg from "rainComputing/components/chat/PrivateMsg"
 
 const NotificationDropdown = props => {
   // Declare a new state variable, which we'll call "menu"
   const { notifications } = useNotifications()
   const [menu, setMenu] = useState(false)
-  const [senderName, setSenderName] = useState(false)
   // console.log("notify:",notifications)
 
-  useEffect(()=> {
-    const getSenderName = async () => {
-    const senderRes = await getSenderNameById({
-      sender: notifications[0]?.sender,
-    })
-    console.log("senderRes",senderRes)
-      const sender = senderRes?.senderDetails[0]?.sender;
-      setSenderName(`${sender?.firstname} ${sender?.lastname}`);
-  }
-  getSenderName()
-  },[])
-
   return (
-    <React.Fragment>
+    <React.Fragment> 
     <Dropdown
       isOpen={menu}
       toggle={() => setMenu(!menu)}
@@ -69,37 +52,11 @@ const NotificationDropdown = props => {
             </Row>
           </div>
           <SimpleBar style={{ height: "230px" }}>
-            <Link to="/chat-rc" className="text-reset notification-item">
-              <div className="d-flex">
-                <div className="avatar-xs me-3">
-                  <span className="avatar-title bg-primary rounded-circle font-size-16">
-                    <i className="bx bx-chat" />
-                  </span>
-                </div>
-                <div className="flex-grow-1">
-                  <h6 className="mt-0 mb-1">
-                  {props.t(`${notifications?.length} messages `)}
-                  </h6>
-                  {notifications && notifications?.map((notify,i) => (
-                  <div className="font-size-11 text-muted" key={i}>
-                    <p className="mb-1">
-                      {/* {props.t("If several languages coalesce the grammar")} */}
-                      {props.t(` New messages from ${senderName}`)}
-                    </p>
-                    <p className="text-primary">
-                    {props.t(`${notify?.messageData}`)}
-                    </p>
-                    <p className="mb-0">
-                      <i className="mdi mdi-clock-outline" />{" "}
-                      {moment(notify?.createdAt).format(
-                        "DD-MM-YY hh:mm"
-                      )}
-                    </p>
-                  </div>
+            <div className="text-reset notification-item">
+            {notifications && notifications?.map((notify,i) => (
+                  <PrivateMsg notification={notify} key={i}/>
                   ))}
-                </div>
               </div>
-            </Link>
             {/* <Link to="" className="text-reset notification-item">
             <div className="d-flex">
               <img
