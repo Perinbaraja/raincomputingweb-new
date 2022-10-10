@@ -2,32 +2,33 @@ import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import moment from "moment"
-import { getSenderNameById } from "rainComputing/helpers/backend_helper"
-
-const PrivateMsg =(props) => {
-  // console.log("Rp notify : ",props)
+import { getGroupNameById } from "rainComputing/helpers/backend_helper"
+const GroupMsg =(props) => {
+  console.log("case notify : ",props)
 const {
-  sender,
+    caseId,
   messageData,
   createdAt,
 } =props?.notification
-const [senderName, setSenderName] = useState(sender)
+
 const [isLoading, setIsLoading] = useState(true)
+const [caseName,setCaseName] = useState(caseId)
 
 useEffect(()=> {
-  const getSenderName = async () => {
-  const senderRes = await getSenderNameById({
-    sender
+  const getGroupName = async () => {
+  const groupRes = await getGroupNameById({
+    caseId
   })
-    const senderData = senderRes?.senderDetails[0]?.sender;
-    setSenderName(`${senderData?.firstname} ${senderData?.lastname}`);
+    const groupData = groupRes?.caseDetails[0]?.caseId;
+    // console.log("groupData",groupData)
+    setCaseName(`${groupData?.caseName}`);
     setIsLoading(false)
 }
-getSenderName()
-},[sender])
+getGroupName()
+},[caseId])
   return (
   !isLoading &&  
-  <Link to={`/chat-rc?uid=${sender}`}className="text-reset notification-item">
+  <Link to={`/chat-rc?uid=${caseId}`}className="text-reset notification-item">
   <div className="d-flex">
     <div className="avatar-xs me-3">
       <span className="avatar-title bg-primary rounded-circle font-size-16">
@@ -37,7 +38,7 @@ getSenderName()
     <div className="flex-grow-1">
     <div className="font-size-11 text-muted" >
                     <p className="mb-1">
-                      {` New messages from ${senderName}`}
+                      {` New messages from ${caseName}`}
                     </p>
                     <p className="text-primary">
                     {`${messageData}`}
@@ -54,8 +55,8 @@ getSenderName()
              </Link>
 )
 }
-PrivateMsg.propTypes = {
+GroupMsg.propTypes = {
   notification: PropTypes.any,
   }
-export default PrivateMsg
+export default GroupMsg
 
