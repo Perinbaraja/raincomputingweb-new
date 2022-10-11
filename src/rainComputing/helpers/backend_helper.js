@@ -68,8 +68,6 @@ const getGroupsByUserIdandCaseId = payload =>
 const getMessageById = payload =>
   post(`${BASE_URL}/message/getmsgById`, payload)
 const deleteLastMsg = payload => post(`${BASE_URL}/message/deletemsg`, payload)
-const getOnevsOneChatforward = payload =>
-  post(`${BASE_URL}/group/getChatforward`, payload)
 
 const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
@@ -111,8 +109,10 @@ const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 const sentEmail = payload => post(`${BASE_URL}/message/mailChat`, payload)
-const getSenderNameById = payload => post(`${BASE_URL}/message/getsendernameById`, payload)
-const getGroupNameById = payload => post(`${BASE_URL}/message/getgroupnameById`, payload)
+const getSenderNameById = payload =>
+  post(`${BASE_URL}/message/getsendernameById`, payload)
+const getGroupNameById = payload =>
+  post(`${BASE_URL}/message/getgroupnameById`, payload)
 
 //Appoinments
 
@@ -191,7 +191,6 @@ export {
   getPaymentId,
   getMessageById,
   deleteLastMsg,
-  getOnevsOneChatforward,
   postReplies,
   sentEmail,
   getSenderNameById,
