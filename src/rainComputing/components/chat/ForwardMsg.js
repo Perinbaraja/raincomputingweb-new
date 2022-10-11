@@ -14,17 +14,11 @@ import {
   updateCase,
   getMessageById,
   createOnevsOneChat,
-  getOnevsOneChatforward,
+  getOnevsOneChat,
   getAllChatRooms,
 } from "rainComputing/helpers/backend_helper"
 
-const ForwardMsg = ({
-  open,
-  setOpen,
-  toggleOpen,
-  currentMsg,
-  
-}) => {
+const ForwardMsg = ({ open, setOpen, toggleOpen, currentMsg }) => {
   const {
     chats,
     setChats,
@@ -100,7 +94,7 @@ const ForwardMsg = ({
     }
     handleFetchingContacts()
   }, [searchText])
- 
+
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
     const payload = {
@@ -163,7 +157,7 @@ const ForwardMsg = ({
       //await handleAttachment()
     }
     payLoad.attachments = attachmentsId
-  
+
     console.log("p", payLoad)
     handleSendingMessage(payLoad)
     //setIsForward(true)
@@ -193,7 +187,7 @@ const ForwardMsg = ({
     />
   }
   const ongetAllChatRooms = async () => {
-    const chatRoomsRes = await getOnevsOneChatforward({
+    const chatRoomsRes = await getOnevsOneChat({
       userId: currentUser?.userID,
     })
     if (chatRoomsRes.success) {
