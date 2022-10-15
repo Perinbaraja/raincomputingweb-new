@@ -56,10 +56,11 @@ import {
   updateCase,
   deleteLastMsg,
   sentEmail,
+  pinMessage,
 } from "rainComputing/helpers/backend_helper"
 import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
-import { isEmpty, map, now } from "lodash"
+import { indexOf, isEmpty, map, now } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
@@ -180,7 +181,12 @@ const ChatRc = () => {
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
   const [email, setEmail] = useState("")
+  const [searchIndex, setSearchIndex] = useState(0)
+  const [pinModal, setPinModal] = useState(false)
+  const [pinnedMsg, setPinnedMsg] = useState("")
 
+  const pinmessage = messages?.filter(msg => msg?.isPinned === true)
+  console.log("pinmessage", pinmessage)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -206,7 +212,10 @@ const ChatRc = () => {
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
   }
-
+  //PinnedMessage
+  const tog_scroll = () => {
+    setPinModal(!pinModal)
+  }
   //Getting Notofication Count
   const getNotificationCount = id => {
     const notiCount = notifications.filter(c => c.groupId === id)
@@ -407,6 +416,20 @@ const ChatRc = () => {
     setCurrentCase(cas)
   }
 
+  //pinned Message
+  const onPinnedMessage = async msgid => {
+    const payload = { Id: msgid }
+    const res = await pinMessage(payload)
+    if (res.success) {
+      setPinnedMsg(res.message)
+    }
+    console.log(res, "Dk")
+  }
+  useEffect(() => {
+    if (!pinnedMsg) {
+      onPinnedMessage()
+    }
+  }, [pinnedMsg])
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -680,16 +703,16 @@ const ChatRc = () => {
       mail: email,
       chatRoomId: currentChat?._id,
       caseName: currentCase?.caseName ? currentCase?.caseName : "PrivateChat",
-      groupName:  currentChat?.isGroup
-      ? currentChat?.groupName
-      : getChatName(currentChat?.groupMembers)
+      groupName: currentChat?.isGroup
+        ? currentChat?.groupName
+        : getChatName(currentChat?.groupMembers),
     }
-    const mailRes = await sentEmail (payLoad)
-    console.log ("mailRes :",mailRes);
+    const mailRes = await sentEmail(payLoad)
+    // console.log ("mailRes :",mailRes);
+    toastr.success(`Mail has been Send successfully`, "Success")
     setEmail(mailRes.true)
     setEmailModal(false)
   }
- 
 
   //Contacts infiniteScroll
   const handleContactScroll = t => {
@@ -710,6 +733,13 @@ const ChatRc = () => {
       setCasePage(casePage + 1)
     }
   }
+  //Message ScrollintoView
+  const handleShow = () => {
+    setSearchIndex(searchIndex + 1)
+  }
+  const handleShowTop = () => {
+    setSearchIndex(searchIndex - 1)
+  }
 
   //Message search
   useEffect(() => {
@@ -726,6 +756,16 @@ const ChatRc = () => {
       setSearchedMessages([])
     }
   }, [searchMessageText])
+
+  useEffect(() => {
+    if (searchedMessages?.length > 0) {
+      const elementid = searchedMessages[0]?._id
+      document.getElementById(elementid)?.scrollIntoView(false)
+      console.log(searchIndex, elementid, document.getElementById(elementid))
+    } else {
+      setSearchIndex(0)
+    }
+  }, [searchedMessages])
 
   //Text Convert into Link URL
   const stringFormatter = txt => {
@@ -751,6 +791,14 @@ const ChatRc = () => {
       return <p>{txt}</p>
     }
   }
+
+  useEffect(() => {
+    if (searchIndex >= 0) {
+      const elementid = searchedMessages[searchIndex]?._id
+      document.getElementById(elementid)?.scrollIntoView(false)
+      console.log(searchIndex, elementid, document.getElementById(elementid))
+    }
+  }, [searchIndex])
 
   //Resetting page whiule changing Tab
   useEffect(() => {
@@ -918,7 +966,7 @@ const ChatRc = () => {
                           placeholder="Enter Email address"
                           value={email}
                           onChange={e => setEmail(e.target.value)}
-                          />
+                        />
                         <Button
                           color="primary"
                           type="button"
@@ -932,6 +980,41 @@ const ChatRc = () => {
                   </div>
                 </div>
               </div>
+            </Modal>
+            {/* Modal For PinnedMessage */}
+            <Modal
+              isOpen={pinModal}
+              toggle={() => {
+                tog_scroll()
+              }}
+              // scrollable={true}
+            >
+              <div className="modal-header">
+                <h5 className="modal-title mt-0">Pinned Message</h5>
+                <button
+                  type="button"
+                  onClick={() => setPinModal(false)}
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              {pinmessage &&
+                pinmessage?.map((msg, m) => (
+                  <div className="modal-body" key={m}>
+                    
+                 
+                    <p>{msg?.messageData}</p>
+                    <p className="chat-time mb-0">
+                      <i className="bx bx-comment-check align-middle me-1" />
+                      {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                      {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
+                   
+                    </p>
+                  </div>
+                ))}
             </Modal>
             {/* Model for creating case*/}
             <Modal
@@ -1058,7 +1141,6 @@ const ChatRc = () => {
                 setOpen={setForwardModalOpen}
                 toggleOpen={toggleForwardModal}
                 currentMsg={forwardMessages}
-                
               />
             )}
 
@@ -1071,9 +1153,9 @@ const ChatRc = () => {
               onCloseClick={toggleCaseDeleteModal}
             />
             {messages &&
-              messages.map((msg,m) => (
+              messages.map((msg, m) => (
                 <DeleteModal
-                  key={ m }
+                  key={m}
                   show={MsgDeleteModalOpen}
                   onDeleteClick={() =>
                     onDeletingMsg(msg._id, msg.createdAt, msg.messageData)
@@ -1340,6 +1422,24 @@ const ChatRc = () => {
                                 <ul className="list-inline user-chat-nav text-end mb-0">
                                   <li className="list-inline-item d-none d-sm-inline-block">
                                     <Dropdown
+                                      isOpen={pinModal}
+                                      toggle={tog_scroll}
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i
+                                          className="mdi mdi-pin-outline mdi-rotate-315"
+                                          onClick={() => {
+                                            tog_scroll()
+                                          }}
+                                        />
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
+                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                    <Dropdown
                                       isOpen={search_Menu}
                                       toggle={toggleSearch}
                                     >
@@ -1352,9 +1452,17 @@ const ChatRc = () => {
                                       <DropdownMenu className="dropdown-menu-md">
                                         {searchMessageText &&
                                         searchedMessages?.length > 1 ? (
-                                          <span>
+                                          <span className="ps-3 fw-bold">
                                             {searchedMessages?.length} results
                                             found
+                                            <i
+                                              className="mdi mdi-chevron-down-circle-outline mdi-18px ps-4 text-primary"
+                                              onClick={() => handleShow()}
+                                            />
+                                            <i
+                                              className="mdi mdi-chevron-up-circle-outline mdi-18px ps-2 text-primary"
+                                              onClick={() => handleShowTop()}
+                                            />
                                           </span>
                                         ) : (
                                           ""
@@ -1494,8 +1602,12 @@ const ChatRc = () => {
                                       >
                                         <div
                                           className="conversation-list"
+                                          id={msg?._id}
                                           style={{
                                             maxWidth: "80%",
+                                            color:
+                                              searchedMessages?.includes(msg) &&
+                                              "white",
                                             backgroundColor:
                                               searchedMessages?.includes(msg) &&
                                               "black",
@@ -1528,6 +1640,14 @@ const ChatRc = () => {
                                                 }}
                                               >
                                                 Reply
+                                              </DropdownItem>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  onPinnedMessage(msg)
+                                                }}
+                                              >
+                                                Pin
                                               </DropdownItem>
                                               <DropdownItem
                                                 href="#"

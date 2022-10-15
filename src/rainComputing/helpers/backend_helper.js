@@ -73,6 +73,7 @@ const getMessagesByUserIdandGroupId = payload =>
   post(`${BASE_URL}/message/get`, payload)
 
 const postReplies = payload => post(`${BASE_URL}/message/reply`, payload)
+const pinMessage = payload => post(`${BASE_URL}/message/pinnedmsgById`, payload)
 
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
@@ -195,4 +196,5 @@ export {
   sentEmail,
   getSenderNameById,
   getGroupNameById,
+  pinMessage,
 }
