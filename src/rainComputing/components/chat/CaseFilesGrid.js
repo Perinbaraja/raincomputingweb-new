@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react"
-import { Row, Col, Card, CardBody, CardTitle } from "reactstrap"
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Modal,
+  Button,
+  Label,
+  Form,
+  FormGroup,
+} from "reactstrap"
 import MetaTags from "react-meta-tags"
 import PropTypes from "prop-types"
+import { useFormik } from "formik"
 
 // datatable related plugins
 import BootstrapTable from "react-bootstrap-table-next"
@@ -20,6 +31,7 @@ import "./style/datatables.scss"
 import {
   getCaseFiles,
   getFileFromGFS,
+  userNotes,
 } from "rainComputing/helpers/backend_helper"
 import ChatLoader from "./ChatLoader"
 import moment from "moment"
@@ -27,6 +39,37 @@ import moment from "moment"
 const CaseFilesGrid = ({ caseId }) => {
   const [loading, setLoading] = useState(false)
   const [productData, setProductData] = useState([])
+  const [addNotesModal, setAddNotesModal] = useState(false)
+  const [currentFileStatus, setCurrentFileStatus] = useState({})
+  const [notes, setNotes] = useState(" ")
+
+  const toggle_addNotesModal = () => {
+    setAddNotesModal(!addNotesModal)
+  }
+  const handleAddNotesCancel = () => {
+    setAddNotesModal(false)
+    setNotes("")
+  }
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      fileNotes: "",
+    },
+    onSubmit: values => {
+      console.log("REQuest submitted")
+    },
+  })
+
+  //Document Notes:
+  const handleTakeNotes = async () => {
+    const payload = { ...currentFileStatus, note: notes }
+    const res = await userNotes(payload)
+    console.log("dk:", res)
+    if (res.success) {
+    }
+    setAddNotesModal(false)
+    setNotes("")
+  }
 
   const nameFormatter = (cell, row) => {
     if (row?.type === "jpeg" || row?.type === "png" || row?.type === "jpg") {
@@ -76,11 +119,18 @@ const CaseFilesGrid = ({ caseId }) => {
   }
 
   const downloadFormatter = (cell, row) => {
-    console.log("downloadFormatter:", cell)
+    // console.log("downloadFormatter:", cell)
     return cell ? (
       <i className="mdi mdi-loading mdi-spin text-info mdi-24px" />
     ) : (
       <i className="mdi mdi-download text-primary mdi-24px" />
+    )
+  }
+  const notesFormatter = (cell, row) => {
+    return cell ? (
+      <i className="mdi mdi-pencil text-info mdi-24px" />
+    ) : (
+      <i className="mdi mdi-pencil text-primary mdi-24px" />
     )
   }
 
@@ -142,12 +192,33 @@ const CaseFilesGrid = ({ caseId }) => {
         },
       },
     },
+    {
+      dataField: "notes",
+      text: "Notes",
+      sort: true,
+      // eslint-disable-next-line react/display-name
+      formatter: notesFormatter,
+      headerAlign: "center",
+      style: {
+        textAlign: "center",
+      },
+      events: {
+        onClick: (e, column, columnIndex, row, rowIndex) => {
+          setCurrentFileStatus({
+            id: row?.msgId,
+            attachmentId: row?.id,
+            note: row?.note,
+          })
+          toggle_addNotesModal()
+        },
+      },
+    },
   ]
 
   const defaultSorted = [
     {
-      dataField: "name",
-      order: "asc",
+      dataField: "time",
+      order: "desc",
     },
   ]
 
@@ -186,7 +257,6 @@ const CaseFilesGrid = ({ caseId }) => {
     }
     setLoading(false)
   }
-
   useEffect(() => {
     handleFetchFiles()
 
@@ -195,12 +265,85 @@ const CaseFilesGrid = ({ caseId }) => {
       setProductData([])
     }
   }, [])
-
   return (
     <React.Fragment>
       <MetaTags>
         <title>RC | Case Files </title>
       </MetaTags>
+      <>
+        <Modal
+          size="lg"
+          isOpen={addNotesModal}
+          toggle={() => {
+            toggle_addNotesModal()
+          }}
+          backdrop={"static"}
+          id="staticBackdrop"
+          centered
+        >
+          <div className="modal-header">
+            <h5 className="modal-title mt-0" id="myLargeModalLabel">
+            Document Notes
+            </h5>
+            <button
+              onClick={() => {
+                handleAddNotesCancel()
+              }}
+              type="button"
+              className="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div className="modal-body">
+          <ul><li> <p className="fs-5 fw-bold text-primary ">{currentFileStatus?.note}</p></li></ul>
+           
+            <Form className="needs-validation">
+              <Row className="mb-3">
+                <Col>
+                  <FormGroup className="mb-3">
+                   
+                    <Label htmlFor="validationCustom01">Notes</Label>
+                    <textarea
+                      type="text"
+                      name="fileNotes"
+                      id="validationCustom01"
+                      className="form-control"
+                      // rows="2"
+                      placeholder="Enter Your Notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                  </FormGroup>
+                  <div className="modal-footer">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        handleAddNotesCancel()
+                      }}
+                      className="btn btn-danger ms-3 w-lg"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </Button>
+
+                    <Button
+                      type="button"
+                      color="primary"
+                      className="btn btn-primary ms-3 w-lg "
+                      onClick={() => handleTakeNotes()}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        </Modal>
+      </>
       <div>
         {loading ? (
           <ChatLoader />

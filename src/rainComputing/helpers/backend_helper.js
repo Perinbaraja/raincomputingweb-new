@@ -110,6 +110,7 @@ const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 const sentEmail = payload => post(`${BASE_URL}/message/mailChat`, payload)
+const userNotes = payload => post(`${BASE_URL}/message/notes`, payload)
 const getSenderNameById = payload =>
   post(`${BASE_URL}/message/getsendernameById`, payload)
 const getGroupNameById = payload =>
@@ -197,4 +198,5 @@ export {
   getSenderNameById,
   getGroupNameById,
   pinMessage,
+  userNotes,
 }

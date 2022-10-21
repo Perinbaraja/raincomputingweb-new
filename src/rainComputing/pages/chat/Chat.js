@@ -186,7 +186,7 @@ const ChatRc = () => {
   const [pinnedMsg, setPinnedMsg] = useState("")
 
   const pinmessage = messages?.filter(msg => msg?.isPinned === true)
-  console.log("pinmessage", pinmessage)
+  // console.log("pinmessage", pinmessage)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -423,7 +423,6 @@ const ChatRc = () => {
     if (res.success) {
       setPinnedMsg(res.message)
     }
-    console.log(res, "Dk")
   }
   useEffect(() => {
     if (!pinnedMsg) {

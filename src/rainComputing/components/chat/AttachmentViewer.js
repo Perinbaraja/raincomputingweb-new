@@ -20,11 +20,11 @@ const AttachmentViewer = ({ attachments, text }) => {
     <div className="att_wrapper">
       {attachments?.map((att, a) => (
         <div key={a} className="att_item">
-          {att.type.includes("image") ? (
+          {att?.type?.includes("image") ? (
             <ImageViewer imgData={att} />
           ) : (
             <div key={a} className="">
-              {att.type.includes("pdf") ? (
+              {att?.type?.includes("pdf") ? (
                 <a
                   href={`${SERVER_URL}/file/${att?.id}`}
                   download={att?.name}
