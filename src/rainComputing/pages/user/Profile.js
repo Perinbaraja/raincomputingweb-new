@@ -29,8 +29,10 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import {
   userUpdate,
   profilePicUpdate,
+  updatePassword
 } from "rainComputing/helpers/backend_helper"
 import profile from "store/auth/profile/reducer"
+import { values } from "lodash"
 
 const UserProfile = props => {
   const user = localStorage.getItem("authUser")
@@ -42,6 +44,8 @@ const UserProfile = props => {
   const [profilePic, setProfilePic] = useState("")
   const [profileUpdateSuccess, setProfileUpateSuccess] = useState("")
   const [profileUpdateError, setProfileUpateError] = useState("")
+  const [passwordUpdateSuccess, setPasswordUpateSuccess] = useState("")
+  const [passwordUpdateError, setPasswordUpateError] = useState("")
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -50,14 +54,17 @@ const UserProfile = props => {
     initialValues: {
       firstname: currentUser?.firstname,
       lastname: currentUser?.lastname,
+     
     },
     validationSchema: Yup.object({
       firstname: Yup.string().required("Please Enter Your First Name"),
       lastname: Yup.string().required("Please Enter Your Last Name"),
+     
     }),
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
       const res = await userUpdate({ ...values, email: currentUser?.email })
+      console.log(res,'res name');
       if (res.success) {
         setUpdateError("")
         localStorage.setItem("authUser", JSON.stringify(res))
@@ -72,6 +79,30 @@ const UserProfile = props => {
       setLoading(false)
     },
   })
+ const handleUpdatePassword = async () => {  
+  if(validation.values.password ===validation.values.confirmPassword){
+
+  const res = await updatePassword({
+    userID: currentUser.userID,
+    password:validation.values.password
+  })
+ 
+  if(res.success){
+    setPasswordUpateError("");
+    localStorage.setItem("authUser", JSON.stringify(res));
+    setCurrentUser(res);
+    validation.values.password='';
+    validation.values.confirmPassword='';
+    setPasswordUpateSuccess(res.msg);
+  } else {
+    setPasswordUpateSuccess("");
+    setPasswordUpateError("Failed to update password !!")
+  }
+  }
+  else
+  console.log('miss match password and confirm password');
+    setProLoading(false)
+  }
 
   const profilePicUpload = async e => {
     setProLoading(true)
@@ -89,8 +120,7 @@ const UserProfile = props => {
       setCurrentUser(updateRes)
       setProfileUpateSuccess("User Profile updated Successfully")
     } else {
-      setProfileUpateSuccess("")
-
+      setProfileUpateSuccess("");
       setProfileUpateError("Failed to update userProfile !!")
     }
 
@@ -130,7 +160,12 @@ const UserProfile = props => {
               {profileUpdateSuccess && (
                 <Alert color="success">{profileUpdateSuccess}</Alert>
               )}
-
+                {passwordUpdateError && (
+                      <Alert color="danger">{passwordUpdateError}</Alert>
+                    )}
+                    {passwordUpdateSuccess && (
+                      <Alert color="success">{passwordUpdateSuccess}</Alert>
+                    )}
               <Card>
                 <CardBody>
                   <div className="d-flex">
@@ -229,7 +264,6 @@ const UserProfile = props => {
                     </FormGroup>
                   </Col>
                 </Row>
-
                 <Row>
                   <Col md="6">
                     <FormGroup className="mb-3">
@@ -259,6 +293,8 @@ const UserProfile = props => {
                     </FormGroup>
                   </Col>
                 </Row>
+               
+
 
                 {loading ? (
                   <button
@@ -277,6 +313,92 @@ const UserProfile = props => {
               </Form>
             </CardBody>
           </Card>
+
+          <h4 className="card-title mb-4">Password Update</h4>
+
+          <Card>
+            <CardBody>
+            <Row >
+                  <Col md="6">
+                  
+                  
+                    <FormGroup className="mb-3">
+                      <Label htmlFor="validationCustom02">New Password</Label>
+                      <Input
+                        name="password"
+                        placeholder="New Password"
+                        type="password"
+                        className="form-control"
+                        id="  "
+                        onChange={validation.handleChange}
+                        // onBlur={validation.handleBlur}
+                         value={validation.values.password || ""}
+                        // invalid={
+                        //   validation.touched.lastname &&
+                        //   validation.errors.lastname
+                        //     ? true
+                        //     : false
+                        // }
+                      />
+                      {/* {validation.touched.lastname &&
+                      validation.errors.lastname ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.lastname}
+                        </FormFeedback>
+                      ) : null} */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="6">
+                    <FormGroup className="mb-3">
+                      <Label htmlFor="validationCustom02">Confirm Password</Label>
+                      <Input
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        type="password"
+                        className="form-control"
+                        id="validationCustom02"
+                        onChange={
+                          validation.handleChange
+                          }
+                        // onBlur={validation.handleBlur}
+                         value={validation.values.confirmPassword || ""}
+                        // invalid={
+                        //   validation.touched.lastname &&
+                        //   validation.errors.lastname
+                        //     ? true
+                        //     : false
+                        // }
+                      />
+                      {/* {validation.touched.lastname &&
+                      validation.errors.lastname ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.lastname}
+                        </FormFeedback>
+                      ) : null} */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                {loading ? (
+                  <button
+                    type="button"
+                    className="btn btn-dark"
+                    style={{ cursor: "not-allowed" }}
+                  >
+                    <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
+                    Registering...
+                  </button>
+                ) : (
+                  <Button color="primary" type="submit"  onClick={() => {
+                    handleUpdatePassword()
+                  }}>
+                    Update
+                  </Button>
+                )}
+            </CardBody>
+          </Card>
+        
         </Container>
       </div>
     </React.Fragment>

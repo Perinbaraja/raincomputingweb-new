@@ -50,6 +50,8 @@ const removeFirmMember = payload =>
 
 const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
 
+const updatePassword = payload => put(`${BASE_URL}/user/changepassword`, payload)
+
 const setForgettingPassword = payload =>
   post(`${BASE_URL}/user/verifyForgetPassword`, payload)
 
@@ -199,4 +201,5 @@ export {
   getGroupNameById,
   pinMessage,
   userNotes,
+  updatePassword,
 }
