@@ -116,6 +116,11 @@ const ChatRc = () => {
     toggleIt: toggleChatSettingOpen,
   } = useToggle(false)
   const {
+    toggleOpen: groupIdOpen,
+    setToggleOpen: setGroupIdOpen,
+    toggleIt: toggleGroupIdOpen,
+  } = useToggle(false)
+  const {
     toggleOpen: forwardModalOpen,
     setToggleOpen: setForwardModalOpen,
     toggleIt: toggleForwardModal,
@@ -1003,14 +1008,11 @@ const ChatRc = () => {
               {pinmessage &&
                 pinmessage?.map((msg, m) => (
                   <div className="modal-body" key={m}>
-                    
-                 
                     <p>{msg?.messageData}</p>
                     <p className="chat-time mb-0">
                       <i className="bx bx-comment-check align-middle me-1" />
                       {/* <i className="bx bx-time-five align-middle me-1" /> */}
                       {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
-                   
                     </p>
                   </div>
                 ))}
@@ -1419,6 +1421,38 @@ const ChatRc = () => {
                               </Col>
                               <Col md="8" xs="3">
                                 <ul className="list-inline user-chat-nav text-end mb-0">
+                                  {currentChat?.isGroup && (
+                                    <li className="list-inline-item d-none d-sm-inline-block align-middle">
+                                      <Dropdown
+                                        isOpen={groupIdOpen}
+                                        toggle={() =>
+                                          toggleGroupIdOpen(!open)
+                                        }
+                                      >
+                                        <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <i className="bx bx-info-circle" />
+                                        </DropdownToggle>
+
+                                        <DropdownMenu>
+                                          <DropdownItem>
+                                            <span
+                                              style={{
+                                                color: currentChat?.color
+                                                  ? currentChat?.color
+                                                  : "#0000FF",
+                                              }}
+                                            >
+                                              <h6 className="fw-bold">Group ID</h6>
+                                              {`RCID __${currentChat?._id}`}
+                                            </span>
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      </Dropdown>
+                                    </li>
+                                  )}
                                   <li className="list-inline-item d-none d-sm-inline-block">
                                     <Dropdown
                                       isOpen={pinModal}

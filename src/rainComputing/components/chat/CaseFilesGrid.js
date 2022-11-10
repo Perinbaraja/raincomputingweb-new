@@ -64,7 +64,7 @@ const CaseFilesGrid = ({ caseId }) => {
   const handleTakeNotes = async () => {
     const payload = { ...currentFileStatus, note: notes }
     const res = await userNotes(payload)
-    console.log("dk:", res)
+    // console.log("dk:", res)
     if (res.success) {
     }
     setAddNotesModal(false)
