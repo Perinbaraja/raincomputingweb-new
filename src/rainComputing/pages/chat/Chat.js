@@ -82,6 +82,7 @@ import EditCase from "rainComputing/components/chat/EditCase"
 import { Mention, MentionsInput } from "react-mentions"
 import { useDropzone } from "react-dropzone"
 import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
+import copy from "copy-to-clipboard";
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -212,7 +213,11 @@ const ChatRc = () => {
       setactiveTab(tab)
     }
   }
-
+//copy group Id
+const copyToClipboard = () => {
+  copy(`RCID __${currentChat?._id}`);
+  // alert(`You have copied "${currentChat?._id}"`);
+}
   //Toggle Chat Box Menus
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
@@ -1445,10 +1450,10 @@ const ChatRc = () => {
                                                   : "#0000FF",
                                               }}
                                             >
-                                              <h6 className="fw-bold">Group ID</h6>
+                                              <h6 className="fw-bold">Group ID <i className="bx bx-copy ms-2" onClick={copyToClipboard}/></h6>
                                               {`RCID __${currentChat?._id}`}
                                             </span>
-                                          </DropdownItem>
+                                            </DropdownItem>
                                         </DropdownMenu>
                                       </Dropdown>
                                     </li>
