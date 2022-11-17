@@ -218,6 +218,10 @@ const copyToClipboard = () => {
   copy(`RCID __${currentChat?._id}`);
   // alert(`You have copied "${currentChat?._id}"`);
 }
+const copyToemail = () => {
+  copy(`rpmongotest@gmail.com`);
+  // alert(`You have copied "${currentChat?._id}"`);
+}
   //Toggle Chat Box Menus
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
@@ -1442,7 +1446,19 @@ const copyToClipboard = () => {
                                         </DropdownToggle>
 
                                         <DropdownMenu>
-                                          <DropdownItem>
+                                        <DropdownItem>
+                                            <span
+                                              style={{
+                                                color: currentChat?.color
+                                                  ? currentChat?.color
+                                                  : "#0000FF",
+                                              }}
+                                            >
+                                              <h6 className="fw-bold">Email <i className="bx bx-copy ms-2" onClick={copyToemail}/></h6>
+                                              {`rpmongotest@gmail.com`}
+                                            </span>
+                                            </DropdownItem>
+                                          <DropdownItem className="mt-4">
                                             <span
                                               style={{
                                                 color: currentChat?.color
