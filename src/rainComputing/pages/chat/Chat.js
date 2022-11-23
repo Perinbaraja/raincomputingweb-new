@@ -82,7 +82,7 @@ import EditCase from "rainComputing/components/chat/EditCase"
 import { Mention, MentionsInput } from "react-mentions"
 import { useDropzone } from "react-dropzone"
 import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
-import copy from "copy-to-clipboard";
+import copy from "copy-to-clipboard"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -205,7 +205,7 @@ const ChatRc = () => {
   //Scroll to messages bottom on load & message arrives
   useEffect(() => {
     if (!isEmpty(messages)) scrollToBottom()
-  }, [messages])
+  }, [messages, currentChat, messageBox?.clientHeight])
 
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
@@ -213,15 +213,15 @@ const ChatRc = () => {
       setactiveTab(tab)
     }
   }
-//copy group Id
-const copyToClipboard = () => {
-  copy(`RCID __${currentChat?._id}`);
-  // alert(`You have copied "${currentChat?._id}"`);
-}
-const copyToemail = () => {
-  copy(`rpmongotest@gmail.com`);
-  // alert(`You have copied "${currentChat?._id}"`);
-}
+  //copy group Id
+  const copyToClipboard = () => {
+    copy(`RCID __${currentChat?._id}`)
+    // alert(`You have copied "${currentChat?._id}"`);
+  }
+  const copyToemail = () => {
+    copy(`rpmongotest@gmail.com`)
+    // alert(`You have copied "${currentChat?._id}"`);
+  }
   //Toggle Chat Box Menus
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
@@ -617,9 +617,18 @@ const copyToemail = () => {
   //Scrolling to bottom of message
   const scrollToBottom = () => {
     if (messageBox) {
-      messageBox.scrollTop = messageBox.scrollHeight + 1000
+      // console.log("Scrolling to bottom before: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
+      messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
+      // console.log("Scrolling to bottom after: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
     }
   }
+
+  useEffect(() => {
+    if (messageBox) {
+      // console.log("Scrolling t: ",messageBox?.scrollHeight)
+      messageBox.scrollTop = messageBox.scrollHeight
+    }
+  }, [messageBox?.scrollHeight])
 
   //Handling File change
   const handleFileChange = e => {
@@ -1434,9 +1443,7 @@ const copyToemail = () => {
                                     <li className="list-inline-item d-none d-sm-inline-block align-middle">
                                       <Dropdown
                                         isOpen={groupIdOpen}
-                                        toggle={() =>
-                                          toggleGroupIdOpen(!open)
-                                        }
+                                        toggle={() => toggleGroupIdOpen(!open)}
                                       >
                                         <DropdownToggle
                                           className="btn nav-btn"
@@ -1446,7 +1453,7 @@ const copyToemail = () => {
                                         </DropdownToggle>
 
                                         <DropdownMenu>
-                                        <DropdownItem>
+                                          <DropdownItem>
                                             <span
                                               style={{
                                                 color: currentChat?.color
@@ -1454,10 +1461,16 @@ const copyToemail = () => {
                                                   : "#0000FF",
                                               }}
                                             >
-                                              <h6 className="fw-bold">Email <i className="bx bx-copy ms-2" onClick={copyToemail}/></h6>
+                                              <h6 className="fw-bold">
+                                                Email{" "}
+                                                <i
+                                                  className="bx bx-copy ms-2"
+                                                  onClick={copyToemail}
+                                                />
+                                              </h6>
                                               {`rpmongotest@gmail.com`}
                                             </span>
-                                            </DropdownItem>
+                                          </DropdownItem>
                                           <DropdownItem className="mt-4">
                                             <span
                                               style={{
@@ -1466,10 +1479,16 @@ const copyToemail = () => {
                                                   : "#0000FF",
                                               }}
                                             >
-                                              <h6 className="fw-bold">Group ID <i className="bx bx-copy ms-2" onClick={copyToClipboard}/></h6>
+                                              <h6 className="fw-bold">
+                                                Group ID{" "}
+                                                <i
+                                                  className="bx bx-copy ms-2"
+                                                  onClick={copyToClipboard}
+                                                />
+                                              </h6>
                                               {`RCID __${currentChat?._id}`}
                                             </span>
-                                            </DropdownItem>
+                                          </DropdownItem>
                                         </DropdownMenu>
                                       </Dropdown>
                                     </li>
