@@ -35,11 +35,11 @@ const AdminLogin = props => {
     enableReinitialize: true,
 
     initialValues: {
-      username: "",
+      firstname: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Please Enter Your  Name"),
+      firstname: Yup.string().required("Please Enter Your  Name"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: async values => {
@@ -121,24 +121,24 @@ const AdminLogin = props => {
                       <div className="mb-3">
                         <Label className="form-label">User Name</Label>
                         <Input
-                          name="username"
+                          name="firstname"
                           className="form-control"
                           placeholder="Enter Name"
-                          type="username"
+                          type="firstname"
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
-                          value={validation.values.username || ""}
+                          value={validation.values.firstname || ""}
                           invalid={
-                            validation.touched.username &&
-                            validation.errors.username
+                            validation.touched.firstname &&
+                            validation.errors.firstname
                               ? true
                               : false
                           }
                         />
-                        {validation.touched.username &&
-                        validation.errors.username ? (
+                        {validation.touched.firstname &&
+                        validation.errors.firstname ? (
                           <FormFeedback type="invalid">
-                            {validation.errors.username}
+                            {validation.errors.firstname}
                           </FormFeedback>
                         ) : null}
                       </div>

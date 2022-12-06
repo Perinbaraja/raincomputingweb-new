@@ -12,12 +12,7 @@ const GroupMsg = props => {
 
   useEffect(() => {
     const getGroupName = async () => {
-      const groupRes = await getGroupNameById(
-        {
-          caseId,
-        },
-        []
-      )
+      const groupRes = await getGroupNameById({caseId})
       const groupData = groupRes?.caseDetails[0]?.caseId
       // console.log("groupData",groupData)
       setCaseName(`${groupData?.caseName}`)
