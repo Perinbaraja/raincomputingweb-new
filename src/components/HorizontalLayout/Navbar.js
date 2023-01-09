@@ -107,6 +107,15 @@ const Navbar = props => {
                     </Link>
                   </li>
                    )} 
+                   <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/help"
+                    >
+                      <i className="mdi mdi-help me-2"></i>
+                      {props.t("Help")} {props.menuOpen}
+                    </Link>
+                  </li>
               </ul>
             </Collapse>
           </nav>

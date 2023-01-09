@@ -92,6 +92,7 @@ import PaymentVia from "rainComputing/pages/user/AppointmentLanding/Paymentvia"
 import AppointmentCard from "rainComputing/pages/user/AppointmentLanding/AppointmentStatus"
 import PSwrapper from "rainComputing/pages/user/AppointmentLanding/PSwrapper"
 import PaymentTranaction from "rainComputing/pages/admin/adminLogin/TransactionDetails"
+import Guide from "rainComputing/pages/guide"
 
 const authProtectedRoutes = [
   //Crypto
@@ -141,6 +142,7 @@ const publicRoutes = [
   { path: "/forgot-password", component: ForgetPwd },
   { path: "/verifyemail", component: VerifyEmailPage },
   { path: "/emailforgotPwd", component: emailForgetPassword },
+  { path: "/help", component: Guide },
 
   // Authentication Inner
   { path: "/pages-login", component: Login1 },

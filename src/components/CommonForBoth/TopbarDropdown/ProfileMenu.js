@@ -88,14 +88,14 @@ const ProfileMenu = props => {
                 )}
               </DropdownItem>
             )}
-
+{/* 
             {currentUser?.attorneyStatus === "approved" && (
               <Link to="/firmlanding" className="dropdown-item">
                 <span className="badge bg-success float-end"></span>
                 <i className="bx  bx-buildings font-size-16 align-middle me-1" />
                 {props.t("Firm")}
               </Link>
-            )}
+            )} */}
 
             {/* {!currentUser?.appointmentStatus && (
               <DropdownItem tag="a" href="/appointmentstatus">
