@@ -14,6 +14,7 @@ import {
   Row,
   FormFeedback,
   Button,
+  Alert,
 } from "reactstrap"
 // Formik Validation
 import * as Yup from "yup"
@@ -24,6 +25,10 @@ import { useHistory } from "react-router-dom"
 const AttorneyRegister = () => {
   const history = useHistory()
   const { currentUser, setCurrentUser } = useUser()
+  const [profileUpdateError, setProfileUpateError] = useState("")
+  const [profileUpdateSuccess, setProfileUpateSuccess] = useState("")
+  const [updateError, setUpdateError] = useState("")
+  const [updateSuccess, setUpdateSuccess] = useState("")
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -52,15 +57,16 @@ const AttorneyRegister = () => {
   })
 
   const handleAttorneyReg = async payload => {
-    console.log("reg value: ", payload)
     const res = await registerAttorney(payload)
     if (res.success) {
-      console.log("attorney", res)
+      setUpdateError("")
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
+      setUpdateSuccess("Registering attorney Successfully")
       history.push("/")
     } else {
-      console.log("Failed to registering attorney", res)
+      setUpdateSuccess("")
+      setUpdateError("Failed to Register an attroney!!")
     }
   }
 
@@ -70,6 +76,11 @@ const AttorneyRegister = () => {
         <MetaTags>
           <title>RainComputing | Rain - Admin & Dashboard Template</title>
         </MetaTags>
+        {updateError && <Alert color="danger">{updateError}</Alert>}
+              {updateSuccess && <Alert color="success">{updateSuccess}</Alert>}
+              {profileUpdateError && (
+                <Alert color="danger">{profileUpdateError}</Alert>
+              )}
         <Container fluid={true}>
           <Row>
             <Col lg="12">
@@ -79,7 +90,6 @@ const AttorneyRegister = () => {
                     className="needs-validation"
                     onSubmit={e => {
                       e.preventDefault()
-                      console.log("values")
                       validation.handleSubmit()
                     }}
                   >

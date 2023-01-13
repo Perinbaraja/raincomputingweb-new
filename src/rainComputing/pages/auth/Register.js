@@ -16,7 +16,7 @@ import {
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
-
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom"
 
 // import images
@@ -27,6 +27,7 @@ import logo from "assets/images/rain-drop.png"
 import { userRegisteration } from "rainComputing/helpers/backend_helper"
 
 const RainRegister = () => {
+  let history = useHistory();
   const [registrationError, setRegistrationError] = useState("")
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [loading, setLoading] = useState(false)
@@ -58,6 +59,7 @@ const RainRegister = () => {
         setRegistrationSuccess(res.msg)
         // onSubmitProps.setSubmitting(false) //Vidhya
         onSubmitProps.resetForm()
+        history.push("/login");
       } else {
         setRegistrationSuccess("")
         setRegistrationError(res.msg)
