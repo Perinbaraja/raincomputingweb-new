@@ -22,7 +22,7 @@ const GroupMsg = props => {
   }, [caseId])
   return (
     !isLoading && (
-      <a href="/chat-rc" className="text-reset notification-item">
+      <Link to="/chat-rc" className="text-reset notification-item">
         <div className="d-flex">
           <div className="avatar-xs me-3">
             <span className="avatar-title bg-primary rounded-circle font-size-16">
@@ -40,7 +40,7 @@ const GroupMsg = props => {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
     )
   )
 }
