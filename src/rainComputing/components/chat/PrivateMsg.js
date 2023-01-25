@@ -10,6 +10,7 @@ const {
   sender,
   messageData,
   createdAt,
+  groupId,
 } =props?.notification
 const [senderName, setSenderName] = useState(sender)
 const [isLoading, setIsLoading] = useState(true)
@@ -27,7 +28,9 @@ getSenderName()
 },[sender])
   return (
   !isLoading &&  
-  <Link to={`/chat-rc?uid=${sender}`}className="text-reset notification-item">
+  <Link
+   to={`/chat-rc?p_id=${groupId}`}
+   className="text-reset notification-item">
   <div className="d-flex">
     <div className="avatar-xs me-3">
       <span className="avatar-title bg-primary rounded-circle font-size-16">

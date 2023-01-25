@@ -81,7 +81,7 @@ import ChatLoader from "rainComputing/components/chat/ChatLoader"
 import EditCase from "rainComputing/components/chat/EditCase"
 import { Mention, MentionsInput } from "react-mentions"
 import { useDropzone } from "react-dropzone"
-import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
+// import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
 import copy from "copy-to-clipboard"
 
 const CreateCase = lazy(() =>
@@ -138,6 +138,11 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+
+  const privateChatId=query.get('p_id')
+  const groupChatId=query.get('g_id')
+  const caseChatId=query.get('c_id')
+
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
@@ -158,14 +163,14 @@ const ChatRc = () => {
   } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
   const [messageBox, setMessageBox] = useState(null)
-  const [pageLoader, setPageLoader] = useState(false)
+  const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
   const [contacts, setContacts] = useState([])
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
-  const [caseLoading, setCaseLoading] = useState(false)
+  const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
   const [allgroups, setAllgroups] = useState([])
   const [receivers, setReceivers] = useState([])
@@ -354,7 +359,6 @@ const ChatRc = () => {
       setAllCases([])
       setCurrentCase(null)
       setAllgroups(null)
-      setCurrentChat(null)
       console.log("Rendering ongetAllCases error", allCasesRes)
     }
     setCaseLoading(false)
@@ -946,6 +950,23 @@ const ChatRc = () => {
       setMessages([])
     }
   }, [])
+
+  useEffect(()=>{
+    if(privateChatId && !pageLoader){
+      const tempChat = chats?.find(ch => ch?._id === privateChatId)
+      setCurrentChat(tempChat)
+    }
+  },[privateChatId,pageLoader])
+
+  useEffect(()=>{
+    if(groupChatId && caseChatId && !pageLoader && !caseLoading ){
+      const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
+      const tempCase = allCases?.find(c => c?._id === caseChatId)
+      setactiveTab("2")
+      setCurrentCase(tempCase)
+      setCurrentChat(groupChat)
+    }
+  },[groupChatId,pageLoader,caseChatId,caseLoading])
   return (
     <div className="page-content">
       <>
@@ -1154,14 +1175,14 @@ const ChatRc = () => {
                 getSubGroups={onGettingSubgroups}
               />
             )}
-            {contacts && (
+            {/* {contacts && (
               <ForwardMsg
                 open={forwardModalOpen}
                 setOpen={setForwardModalOpen}
                 toggleOpen={toggleForwardModal}
                 currentMsg={forwardMessages}
               />
-            )}
+            )} */}
 
             {/* Modal for deleting Case*/}
             <DeleteModal
@@ -1695,7 +1716,7 @@ const ChatRc = () => {
                                               <i className="bx bx-dots-vertical-rounded" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                              <DropdownItem
+                                              {/* <DropdownItem
                                                 href="#"
                                                 onClick={() =>
                                                   handleForwardMessage(
@@ -1704,7 +1725,7 @@ const ChatRc = () => {
                                                 }
                                               >
                                                 Forward
-                                              </DropdownItem>
+                                              </DropdownItem> */}
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
@@ -1750,7 +1771,7 @@ const ChatRc = () => {
                                                   : "#00EE00" + "33",
                                             }}
                                           >
-                                            {msg.isForward ? (
+                                            {/* {msg.isForward ? (
                                               <div className=" mdi mdi-forward">
                                                 Forwarded:
                                               </div>
@@ -1758,7 +1779,7 @@ const ChatRc = () => {
                                               <div className="conversation-name">
                                                 {" "}
                                               </div>
-                                            )}
+                                            )} */}
                                             <div className="conversation-name">
                                               {currentChat.isGroup
                                                 ? getMemberName(msg.sender)

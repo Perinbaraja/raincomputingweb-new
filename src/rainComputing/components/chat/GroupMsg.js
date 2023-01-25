@@ -5,7 +5,7 @@ import moment from "moment"
 import { getGroupNameById } from "rainComputing/helpers/backend_helper"
 const GroupMsg = props => {
   // console.log("case notify : ", props)
-  const { caseId, messageData, createdAt } = props?.notification
+  const { caseId, messageData, createdAt ,groupId} = props?.notification
 
   const [isLoading, setIsLoading] = useState(true)
   const [caseName, setCaseName] = useState(caseId)
@@ -21,8 +21,8 @@ const GroupMsg = props => {
     getGroupName()
   }, [caseId])
   return (
-    !isLoading && (
-      <Link to="/chat-rc" className="text-reset notification-item">
+    !isLoading && 
+      <Link to={`/chat-rc?g_id=${groupId}&c_id=${caseId}`} className="text-reset notification-item">
         <div className="d-flex">
           <div className="avatar-xs me-3">
             <span className="avatar-title bg-primary rounded-circle font-size-16">
@@ -42,7 +42,6 @@ const GroupMsg = props => {
         </div>
       </Link>
     )
-  )
 }
 GroupMsg.propTypes = {
   notification: PropTypes.any,
