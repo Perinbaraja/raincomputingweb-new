@@ -9,20 +9,6 @@ on:
       - revert-caseDetails
   workflow_dispatch:
 
-variables:
-  npm_config_cache: $(Pipeline.Workspace)/.npm
-
-steps:
-- task: Cache@2
-  inputs:
-    key: 'npm | "$(Agent.OS)" | package.json'
-    restoreKeys: |
-       npm | "$(Agent.OS)"
-    path: $(npm_config_cache)
-  displayName: Cache npm
-
-- script: npm ci
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -66,5 +52,5 @@ jobs:
         with:
           app-name: 'raincomputing'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5F5D17DC25074A57B95A2E49F6EC51E1 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F933FC3A311944DA94030C38A0037C11 }}
           package: .
