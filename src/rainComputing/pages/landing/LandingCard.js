@@ -56,7 +56,7 @@ const LandingCard = props => {
                 </Link>
               </div>
               <div className="flex-fill">
-                {/* <Link to="#" id={"project" + user._id}>
+                <Link to="#" id={"project" + user._id}>
                   <i className="bx bx-pie-chart-alt" />
                   <UncontrolledTooltip
                     placement="bottom"
@@ -64,7 +64,7 @@ const LandingCard = props => {
                   >
                     Schedule
                   </UncontrolledTooltip>
-                </Link> */}
+                </Link>
               </div>
               <div className="flex-fill">
                 <Link
