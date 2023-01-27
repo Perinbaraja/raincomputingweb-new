@@ -47,7 +47,14 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-   
+      - name: Zip all files for upload between jobs
+        run: zip react.zip ./* 
+            
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: node-app
+          path: react.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,7 +64,10 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-     
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: node-app
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -66,4 +76,7 @@ jobs:
           app-name: 'raincomputing'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_400FB66A26C2418DA0A5C01973A77863 }}
-          package: .
+          package: react.zip
+      
+      - name: Delete zip file
+        run: rm react.zip
