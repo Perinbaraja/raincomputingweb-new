@@ -21,7 +21,7 @@ steps:
     path: $(npm_config_cache)
   displayName: Cache npm
 
-- script: npm ciz
+- script: npm ci
 
 jobs:
   build:
