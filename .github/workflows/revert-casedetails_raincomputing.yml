@@ -8,7 +8,7 @@ on:
     branches:
       - revert-caseDetails
   workflow_dispatch:
-  
+
 variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
 
@@ -21,7 +21,7 @@ steps:
     path: $(npm_config_cache)
   displayName: Cache npm
 
-- script: npm ci
+- script: npm ciz
 
 jobs:
   build:
