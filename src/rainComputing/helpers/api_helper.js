@@ -37,5 +37,13 @@ export async function put(url, data, config = {}) {
 export async function del(url, config = {}) {
   return await axiosApi
     .delete(url, { ...config })
-    .then(response => response.data)
+    .then(response => response.data) 
 }
+
+//new change: 
+export async function del(url, config = {}) {
+  return await axiosApi
+    .delete(url, { ...config }) 
+}
+
+
