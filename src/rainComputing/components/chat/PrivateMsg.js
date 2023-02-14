@@ -5,7 +5,6 @@ import moment from "moment"
 import { getSenderNameById } from "rainComputing/helpers/backend_helper"
 
 const PrivateMsg =(props) => {
-  // console.log("Rp notify : ",props)
 const {
   sender,
   messageData,

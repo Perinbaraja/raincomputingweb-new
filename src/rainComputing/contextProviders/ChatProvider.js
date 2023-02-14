@@ -34,7 +34,6 @@ export function ChatProvider({ socket, children }) {
   //     if (socket == null) return
 
   //     socket.once("receive_message", async msgData => {
-  //       console.log("receive_message From SocketProvider ", msgData)
   //       if (!currentRoom) {
   //         setNotifications([msgData, ...notifications])
   //       } else {
@@ -78,10 +77,8 @@ export function ChatProvider({ socket, children }) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
         if (msgData?.groupId === currentRoom._id) {
-          console.log("Received message : ", msgData)
           setMessages([...messages, msgData])
         } else {
-          console.log("Received message for notifications 1: ", msgData)
           setNotifications([msgData, ...notifications])
           const options = {
             title: "Rain Computing",
@@ -98,14 +95,12 @@ export function ChatProvider({ socket, children }) {
         }
       })
       socket.off("s_s").once("s_s", async msgData => {
-        console.log("Message send successfully : ", msgData)
         setMessageStack([])
         setMessages([...messages, msgData])
       })
     } else {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
-        console.log("Received message for notifications: ", msgData)
         setNotifications([msgData, ...notifications])
         const options = {
           title: "Rain Computing",

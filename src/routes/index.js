@@ -1,32 +1,15 @@
 import React from "react"
 import { Redirect } from "react-router-dom"
-//Demo
 
 // // Pages Component
 import Chat from "../pages/Chat/Chat"
 
-// // File Manager
-// import FileManager from "../pages/FileManager/index"
-
-// Profile
-// import UserProfile from "../pages/Authentication/user-profile"
-
-// Pages Calendar
-// import Calendar from "../pages/Calendar/index"
-
-// //Tasks
 
 // //Projects
 import ProjectsGrid from "../pages/Projects/projects-grid"
 import ProjectsList from "../pages/Projects/projects-list"
 import ProjectsOverview from "../pages/Projects/ProjectOverview/projects-overview"
 import ProjectsCreate from "../pages/Projects/projects-create"
-
-// //Ecommerce Pages
-
-//Email
-
-//Invoices
 
 // Authentication related pages
 import Login from "../pages/Authentication/Login"
@@ -61,7 +44,6 @@ import Popup from "../pages/popup/index"
 import LandingPage from "pages/Contacts/landingPage"
 
 //Custom
-import RcChat from "rainComputing/pages/Chat"
 import RainRegister from "rainComputing/pages/auth/Register"
 import RainLogin from "rainComputing/pages/auth/Login"
 import UserProfile from "rainComputing/pages/user/Profile"
@@ -114,7 +96,6 @@ const authProtectedRoutes = [
   { path: "/contacts-profile", component: ContactsProfile },
 
   //Custom Pages
-  { path: "/rc-chat", component: RcChat },
   { path: "/profile", component: UserProfile },
   { path: "/attorney-signup", component: AttorneyRegister },
   { path: "/firmcreate", component: FirmCreate },

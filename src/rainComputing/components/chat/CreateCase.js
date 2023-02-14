@@ -82,7 +82,6 @@ const CreateCase = ({
       await getAllCases({ isSet: false })
       handleCaseCreationCancel()
     } else {
-      console.log("Case Creation Erron :", caseRes)
       toastr.error(
         ` ${caseRes?.msg} Failed to create case `,
         "Case creation failed!!!"

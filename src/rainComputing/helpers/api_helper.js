@@ -40,10 +40,3 @@ export async function del(url, config = {}) {
     .then(response => response.data) 
 }
 
-//new change: 
-export async function del(url, config = {}) {
-  return await axiosApi
-    .delete(url, { ...config }) 
-}
-
-

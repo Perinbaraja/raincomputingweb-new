@@ -197,7 +197,6 @@ const ChatRc = () => {
   const [pinnedMsg, setPinnedMsg] = useState("")
 
   const pinmessage = messages?.filter(msg => msg?.isPinned === true)
-  // console.log("pinmessage", pinmessage)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -255,7 +254,6 @@ const ChatRc = () => {
     if (res.success) {
       setForwardMessages(res.Msg)
       //setcurMessage(res.messageData)
-      console.log("fmsg", res)
     } else {
       console.log("Failed to fetch message", res)
     }
@@ -359,7 +357,6 @@ const ChatRc = () => {
       setAllCases([])
       setCurrentCase(null)
       setAllgroups(null)
-      console.log("Rendering ongetAllCases error", allCasesRes)
     }
     setCaseLoading(false)
   }
@@ -523,7 +520,6 @@ const ChatRc = () => {
       userId: currentUser?.userID,
     }
     await getMessagesByUserIdandGroupId(payloadMsg)
-    console.log("replies : ", res)
     setReplyMessage("")
     setCreateReplyMsgModal(false)
   }
@@ -577,7 +573,6 @@ const ChatRc = () => {
       }
       payLoad.attachments = attachmentsId
       handleSendingMessage(payLoad)
-      console.log("att", allFiles)
       setAllFiles([])
       setcurMessage("")
       setIsAttachment(false)
@@ -595,7 +590,6 @@ const ChatRc = () => {
           })
         )
       )
-      console.log("Result", getInputProps)
     },
   })
 
@@ -621,15 +615,12 @@ const ChatRc = () => {
   //Scrolling to bottom of message
   const scrollToBottom = () => {
     if (messageBox) {
-      // console.log("Scrolling to bottom before: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
       messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
-      // console.log("Scrolling to bottom after: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
     }
   }
 
   useEffect(() => {
     if (messageBox) {
-      // console.log("Scrolling t: ",messageBox?.scrollHeight)
       messageBox.scrollTop = messageBox.scrollHeight
     }
   }, [messageBox?.scrollHeight])
@@ -734,7 +725,6 @@ const ChatRc = () => {
         : getChatName(currentChat?.groupMembers),
     }
     const mailRes = await sentEmail(payLoad)
-    // console.log ("mailRes :",mailRes);
     toastr.success(`Mail has been Send successfully`, "Success")
     setEmail(mailRes.true)
     setEmailModal(false)
@@ -787,7 +777,6 @@ const ChatRc = () => {
     if (searchedMessages?.length > 0) {
       const elementid = searchedMessages[0]?._id
       document.getElementById(elementid)?.scrollIntoView(false)
-      console.log(searchIndex, elementid, document.getElementById(elementid))
     } else {
       setSearchIndex(0)
     }
@@ -822,7 +811,6 @@ const ChatRc = () => {
     if (searchIndex >= 0) {
       const elementid = searchedMessages[searchIndex]?._id
       document.getElementById(elementid)?.scrollIntoView(false)
-      console.log(searchIndex, elementid, document.getElementById(elementid))
     }
   }, [searchIndex])
 

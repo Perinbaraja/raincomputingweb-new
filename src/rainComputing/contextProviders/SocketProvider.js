@@ -30,7 +30,7 @@ export function SocketProvider({ children }) {
     })
   }
   const handleSetSocket = id => {
-    console.log("setting socket after login")
+    // console.log("setting socket after login")
     setSocket(
       io(SERVER_URL, {
         query: { id },
