@@ -9,7 +9,6 @@ import { Link } from "react-router-dom"
 import { Dropdown, DropdownToggle, DropdownMenu } from "reactstrap"
 
 // Import menuDropdown
-import LanguageDropdown from "../CommonForBoth/TopbarDropdown/LanguageDropdown"
 import { adminLogout } from "rainComputing/helpers/backend_helper"
 
 import rain from "../../assets/images/rain-drop.png"
@@ -75,7 +74,6 @@ const Header = props => {
             </button>
           </div>
           <div className="d-flex">
-            <LanguageDropdown />
             <div className="dropdown d-none d-lg-inline-block ms-1"></div>
             <div className="mt-4">
               <Link

@@ -17,10 +17,6 @@ const topBarThemeTypes = {
 
 const leftBarThemeImageTypes = {
   NONE: "none",
-  IMG1: "img1",
-  IMG2: "img2",
-  IMG3: "img3",
-  IMG4: "img4",
 }
 
 const leftSidebarTypes = {

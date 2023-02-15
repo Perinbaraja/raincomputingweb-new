@@ -11,25 +11,11 @@ import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu } from "reactstrap"
 
 // Import menuDropdown
-import LanguageDropdown from "../CommonForBoth/TopbarDropdown/LanguageDropdown"
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu"
 
-import megamenuImg from "../../assets/images/megamenu-img.png"
-import logo from "../../assets/images/logo.svg"
-import logoLight from "../../assets/images/RainCom_Logo.webp"
-import logoLightSvg from "../../assets/images/logo-light.svg"
-import logoDark from "../../assets/images/RainCom_Logo.webp"
 import rainlogo from "assets/images/rain-drop.png"
 import rainlglogo from "assets/images/raincom_Logo1.png"
-// import images
-import github from "../../assets/images/brands/github.png"
-import bitbucket from "../../assets/images/brands/bitbucket.png"
-import dribbble from "../../assets/images/brands/dribbble.png"
-import dropbox from "../../assets/images/brands/dropbox.png"
-import mail_chimp from "../../assets/images/brands/mail_chimp.png"
-import slack from "../../assets/images/brands/slack.png"
-
 //i18n
 import { withTranslation } from "react-i18next"
 
@@ -91,9 +77,7 @@ const Header = props => {
           </div>
 
           <div className="d-flex align-items-center">
-            {/* <NotificationDropdown /> */}
-            {/* <LanguageDropdown /> */}
-
+            <NotificationDropdown />
             <ProfileMenu />
           </div>
         </div>

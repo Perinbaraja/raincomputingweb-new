@@ -8,7 +8,6 @@ import {
   Button,
 } from "reactstrap"
 
-//i18n
 import { withTranslation } from "react-i18next"
 // Redux
 import { connect } from "react-redux"
@@ -130,7 +129,7 @@ const ProfileMenu = props => {
                 handleLogout()
               }}
             >
-              {/* <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" /> */}
+              <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" />
               <span>{props.t("Logout")}</span>
             </Link>
           </DropdownMenu>

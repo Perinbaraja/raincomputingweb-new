@@ -4,17 +4,9 @@ import { map, get, attempt } from "lodash"
 import {
   Card,
   CardBody,
-  Col,
   Row,
-  Label,
-  Button,
-  Input,
-  Form,
-  FormGroup,
-  FormFeedback,
 } from "reactstrap"
 import { Link } from "react-router-dom"
-import img1 from "../../../assets/images/img1m.png"
 import * as Yup from "yup"
 import { useFormik } from "formik"
 import PerfectScrollbar from "react-perfect-scrollbar"

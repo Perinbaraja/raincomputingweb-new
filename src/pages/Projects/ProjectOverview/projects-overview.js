@@ -2,18 +2,11 @@ import React, { useEffect } from "react"
 import MetaTags from "react-meta-tags"
 import PropTypes from "prop-types"
 import { useLocation, withRouter } from "react-router-dom"
-import { connect } from "react-redux"
 import { isEmpty } from "lodash"
 import { Col, Container, Row } from "reactstrap"
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb"
-import { getProjectDetail as onGetProjectDetail } from "store/projects/actions"
 import ProjectDetail from "./projectDetail"
-import TeamMembers from "./teamMembers"
-import OverviewChart from "./overviewChart"
-import { options, series } from "common/data/projects"
-import AttachedFiles from "./attachedFiles"
-import Comments from "./comments"
 //IMPORT ATTORNEY DETAILS
 import { getAttorneyByid as onGetAttorneyDetails } from "store/projects/actions"
 //redux
