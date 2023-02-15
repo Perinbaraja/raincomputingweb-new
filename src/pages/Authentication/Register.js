@@ -25,10 +25,6 @@ import { useSelector, useDispatch } from "react-redux"
 
 import { Link } from "react-router-dom"
 
-//scss
-
-import "../../pages/Contacts/landing.scss"
-
 // import images
 import profileImg from "../../assets/images/profile-img.png"
 import logoImg from "../../assets/images/logo.svg"
