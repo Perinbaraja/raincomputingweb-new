@@ -91,8 +91,8 @@ const Header = props => {
           </div>
 
           <div className="d-flex align-items-center">
-            <NotificationDropdown />
-            <LanguageDropdown />
+            {/* <NotificationDropdown /> */}
+            {/* <LanguageDropdown /> */}
 
             <ProfileMenu />
           </div>

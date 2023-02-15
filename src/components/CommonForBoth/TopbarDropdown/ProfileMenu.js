@@ -130,20 +130,20 @@ const ProfileMenu = props => {
                 handleLogout()
               }}
             >
-              <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" />
+              {/* <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" /> */}
               <span>{props.t("Logout")}</span>
             </Link>
           </DropdownMenu>
         </Dropdown>
       ) : (
         <Link to="/login" className="dropdown">
-          <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" />
-          <span>{props.t("Login")}</span>
+          {/* <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" /> */}
+          <button className=" bg-primary text-light px-4 py-2 border-0 rounded" type="button"><span>{props.t("Login")}</span></button>
         </Link>
       )}
-    </React.Fragment>
+    </React.Fragment> 
   )
-}
+} 
 
 ProfileMenu.propTypes = {
   success: PropTypes.any,
