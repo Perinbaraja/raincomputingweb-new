@@ -43,9 +43,6 @@ import { facebook, google } from "../../config"
 import Header from "components/VerticalLayout/Header"
 import Navbar from "components/HorizontalLayout/Navbar"
 
-//scss
-import "../../pages/Contacts/landing.scss"
-
 const Login = props => {
   const dispatch = useDispatch()
 

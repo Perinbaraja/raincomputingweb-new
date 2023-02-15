@@ -19,17 +19,8 @@ import NonAuthLayout from "./components/NonAuthLayout"
 // Import scss
 import "./assets/scss/theme.scss"
 
-// Import Firebase Configuration file
-// import { initFirebaseBackend } from "./helpers/firebase_helper"
-
-import fakeBackend from "./helpers/AuthType/fakeBackend"
-
-// Activating fake backend
-fakeBackend()
-
 import { ChatProvider } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
-import ContactsGrid from "pages/Contacts/contacts-grid"
 import LandingGrid from "rainComputing/pages/landing/LandingGrid"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 

@@ -20,7 +20,6 @@ import {
 } from "./actions"
 
 //Include Both Helper File with needed methods
-import { getProjects, getProjectsDetails, addNewProject, updateProject, deleteProject } from "helpers/fakebackend_helper"
 import { get } from "lodash"
 import {getAttorneyByID} from "helpers/backend_helper"
 
