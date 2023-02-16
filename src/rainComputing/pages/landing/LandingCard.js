@@ -9,6 +9,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap"
 import { attImages } from "helpers/mockData"
+import "./landingcard.scss"
 
 const LandingCard = props => {
   const imgIndex = Math.floor(Math.random() * 8)
@@ -16,30 +17,70 @@ const LandingCard = props => {
 
   return (
     <React.Fragment>
-      <Col xl="3" sm="6">
-        <Card className="text-center">
+      <Col xl="6" md="6" sm="12">
+        <Card className="text-center " id="attcard">
           <Link to={`/projects-overview?uid=${user._id}`}>
-            <CardBody>
-              <div>
-                <div>
+            <CardBody >
+              <div className="d-flex">
+                <div id="attimg">
                   <img
                     className="avatar-xl1"
                     src={user.img ? user.img : attImages[imgIndex].url}
                     alt=""
                   />
                 </div>
-                <div className="mt-3">
-                  <h5 className="font-size-16 mb-1 text-dark">
-                    {user.firstname} {user.lastname} {user.initial}
-                  </h5>
-                </div>
-                <p className="font-size-10 text-muted">{user.firm}</p>
-                <p className="text-muted">{user.type}</p>
+                <div id="attdetail">
+                  <div className="mt-3 mx-3">
+                    <h5 className="font-size-20 mb-1 text-primary">
+                     {user.firstname} {user.lastname} {user.initial}
+                    </h5>
+                  </div> <br></br>
+                  <p className="mx-3 text-dark" id="attfirm">{user.firm}</p>
+                  <p className="mx-3 text-muted">{user.type}</p>
               </div>
+              </div>
+              <div className="d-flex justify-content-end">
+                <div id="prof"></div>
+                    <div className="d-flex mx-3">
+                      <Link
+                        to={`/chat-rc?uid=62ec8de74fde4cb410073cc0`}
+                        id={"message" + user._id}
+                      >
+                        <div id="attmenus">
+                       <i className="bx bx-message-square-dots"  id="atticon"/>
+                        </div>
+                  
+                        <UncontrolledTooltip
+                         placement="bottom"
+                         target={"message" + user._id}
+                        >
+                         Chat
+                        </UncontrolledTooltip>
+                      </Link>
+                    </div>
+                    <div className="d-flex mx-3">
+                      <Link
+                        to={`/projects-overview?uid=${user._id}`}
+                        id={"profile" + user._id}
+                     >
+                        <div id="attmenus">
+                        <i className="bx bx-user-circle" id="atticon" />
+                        </div>
+                      </Link>
+                      <UncontrolledTooltip
+                        placement="bottom"
+                        target={"profile" + user._id}
+                      >
+                        Profile
+                      </UncontrolledTooltip>
+                    </div>
+
+              </div>
+              
             </CardBody>
           </Link>
 
-          <CardFooter className="bg-transparent border-top">
+          {/* <CardFooter className="bg-transparent border-top">
             <div className="contact-links d-flex font-size-20">
               <div className="flex-fill">
                 <Link
@@ -56,7 +97,7 @@ const LandingCard = props => {
                 </Link>
               </div>
               <div className="flex-fill">
-                {/* <Link to="#" id={"project" + user._id}>
+                <Link to="#" id={"project" + user._id}>
                   <i className="bx bx-pie-chart-alt" />
                   <UncontrolledTooltip
                     placement="bottom"
@@ -64,7 +105,7 @@ const LandingCard = props => {
                   >
                     Schedule
                   </UncontrolledTooltip>
-                </Link> */}
+                </Link>
               </div>
               <div className="flex-fill">
                 <Link
@@ -81,7 +122,7 @@ const LandingCard = props => {
                 </UncontrolledTooltip>
               </div>
             </div>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
       </Col>
     </React.Fragment>

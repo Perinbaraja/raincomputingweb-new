@@ -5,13 +5,14 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 // import TwitterLogin from "react-twitter-auth"
 import { GoogleLogin } from "react-google-login" 
 
+import "./footerclr.scss"
 const Footer = () => {
   return (
     <React.Fragment>
-      <footer className="footer">
-        <Container fluid>
+      <footer className="footer" id="footclr">
+        <Container fluid  >
           <Row>
-            <div className="col-md-3 col-sm-10 " id="footermenu">
+            <div className="col-md-3 col-sm-10 " >
               <ul className="list-unstyled">
                 <h3 className="text-primary">ABOUT</h3>
                 <Link 
@@ -24,7 +25,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6" id="footermenu">
+            <div className="col-md-3 col-sm-6" >
               <ul className="list-unstyled ">
                 <h3 className="text-primary">SOLUTION</h3>
                 <Link 
@@ -37,7 +38,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6" id="footermenu">
+            <div className="col-md-3 col-sm-6" >
               <ul className="list-unstyled  ">
                 <h3 className="text-primary">CONTACT</h3>
                 <Link 
@@ -50,7 +51,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6 ">
+            <div className="col-md-3 col-sm-6 " >
               <ul className="list-unstyled  ">
                 <h3 className="text-primary">FOLLOW US</h3>
                 <Link 
@@ -72,7 +73,7 @@ const Footer = () => {
 
             <hr></hr>
 
-            <Col md={6}>{new Date().getFullYear()} © <a href="#" id="footlog">RainComputing</a></Col>
+            <Col md={6}>{new Date().getFullYear()} © <a href="#" id="footlog" >RainComputing</a></Col>
             <Col md={6}>
               <div className="text-sm-end d-none d-sm-block mb-4">
                 Design & Develop by <a href="#" id="footlog"><strong>RainComputing</strong></a>

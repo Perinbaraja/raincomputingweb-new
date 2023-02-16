@@ -5,6 +5,8 @@ import { connect } from "react-redux"
 
 import { Link } from "react-router-dom"
 
+import "./headsearch.scss"
+
 // Redux Store
 import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 // reactstrap
@@ -74,6 +76,13 @@ const Header = props => {
                 </span>
               </Link>
             </div>
+          </div>
+
+          <div id="topinput">
+            <form >
+            <span className="bx bx-search-alt mx-2 bg-primary text-white px-2 py-1" id="topsearch"/>
+              <input type="text" placeholder="Search for Attorney..." className="border-0"/>
+            </form>
           </div>
 
           <div className="d-flex align-items-center">

@@ -69,7 +69,7 @@ const Navbar = props => {
               className="navbar-collapse"
               id="topnav-menu-content"
             >
-              <ul className="navbar-nav">
+              <ul className="navbar-nav text-white">
                 <li className="nav-item dropdown">
                   <Link className="nav-link dropdown-toggle arrow-none" to="/">
                     <i className="bx bx-home-circle me-2"></i>

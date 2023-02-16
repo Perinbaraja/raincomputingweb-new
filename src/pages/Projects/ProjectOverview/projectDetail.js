@@ -74,7 +74,6 @@ const ProjectDetail = ({ project }) => {
   return (
     <Card>
       <CardBody>
-        <PerfectScrollbar style={{ height: "330px" }}>
           <div className="d-flex">
             <img
               src={project.img ? project.img : attImages[imgIndex].url}
@@ -89,6 +88,16 @@ const ProjectDetail = ({ project }) => {
               <p className="text-muted font-size-14">{project.firm}</p>
               <p className="text-muted font-size-14">{project.type}</p>
             </div>
+
+            <Row>
+                  <div className="d-flex justify-content-center mt-4 ">
+                    <Link to="/payment-via">
+                     <button type="button" className="btn btn-primary ms-3 w-lg ">
+                       Get Appointment
+                      </button>
+                    </Link>
+                  </div>
+            </Row>
           </div>
 
           <div>
@@ -330,17 +339,8 @@ const ProjectDetail = ({ project }) => {
             </div>
           </Col> */}
           </Row>
-        </PerfectScrollbar>
       </CardBody>
-      <Row>
-        <div className="d-flex justify-content-center ">
-          <Link to="/payment-via">
-            <button type="button" className="btn btn-primary ms-3 w-lg ">
-              Get Appointment
-            </button>
-          </Link>
-        </div>
-      </Row>
+      
     </Card>
   )
 }
