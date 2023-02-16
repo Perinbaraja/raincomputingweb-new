@@ -8,8 +8,10 @@ import { withTranslation } from "react-i18next"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 import PrivateMsg from "rainComputing/components/chat/PrivateMsg"
 import GroupMsg from "rainComputing/components/chat/GroupMsg"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const NotificationDropdown = props => {
+  const { currentUser } = useUser()
   // Declare a new state variable, which we'll call "menu"
   const { notifications } = useNotifications()
 
@@ -28,7 +30,8 @@ const NotificationDropdown = props => {
         tag="button"
         id="page-header-notifications-dropdown"
       >
-        <i className="bx bx-bell" />
+        {currentUser &&
+        <i className="bx bx-bell" />}
         {notifications?.length > 0 && (
           <span className="badge bg-danger rounded-pill">
             {notifications?.length}

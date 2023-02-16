@@ -25,7 +25,8 @@ import computer from "assets/images/computer.png"
 import rainlogo from "assets/images/RainCom_Logo.webp"
 import logo from "assets/images/rain-drop.png"
 import { userRegisteration } from "rainComputing/helpers/backend_helper"
-
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 const RainRegister = () => {
   let history = useHistory();
   const [registrationError, setRegistrationError] = useState("")
@@ -59,6 +60,7 @@ const RainRegister = () => {
         setRegistrationSuccess(res.msg)
         // onSubmitProps.setSubmitting(false) //Vidhya
         onSubmitProps.resetForm()
+      toastr.success(`Registered successfully `, "Success")
         history.push("/login");
       } else {
         setRegistrationSuccess("")

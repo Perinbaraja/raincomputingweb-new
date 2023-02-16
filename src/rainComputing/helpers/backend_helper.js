@@ -69,6 +69,8 @@ const getGroupsByUserIdandCaseId = payload =>
   post(`${BASE_URL}/group/getByUserandCaseId`, payload)
 const getMessageById = payload =>
   post(`${BASE_URL}/message/getmsgById`, payload)
+const getPinnedMsg = payload =>
+  post(`${BASE_URL}/message/getPinnedMsg`, payload)
 const deleteLastMsg = payload => post(`${BASE_URL}/message/deletemsg`, payload)
 
 const getMessagesByUserIdandGroupId = payload =>
@@ -164,6 +166,7 @@ export {
   createNewCase,
   getCasesByUserId,
   getGroupsByUserIdandCaseId,
+  getPinnedMsg,
   getMessagesByUserIdandGroupId,
   getFileFromGFS,
   createOnevsOneChat,

@@ -1,0 +1,82 @@
+import { useChat } from "rainComputing/contextProviders/ChatProvider"
+import { getPinnedMsg, pinMessage } from "rainComputing/helpers/backend_helper"
+import React, { useEffect, useState } from "react"
+import { Card, Dropdown, DropdownToggle, Modal } from "reactstrap"
+import moment from "moment"
+
+const PinnedModels = () => {
+  const { currentRoom: currentChat, } = useChat()
+
+  const [pinModal, setPinModal] = useState(false)
+  const [pinnedMsg, setPinnedMsg] = useState([])
+  const tog_scroll = () => {
+    setPinModal(!pinModal)
+  }
+  useEffect(() => {
+    if (pinModal) {
+        const PinnedMessage = async () => {
+        const payload = { groupId: currentChat?._id }
+        const res = await getPinnedMsg(payload)
+        if (res.success) {
+          setPinnedMsg(res?.pinMessages)
+        }
+      }
+    PinnedMessage()
+}
+  }, [pinModal])
+
+  return (
+    <>
+      <Modal
+        isOpen={pinModal}
+        toggle={() => {
+          tog_scroll()
+        }}
+        // scrollable={true}
+      >
+        <div className="modal-header">
+          <h5 className="modal-title mt-0 ">
+          <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger px-2" ></i>
+            Pinned Message</h5>
+          <button
+            type="button"
+            onClick={() => setPinModal(false)}
+            className="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+            <div className="card" >
+                <div className="card-body ">
+        {pinnedMsg &&
+          pinnedMsg?.map((msg, m) => (
+           
+            <div className=" border border-dark mt-1 p-4"  key={m}>
+             <div className="d-flex justify-content-center text-primary"><p>{msg?.messageData}</p></div> 
+              <p className="chat-time mb-0 ">
+                <i className="bx bx-comment-check align-middle " />
+                {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
+              </p>
+            </div>
+          ))}
+          </div>
+            </div>
+      </Modal>
+      <Dropdown isOpen={pinModal} toggle={tog_scroll}>
+        <DropdownToggle className="btn nav-btn" tag="i">
+          <i
+            className="mdi mdi-pin-outline mdi-rotate-315"
+            onClick={() => {
+              tog_scroll()
+            }}
+          />
+        </DropdownToggle>
+      </Dropdown>
+    </>
+  )
+}
+
+export default PinnedModels

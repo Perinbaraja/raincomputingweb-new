@@ -83,6 +83,7 @@ import { Mention, MentionsInput } from "react-mentions"
 import { useDropzone } from "react-dropzone"
 // import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
 import copy from "copy-to-clipboard"
+import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -195,8 +196,6 @@ const ChatRc = () => {
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
-
-  const pinmessage = messages?.filter(msg => msg?.isPinned === true)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -1012,38 +1011,6 @@ const ChatRc = () => {
                 </div>
               </div>
             </Modal>
-            {/* Modal For PinnedMessage */}
-            <Modal
-              isOpen={pinModal}
-              toggle={() => {
-                tog_scroll()
-              }}
-              // scrollable={true}
-            >
-              <div className="modal-header">
-                <h5 className="modal-title mt-0">Pinned Message</h5>
-                <button
-                  type="button"
-                  onClick={() => setPinModal(false)}
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              {pinmessage &&
-                pinmessage?.map((msg, m) => (
-                  <div className="modal-body" key={m}>
-                    <p>{msg?.messageData}</p>
-                    <p className="chat-time mb-0">
-                      <i className="bx bx-comment-check align-middle me-1" />
-                      {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                      {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
-                    </p>
-                  </div>
-                ))}
-            </Modal>
             {/* Model for creating case*/}
             <Modal
               size="lg"
@@ -1507,17 +1474,7 @@ const ChatRc = () => {
                                       isOpen={pinModal}
                                       toggle={tog_scroll}
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i
-                                          className="mdi mdi-pin-outline mdi-rotate-315"
-                                          onClick={() => {
-                                            tog_scroll()
-                                          }}
-                                        />
-                                      </DropdownToggle>
+                                        <PinnedModels />
                                     </Dropdown>
                                   </li>
                                   <li className="list-inline-item d-none d-sm-inline-block">
@@ -1639,9 +1596,6 @@ const ChatRc = () => {
                                               onClick={() => onArchievingChat()}
                                             >
                                               Archive Chat
-                                            </DropdownItem>
-                                            <DropdownItem href="#">
-                                              Manage chat
                                             </DropdownItem>
                                             <DropdownItem
                                               href="#"
@@ -1768,6 +1722,14 @@ const ChatRc = () => {
                                                 {" "}
                                               </div>
                                             )} */}
+                                              <div>
+                                              {(msg?.isPinned ?(
+                                            <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                            ):(
+                                              <div className="conversation-name">
+                                                {" "}
+                                              </div>
+                                            ))}</div>
                                             <div className="conversation-name">
                                               {currentChat.isGroup
                                                 ? getMemberName(msg.sender)
