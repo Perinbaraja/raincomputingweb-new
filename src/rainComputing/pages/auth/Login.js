@@ -105,8 +105,8 @@ const RainLogin = props => {
             </p>
           </div>
         </div>
-        <div className="container  mt-2">
-          <Container className="cont">
+        <div className="container">
+          <Container className="cont mt-5 mb-5">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={10}>
                 <Card className="overflow-hidden">

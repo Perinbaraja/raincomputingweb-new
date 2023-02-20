@@ -140,9 +140,9 @@ const ChatRc = () => {
     messageStack,
   } = useChat()
 
-  const privateChatId=query.get('p_id')
-  const groupChatId=query.get('g_id')
-  const caseChatId=query.get('c_id')
+  const privateChatId = query.get("p_id")
+  const groupChatId = query.get("g_id")
+  const caseChatId = query.get("c_id")
 
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
@@ -344,11 +344,8 @@ const ChatRc = () => {
       searchText,
     })
     if (allCasesRes.success) {
-      if (!isSearch) {
-        setAllCases([...allCases, ...allCasesRes.cases])
-      } else {
-        setAllCases(allCasesRes.cases)
-      }
+      setAllCases(allCasesRes.cases)
+
       if (isSet) {
         setCurrentCase(allCasesRes?.cases[0])
       }
@@ -939,24 +936,24 @@ const ChatRc = () => {
     }
   }, [])
 
-  useEffect(()=>{
-    if(privateChatId && !pageLoader){
+  useEffect(() => {
+    if (privateChatId && !pageLoader) {
       const tempChat = chats?.find(ch => ch?._id === privateChatId)
       setCurrentChat(tempChat)
     }
-  },[privateChatId,pageLoader])
+  }, [privateChatId, pageLoader])
 
-  useEffect(()=>{
-    if(groupChatId && caseChatId && !pageLoader && !caseLoading ){
+  useEffect(() => {
+    if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
       const tempCase = allCases?.find(c => c?._id === caseChatId)
       setactiveTab("2")
       setCurrentCase(tempCase)
       setCurrentChat(groupChat)
     }
-  },[groupChatId,pageLoader,caseChatId,caseLoading])
+  }, [groupChatId, pageLoader, caseChatId, caseLoading])
   return (
-    <div className="page-content">
+    <div className="p-5 m-5">
       <>
         {pageLoader ? (
           <ChatLoader />
@@ -1475,7 +1472,7 @@ const ChatRc = () => {
                                       isOpen={pinModal}
                                       toggle={tog_scroll}
                                     >
-                                        <PinnedModels />
+                                      <PinnedModels />
                                     </Dropdown>
                                   </li>
                                   <li className="list-inline-item d-none d-sm-inline-block">
@@ -1619,10 +1616,10 @@ const ChatRc = () => {
                             </Row>
                           </div>
                           <div>
-                            <div className="chat-conversation p-3">
+                            <div className="chat-conversation p-5">
                               <ul className="list-unstyled">
                                 <PerfectScrollbar
-                                  style={{ height: "320px" }}
+                                  style={{ height: "380px" }}
                                   containerRef={ref => setMessageBox(ref)}
                                   onMouseEnter={() => setIsChatScroll(true)}
                                   onMouseLeave={() => setIsChatScroll(false)}
@@ -1723,16 +1720,17 @@ const ChatRc = () => {
                                                 {" "}
                                               </div>
                                             )} */}
-                                              <div>
-                                              {msg?.isPinned?(
-                                                <div>                               
-                                               <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                            <div>
+                                              {msg?.isPinned ? (
+                                                <div>
+                                                  <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
                                                 </div>
-                                            ):(
-                                              <div className="conversation-name">
-                                                {" "}
-                                              </div>
-                                            )}</div>
+                                              ) : (
+                                                <div className="conversation-name">
+                                                  {" "}
+                                                </div>
+                                              )}
+                                            </div>
                                             <div className="conversation-name">
                                               {currentChat.isGroup
                                                 ? getMemberName(msg.sender)

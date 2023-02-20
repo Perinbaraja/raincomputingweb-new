@@ -68,7 +68,7 @@ const LandingGrid = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="p-5 m-5">
         <MetaTags>
           <title>Raincomputing | Homepage</title>
         </MetaTags>

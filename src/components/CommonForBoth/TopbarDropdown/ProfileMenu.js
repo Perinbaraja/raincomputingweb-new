@@ -18,6 +18,7 @@ import user1 from "../../../assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { logoutUser } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
+import { useLocation } from 'react-router-dom';
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -25,6 +26,10 @@ const ProfileMenu = props => {
   const { currentUser,setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
+  
+  const location = useLocation();
+
+  const isLoginButton = location.pathname.includes('/login') ||location.pathname.includes('/register');
 
   const handleLogout = async () => {
     const res = await logoutUser()
@@ -136,6 +141,7 @@ const ProfileMenu = props => {
           </DropdownMenu>
         </Dropdown>
       ) : (
+        !isLoginButton &&
         <Link to="/login" className="dropdown">
           {/* <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" /> */}
           <button className=" bg-primary text-light px-4 py-2 border-0 rounded" type="button"><span>{props.t("Login")}</span></button>

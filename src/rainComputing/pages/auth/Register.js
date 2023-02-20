@@ -72,17 +72,10 @@ const RainRegister = () => {
 
   return (
     <React.Fragment>
+      <div className="p-5 m-5">
       <MetaTags>
         <title>Register | Raincomputing</title>
       </MetaTags>
-      <div className="d-none d-xl-block ps-lg-5 ms-lg-5" >
-        <img src={rainlogo} height="50" width="300"/>
-      </div>
-      <div className="home-btn d-none d-sm-block">
-        <Link to="/" className="text-dark">
-          <i className="fas fa-home h2" />
-        </Link>
-      </div>
       <div className="d-flex ">
         <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
           <div className="my-5">
@@ -94,28 +87,28 @@ const RainRegister = () => {
             </p>
           </div>
         </div>
-        <div className="container">
-          <Container className="cont1 mt-4">
+        <div className="container ">
+          <Container className="cont1">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={9}>
                 <Card className="overflow-hidden">
                   <div className="bg-primary bg-soft">
                     <Row>
-                      <Col className="col-7">
-                        <div className="text-primary p-4">
+                      <Col className="col-7 ">
+                        <div className="text-primary p-3">
                           <h5 className="text-primary"> Register</h5>
                           <p>Get your rain account now.</p>
                         </div>
                       </Col>
                       <Col className="col-5 align-self-end">
-                        <img src={profileImg}  height="200" width="300" className="img-fluid" />
+                        <img src={profileImg}  height="100" width="300" className="img-fluid" />
                       </Col>
                     </Row>
                   </div>
                   <CardBody className="pt-0">
                     <div>
                       <Link to="/">
-                        <div className="avatar-md profile-user-wid mb-3">
+                        <div className="avatar-md profile-user-wid mb-1">
                           <span className="avatar-title rounded-circle bg-light">
                             <img
                               src={logo}
@@ -127,7 +120,7 @@ const RainRegister = () => {
                         </div>
                       </Link>
                     </div>
-                    <div className="p-2">
+                    <div className="">
                       <Form
                         className="form-horizontal"
                         onSubmit={e => {
@@ -251,8 +244,8 @@ const RainRegister = () => {
                             </FormFeedback>
                           ) : null}
                         </div>
-                        <div className="mt-2">
-                          <p className="mb-0">
+                        <div className="mt-1">
+                          <p className="">
                             <input
                               className="form-check-input me-2"
                               type="checkbox"
@@ -260,7 +253,7 @@ const RainRegister = () => {
                               id="flexCheckDefault"
                             />
                             By registering you agree to the raincomputing{" "}
-                            <Link to="#" className="text-primary">
+                            <Link to="#" className="text-primary font-sm">
                               Terms of Use
                             </Link>
                           </p>
@@ -315,6 +308,7 @@ const RainRegister = () => {
               </Col>
             </Row>
           </Container>
+        </div>
         </div>
       </div>
     </React.Fragment>
