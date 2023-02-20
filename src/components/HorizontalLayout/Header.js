@@ -81,9 +81,9 @@ const Header = props => {
                     {/* <div id="navbox"></div> */}
           <div>
                 <ul id="menunav" className="d-flex">
-                  <li id="navmen" className=""><a href="">Home</a></li>
-                  <li id="navmen" className=""><a href="">Chat</a></li>
-                  <li id="navmen" className=""><a href="">Help</a></li>
+                  <li id="navmen" className=""><Link to="/">Home</Link></li>
+                  <li id="navmen" className=""><Link to="/chat-rc">Chat</Link></li>
+                  <li id="navmen" className=""><Link to="/help">Help</Link></li>
                 </ul>
 
           </div>

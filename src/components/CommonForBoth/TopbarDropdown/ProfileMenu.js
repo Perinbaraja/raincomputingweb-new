@@ -30,6 +30,7 @@ const ProfileMenu = props => {
     const res = await logoutUser()
     if (res.success) {
       socket?.emit("close_manually")
+      localStorage.removeItem("authUser")
       setCurrentUser(null)
       histroy.push("/login")
     } else {

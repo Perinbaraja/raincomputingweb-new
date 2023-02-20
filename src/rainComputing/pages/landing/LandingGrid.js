@@ -73,7 +73,7 @@ const LandingGrid = () => {
           <title>Raincomputing | Homepage</title>
         </MetaTags>
 
-        <Container overflow-hidden fluid>
+        <Container fluid>
             <div className="mb-2">
               <form className="app-search  ">
                 <div className="position-relative">
