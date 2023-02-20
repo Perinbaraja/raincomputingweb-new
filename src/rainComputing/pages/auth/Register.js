@@ -16,7 +16,7 @@ import {
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 import { Link } from "react-router-dom"
 
 // import images
@@ -28,7 +28,7 @@ import { userRegisteration } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 const RainRegister = () => {
-  let history = useHistory();
+  let history = useHistory()
   const [registrationError, setRegistrationError] = useState("")
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [loading, setLoading] = useState(false)
@@ -60,8 +60,8 @@ const RainRegister = () => {
         setRegistrationSuccess(res.msg)
         // onSubmitProps.setSubmitting(false) //Vidhya
         onSubmitProps.resetForm()
-      toastr.success(`Registered successfully `, "Success")
-        history.push("/login");
+        toastr.success(`Registered successfully `, "Success")
+        history.push("/login")
       } else {
         setRegistrationSuccess("")
         setRegistrationError(res.msg)
@@ -75,8 +75,8 @@ const RainRegister = () => {
       <MetaTags>
         <title>Register | Raincomputing</title>
       </MetaTags>
-      <div className="d-none d-xl-block ps-lg-5 ms-lg-5">
-        <img src={rainlogo} height="50" />
+      <div className="d-none d-xl-block ps-lg-5 ms-lg-5" >
+        <img src={rainlogo} height="50" width="300"/>
       </div>
       <div className="home-btn d-none d-sm-block">
         <Link to="/" className="text-dark">
@@ -87,15 +87,15 @@ const RainRegister = () => {
         <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
           <div className="my-5">
             <div className="justify-content-center">
-              <img src={computer} height="350" />
+              <img src={computer} height="350" width="500" />
             </div>
             <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
             </p>
           </div>
         </div>
-        <div className="container  ms-xl-1 mt-2 ">
-          <Container className="cont1">
+        <div className="container">
+          <Container className="cont1 mt-4">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={9}>
                 <Card className="overflow-hidden">
@@ -108,7 +108,7 @@ const RainRegister = () => {
                         </div>
                       </Col>
                       <Col className="col-5 align-self-end">
-                        <img src={profileImg} alt="" className="img-fluid" />
+                        <img src={profileImg}  height="200" width="300" className="img-fluid" />
                       </Col>
                     </Row>
                   </div>
@@ -251,7 +251,20 @@ const RainRegister = () => {
                             </FormFeedback>
                           ) : null}
                         </div>
-
+                        <div className="mt-2">
+                          <p className="mb-0">
+                            <input
+                              className="form-check-input me-2"
+                              type="checkbox"
+                              required
+                              id="flexCheckDefault"
+                            />
+                            By registering you agree to the raincomputing{" "}
+                            <Link to="#" className="text-primary">
+                              Terms of Use
+                            </Link>
+                          </p>
+                        </div>
                         <div className="mt-3 d-grid">
                           {loading ? (
                             <button
@@ -284,15 +297,17 @@ const RainRegister = () => {
                             </Link>{" "}
                           </p>
                         </div>
-
-                        <div className="mt-2 text-center">
-                          <p className="mb-0">
-                            By registering you agree to the raincomputing{" "}
-                            <Link to="#" className="text-primary">
-                              Terms of Use
-                            </Link>
-                          </p>
-                        </div>
+                        {/* <div className="text-center ">
+                          <a href="https://www.google.co.in/">
+                          <i className="fab fa-google me-2 "></i>
+                          </a>
+                          <a href="">
+                          <i class="fab fa-linkedin-in  me-2"></i>
+                          </a>
+                          <a href="">      
+                          <i class="fab fa-twitter me-2"></i>
+                           </a>
+                        </div> */}
                       </Form>
                     </div>
                   </CardBody>

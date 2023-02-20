@@ -9,12 +9,13 @@ import { useNotifications } from "rainComputing/contextProviders/NotificationsPr
 import PrivateMsg from "rainComputing/components/chat/PrivateMsg"
 import GroupMsg from "rainComputing/components/chat/GroupMsg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import ChatLoader from "rainComputing/components/chat/ChatLoader"
 
 const NotificationDropdown = props => {
   const { currentUser } = useUser()
   // Declare a new state variable, which we'll call "menu"
   const { notifications } = useNotifications()
-
+  const [loading, setLoading] = useState(false)
   const [menu, setMenu] = useState(false)
 
   return (
@@ -53,6 +54,9 @@ const NotificationDropdown = props => {
               </div>
             </Row>
           </div>
+          {loading?(
+             <ChatLoader />
+          ):(
           <SimpleBar style={{ height: "230px" }}>
             <div className="text-reset notification-item">
             {notifications && notifications?.filter(n => !n?.caseId
@@ -66,7 +70,7 @@ const NotificationDropdown = props => {
                   <GroupMsg notification={msgnotify} key={g}/>
                   ))}
               </div>
-          </SimpleBar>
+          </SimpleBar>)}
         </DropdownMenu>
       )}
     </Dropdown>

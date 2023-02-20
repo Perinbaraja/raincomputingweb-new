@@ -94,18 +94,18 @@ const RainLogin = props => {
           <i className="fas fa-home h2" />
         </Link>
       </div>
-      <div className="d-flex  ">
-        <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
+      <div className="d-flex ">
+        <div className="d-none d-xl-block  ">
           <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  ">
             <div className="justify-content-center">
-              <img src={computer} height="350" />
+              <img src={computer} width="500" height="350" />
             </div>
             <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
             </p>
           </div>
         </div>
-        <div className="container  ms-xl-1 mt-2 ">
+        <div className="container  mt-2">
           <Container className="cont">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={10}>
@@ -119,7 +119,7 @@ const RainLogin = props => {
                         </div>
                       </Col>
                       <Col className="col-5 align-self-end">
-                        <img src={profile} alt="" className="img-fluid" />
+                        <img src={profile} width="300"  height="200" className="img-fluid " />
                       </Col>
                     </Row>
                   </div>

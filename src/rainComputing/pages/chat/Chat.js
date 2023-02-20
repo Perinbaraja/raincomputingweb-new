@@ -538,6 +538,7 @@ const ChatRc = () => {
         messageData: curMessage,
         isAttachment,
         isForward: false,
+        // isPinned: false,
       }
       if (isAttachment) {
         const formData = new FormData()
@@ -1723,13 +1724,15 @@ const ChatRc = () => {
                                               </div>
                                             )} */}
                                               <div>
-                                              {(msg?.isPinned ?(
-                                            <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                              {msg?.isPinned?(
+                                                <div>                               
+                                               <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                                </div>
                                             ):(
                                               <div className="conversation-name">
                                                 {" "}
                                               </div>
-                                            ))}</div>
+                                            )}</div>
                                             <div className="conversation-name">
                                               {currentChat.isGroup
                                                 ? getMemberName(msg.sender)
