@@ -159,12 +159,12 @@ const PaymentVia = () => {
                           Attorney
                         </label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
-                          <label className="fw-bolder">
+                          <label className="fw-semibold text-primary">
                             {"Hsuanyeh Chang, PhD, Esq."}{" "}
                           </label>
                         </div>
                       </Row>
-                      <Row className="mb-5">
+                      <Row className="mb-3">
                         <label className="col-md-5 col-lg-2 col-form-label"></label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
                           <label className="text-muted">

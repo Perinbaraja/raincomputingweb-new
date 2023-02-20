@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
+import "../../Projects/ProjectOverview/projectdetail.scss"
 import { map, get, attempt } from "lodash"
 import {
   Card,
@@ -73,20 +74,20 @@ const ProjectDetail = ({ project }) => {
 
   return (
     <Card>
-      <CardBody>
+      <CardBody id="projcard">
           <div className="d-flex">
             <img
               src={project.img ? project.img : attImages[imgIndex].url}
               alt=""
-              className="avatar-lg rounded-circle me-4"
+              className="avatar-lg me-4"
             />
             {/* src={user.img ? user.img : attImages[imgIndex].url} */}
             <div className="flex-grow-1 overflow-hidden">
-              <h5 className="text-truncate font-size-16">
+              <h5 className="text-primary text-truncate font-size-16">
                 {project.firstname} {project.lastname}
               </h5>
               <p className="text-muted font-size-14">{project.firm}</p>
-              <p className="text-muted font-size-14">{project.type}</p>
+              <p className="text-muted font-size-14"><strong>{project.type}</strong></p>
             </div>
 
             <Row>
