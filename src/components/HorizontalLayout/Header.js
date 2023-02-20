@@ -77,18 +77,31 @@ const Header = props => {
               </Link>
             </div>
           </div>
+                  <div className="d-flex justify-content-between" id="navsection">
+                    {/* <div id="navbox"></div> */}
+          <div>
+                <ul id="menunav" className="d-flex">
+                  <li id="navmen" className=""><a href="">Home</a></li>
+                  <li id="navmen" className=""><a href="">Chat</a></li>
+                  <li id="navmen" className=""><a href="">Help</a></li>
+                </ul>
 
-          <div id="topinput">
+          </div>
+
+          {/* <div id="topinput">
             <form >
             <span className="bx bx-search-alt mx-2 bg-primary text-white px-2 py-1" id="topsearch"/>
               <input type="text" placeholder="Search for Attorney..." className="border-0"/>
             </form>
-          </div>
+          </div> */}
 
-          <div className="d-flex align-items-center">
-            <NotificationDropdown />
-            <ProfileMenu />
-          </div>
+                  <div className="d-flex align-items-center">
+                    <NotificationDropdown />
+                    <ProfileMenu />
+                  </div>
+
+                </div>
+
         </div>
       </header>
     </React.Fragment>

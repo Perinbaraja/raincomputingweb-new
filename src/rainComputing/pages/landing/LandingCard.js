@@ -17,7 +17,7 @@ const LandingCard = props => {
 
   return (
     <React.Fragment>
-      <Col xl="6" md="6" sm="12">
+      <Col xl="4" md="6" sm="12">
         <Card className="text-center " id="attcard">
           <Link to={`/projects-overview?uid=${user._id}`}>
             <CardBody >
@@ -30,8 +30,8 @@ const LandingCard = props => {
                   />
                 </div>
                 <div id="attdetail">
-                  <div className="mt-3 mx-3">
-                    <h5 className="font-size-20 mb-1 text-primary">
+                  <div className="mt-1 mx-3">
+                    <h5 id="attname" className="font-size-14 mb-1 text-primary ">
                      {user.firstname} {user.lastname} {user.initial}
                     </h5>
                   </div> <br></br>

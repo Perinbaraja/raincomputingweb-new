@@ -28,10 +28,12 @@
 }
 
 .avatar-xl1 {
-  height: 8rem;
-  width: 8rem;
-  border-radius:50%;
-  
+  height: 6.3rem;
+  width: 6rem;
+  // border-radius:50%;
+  border-radius:8px;
+  border:2px dotted #556ee6;
+  padding: 5px;
 }
 .avatar-title {
   align-items: center;

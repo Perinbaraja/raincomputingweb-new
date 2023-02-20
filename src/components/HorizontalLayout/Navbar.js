@@ -133,7 +133,7 @@ const Navbar = props => {
           </nav>
         </div>
       </div>
-    </React.Fragment>
+    </React.Fragment> 
   )
 }
 
