@@ -22,7 +22,7 @@ import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
   const histroy = useHistory()
-  const { currentUser } = useUser()
+  const { currentUser,setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
 
@@ -30,7 +30,7 @@ const ProfileMenu = props => {
     const res = await logoutUser()
     if (res.success) {
       socket?.emit("close_manually")
-      localStorage.removeItem("authUser")
+      setCurrentUser(null)
       histroy.push("/login")
     } else {
       console.log("Logout failed")

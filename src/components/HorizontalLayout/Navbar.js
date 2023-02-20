@@ -117,7 +117,7 @@ const Navbar = props => {
                     </Link>
 
                   </li>
-                   <li className=" dropdown">
+                   {/* <li className=" dropdown">
                     <a href={PDF}  download="guide.pdf"
                       className="nav-link dropdown-toggle arrow-none"
                      
@@ -126,7 +126,7 @@ const Navbar = props => {
                       
                     </a>
 
-                  </li>
+                  </li> */}
 
               </ul>
             </Collapse>

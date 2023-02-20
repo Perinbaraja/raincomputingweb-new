@@ -3,6 +3,7 @@ import MetaTags from "react-meta-tags"
 import { Link, withRouter } from "react-router-dom"
 import { Col, Container, Row } from "reactstrap"
 import { map } from "lodash"
+import PerfectScrollbar from "react-perfect-scrollbar"
 
 //Import Card
 import LandingCard from "./LandingCard"
@@ -72,8 +73,7 @@ const LandingGrid = () => {
           <title>Raincomputing | Homepage</title>
         </MetaTags>
 
-        <Container fluid>
-          <>
+        <Container overflow-hidden fluid>
             <div className="mb-2">
               <form className="app-search  ">
                 <div className="position-relative">
@@ -87,6 +87,7 @@ const LandingGrid = () => {
                 </div>
               </form>
             </div>
+            <PerfectScrollbar style={{ height: "500px" }}>
             {loading ? (
               <Row>
                 <Col xs="12">
@@ -116,7 +117,7 @@ const LandingGrid = () => {
                 </div>
               </>
             )}
-          </>
+          </PerfectScrollbar>
         </Container>
       </div>
     </React.Fragment>
