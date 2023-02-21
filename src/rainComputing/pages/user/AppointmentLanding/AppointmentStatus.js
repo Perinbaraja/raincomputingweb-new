@@ -36,7 +36,7 @@ const AppointmentCard = () => {
   }, [])
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="p-5 m-5">
         <Container fluid>
           <Link to="/">
             <Breadcrumb title="Rain" breadcrumbItem="Appointment Status" />

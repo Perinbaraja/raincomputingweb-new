@@ -58,7 +58,6 @@ import {
   sentEmail,
   pinMessage,
 } from "rainComputing/helpers/backend_helper"
-import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
@@ -84,6 +83,7 @@ import { useDropzone } from "react-dropzone"
 // import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
 import copy from "copy-to-clipboard"
 import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
+import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -162,6 +162,11 @@ const ChatRc = () => {
     setToggleOpen: setCaseEditModalOpen,
     toggleIt: toggleCaseEditModal,
   } = useToggle(false)
+  const {
+    toggleOpen: rplyMessageModalOpen,
+    setToggleOpen: setReplyMsgModalOpen,
+    toggleIt: toggleReplyMessageModal,
+  } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
@@ -187,9 +192,7 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
-  const [replyMessage, setReplyMessage] = useState("")
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
-  const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
   const [email, setEmail] = useState("")
@@ -488,36 +491,9 @@ const ChatRc = () => {
 
     return curMessage === null || curMessage.match(/^ *$/) !== null
   }
-  //reply Message
-
-  const toggle_replyMsgModal = () => {
-    setCreateReplyMsgModal(!createReplyMsgModal)
-    document.body.classList.add("no_padding")
-  }
   const toggle_emailModal = () => {
     setEmailModal(!emailModal)
     document.body.classList.add("no_padding")
-  }
-
-  const handlereplyMsgCancel = () => {
-    setCreateReplyMsgModal(false)
-  }
-
-  const handleReplyMessage = async id => {
-    const payload = {
-      id,
-      sender: currentUser?.userID,
-      msg: replyMessage,
-    }
-
-    const res = await postReplies(payload)
-    const payloadMsg = {
-      groupId: currentChat?._id,
-      userId: currentUser?.userID,
-    }
-    await getMessagesByUserIdandGroupId(payloadMsg)
-    setReplyMessage("")
-    setCreateReplyMsgModal(false)
   }
 
   //Sending Message
@@ -1010,72 +986,6 @@ const ChatRc = () => {
               </div>
             </Modal>
             {/* Model for creating case*/}
-            <Modal
-              size="lg"
-              isOpen={createReplyMsgModal && curReplyMessageId}
-              toggle={() => {
-                toggle_replyMsgModal()
-              }}
-              backdrop={"static"}
-              id="staticBackdrop"
-              centered
-            >
-              <div className="modal-header">
-                <button
-                  onClick={() => {
-                    handlereplyMsgCancel()
-                  }}
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <h5>Reply :</h5>
-                <Row>
-                  <Col>
-                    <div className="position-relative">
-                      <MentionsInput
-                        type="text"
-                        value={replyMessage}
-                        onKeyPress={onKeyPress}
-                        style={{
-                          resize: "none",
-                        }}
-                        onChange={e => setReplyMessage(e.target.value)}
-                        className="form-control chat-input"
-                        placeholder="Enter Message..."
-                      >
-                        <Mention trigger="@" data={mentionsArray} />
-                      </MentionsInput>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handlereplyMsgCancel()
-                  }}
-                  className="btn btn-secondary "
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => handleReplyMessage(curReplyMessageId?._id)}
-                >
-                  Send
-                </button>
-              </div>
-            </Modal>
             <DynamicModel
               open={newCaseModelOpen}
               toggle={toggleNewCaseModelOpen}
@@ -1128,6 +1038,12 @@ const ChatRc = () => {
                 getSubGroups={onGettingSubgroups}
               />
             )}
+            <ReplyMsgModal
+              open={rplyMessageModalOpen}
+              setOpen={setReplyMsgModalOpen}
+              toggleOpen={toggleReplyMessageModal}
+              curMessageId={curReplyMessageId}
+            />
             {/* {contacts && (
               <ForwardMsg
                 open={forwardModalOpen}
@@ -1541,13 +1457,35 @@ const ChatRc = () => {
                                       }
                                       className="float-end me-2"
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i className="bx bx-cog" />
-                                      </DropdownToggle>
-
+                                      {" "}
+                                      {currentCase?.admins?.includes(
+                                        currentUser?.userID
+                                      ) ? (
+                                        <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <div>
+                                            <i className="bx bx-cog" />
+                                          </div>
+                                        </DropdownToggle>
+                                      ) : (
+                                        currentChat &&
+                                        currentChat?.admins?.includes(
+                                          currentUser?.userID
+                                        ) && (
+                                        <div className="conversation-name">
+                                          <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <div>
+                                            <i className="bx bx-cog" />
+                                          </div>
+                                        </DropdownToggle>
+                                        </div>
+                                      ))}
+                                      <></>
                                       {currentCase?.admins?.includes(
                                         currentUser?.userID
                                       ) ? (
@@ -1670,7 +1608,7 @@ const ChatRc = () => {
                                                 href="#"
                                                 onClick={() => {
                                                   setCurReplyMessageId(msg)
-                                                  toggle_replyMsgModal()
+                                                  setReplyMsgModalOpen(true)
                                                 }}
                                               >
                                                 Reply
