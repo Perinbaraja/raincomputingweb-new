@@ -65,7 +65,7 @@ const PaymentStatus = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="p-5 m-5">
         <MetaTags>
           <title>Status | Rain- Dashboard Template</title>
         </MetaTags>

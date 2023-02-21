@@ -89,10 +89,7 @@ const RequestUser = () => {
         cancelText="Cancel"
         onCloseClick={toggleModal}
       />
-      <div className="page-content">
-        <MetaTags>
-          <title>Request User | Rain - Admin & Dashboard Template</title>
-        </MetaTags>
+      <div className="p-5 m-5">
         <Container fluid>
           <>
             <Link to="/">

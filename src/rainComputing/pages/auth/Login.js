@@ -238,7 +238,7 @@ const RainLogin = props => {
                             </button>
                           )}
                         </div>
-                        <div className="mt-5 text-center">
+                        <div className="mt-3 text-center">
                           <p>
                             Don&#39;t have an account ?{" "}
                             <Link
@@ -307,7 +307,7 @@ const RainLogin = props => {
                         </div> */}
 
                         <div className="mt-4 text-center">
-                          <Link to="/emailforgotPwd" className="text-muted">
+                          <Link to="/emailforgotPwd" className="text-black">
                             <i className="mdi mdi-lock me-1" />
                             Forgot your password?
                           </Link>

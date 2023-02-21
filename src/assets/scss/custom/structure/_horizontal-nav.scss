@@ -67,7 +67,7 @@ body[data-layout="horizontal"] {
 @include media-breakpoint-up(xl) {
 
     body[data-layout="horizontal"] {
-        .container-fluid,
+        // .container-fluid,
         .navbar-header {
             max-width: 85%;
         }

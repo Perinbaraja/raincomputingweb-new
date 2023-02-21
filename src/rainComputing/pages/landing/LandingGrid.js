@@ -69,10 +69,6 @@ const LandingGrid = () => {
   return (
     <React.Fragment>
       <div className="p-5 m-5">
-        <MetaTags>
-          <title>Raincomputing | Homepage</title>
-        </MetaTags>
-
         <Container fluid>
             <div className="mb-2">
               <form className="app-search  ">
@@ -87,7 +83,6 @@ const LandingGrid = () => {
                 </div>
               </form>
             </div>
-            <PerfectScrollbar style={{ height: "500px" }}>
             {loading ? (
               <Row>
                 <Col xs="12">
@@ -117,7 +112,6 @@ const LandingGrid = () => {
                 </div>
               </>
             )}
-          </PerfectScrollbar>
         </Container>
       </div>
     </React.Fragment>
