@@ -20,38 +20,12 @@ import rainlogo from "assets/images/rain-drop.png"
 import rainlglogo from "assets/images/raincom_Logo1.png"
 //i18n
 import { withTranslation } from "react-i18next"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const Header = props => {
-  const [menu, setMenu] = useState(false)
-  const [isSearch, setSearch] = useState(false)
-  const [socialDrp, setsocialDrp] = useState(false)
+  const { currentAttorney } = useUser()
+  const { currentUser } = useUser()
 
-  function toggleFullscreen() {
-    if (
-      !document.fullscreenElement &&
-      /* alternative standard method */ !document.mozFullScreenElement &&
-      !document.webkitFullscreenElement
-    ) {
-      // current working methods
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen()
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen(
-          Element.ALLOW_KEYBOARD_INPUT
-        )
-      }
-    } else {
-      if (document.cancelFullScreen) {
-        document.cancelFullScreen()
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen()
-      } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen()
-      }
-    }
-  }
   return (
     <React.Fragment>
       <header id="page-topbar">
@@ -77,31 +51,44 @@ const Header = props => {
               </Link>
             </div>
           </div>
-                  <div className="d-flex justify-content-between" id="navsection">
-                    {/* <div id="navbox"></div> */}
-          <div>
-                <ul id="menunav" className="d-flex">
-                  <li id="navmen" className=""><Link to="/">Home</Link></li>
-                  <li id="navmen" className=""><Link to="/chat-rc">Chat</Link></li>
-                  <li id="navmen" className=""><Link to="/help">Help</Link></li>
-                </ul>
+          <div className="d-flex justify-content-between" id="navsection">
+            {/* <div id="navbox"></div> */}
+            <div>
+              <ul id="menunav" className="d-flex">
+                <li id="navmen" className="">
+                  <Link to="/">Home</Link>
+                </li>
+                <li id="navmen" className="">
+                  <Link to="/chat-rc">Chat</Link>
+                </li>
+                <li id="navmen" className="">
+                  <Link to="/help">Help</Link>
+                </li>
+                {currentUser && currentAttorney?.status === "approved" && (
+                  <li id="navmen" className="">
+                    <Link to="/req-user">Requests</Link>
+                  </li>
+                )}
+                {currentUser && !currentAttorney && (
+                  <li id="navmen">
+                    <Link to="/appointment-status">Connection</Link>
+                  </li>
+                )}
+              </ul>
+            </div>
 
-          </div>
-
-          {/* <div id="topinput">
+            {/* <div id="topinput">
             <form >
             <span className="bx bx-search-alt mx-2 bg-primary text-white px-2 py-1" id="topsearch"/>
               <input type="text" placeholder="Search for Attorney..." className="border-0"/>
             </form>
           </div> */}
 
-                  <div className="d-flex align-items-center">
-                    <NotificationDropdown />
-                    <ProfileMenu />
-                  </div>
-
-                </div>
-
+            <div className="d-flex align-items-center">
+              <NotificationDropdown />
+              <ProfileMenu />
+            </div>
+          </div>
         </div>
       </header>
     </React.Fragment>
