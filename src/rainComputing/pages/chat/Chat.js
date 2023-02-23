@@ -208,10 +208,18 @@ const ChatRc = () => {
   //Handle Body Scrolling
   isChatScroll ? disableBodyScroll(document) : enableBodyScroll(document)
 
+  const depMessages=messages?.slice()
+  
   //Scroll to messages bottom on load & message arrives
+  
   useEffect(() => {
-    if (!isEmpty(messages)) scrollToBottom()
-  }, [messages, currentChat, messageBox?.clientHeight])
+    const timer = setTimeout(()=> {if (!isEmpty(messages)) {
+        scrollToBottom()
+      }
+    },500)
+    return ()=> clearTimeout(timer)
+  }, [depMessages])
+
 
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
@@ -438,11 +446,6 @@ const ChatRc = () => {
       setPinnedMsg(res.message)
     }
   }
-  useEffect(() => {
-    if (!pinnedMsg) {
-      onPinnedMessage()
-    }
-  }, [pinnedMsg])
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -1062,7 +1065,7 @@ const ChatRc = () => {
               onCloseClick={toggleCaseDeleteModal}
             />
             {messages &&
-              messages.map((msg, m) => (
+              messages?.map((msg, m) => (
                 <DeleteModal
                   key={m}
                   show={MsgDeleteModalOpen}
@@ -1079,7 +1082,7 @@ const ChatRc = () => {
             </MetaTags>
             <Container fluid>
               <Row>
-                <Col xs="12" lg="5">
+                <Col xs="12" lg="4">
                   <div className="pb-2 border-bottom">
                     <Link className="d-flex" to="/profile">
                       <div className="align-self-center me-3">
@@ -1296,7 +1299,7 @@ const ChatRc = () => {
                     </TabContent>
                   </div>
                 </Col>
-                <Col xs="12" lg="7" className="align-self-center">
+                <Col xs="12" lg="8" className="align-self-center" >
                   <div className="w-100 ">
                     {currentChat ? (
                       chatLoader ? (
@@ -1485,7 +1488,7 @@ const ChatRc = () => {
                                         </DropdownToggle>
                                         </div>
                                       ))}
-                                      <></>
+                                      
                                       {currentCase?.admins?.includes(
                                         currentUser?.userID
                                       ) ? (
@@ -1559,8 +1562,6 @@ const ChatRc = () => {
                                 <PerfectScrollbar
                                   style={{ height: "380px" }}
                                   containerRef={ref => setMessageBox(ref)}
-                                  onMouseEnter={() => setIsChatScroll(true)}
-                                  onMouseLeave={() => setIsChatScroll(false)}
                                 >
                                   {messages &&
                                     messages.map((msg, m) => (

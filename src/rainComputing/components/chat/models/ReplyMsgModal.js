@@ -11,13 +11,13 @@ import { useChat } from "rainComputing/contextProviders/ChatProvider"
 
 const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId }) => {
   const { currentUser } = useUser()
-  const { currentRoom: currentChat } = useChat()
+  const { setMessages,messages } = useChat()
   const [replyMessage, setReplyMessage] = useState("")
 
   const handlereplyMsgCancel = () => {
     setOpen(false)
   }
-  
+
   const handleReplyMessage = async id => {
     const payload = {
       id,
@@ -26,12 +26,12 @@ const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId }) => {
     }
 
     const res = await postReplies(payload)
-    const payloadMsg = {
-      groupId: currentChat?._id,
-      userId: currentUser?.userID,
+    if (res?.success) {
+      setMessages(
+        messages?.map(m => m?._id === id ? res?.replyMessage : m)
+      )
+      setReplyMessage("")
     }
-    await getMessagesByUserIdandGroupId(payloadMsg)
-    setReplyMessage("")
     setOpen(false)
   }
 
