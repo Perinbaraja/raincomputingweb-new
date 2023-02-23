@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Route, Redirect } from "react-router-dom"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const Authmiddleware = ({
   component: Component,
@@ -8,6 +9,8 @@ const Authmiddleware = ({
   isAuthProtected,
   ...rest
 }) => {
+  const { currentUser } = useUser()
+
   return (
     <Route
       {...rest}
@@ -20,6 +23,13 @@ const Authmiddleware = ({
           )
         }
 
+        if (!isAuthProtected && currentUser) {
+          return (
+            <Redirect
+              to={{ pathname: "/", state: { from: props.location } }}
+            />
+          )
+        }
         return (
           <Layout>
             <Component {...props} />
