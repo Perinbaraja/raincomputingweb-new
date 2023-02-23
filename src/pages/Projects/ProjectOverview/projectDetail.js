@@ -73,8 +73,10 @@ const ProjectDetail = ({ project }) => {
   }
 
   return (
-    <Card>
-      <CardBody id="projcard">
+    <Card id="projcard">
+      <div id="appcard">
+      <CardBody >
+        
           <div className="d-flex">
             <img
               src={project.img ? project.img : attImages[imgIndex].url}
@@ -340,8 +342,9 @@ const ProjectDetail = ({ project }) => {
             </div>
           </Col> */}
           </Row>
+         
       </CardBody>
-      
+      </div> 
     </Card>
   )
 }
