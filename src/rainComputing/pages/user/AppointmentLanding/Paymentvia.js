@@ -27,9 +27,12 @@ import { appointmentRequest } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 
 const PaymentVia = () => {
   const history = useHistory()
+ const query = useQuery()
+
   const { currentUser, setCurrentUser } = useUser()
   const imgIndex = Math.floor(Math.random() * 8)
   const [loading, setLoading] = useState(false)
@@ -40,6 +43,7 @@ const PaymentVia = () => {
     progressBar: true,
     closeButton: true,
   }
+  const currentAttorney= query.get("uid")
   const handleCancelClick = () => {
     history.push("/")
   }
@@ -62,7 +66,6 @@ const PaymentVia = () => {
     onSubmit: values => {
     },
   })
-  
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
     return caseData === null || caseData.match(/^ *$/) !== null
@@ -75,7 +78,7 @@ const PaymentVia = () => {
       let attachmentsId = []
       let payload = {
         caseData: caseData,
-        attorney: "631202e3879cd1751698643c",
+        attorney: currentAttorney,
         User: currentUser.userID,
         isAttachments,
         appointmentstatus: "requested",

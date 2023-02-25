@@ -198,7 +198,7 @@ const ChatRc = () => {
   const [email, setEmail] = useState("")
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
-  const [pinnedMsg, setPinnedMsg] = useState("")
+  
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -443,7 +443,9 @@ const ChatRc = () => {
     const payload = { Id: msgid }
     const res = await pinMessage(payload)
     if (res.success) {
-      setPinnedMsg(res.message)
+      setMessages(
+        messages?.map(m => m?._id === msgid ? res?.message : m)
+      )
     }
   }
   //Deleting Case
@@ -1617,7 +1619,7 @@ const ChatRc = () => {
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
-                                                  onPinnedMessage(msg)
+                                                  onPinnedMessage(msg?._id)
                                                 }}
                                               >
                                                 Pin
@@ -1660,7 +1662,7 @@ const ChatRc = () => {
                                               </div>
                                             )} */}
                                             <div>
-                                              {msg?.isPinned ? (
+                                              {msg?.isPinned? (
                                                 <div>
                                                   <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
                                                 </div>

@@ -25,25 +25,25 @@ const LandingCard = props => {
                 <div id="attimg">
                   <img
                     className="avatar-xl1"
-                    src={user.img ? user.img : attImages[imgIndex].url}
+                    src={user?.regUser?.profilePic ? user?.regUser?.profilePic : attImages[imgIndex].url}
                     alt=""
                   />
                 </div>
                 <div id="attdetail">
                   <div className="mt-1 mx-3">
                     <h5 id="attname" className="font-size-14 mb-1 text-primary ">
-                     {user.firstname} {user.lastname} {user.initial}
+                     {user?.regUser?.firstname} {user?.regUser?.lastname} {user?.initial}
                     </h5>
                   </div> <br></br>
-                  <p className="mx-3 text-dark" id="attfirm">{user.firm}</p>
-                  <p className="mx-3 text-muted">{user.type}</p>
+                  <p className="mx-3 text-dark" id="attfirm">PATTENT ATTORNEY & LAW</p>
+                  <p className="mx-3 text-muted">Attorney</p>
               </div>
               </div>
               <div className="d-flex justify-content-end">
                 <div id="prof"></div>
                     <div className="d-flex mx-3">
                       <Link
-                        to={`/chat-rc?uid=62ec8de74fde4cb410073cc0`}
+                        to={`/chat-rc`}
                         id={"message" + user._id}
                       >
                         <div id="attmenus">

@@ -17,23 +17,20 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const AppointmentCard = () => {
   const [statusUpdate, setStatusUpdate] = useState(null)
-  const { currentUser, setCurrentUser } = useUser()
-  const chatid= "62ebc2854fde4cb41007350a"
+  const { currentUser } = useUser()
 
   useEffect(() => {
-    // if (currentUser?._id) {
     const getStatusByUser = async () => {
       const res = await appointmentUserStatus({
         userID: currentUser?.userID,
       })
       if (res.success) {
         setStatusUpdate(res.list)
-        console.log("res :", res)
       }
     }
     getStatusByUser()
-    // }
   }, [])
+  
   return (
     <React.Fragment>
       <div className="p-5 m-5">
@@ -46,7 +43,7 @@ const AppointmentCard = () => {
             {statusUpdate &&
               statusUpdate.map((att, i) => (
                 <Col xl="4" sm="6" key={i}>
-                  <Card>
+                 <Card>
                     <CardBody>
                       <div className="d-flex">
                         <div className="avatar-md me-4">
@@ -77,7 +74,7 @@ const AppointmentCard = () => {
                     <div className="px-4 py-3 border-top">
                       <ul className="list-inline mb-0">
                         <li className="list-inline-item me-5">
-                          <Badge className={`${att?.appointmentstatus ? "bg-success" : "bg-warning"}`}>
+                          <Badge className={`${att?.appointmentstatus  === "approved" ? "bg-success" : "bg-warning"}`}>
                             {att?.appointmentstatus}
                           </Badge>
                         </li>
@@ -87,7 +84,7 @@ const AppointmentCard = () => {
                         </li>
                        { statusUpdate && att?.appointmentstatus === "approved" &&(
                         <Link
-                        to={`/chat-rc?uid=${chatid}`}
+                        to={`/chat-rc?uid=${att?.attorney?.regUser?._id}`}
                              >
                         <li className="list-inline-item me-3" id="chat">
                           <i className="mdi mdi-chat-outline mdi-24px me-1" /> {""}

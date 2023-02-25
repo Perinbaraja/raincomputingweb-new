@@ -8,11 +8,14 @@ import PerfectScrollbar from "react-perfect-scrollbar"
 //Import Card
 import LandingCard from "./LandingCard"
 
-//redux
-import {
-  getAllAttorneys,
-  getAttorneysCount,
-} from "rainComputing/helpers/backend_helper"
+// //redux
+// import {
+//   getAllAttorneys,
+//   getAttorneysCount,
+// } from "rainComputing/helpers/backend_helper"
+
+import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
+
 import Pagination from "components/pagination/Pagination"
 import ChatBot from "../chatbot"
 
@@ -25,22 +28,21 @@ const LandingGrid = () => {
   const [limit, setLimit] = useState(20)
 
   const loadAttorney = async () => {
-    const res = await getAllAttorneys({ page, limit, searchText })
+    const res = await getAllRegAttorneys({ page, limit, searchText })
     if (res.success) {
       setAttorneys(res.attorneys)
     } else {
       console.log("Error while fetching Attorneys", res)
     }
   }
-
-  const loadAttorneyCount = async () => {
-    const res = await getAttorneysCount({ searchText })
-    if (res.success) {
-      setAttorneysCount(res.count)
-    } else {
-      console.log("Error while fetching AttorneysCount", res)
-    }
-  }
+  // const loadAttorneyCount = async () => {
+  //   const res = await getAttorneysCount({ searchText })
+  //   if (res.success) {
+  //     setAttorneysCount(res.count)
+  //   } else {
+  //     console.log("Error while fetching AttorneysCount", res)
+  //   }
+  // }
 
   useEffect(() => {
     const handleLoad = async () => {
@@ -56,10 +58,9 @@ const LandingGrid = () => {
   }, [searchText])
 
   useEffect(() => {
-    console.log("searchText :", searchText)
     const handleLoad = async () => {
       setLoading(true)
-      await loadAttorneyCount()
+      // await loadAttorneyCount()
       await loadAttorney()
       setLoading(false)
     }

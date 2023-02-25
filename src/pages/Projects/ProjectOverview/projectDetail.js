@@ -8,69 +8,10 @@ import {
   Row,
 } from "reactstrap"
 import { Link } from "react-router-dom"
-import * as Yup from "yup"
-import { useFormik } from "formik"
-import PerfectScrollbar from "react-perfect-scrollbar"
 import { attImages } from "../../../helpers/mockData"
-import ReactTextareaAutosize from "react-textarea-autosize"
-import { appointmentRequest } from "rainComputing/helpers/backend_helper"
-import { useHistory } from "react-router-dom"
-import { useUser } from "rainComputing/contextProviders/UserProvider"
-import toastr from "toastr"
-import "toastr/build/toastr.min.css"
 
 const ProjectDetail = ({ project }) => {
-  const history = useHistory()
-  const { currentUser, setCurrentUser } = useUser()
   const imgIndex = Math.floor(Math.random() * 8)
-  const [loading, setLoading] = useState(false)
-  const [allFiles, setAllFiles] = useState([])
-  toastr.options = {
-    progressBar: true,
-    closeButton: true,
-  }
-
-  const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      caseData: "",
-    },
-    validationSchema: Yup.object({
-      caseData: Yup.string().required("Please Enter Your case detail"),
-    }),
-    onSubmit: values => {
-      handleAppointmentRequest({
-        caseData: values.caseData,
-        attorney: "62d2a70586e7821195591d80",
-        User: currentUser.userID,
-        appointmentstatus: "request",
-      })
-    },
-  })
-  const handleAppointmentRequest = async payload => {
-    console.log("req value: ", payload)
-    const res = await appointmentRequest(payload)
-    if (res.success) {
-      toastr.success(`Appointment request send successfully `, "Success")
-      localStorage.setItem("authUser", JSON.stringify(res))
-      setCurrentUser(res)
-      history.push("/payment-via")
-    } else {
-      toastr.error(`you have already send reqest`, "Failed!!!")
-      console.log("Failed to send request", res)
-    }
-  }
-  //Handling File change
-  const handleFileChange = e => {
-    setAllFiles(e.target.files)
-  }
-  const onKeyPress = e => {
-    const { key } = e
-    if (key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
 
   return (
     <Card id="projcard">
@@ -79,7 +20,7 @@ const ProjectDetail = ({ project }) => {
         
           <div className="d-flex">
             <img
-              src={project.img ? project.img : attImages[imgIndex].url}
+              src={project.profilePic ? project.profilePic : attImages[imgIndex].url}
               alt=""
               className="avatar-lg me-4"
             />
@@ -94,7 +35,7 @@ const ProjectDetail = ({ project }) => {
 
             <Row>
                   <div className="d-flex justify-content-center mt-4 ">
-                    <Link to="/payment-via">
+                    <Link to={`/payment-via?uid=${project._id}`}>
                      <button type="button" className="btn btn-primary ms-3 w-lg ">
                        Get Appointment
                       </button>
