@@ -31,7 +31,7 @@ const LandingCard = props => {
                 </div>
                 <div id="attdetail">
                   <div className="mt-1 mx-3">
-                    <h5 id="attname" className="font-size-14 mb-1 text-primary ">
+                    <h5 id="attname" className="font-size-16 mb-1 text-primary ">
                      {user?.regUser?.firstname} {user?.regUser?.lastname} {user?.initial}
                     </h5>
                   </div> <br></br>

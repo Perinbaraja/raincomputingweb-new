@@ -3,6 +3,7 @@ import MetaTags from "react-meta-tags"
 import { Link, withRouter } from "react-router-dom"
 import { Col, Container, Row } from "reactstrap"
 import { map } from "lodash"
+import banner from "../../../assets/images/background-img/banner.jpg"
 import PerfectScrollbar from "react-perfect-scrollbar"
 
 //Import Card
@@ -70,7 +71,7 @@ const LandingGrid = () => {
 
   return (
     <React.Fragment>
-      <div className="p-5 m-5">
+      <div className="p- m-" id="landinggrid">
         <Container fluid>
             <div className="mb-2">
               <form className="app-search  ">
@@ -114,9 +115,15 @@ const LandingGrid = () => {
                 </div>
               </>
             )}
+
+
         </Container>
         <ChatBot />
+       
       </div>
+      <div>
+  <img src= {banner} alt="banner background" className="img-fluid" id="banner"/>
+</div>
 
     </React.Fragment>
   )
