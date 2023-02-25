@@ -14,7 +14,7 @@ const ProjectDetail = ({ project }) => {
   const imgIndex = Math.floor(Math.random() * 8)
 
   return (
-    <Card id="projcard">
+    <Card id="projcard" text-primary>
       <div id="appcard">
       <CardBody >
         
@@ -26,7 +26,7 @@ const ProjectDetail = ({ project }) => {
             />
             {/* src={user.img ? user.img : attImages[imgIndex].url} */}
             <div className="flex-grow-1 overflow-hidden">
-              <h5 className="text-primary text-truncate font-size-16">
+              <h5 className="text-primary text-truncate font-size-20">
                 {project.firstname} {project.lastname}
               </h5>
               <p className="text-muted font-size-14">{project.firm}</p>
@@ -46,28 +46,28 @@ const ProjectDetail = ({ project }) => {
 
           <div>
             {" "}
-            <h5 className="font-size-16 mt-4">Biography :</h5>
-            <p className="text-muted">{project.bio ? project.bio : null}</p>
+            <h5 className="font-size-18 mb-3 mt-4 text-primary">Biography :</h5>
+            <p className="text-muted font-size-14">{project.bio ? project.bio : null}</p>
           </div>
           <div>
             {" "}
-            <h5 className="font-size-16 mt-4">Education :</h5>
-            <p className="text-muted">
+            <h5 className="font-size-20 mb-3 mt-4 text-primary">Education :</h5>
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l1 ? project.l1 : null}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project?.l2}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l3}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l4}
@@ -75,72 +75,72 @@ const ProjectDetail = ({ project }) => {
           </div>
           <div>
             {""}
-            <h5 className="font-size-16 mt-4">Technical Expertise :</h5>
-            <p className="text-muted mb-1">
+            <h5 className="font-size-18 mb-3 mt-4 text-primary">Technical Expertise :</h5>
+            <p className="text-muted mb-1 font-size-14">
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l5}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {/* {" "} */}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l6}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {/* {" "} */}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l7}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l8}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l9}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l10}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l11}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l12}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l13}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l14}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l15}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l16}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l17}
             </p>
-            <p className="text-muted mb-1">
+            <p className="text-muted mb-1 font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l18}
@@ -148,42 +148,42 @@ const ProjectDetail = ({ project }) => {
           </div>
           <div>
             {" "}
-            <h5 className="font-size-16 mt-4">Legal Experience :</h5>
-            <p className="text-muted">
+            <h5 className="font-size-18 mb-3 mt-4 text-primary">Legal Experience :</h5>
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l19}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project?.l20}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l21}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l22}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l23}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               {/* {" "} */}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l24}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               {/* {" "} */}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l25}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l26}
@@ -191,32 +191,32 @@ const ProjectDetail = ({ project }) => {
           </div>
           <div>
             {" "}
-            <h5 className="font-size-16 mt-4">Practice Admissions :</h5>
-            <p className="text-muted">
+            <h5 className="font-size-18 mb-3 mt-4 text-primary">Practice Admissions :</h5>
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l27}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project?.l28}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l29}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l30}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l31}
             </p>
-            <p className="text-muted ">
+            <p className="text-muted font-size-14 ">
               {/* {" "} */}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l32}
@@ -224,27 +224,27 @@ const ProjectDetail = ({ project }) => {
           </div>
           <div>
             {" "}
-            <h5 className="font-size-16 mt-4">Recognition :</h5>
-            <p className="text-muted">
+            <h5 className="font-size-18 mb-3 mt-4 text-primary">Recognition :</h5>
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l33}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project?.l34}
             </p>
-            <p className="text-muted">
+            <p className="text-muted font-size-14">
               {" "}
               <i className="mdi mdi-chevron-right text-primary me-1" />
               {project.l35}
             </p>
           </div>
 
-          <h5 className="font-size-16 mt-4">Attorney Address :</h5>
+          <h5 className="font-size-18 mb-3 mt-4 text-primary">Attorney Address :</h5>
           <p> </p>
-          <p className="text-muted ">
+          <p className="text-muted font-size-14 ">
             {project.address1}, {project.address2}{" "}
           </p>
           <p className="text-muted ">{project.city}</p>
@@ -253,7 +253,7 @@ const ProjectDetail = ({ project }) => {
 
           {/* {get(project, "projectDetails.description")} */}
 
-          <div className="text-muted mt-4">
+          <div className="text-muted mt-4 ">
             {project.projectDetails &&
               map(project.projectDetails.points, (point, index) => (
                 <p key={index}>

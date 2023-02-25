@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import { useLocation, withRouter } from "react-router-dom"
 import { isEmpty } from "lodash"
 import { Col, Container, Row } from "reactstrap"
+
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb"
 import ProjectDetail from "./projectDetail"
@@ -44,6 +45,8 @@ const ProjectsOverview = props => {
                 <Col>
                   <ProjectDetail project={attorneyDetails} />
                 </Col>
+
+                
                 {/* <Col lg="4">
                   <TeamMembers team={projectDetail.team} />
                 </Col> */}
@@ -59,6 +62,7 @@ const ProjectsOverview = props => {
                   <Comments comments={projectDetail.comments} />
                 </Col> */}
               </Row>
+             
             </>
           )}
         </Container>
