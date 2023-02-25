@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react"
 import { Card, Dropdown, DropdownToggle, Modal } from "reactstrap"
 import moment from "moment"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import AttachmentViewer from "../AttachmentViewer"
 
 const PinnedModels = () => {
-  const { currentRoom: currentChat } = useChat()
+  const { currentRoom: currentChat,setMessages,messages } = useChat()
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState([])
   const currentChats = currentChat?.groupMembers.map(i => i?.id)
@@ -22,8 +23,12 @@ const PinnedModels = () => {
         const payload = { groupId: currentChat?._id }
         const res = await getPinnedMsg(payload)
         if (res.success) {
+          setMessages(
+            messages?.map(m => m?._id === currentChat?._id? res?.pinMessages : m)
+          )
           setPinnedMsg(res?.pinMessages)
         }
+
       }
       PinnedMessage()
     }
@@ -77,8 +82,33 @@ const PinnedModels = () => {
                         </p>{" "}
                       </div>
                       <div className="mb-1">
-                        <p>{msg?.messageData}</p>
-                      </div>
+                                              {msg.isAttachment ? (
+                                                <>
+                                                  <AttachmentViewer
+                                                    attachments={
+                                                      msg.attachments
+                                                    }
+                                                  />
+                                                   <p>{msg?.messageData}</p> 
+                                                  <div className="mt-3">
+                                                    {" "}
+                                                  </div>
+                                                  <div
+                                                    className="mt-1"
+                                                    style={{
+                                                      whiteSpace:
+                                                        "break-spaces",
+                                                    }}
+                                                  >
+                                                  </div>
+                                                </>
+                                              ) : (
+                                                <div className="mb-1">
+                                                <p>{msg?.messageData}</p>
+                                              </div>
+                                              )}
+                                            </div>
+                     
                       <p className="chat-time mb-0 ">
                         <i className="bx bx-comment-check align-middle " />
                         {/* <i className="bx bx-time-five align-middle me-1" /> */}

@@ -14,6 +14,7 @@ import {
   getAttorneysCount,
 } from "rainComputing/helpers/backend_helper"
 import Pagination from "components/pagination/Pagination"
+import ChatBot from "../chatbot"
 
 const LandingGrid = () => {
   const [searchText, setSearchText] = useState("")
@@ -113,7 +114,9 @@ const LandingGrid = () => {
               </>
             )}
         </Container>
+        <ChatBot />
       </div>
+
     </React.Fragment>
   )
 }
