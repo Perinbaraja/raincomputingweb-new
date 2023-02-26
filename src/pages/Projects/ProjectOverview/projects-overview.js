@@ -28,7 +28,7 @@ const ProjectsOverview = props => {
         setAttorneyDetail(res.attorney)
       }
   }
-
+console.log("attorneyDetails:",attorneyDetails);
   useEffect(() =>{
     getAttorneyinfo()
   },[])

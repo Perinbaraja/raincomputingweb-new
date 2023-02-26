@@ -20,14 +20,14 @@ const ProjectDetail = ({ project }) => {
         
           <div className="d-flex">
             <img
-              src={project.profilePic ? project.profilePic : attImages[imgIndex].url}
+              src={project?.regUser?.profilePic ? project?.regUser?.profilePic : attImages[imgIndex].url}
               alt=""
-              className="avatar-lg me-4"
+              className="avatar-md me-4"
             />
             {/* src={user.img ? user.img : attImages[imgIndex].url} */}
             <div className="flex-grow-1 overflow-hidden">
-              <h5 className="text-primary text-truncate font-size-20">
-                {project.firstname} {project.lastname}
+              <h5 className="text-primary text-truncate font-size-16">
+                {project?.regUser?.firstname} {project?.regUser?.lastname}
               </h5>
               <p className="text-muted font-size-14">{project.firm}</p>
               <p className="text-muted font-size-14"><strong>{project.type}</strong></p>
