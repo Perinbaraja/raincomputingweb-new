@@ -65,9 +65,12 @@ const CaseFilesGrid = ({ caseId }) => {
     const payload = { ...currentFileStatus, note: notes }
     const res = await userNotes(payload)
     if (res.success) {
+      await handleFetchFiles()
+      setCurrentFileStatus(res?.isFound)
     }
     setAddNotesModal(false)
     setNotes("")
+    console.log("res",payload)
   }
 
   const nameFormatter = (cell, row) => {

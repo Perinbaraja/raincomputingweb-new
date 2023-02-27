@@ -35,8 +35,13 @@ const AttorneyRegister = () => {
     initialValues: {
       attorneybarnumber: "",
       phonenumber: "",
+      firm:"",
+      bio:"",
+      country:"",
+      state:"",
+      city:"",
+      postalCode:"",
       email: currentUser.email,
-      address: "",
     },
     validationSchema: Yup.object({
       attorneybarnumber: Yup.string().required(
@@ -47,15 +52,31 @@ const AttorneyRegister = () => {
     }),
     onSubmit: values => {
       handleAttorneyReg({
-        barNumber: values.attorneybarnumber,
+        registerNumber: values.attorneybarnumber,
         phoneNumber: values.phonenumber,
-        address: values.address,
+        firm: values.firm,
+        bio: values.bio,
+        country: values.country,
+        state: values.state,                    
+        city: values.city,
+        postalCode: values.postalCode,
         userID: currentUser.userID,
         status: "approved",
       })
     },
   })
-
+ const country = [
+  {value: "india", text:"india"},
+  {value:"singapore",text:"singapore"},
+  {value:"england",text:"england"},
+  {value:"china",text:"china"}
+ ]
+ const state = [
+  {value:"tamilnadu",text:"Tamilnadu"},
+  {value:"hougang",text:"Hougang"},
+  {value:"zhejiang",text: "Zhejiang"},
+  {value: "london",text:"London"}
+ ]
   const handleAttorneyReg = async payload => {
     const res = await registerAttorney(payload)
     if (res.success) {
@@ -72,10 +93,7 @@ const AttorneyRegister = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
-        <MetaTags>
-          <title>RainComputing | Rain - Admin & Dashboard Template</title>
-        </MetaTags>
+      <div className="p-5 m-5">
         {updateError && <Alert color="danger">{updateError}</Alert>}
               {updateSuccess && <Alert color="success">{updateSuccess}</Alert>}
               {profileUpdateError && (
@@ -142,37 +160,7 @@ const AttorneyRegister = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                            <Col lg="6">
-                              <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom03">
-                                  Phone Number
-                                </Label>
-                                <Input
-                                  type="text"
-                                  name="phonenumber"
-                                  className="form-control"
-                                  id="validationCustom03"
-                                  placeholder="Enter Your Phone No."
-                                  onChange={validation.handleChange}
-                                  onBlur={validation.handleBlur}
-                                  value={validation.values.phonenumber || ""}
-                                  invalid={
-                                    validation.touched.phonenumber &&
-                                    validation.errors.phonenumber
-                                      ? true
-                                      : false
-                                  }
-                                />
-                                {validation.touched.phonenumber &&
-                                validation.errors.phonenumber ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.phonenumber}
-                                  </FormFeedback>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
+                           
                             <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">
@@ -205,19 +193,153 @@ const AttorneyRegister = () => {
                             </Col>
                           </Row>
                           <Row>
-                            <Col lg="12">
+                            <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">
-                                  Address
+                                Firm
                                 </Label>
-                                <textarea
-                                  name="address"
+                                <Input
+                                  name="firm"
                                   id="validationCustom05"
                                   className="form-control"
                                   rows="2"
                                   placeholder="Enter Your Address"
                                   onChange={validation.handleChange}
-                                  value={validation.values.address || ""}
+                                  value={validation.values.firm || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                       
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom03">
+                                  Phone Number
+                                </Label>
+                                <Input
+                                  type="text"
+                                  name="phonenumber"
+                                  className="form-control"
+                                  id="validationCustom03"
+                                  placeholder="Enter Your Phone No."
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.phonenumber || ""}
+                                  invalid={
+                                    validation.touched.phonenumber &&
+                                    validation.errors.phonenumber
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.phonenumber &&
+                                validation.errors.phonenumber ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.phonenumber}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                         
+                            </Row>
+                         
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                Biography
+                                </Label>
+                                <Input
+                                  name="bio"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your bio"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.bio || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                          
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  Country
+                                </Label>
+                                <select
+                                  name="country"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your Country"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.country || ""}
+                              >
+                               <option value="">Select Country</option>
+                                {country.map((option,i)=>(
+                                  <option value={option?.value} key={i}>
+                                    {option?.text}
+                                  </option>
+                                ))}
+                                </select>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  State
+                                </Label>
+                                <select
+                                  name="state"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your State"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.state || ""}
+                                >
+                                  <option value="">Select State</option>
+                                 {state.map((option,i)=>(
+                                  <option value={option?.value} key={i}>
+                                    {option?.text}
+                                  </option>
+                                 ))}
+                                </select>
+                              </FormGroup>
+                            </Col>
+                          
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                 City
+                                </Label>
+                                <Input
+                                  name="city"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your City"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.city || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  PostalCode
+                                </Label>
+                                <Input
+                                  name="postalCode"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your PostalCode"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.postalCode || ""}
                                 />
                               </FormGroup>
                             </Col>

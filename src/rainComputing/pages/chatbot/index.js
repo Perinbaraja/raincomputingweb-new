@@ -11,7 +11,7 @@ const ChatBot = () => {
     })(document, window.kommunicate || {});
 /* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */
   return (  
-    <div>ChatBot</div>
+    <div></div>
   )
 }
 
