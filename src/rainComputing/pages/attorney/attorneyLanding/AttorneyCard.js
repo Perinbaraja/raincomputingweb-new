@@ -6,7 +6,6 @@ import PropTypes from "prop-types"
 import error from "assets/images/error-img.png"
 
 const AttorneyCard = ({status}) => {
-  console.log("status",status)
   const  handleStatus = {
     requested:"Your registration is under process",
     rejected:"You registeration process was rejected",

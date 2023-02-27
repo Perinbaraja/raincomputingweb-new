@@ -73,7 +73,6 @@ const PaymentVia = () => {
   const handleAppointmentRequest = async () => {
     setLoading(true)
     if (isEmptyOrSpaces()) {
-      // console.log("You can't send empty Case Details")
     } else {
       let attachmentsId = []
       let payload = {
@@ -114,7 +113,6 @@ const PaymentVia = () => {
         }
       }
       payload.attachments = attachmentsId
-      console.log("req value: ", payload)
       const res = await appointmentRequest(payload)
       if (res.success) {
         toastr.success(`Appointment request send successfully `, "Success")
@@ -122,7 +120,6 @@ const PaymentVia = () => {
         history.push("/payment-page")
       } else {
         toastr.error(`you have already send reqest`, "Failed!!!")
-        console.log("Failed to send request", res)
       }
       setAllFiles([])
       setCaseData("")
@@ -184,7 +181,6 @@ const PaymentVia = () => {
                         className="needs-validation"
                         onSubmit={e => {
                           e.preventDefault()
-                          console.log("values")
                           validation.handleSubmit()
                         }}
                       >

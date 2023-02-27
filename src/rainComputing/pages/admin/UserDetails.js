@@ -34,7 +34,6 @@ const UserDetails = () => {
     })
     if (res.success) {
       setGetUser(res.User)
-      console.log("res", res)
     }
   }
 
@@ -62,7 +61,6 @@ const UserDetails = () => {
     }
     const res = await removeUser(payload)
     if (res.success) {
-      console.log(res)
       toastr.success(`User has been Deactivated successfully`, "Success")
 
       await getAllUsers()

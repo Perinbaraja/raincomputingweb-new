@@ -36,13 +36,11 @@ export default function Payment() {
       }),
     })
       .then(res => {
-        // console.log("res:", res)
         return res.json()
       })
       .then(data => setClientSecret(data.clientSecret))
   }, [])
 
-  // console.log("currentAttorney",query.get("uid"))
 
 
   const appearance = {

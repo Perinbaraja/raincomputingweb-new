@@ -8,7 +8,6 @@ import { postRegister } from "../../../helpers/backend_helper"
 
 // Is user register successfull then direct plot user in redux.
 function* registerUser({ payload: { user } }) {
-  console.log("register")
   try {
     // if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
     //   const response = yield call(
@@ -22,7 +21,6 @@ function* registerUser({ payload: { user } }) {
     //   yield put(registerUserSuccessful(response))
     // } else
 
-    console.log("post call")
     const response = yield call(postRegister, user)
     yield put(registerUserSuccessful(response))
   } catch (error) {

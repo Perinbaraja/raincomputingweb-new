@@ -10,286 +10,13 @@ const ProjectDetail = ({ project }) => {
   const imgIndex = Math.floor(Math.random() * 8)
 
   return (
-    // <Card id="projcard" text-primary>
-    //   <div id="appcard">
-    //   <CardBody >
-
-    //       <div className="d-flex">
-    //         <img
-    //           src={project?.regUser?.profilePic ? project?.regUser?.profilePic : attImages[imgIndex].url}
-    //           alt=""
-    //           className="avatar-md me-4"
-    //         />
-    //         {/* src={user.img ? user.img : attImages[imgIndex].url} */}
-    //         <div className="flex-grow-1 overflow-hidden">
-    //           <h5 className="text-primary text-truncate font-size-16">
-    //             {project?.regUser?.firstname} {project?.regUser?.lastname}
-    //           </h5>
-    //           <p className="text-muted font-size-14">{project.firm}</p>
-    //           <p className="text-muted font-size-14"><strong>{project.type}</strong></p>
-    //         </div>
-
-    //         <Row>
-    //               <div className="d-flex justify-content-center mt-4 ">
-    //                 <Link to={`/payment-via?uid=${project._id}`}>
-    //                  <button type="button" className="btn btn-primary ms-3 w-lg ">
-    //                    Get Appointment
-    //                   </button>
-    //                 </Link>
-    //               </div>
-    //         </Row>
-    //       </div>
-
-    //       <div>
-    //         {" "}
-    //         <h5 className="font-size-18 mb-3 mt-4 text-primary">Bio :</h5>
-    //         <p className="text-muted font-size-14">{project.bio ? project.bio : null}</p>
-    //       </div>
-    //       <div>
-    //         {" "}
-    //         <h5 className="font-size-20 mb-3 mt-4 text-primary">Education :</h5>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l1 ? project.l1 : null}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project?.l2}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l3}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l4}
-    //         </p>
-    //       </div>
-    //       <div>
-    //         {""}
-    //         <h5 className="font-size-18 mb-3 mt-4 text-primary">Technical Expertise :</h5>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l5}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {/* {" "} */}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l6}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {/* {" "} */}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l7}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l8}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l9}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l10}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l11}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l12}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l13}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l14}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l15}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l16}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l17}
-    //         </p>
-    //         <p className="text-muted mb-1 font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l18}
-    //         </p>
-    //       </div>
-    //       <div>
-    //         {" "}
-    //         <h5 className="font-size-18 mb-3 mt-4 text-primary">Legal Experience :</h5>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l19}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project?.l20}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l21}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l22}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l23}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           {/* {" "} */}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l24}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           {/* {" "} */}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l25}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l26}
-    //         </p>
-    //       </div>
-    //       <div>
-    //         {" "}
-    //         <h5 className="font-size-18 mb-3 mt-4 text-primary">Practice Admissions :</h5>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l27}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project?.l28}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l29}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l30}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l31}
-    //         </p>
-    //         <p className="text-muted font-size-14 ">
-    //           {/* {" "} */}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l32}
-    //         </p>
-    //       </div>
-    //       <div>
-    //         {" "}
-    //         <h5 className="font-size-18 mb-3 mt-4 text-primary">Recognition :</h5>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l33}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project?.l34}
-    //         </p>
-    //         <p className="text-muted font-size-14">
-    //           {" "}
-    //           <i className="mdi mdi-chevron-right text-primary me-1" />
-    //           {project.l35}
-    //         </p>
-    //       </div>
-
-    //       <h5 className="font-size-18 mb-3 mt-4 text-primary">Attorney Address :</h5>
-    //       <p> </p>
-    //       <p className="text-muted font-size-14 ">
-    //         {project.address1}, {project.address2}{" "}
-    //       </p>
-    //       <p className="text-muted ">{project.city}</p>
-    //       <p className="text-muted ">{project.country}</p>
-    //       <p className="text-muted ">{project.phone}</p>
-
-    //       {/* {get(project, "projectDetails.description")} */}
-
-    //       <div className="text-muted mt-4 ">
-    //         {project.projectDetails &&
-    //           map(project.projectDetails.points, (point, index) => (
-    //             <p key={index}>
-    //               <i className="mdi mdi-chevron-right text-primary me-1" />{" "}
-    //               {point}
-    //             </p>
-    //           ))}
-    //       </div>
-
-    //       <Row className="task-dates">
-    //         {/* <Col sm="4" xs="6">
-    //         <div className="mt-4">
-    //           <h5 className="font-size-14">
-    //             <i className="bx bx-calendar me-1 text-primary" /> Start Date
-    //           </h5>
-    //           <p className="text-muted mb-0">{project.startDate}</p>
-    //         </div>
-    //       </Col> */}
-
-    //         {/* <Col sm="4" xs="6">
-    //         <div className="mt-4">
-    //           <h5 className="font-size-14">
-    //             <i className="bx bx-calendar-check me-1 text-primary" /> Due
-    //             Date
-    //           </h5>
-    //           <p className="text-muted mb-0">{project.dueDate}</p>
-    //         </div>
-    //       </Col> */}
-    //       </Row>
-
-    //   </CardBody>
-    //   </div>
-    // </Card>
-    <Card id="projcard">
-      
-      <CardBody>
-        
-        <Row>
-          <Col lg="6 ">
-            <div className="d-flex">
+    <div id="projcard">
+      <div className="">
+      <div style={{height:"550px",}} >
+         
+        <div className="row">
+          <div className="col-xs-12 col-lg-6 " >
+            <div className="d-flex justify-content-center " >
               <img
                 src={
                   project?.regUser?.profilePic
@@ -297,11 +24,11 @@ const ProjectDetail = ({ project }) => {
                     : attImages[imgIndex].url
                 }
                 alt=""
-                style={{width:"500px",height:"500px",objectFit:"cover"}}
+                style={{width:"380px",height:"380px",objectFit:"cover",}}
               />
             </div>
-          </Col>
-          <Col lg="6 ">
+          </div>
+          <div className="col-xs-12 col-lg-6 ">
             <div className="">
               <h1 className="">
                 {project?.regUser?.firstname} {project?.regUser?.lastname}
@@ -312,7 +39,7 @@ const ProjectDetail = ({ project }) => {
             </div>
             <div>
               {" "}
-              <h5 className="font-size-18 mb-3 mt-4 text-primary">Bio :</h5>
+              <h5 className="font-size-12  text-primary">Bio :</h5>
               <p className="text-muted font-size-14">
                 {project.bio ? project.bio : null}
               </p>
@@ -367,11 +94,11 @@ const ProjectDetail = ({ project }) => {
                 </button>
               </Link>
             </div>
-          </Col>
-        </Row>
-      </CardBody>
-
-    </Card>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
   )
 }
 

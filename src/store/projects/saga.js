@@ -82,9 +82,7 @@ function* onAddNewProject({ payload: project }) {
 }
 function* onGetAttorneyByID({ payload: user }) {
   try {
-    console.log(user,"before call")
     const response = yield call(getAttorneyByID,{objectId:user.user.objectId});
-    console.log(response,'dinesh res');
     yield put(getProjectDetailSuccess(response))
   } catch (error) {
     //yield put(addProjectFail(error))

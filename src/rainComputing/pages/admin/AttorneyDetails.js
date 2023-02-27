@@ -29,7 +29,6 @@ const AttorneyDetails = () => {
     })
     if (res.success) {
       setAttorneyDetail(res.attorney)
-      console.log("attorneyDetail", attorneyDetail)
     } else {
       console.log("Failed to Deactivate", res)
     }
@@ -44,12 +43,10 @@ const AttorneyDetails = () => {
     }
     const res = await removeAttorney(payload)
     if (res.success) {
-      console.log(res)
       toastr.success(`Attorney has been Deactivated successfully`, "Success")
       await getAllAttorneys()
     } else {
       toastr.error("Failed to Deactivate Attorney", "Failed!!!")
-      console.log("Error : ", res?.msg || "error")
     }
     setModalOpen(false)
   }

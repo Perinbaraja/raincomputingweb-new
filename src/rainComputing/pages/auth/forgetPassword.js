@@ -46,7 +46,6 @@ const [forgetSuccessMsg,setForgetSuccessMsg]=useState("")
       ConfirmPassword: Yup.string().oneOf([Yup.ref('NewPassword'),null],"ConfirmPassword doesn't match"),
     }),
     onSubmit: async (values,onSubmitProps) => {
-        console.log("Values",values)
         await handleSetPasswordLink(values?.NewPassword)
         onSubmitProps.resetForm()
 

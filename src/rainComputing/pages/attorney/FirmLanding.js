@@ -20,7 +20,6 @@ const FirmLanding = () => {
   const { currentAttorney } = useUser()
   const [firms, setFirms] = useState([])
   const [myFirm, setMyFirm] = useState(null)
-  // console.log("currentAttorney ", myFirm)
 
   useEffect(() => {
     const handleFetchingFirms = async () => {

@@ -29,7 +29,7 @@ const LandingGrid = () => {
   const [attorneys, setAttorneys] = useState([])
   const [attorneysCount, setAttorneysCount] = useState(0)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(20)
+  const [limit, setLimit] = useState(12)
 
   const loadAttorney = async () => {
     const res = await getAllRegAttorneys({ page, limit, searchText })
@@ -44,7 +44,6 @@ const LandingGrid = () => {
   //   if (res.success) {
   //     setAttorneysCount(res.count)
   //   } else {
-  //     console.log("Error while fetching AttorneysCount", res)
   //   }
   // }
 
@@ -119,6 +118,7 @@ const LandingGrid = () => {
                         .toLowerCase()
                         .includes(searchText.toString().toLowerCase())
                   )
+                  .slice((page - 1) * 12, page * 12)
                         .map((user, key) => (
                           <LandingCard user={user} key={"_user_" + key} />
                         )
@@ -128,7 +128,7 @@ const LandingGrid = () => {
                   <Pagination
                     className="pagination-bar"
                     currentPage={page}
-                    totalCount={attorneysCount}
+                    totalCount={attorneys?.length}
                     pageSize={limit}
                     onPageChange={p => setPage(p)}
                   />

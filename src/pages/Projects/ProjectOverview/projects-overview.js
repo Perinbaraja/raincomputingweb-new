@@ -28,14 +28,13 @@ const ProjectsOverview = props => {
         setAttorneyDetail(res.attorney)
       }
   }
-console.log("attorneyDetails:",attorneyDetails);
   useEffect(() =>{
     getAttorneyinfo()
   },[])
 
   return (
     <React.Fragment>
-      <div className="p-5 m-5">
+      <div className="py-5 my-5">
         <Container fluid>
           {/* Render Breadcrumbs */}
           {/* <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" /> */}

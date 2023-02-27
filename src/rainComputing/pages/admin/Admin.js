@@ -33,7 +33,6 @@ const Admin = () => {
 
   const getReqAttorneys = async () => {
     const res = await allReqAttorneyList({})
-    // console.log("res", res)
     if (res.success) {
       setAllReqAttorney(res.reqAttorney)
     }
@@ -47,7 +46,6 @@ const Admin = () => {
     }
     const res = await attorneyStatusUpdate(payload)
     if (res.success) {
-      // console.log(res)
       await getReqAttorneys()
     } else {
       console.log("Error : ", res)
@@ -62,7 +60,6 @@ const Admin = () => {
     }
     const res = await attorneyStatusUpdate(payload)
     if (res.success) {
-      // console.log(res)
       await getReqAttorneys()
     } else {
       console.log("Error : ", res)
@@ -72,7 +69,6 @@ const Admin = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       const res = await allUsersList({})
-      // console.log("res" ,res);
       if (res.success) {
         setAllUsers(res.users)
       }
@@ -83,7 +79,6 @@ const Admin = () => {
   useEffect(() => {
     const getAllAttorneys = async () => {
       const res = await allAttorneysList({})
-      // console.log("res" ,res);
       if (res.success) {
         setAllAttorneys(res.attorneys)
       }
@@ -94,7 +89,6 @@ const Admin = () => {
   useEffect(() => {
     const getAllFirms = async () => {
       const res = await allFirmsList({})
-      // console.log("res" ,res);
       if (res.success) {
         setAllFirms(res.firms)
       }

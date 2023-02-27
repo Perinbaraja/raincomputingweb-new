@@ -61,10 +61,8 @@ const FirmCreate = () => {
     },
   })
   const handleFirmReg = async payload => {
-    console.log("reg value: ", payload)
     const res = await registerFirm(payload)
     if (res.success) {
-      console.log("firm", res)
       history.push("/firmlanding")
     } else {
       console.log("Failed to registering attorney", res)
@@ -111,7 +109,6 @@ const FirmCreate = () => {
                     className="needs-validation"
                     onSubmit={e => {
                       e.preventDefault()
-                      console.log("values")
                       validation.handleSubmit()
                     }}
                   >

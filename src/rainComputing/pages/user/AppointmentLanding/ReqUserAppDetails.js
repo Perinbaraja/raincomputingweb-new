@@ -28,7 +28,6 @@ const ReqUserAppointmentDetails = () => {
   }
 
   const nameFormatter = (cell, row) => {
-    console.log("row", row)
     return row?.User?.firstname + " " + row?.User?.lastname
   }
 
@@ -109,7 +108,6 @@ useEffect(() => {
         } else {
           setAppointmentUser([])
         }
-        console.log("appointment", RequestRes)
       }
     onGetAllAppointmentDetails()
   }, [currentAttorney])

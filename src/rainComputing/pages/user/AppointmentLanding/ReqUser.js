@@ -47,7 +47,6 @@ const RequestUser = () => {
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
     } 
-    console.log("appointment", RequestRes)
   }
   const handleAppointmentAccept = async ({ id }) => {
     const payload = {
@@ -57,11 +56,9 @@ const RequestUser = () => {
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
       toastr.success(`Appointment  has been Accepted `, "Success")
-      console.log(res)
       await onGetAllAppointmentRequest()
     } else {
       toastr.error(`Failed to Accept Appointment `, "Failed!!!")
-      console.log("Error: ", res)
     }
   }
   const handleAppointmentReject = async ({ id }) => {
@@ -72,11 +69,9 @@ const RequestUser = () => {
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
       toastr.success(`Appointment  has been Rejected `, "Success")
-      console.log(res)
       await onGetAllAppointmentRequest()
     } else {
       toastr.error(`Failed to Reject Appointment `, "Failed!!!")
-      console.log("Error: ", res)
     }
     setModalOpen(false)
   }

@@ -80,7 +80,6 @@ const FirmInfo = () => {
   }
   const handleAddingFirmMembers = async () => {
     if (manageMembers?.length < 1) {
-      console.log("Please add Member to Update Firm ")
     } else {
       const payload = {
         firmId: currentFirm._id,
@@ -88,7 +87,6 @@ const FirmInfo = () => {
       }
       const updatedFirmRes = await addFirmMember(payload)
       if (updatedFirmRes.success) {
-        console.log(updatedFirmRes)
         setManageMembers([])
         await getAllFirms()
       } else {
@@ -105,7 +103,6 @@ const FirmInfo = () => {
     }
     const res = await removeFirmMember(payload)
     if (res.success) {
-      console.log(res)
       await getAllFirms()
     } else {
       console.log("Error : ", res?.msg || "error")

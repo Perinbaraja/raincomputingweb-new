@@ -56,7 +56,6 @@ const CaseFilesGrid = ({ caseId }) => {
       fileNotes: "",
     },
     onSubmit: values => {
-      console.log("REQuest submitted")
     },
   })
 
@@ -70,7 +69,6 @@ const CaseFilesGrid = ({ caseId }) => {
     }
     setAddNotesModal(false)
     setNotes("")
-    console.log("res",payload)
   }
 
   const nameFormatter = (cell, row) => {
