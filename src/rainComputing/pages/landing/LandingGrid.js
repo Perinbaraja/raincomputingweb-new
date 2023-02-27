@@ -4,7 +4,9 @@ import { Link, withRouter } from "react-router-dom"
 import { Col, Container, Row } from "reactstrap"
 import { map } from "lodash"
 import banner from "../../../assets/images/background-img/banner.jpg"
+import illustration from "../../../assets/images/law-illustration.jpg"
 import PerfectScrollbar from "react-perfect-scrollbar"
+import contact from "../../../assets/images/contact-mail.gif"
 
 //Import Card
 import LandingCard from "./LandingCard"
@@ -19,6 +21,7 @@ import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
 
 import Pagination from "components/pagination/Pagination"
 import ChatBot from "../chatbot"
+import { useDropzone } from 'react-dropzone';
 
 const LandingGrid = () => {
   const [searchText, setSearchText] = useState("")
@@ -71,7 +74,7 @@ const LandingGrid = () => {
 
   return (
     <React.Fragment>
-      <div className="p- m-" id="landinggrid">
+      <div className="" id="landinggrid">
         <Container fluid>
             <div className="mb-2">
               <form className="app-search  ">
@@ -80,6 +83,7 @@ const LandingGrid = () => {
                     type="text-success"
                     className="form-control "
                     placeholder="Search for Attorney..."
+                    value={searchText}
                     onChange={e => setSearchText(e.target.value)}
                   />
                   <span className="bx bx-search-alt" />
@@ -100,9 +104,25 @@ const LandingGrid = () => {
             ) : (
               <>
                 <Row>
-                  {map(attorneys, (user, key) => (
-                    <LandingCard user={user} key={"_user_" + key} />
-                  ))}
+                {attorneys?.filter(
+                    item =>
+                      item?.regUser?.firstname
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase()) ||
+                      item?.regUser?.lastname
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase()) ||
+                      item?.regUser?.firm
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase())
+                  )
+                        .map((user, key) => (
+                          <LandingCard user={user} key={"_user_" + key} />
+                        )
+                  )}
                 </Row>
                 <div className="d-flex justify-content-center">
                   <Pagination
@@ -121,9 +141,86 @@ const LandingGrid = () => {
         <ChatBot />
        
       </div>
-      <div>
-  <img src= {banner} alt="banner background" className="img-fluid" id="banner"/>
-</div>
+      {/* <div>
+         <div  id="bannerimg" className="text-white"> A law firm with a passion for success<br/>
+              <div id="rights">Protecting Your<span className="text-primary" id="span"> Rights</span>, Your <span className="text-primary" id="span">Freedom</span>, Your <span className="text-primary" id="span">Future</span></div>
+         </div> 
+      
+          <img src= {banner} alt="banner background"  id="banner"/>
+           
+      </div> */}
+          <section className="aboutuspage">
+
+                     
+
+
+            <div className="px-5 my-5" >
+                  
+                      <div className="d-flex" id="abt">
+
+                            <div id="about">
+                                    <div>
+                                      <h2 className=" text-primary mb-5 " id="aboutus">About Us <div id="aboutline"></div></h2>
+                                    </div>  
+                            <p id="aboutpara">We pride ourselves on our down to earth and friendly approach, with many of us being heavily involved in our spare time in making the law a better and more accessible place for all. Members are currently involved in Bar Council Committees, Inn Scholarship Committees, wellbeing, advocacy training, ethics training and outreach programmes to Inner London schools.
+                            We are a group of passionate mental health advocates, experienced criminal defense attorneys and rock star paralegals. Above all, we are human beings that want to help you and your family face the criminal justice system with confidence. 
+                           </p>
+                           <p  id="aboutpara"> At the same time we have the advantage of being present in four different cities and therefore closer to our clients. We provide a new level of legal services that bridges the gap between the law and modern business reality. An ongoing measure of success is the large number of referrals we receive from satisfied clients. 
+
+                            </p>
+                            </div>
+
+
+                         <div id="abt2">
+
+                            <img src={illustration} alt="about illustration" className="img-fluid" id="illimage"/>
+
+
+                          </div>
+                          
+                    </div> 
+
+            </div>
+
+
+            </section>
+
+            <section className="contactform d-flex px-5">
+              
+
+                        <div id="contact1" className="col-md-6 col-sm-12">
+
+                           {/* <h2 >Contact Us </h2>
+                           <div id="contactline"></div> */}
+
+                              <img src={contact} alt="contact info"  id="congif"/>
+
+                             <h4>Love to hear from you</h4>
+                             <p>Stay Connected.....</p>
+
+                        </div>
+
+                        <div id="contact2" className="col-md-6 col-sm-12">
+                             
+                        <h2 >Contact Us </h2>
+                           <div id="contactline"></div>
+
+                            <div className="formsec">  
+                              <form>
+                                  <input type="text" placeholder="FirstName" required id="formcon1"></input>
+                                  <input type="text" placeholder="LastName" id="formcon"></input>
+                                  <input type="email" placeholder="Mail ID" required id="formcon1"></input>
+
+                                  <input type="tel" placeholder="Phone no"  id="formcon"></input>
+                                  
+                              </form>
+                              <button type="button" id="formbut">Submit</button>
+                            </div>
+
+                        </div>
+
+                      
+            </section>
 
     </React.Fragment>
   )

@@ -12,57 +12,57 @@ const Footer = () => {
       <footer className="footer" id="footclr">
         <Container fluid  >
           <Row>
-            <div className="col-md-3 col-sm-10 " >
+            <div className="col-md-3 col-sm-10 " id="footmen">
               <ul className="list-unstyled">
                 <h3 className="text-primary">ABOUT</h3>
                 <Link 
                 role = "button"
                 to = "#" className="text-dark">
-                <li className="mt-4 "> - About Us</li>
-                <li className="mt-3 "> - How it works</li>
-                <li className="mt-3 "> - Security</li>
+                <li className="mt-4 font-size-14 "> - About Us</li>
+                <li className="mt-3 font-size-14 "> - How it works</li>
+                <li className="mt-3  font-size-14"> - Security</li>
                 </Link>
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6" >
+            <div className="col-md-3 col-sm-6" id="footmen">
               <ul className="list-unstyled ">
                 <h3 className="text-primary">SOLUTION</h3>
                 <Link 
                 role = "button"
                 to = "#" className="text-dark">
-                <li className="mt-4 "> - Enterprise</li>
-                <li className="mt-3 "> - Private Label</li>
-                <li className="mt-3 "> - Management</li>
+                <li className="mt-4 font-size-14 "> - Enterprise</li>
+                <li className="mt-3 font-size-14 "> - Private Label</li>
+                <li className="mt-3 font-size-14 "> - Management</li>
                 </Link>
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6" >
+            <div className="col-md-3 col-sm-6" id="footmen">
               <ul className="list-unstyled  ">
                 <h3 className="text-primary">CONTACT</h3>
                 <Link 
                 role = "button"
                 to = "#" className="text-dark">
-                <li className="mt-4 "> - Contact Us </li>
-                <li className="mt-3"> - Careers</li>
-                <li className="mt-3 "> - Security</li>
+                <li className="mt-4 font-size-14 "> - Contact Us </li>
+                <li className="mt-3 font-size-14"> - Careers</li>
+                <li className="mt-3  font-size-14"> - Security</li>
                 </Link>
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6 " >
+            <div className="col-md-3 col-sm-6 ">
               <ul className="list-unstyled  ">
                 <h3 className="text-primary">FOLLOW US</h3>
                 <Link 
                 role = "button"
                 to = "#" >
-                <li className="mt-4 text-dark " >
+                <li className="mt-4 text-dark  font-size-14" >
                   <i className="mdi mdi-facebook text-primary mx-2" />
                   Facebook{" "}
                 </li>
                 {/* <li><i className="mdi mdi-twitter"/>Twitter</li> */}
-                <li className="mt-3 text-dark ">
+                <li className="mt-3 text-dark  font-size-14">
                   {" "}
                   <i className="mdi mdi-google text-primary mx-2" />
                   Google
