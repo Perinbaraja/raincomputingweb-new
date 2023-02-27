@@ -37,10 +37,11 @@ const AttorneyDetailsCard = () => {
       email: currentUser.email,
       firm: attorneyDetail?.firm,
       bio: attorneyDetail?.bio,
+      address: attorneyDetail?.address,
       country: attorneyDetail?.country,
       state: attorneyDetail?.state,
       city: attorneyDetail?.city,
-      postalCode: attorneyDetail?.postalCode
+      postalCode: attorneyDetail?.postalCode,
     },
     validationSchema: Yup.object({
       attorneybarnumber: Yup.string().required(
@@ -60,30 +61,26 @@ const AttorneyDetailsCard = () => {
   })
 
   useEffect(() => {
-    
     if (currentAttorney) {
-      const payload = { objectId: currentAttorney._id }
+      const payload = { id: currentAttorney._id }
       const getAttorneyinfo = async () => {
         const res = await regAttorneyDetails(payload)
         const { attorney } = res
         if (attorney) {
-          console.log("payload", attorney)
           setAttorneyDetail(attorney)
         }
       }
       getAttorneyinfo()
     }
-   
   }, [currentAttorney])
 
   return (
     <React.Fragment>
-      <div >
-        
+      <div>
         <MetaTags>
           <title>RainComputing | Rain - Admin & Dashboard Template</title>
         </MetaTags>
-     
+
         <Container fluid={true}>
           <Row>
             <Col lg="12">
@@ -93,18 +90,19 @@ const AttorneyDetailsCard = () => {
                     className="needs-validation"
                     onSubmit={e => {
                       e.preventDefault()
-                      console.log("values")
                       validation.handleSubmit()
                     }}
                   >
-                    <h4 className="card-title mb-4"> My info</h4>
                     <div className="wizard clearfix">
                       <div className="steps clearfix">
                         <ul>
                           <NavItem>
-                            {/* <NavLink>
-                              <span className="number">1</span> ATTORNEY
-                            </NavLink> */}
+                            <NavLink>
+                              <h4 className="d-flex justify-content-center card-title mt-2">
+                                {" "}
+                                My info
+                              </h4>{" "}
+                            </NavLink>
                           </NavItem>
                         </ul>
                       </div>
@@ -175,42 +173,9 @@ const AttorneyDetailsCard = () => {
                             </Col>
                           </Row>
                           <Row>
-                            <Col lg="6">
+                          <Col lg="6">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom04">
-                                  Email
-                                </Label>
-                                <Input
-                                  type="email"
-                                  name="email"
-                                  readOnly
-                                  className="form-control"
-                                  id="validationCustom04"
-                                  placeholder="Enter Your Email ID"
-                                  onChange={validation.handleChange}
-                                  onBlur={validation.handleBlur}
-                                  value={validation.values.email || ""}
-                                  invalid={
-                                    validation.touched.email &&
-                                    validation.errors.email
-                                      ? true
-                                      : false
-                                  }
-                                />
-                                {validation.touched.email &&
-                                validation.errors.email ? (
-                                  <FormFeedback type="invalid">
-                                    {validation.errors.email}
-                                  </FormFeedback>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                         
-                            <Col lg="6">
-                              <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom04">
-                                  Firm
-                                </Label>
+                                <Label htmlFor="validationCustom04">Firm</Label>
                                 <Input
                                   type="text"
                                   name="firm"
@@ -236,39 +201,40 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                          </Row>
-                          <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">
-                                  Biography
+                                  Address
                                 </Label>
                                 <Input
                                   type="text"
-                                  name="bio"
+                                  name="address"
                                   readOnly
                                   className="form-control"
                                   id="validationCustom04"
-                                  placeholder="Enter Your Email ID"
+                                  placeholder="Enter Your address"
                                   onChange={validation.handleChange}
                                   onBlur={validation.handleBlur}
-                                  value={validation.values.bio || ""}
+                                  value={validation.values.address || ""}
                                   invalid={
-                                    validation.touched.bio &&
-                                    validation.errors.bio
+                                    validation.touched.address &&
+                                    validation.errors.address
                                       ? true
                                       : false
                                   }
                                 />
-                                {validation.touched.bio &&
-                                validation.errors.bio ? (
+                                {validation.touched.address &&
+                                validation.errors.address ? (
                                   <FormFeedback type="invalid">
-                                    {validation.errors.bio}
+                                    {validation.errors.address}
                                   </FormFeedback>
                                 ) : null}
                               </FormGroup>
                             </Col>
-                       
+
+                          
+                          </Row>
+                          <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">
@@ -299,8 +265,6 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                          </Row>
-                          <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">
@@ -331,12 +295,11 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                    
+                          </Row>
+                          <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom04">
-                                  City
-                                </Label>
+                                <Label htmlFor="validationCustom04">City</Label>
                                 <Input
                                   type="text"
                                   name="city"
@@ -362,8 +325,6 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                          </Row>
-                          <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">
@@ -395,11 +356,40 @@ const AttorneyDetailsCard = () => {
                               </FormGroup>
                             </Col>
                           </Row>
-                      
+                          <Row>
+                            <Col lg="12">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">Bio</Label>
+                                <textarea
+                                  type="text"
+                                  name="bio"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.bio || ""}
+                                  invalid={
+                                    validation.touched.bio &&
+                                    validation.errors.bio
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.bio &&
+                                validation.errors.bio ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.bio}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                          </Row>
                         </Form>
-                        <Button color="primary" type="submit">
+                        {/* <Button color="primary" type="submit">
                           SUBMIT
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </Form>

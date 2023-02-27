@@ -23,7 +23,7 @@ const ProjectsOverview = props => {
   let query = useQuery()
 
     const getAttorneyinfo = async () => {
-      const res = await regAttorneyDetails({objectId:query.get("uid")})
+      const res = await regAttorneyDetails({id:query.get("uid")})
       if (res) {
         setAttorneyDetail(res.attorney)
       }
