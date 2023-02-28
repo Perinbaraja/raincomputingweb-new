@@ -41,7 +41,7 @@ const Header = props => {
                 </span>
               </Link>
 
-              <Link to="/" className="logo logo-light">
+              <Link to="/" className="logo logo-light  col-lg-4 col-md-4 col-sm-2">
                 <span className="logo-sm">
                   <img src={rainlglogo} alt="" height="22" />
                 </span>

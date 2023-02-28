@@ -213,6 +213,14 @@
     font-size: 36px;
 }
 
+#contact2 h2:hover{
+
+    transition: ease-in-out;
+    transition-duration: 300ms;
+    letter-spacing: 0.5px;
+}
+
+
 #congif{
 
     width: 250px;
@@ -234,6 +242,7 @@
     border: none;
     border-bottom: 1px solid #556ee6;;
     border-radius:2px;
+    background-color:transparent;
 }
 
 #formcon1{
@@ -244,6 +253,7 @@
     border: none;
     border-bottom: 1px solid #556ee6;;
     border-radius:2px;
+    background-color:transparent;
 }
 
 #formbut{
@@ -255,4 +265,10 @@
     font-size: 14px;
     border-radius:4px;
     margin:30px 0 0;
+}
+
+#formbut:hover{
+color:#556ee6;
+    background-color:transparent;
+    border:1px solid #556ee6;
 }
