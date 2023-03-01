@@ -98,9 +98,9 @@ const AttorneyDetailsCard = () => {
                         <ul>
                           <NavItem>
                             <NavLink>
-                              <h4 className="d-flex justify-content-center card-title mt-2">
+                              <h4 className="d-flex font-size-18 text-primary card-title mt-2">
                                 {" "}
-                                My info
+                                Personal Info
                               </h4>{" "}
                             </NavLink>
                           </NavItem>

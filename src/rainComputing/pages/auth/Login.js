@@ -96,7 +96,7 @@ const RainLogin = props => {
       </div>
       <div className="d-flex ">
         <div className="d-none d-xl-block  ">
-          <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  ">
+          <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  p-5">
             <div className="justify-content-center">
               <img src={computer} width="500" height="350" />
             </div>
