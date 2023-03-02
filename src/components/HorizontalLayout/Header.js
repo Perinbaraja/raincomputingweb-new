@@ -61,9 +61,10 @@ const Header = props => {
                 <li id="navmen" className="">
                   <Link to="/chat-rc">Chat</Link>
                 </li>
+                {!currentUser&&
                 <li id="navmen" className="">
                   <Link to="/help">Help</Link>
-                </li>
+                </li>}
                 {currentUser && currentAttorney?.status === "approved" && (
                   <li id="navmen" className="">
                     <Link to="/req-user">Requests</Link>
