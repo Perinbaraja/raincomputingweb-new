@@ -198,7 +198,7 @@ const ChatRc = () => {
   const [email, setEmail] = useState("")
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
-  
+  const [pinnedMsg, setPinnedMsg] = useState("")
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -443,9 +443,7 @@ const ChatRc = () => {
     const payload = { Id: msgid }
     const res = await pinMessage(payload)
     if (res.success) {
-      setMessages(
-        messages?.map(m => m?._id === msgid ? res?.message : m)
-      )
+      setPinnedMsg(res.message)
     }
   }
   //Deleting Case
@@ -1425,8 +1423,6 @@ const ChatRc = () => {
                                         ) : (
                                           ""
                                         )}
-                                        <Form className="p-3">
-                                          <FormGroup className="m-0">
                                             <InputGroup>
                                               <Input
                                                 type="text"
@@ -1449,8 +1445,6 @@ const ChatRc = () => {
                                               </Button>
                                               {/* </InputGroupAddon> */}
                                             </InputGroup>
-                                          </FormGroup>
-                                        </Form>
                                       </DropdownMenu>
                                     </Dropdown>
                                   </li>
@@ -1619,7 +1613,7 @@ const ChatRc = () => {
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
-                                                  onPinnedMessage(msg?._id)
+                                                  onPinnedMessage(msg)
                                                 }}
                                               >
                                                 Pin
@@ -1662,7 +1656,7 @@ const ChatRc = () => {
                                               </div>
                                             )} */}
                                             <div>
-                                              {msg?.isPinned? (
+                                              {msg?.isPinned ? (
                                                 <div>
                                                   <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
                                                 </div>

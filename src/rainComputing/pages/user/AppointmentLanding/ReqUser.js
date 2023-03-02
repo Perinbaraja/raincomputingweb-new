@@ -26,6 +26,7 @@ const RequestUser = () => {
     closeButton: true,
   }
   const [appointmentReq, setAppointmentReq] = useState([])
+  const [refetch,setRefetch]=useState(false)
   const handleFileDownload = async ({ id, filename }) => {
     getFileFromGFS(
       { id },
@@ -55,9 +56,11 @@ const RequestUser = () => {
     }
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
+      setRefetch(true)
       toastr.success(`Appointment  has been Accepted `, "Success")
       await onGetAllAppointmentRequest()
     } else {
+      setRefetch(false)
       toastr.error(`Failed to Accept Appointment `, "Failed!!!")
     }
   }
@@ -68,9 +71,11 @@ const RequestUser = () => {
     }
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
+      setRefetch(true)
       toastr.success(`Appointment  has been Rejected `, "Success")
       await onGetAllAppointmentRequest()
     } else {
+      setRefetch(false)
       toastr.error(`Failed to Reject Appointment `, "Failed!!!")
     }
     setModalOpen(false)
@@ -194,7 +199,7 @@ const RequestUser = () => {
                           </Card>
                         )
                     )}
-                  <ReqUserAppointmentDetails />
+                  <ReqUserAppointmentDetails refetch = {refetch}/>
                 </Col>
               </Row>
             ) : (
