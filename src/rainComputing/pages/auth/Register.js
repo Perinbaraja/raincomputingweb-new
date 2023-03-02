@@ -28,12 +28,20 @@ import login from "../../../assets/images/loginanimi.png"
 import { userRegisteration } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import { useToggle } from "./../../helpers/hooks/useToggle"
+import TermsModal from "rainComputing/components/modals/TermsModal"
+import DynamicModel from './../../components/modals/DynamicModal';
+import DynamicSuspense from './../../components/loader/DynamicSuspense';
 const RainRegister = () => {
   let history = useHistory()
   const [registrationError, setRegistrationError] = useState("")
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [loading, setLoading] = useState(false)
-
+  const {
+    toggleOpen: termsModelOpen,
+    setToggleOpen: setTermsModelOpen,
+    toggleIt: toggleTermsModelOpen,
+  } = useToggle(false)
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -74,224 +82,246 @@ const RainRegister = () => {
   return (
     <React.Fragment>
       <div className="p-5 m-5">
-      <MetaTags>
-        <title>Register | Raincomputing</title>
-      </MetaTags>
-      <div className="d-flex ">
-        <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
-          <div className="my-5">
-            <div className="justify-content-center">
-              <img src={login} height="450" width="600" />
-            </div>
-            {/* <p className="fs-5 pt-5 ps-5 ">
+        <MetaTags>
+          <title>Register | Raincomputing</title>
+        </MetaTags>
+        <div className="d-flex ">
+          <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
+            <div className="my-5">
+              <div className="justify-content-center">
+                <img src={login} height="450" width="600" />
+              </div>
+              {/* <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
             </p> */}
+            </div>
           </div>
-        </div>
-        <div className="container ">
-          <Container className="cont1">
-            <Row className="justify-content-center">
-              <Col md={8} lg={7} xl={9}>
-                <Card className="overflow-hidden">
-                  <div className="bg-primary bg-soft">
-                    <Row>
-                      <Col className="col-7 ">
-                        <div className="text-primary p-3">
-                          <h5 className="text-primary"> Register</h5>
-                          <p>Get your rain account now.</p>
-                        </div>
-                      </Col>
-                      <Col className="col-5 align-self-end">
-                        <img src={profileImg}  height="100" width="300" className="img-fluid" />
-                      </Col>
-                    </Row>
-                  </div>
-                  <CardBody className="pt-0">
-                    <div>
-                      <Link to="/">
-                        <div className="avatar-md profile-user-wid mb-1">
-                          <span className="avatar-title rounded-circle bg-light">
-                            <img
-                              src={logo}
-                              alt=""
-                              className="rounded-circle"
-                              height="34"
-                            />
-                          </span>
-                        </div>
-                      </Link>
+          <div className="container ">
+            <Container className="cont1">
+              <Row className="justify-content-center">
+                <Col md={8} lg={7} xl={9}>
+                  <Card className="overflow-hidden">
+                    <div className="bg-primary bg-soft">
+                      <Row>
+                        <Col className="col-7 ">
+                          <div className="text-primary p-3">
+                            <h5 className="text-primary"> Register</h5>
+                            <p>Get your rain account now.</p>
+                          </div>
+                        </Col>
+                        <Col className="col-5 align-self-end">
+                          <img
+                            src={profileImg}
+                            height="100"
+                            width="300"
+                            className="img-fluid"
+                          />
+                        </Col>
+                      </Row>
                     </div>
-                    <div className="">
-                      <Form
-                        className="form-horizontal"
-                        onSubmit={e => {
-                          e.preventDefault()
-                          validation.handleSubmit()
-                          return false
-                          onSubmit.reset()
-                          //e. reset()
-                        }}
-                      >
-                        {registrationSuccess && (
-                          <Alert
-                            className="fw-bolder text-center"
-                            color="success"
-                          >
-                            {registrationSuccess}
-                          </Alert>
-                        )}
-
-                        {registrationError && (
-                          <Alert
-                            color="danger"
-                            className="fw-bolder text-center"
-                          >
-                            {registrationError}
-                          </Alert>
-                        )}
-
-                        <div className="mb-2">
-                          <Label className="form-label">First Name</Label>
-                          <Input
-                            name="firstname"
-                            type="text"
-                            placeholder="Enter first name"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.firstname || ""}
-                            invalid={
-                              validation.touched.firstname &&
-                              validation.errors.firstname
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.firstname &&
-                          validation.errors.firstname ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.firstname}
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-                        <div className="mb-2">
-                          <Label className="form-label">Last Name</Label>
-                          <Input
-                            name="lastname"
-                            type="text"
-                            placeholder="Enter last name"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.lastname || ""}
-                            invalid={
-                              validation.touched.lastname &&
-                              validation.errors.lastname
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.lastname &&
-                          validation.errors.lastname ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.lastname}
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-                        <div className="mb-2">
-                          <Label className="form-label">Email</Label>
-                          <Input
-                            id="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="Enter email"
-                            type="email"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.email || ""}
-                            invalid={
-                              validation.touched.email &&
-                              validation.errors.email
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.email &&
-                          validation.errors.email ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.email}
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-
-                        <div className="mb-2">
-                          <Label className="form-label">Password</Label>
-                          <Input
-                            name="password"
-                            type="password"
-                            placeholder="Enter Password"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.password || ""}
-                            invalid={
-                              validation.touched.password &&
-                              validation.errors.password
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.password &&
-                          validation.errors.password ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.password}
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-                        <div className="mt-1">
-                          <p className="">
-                            <input
-                              className="form-check-input me-2"
-                              type="checkbox"
-                              required
-                              id="flexCheckDefault"
-                            />
-                            By registering you agree to the raincomputing{" "}
-                            <Link to="#" className="text-primary font-sm">
-                              Terms of Use
-                            </Link>
-                          </p>
-                        </div>
-                        <div className="mt-3 d-grid">
-                          {loading ? (
-                            <button
-                              type="button"
-                              className="btn btn-dark"
-                              style={{ cursor: "not-allowed" }}
+                    <CardBody className="pt-0">
+                      <div>
+                        <Link to="/">
+                          <div className="avatar-md profile-user-wid mb-1">
+                            <span className="avatar-title rounded-circle bg-light">
+                              <img
+                                src={logo}
+                                alt=""
+                                className="rounded-circle"
+                                height="34"
+                              />
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+                      <div className="">
+                        <Form
+                          className="form-horizontal"
+                          onSubmit={e => {
+                            e.preventDefault()
+                            validation.handleSubmit()
+                            return false
+                            onSubmit.reset()
+                            //e. reset()
+                          }}
+                        >
+                          {registrationSuccess && (
+                            <Alert
+                              className="fw-bolder text-center"
+                              color="success"
                             >
-                              <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
-                              Registering...
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-primary btn-block "
-                              type="submit"
-                            >
-                              Register
-                            </button>
+                              {registrationSuccess}
+                            </Alert>
                           )}
-                        </div>
 
-                        <div className=" mt-2 text-center">
-                          <p>
-                            Already have an account ?{" "}
-                            <Link
-                              to="/login"
-                              className="font-weight-medium text-primary"
+                          {registrationError && (
+                            <Alert
+                              color="danger"
+                              className="fw-bolder text-center"
                             >
-                              {" "}
-                              Login
-                            </Link>{" "}
-                          </p>
-                        </div>
-                        {/* <div className="text-center ">
+                              {registrationError}
+                            </Alert>
+                          )}
+
+                          <div className="mb-2">
+                            <Label className="form-label">First Name</Label>
+                            <Input
+                              name="firstname"
+                              type="text"
+                              placeholder="Enter first name"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.firstname || ""}
+                              invalid={
+                                validation.touched.firstname &&
+                                validation.errors.firstname
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.firstname &&
+                            validation.errors.firstname ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.firstname}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+                          <div className="mb-2">
+                            <Label className="form-label">Last Name</Label>
+                            <Input
+                              name="lastname"
+                              type="text"
+                              placeholder="Enter last name"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.lastname || ""}
+                              invalid={
+                                validation.touched.lastname &&
+                                validation.errors.lastname
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.lastname &&
+                            validation.errors.lastname ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.lastname}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+                          <div className="mb-2">
+                            <Label className="form-label">Email</Label>
+                            <Input
+                              id="email"
+                              name="email"
+                              className="form-control"
+                              placeholder="Enter email"
+                              type="email"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.email || ""}
+                              invalid={
+                                validation.touched.email &&
+                                validation.errors.email
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.email &&
+                            validation.errors.email ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.email}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+
+                          <div className="mb-2">
+                            <Label className="form-label">Password</Label>
+                            <Input
+                              name="password"
+                              type="password"
+                              placeholder="Enter Password"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.password || ""}
+                              invalid={
+                                validation.touched.password &&
+                                validation.errors.password
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.password &&
+                            validation.errors.password ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.password}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+                          <div className="mt-1">
+                          <DynamicModel
+                              open={termsModelOpen}
+                              toggle={toggleTermsModelOpen}
+                              size="lg"
+                              modalTitle="terms & condition"
+                              footer={false}
+                              isClose={true}
+                            >
+                              <DynamicSuspense>
+                                <TermsModal 
+                                setModalOpen={setTermsModelOpen}/>
+                              </DynamicSuspense>
+                            </DynamicModel>
+                            <p className="">
+                              <input
+                                className="form-check-input me-2"
+                                type="checkbox"
+                                required
+                                id="flexCheckDefault"
+                              />
+                              By registering you agree to the raincomputing{" "}
+                             
+                              <a
+                                className="text-primary font-sm"
+                               onClick={()=>{setTermsModelOpen(true)}}
+                              >
+                                Terms of Use
+                              </a>
+                            </p>
+                          </div>
+                          <div className="mt-3 d-grid">
+                            {loading ? (
+                              <button
+                                type="button"
+                                className="btn btn-dark"
+                                style={{ cursor: "not-allowed" }}
+                              >
+                                <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
+                                Registering...
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-primary btn-block "
+                                type="submit"
+                              >
+                                Register
+                              </button>
+                            )}
+                          </div>
+
+                          <div className=" mt-2 text-center">
+                            <p>
+                              Already have an account ?{" "}
+                              <Link
+                                to="/login"
+                                className="font-weight-medium text-primary"
+                              >
+                                {" "}
+                                Login
+                              </Link>{" "}
+                            </p>
+                          </div>
+                          {/* <div className="text-center ">
                           <a href="https://www.google.co.in/">
                           <i className="fab fa-google me-2 "></i>
                           </a>
@@ -302,14 +332,14 @@ const RainRegister = () => {
                           <i class="fab fa-twitter me-2"></i>
                            </a>
                         </div> */}
-                      </Form>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </Container>
-        </div>
+                        </Form>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+            </Container>
+          </div>
         </div>
       </div>
     </React.Fragment>
