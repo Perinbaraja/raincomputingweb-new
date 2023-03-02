@@ -1,1 +1,1 @@
- export const SERVER_URL = "https://rainwebapi.azurewebsites.net"
+ export const SERVER_URL = "http://localhost:8080"

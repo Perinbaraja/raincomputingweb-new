@@ -19,6 +19,7 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { logoutUser } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import { useLocation } from 'react-router-dom';
+import "../TopbarDropdown/login.scss"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -144,7 +145,7 @@ const ProfileMenu = props => {
         !isLoginButton &&
         <Link to="/login" className="dropdown">
           {/* <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" /> */}
-          <button className=" bg-primary text-white font-size-16 px-4 py-2 border-0 rounded" type="button"><span>{props.t("Login")}</span></button>
+          <button id="logbtn" type="button"><span>{props.t("Login")}</span></button>
         </Link>
       )}
     </React.Fragment> 

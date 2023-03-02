@@ -1,3 +1,12 @@
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
 
 #attcard{
     height: 220px;
@@ -61,7 +70,7 @@
 
 .aboutuspage{
 
-    width: 1400px;
+    width: 100%;
     // margin-bottom: 0px;
    
     padding: 20px 0;
@@ -69,8 +78,8 @@
 
 #about{
 
-    padding: 30px;
-
+   width: 700px;
+    padding: 20px;
 }
 
 #aboutus{
@@ -88,6 +97,7 @@
 
 }
 
+
 #aboutline{
     margin-top: 5px;
     width: 100px;
@@ -97,20 +107,43 @@
 }
 
 #aboutpara{
-    font-size: 14px;
+   
     // text-align: center;
    
-    width: 700px;
+    @media (min-width: 576px){
+    
+        font-size: 10px;
+
+}
+
+@media (min-width: 768px){
+    
+    font-size: 10px;
+
+}
+
+@media (min-width: 992px){
+    
+    font-size: 12px;
+
+}
+
+@media (min-width: 1200px){
+    
+    font-size: 14px;
+
+}
     
 }
 
 #abt{
+    width: 1400px;
     height: 400px;
 }
 
 #abt2{
-
-    padding-left: 80px;
+    width: 700px;
+    text-align: center;
 }
 
 // #banner{
@@ -272,3 +305,5 @@ color:#556ee6;
     background-color:transparent;
     border:1px solid #556ee6;
 }
+
+
