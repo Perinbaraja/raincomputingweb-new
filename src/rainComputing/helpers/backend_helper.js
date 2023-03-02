@@ -34,6 +34,8 @@ const getAllRegAttorneys = payload =>
   post(`${BASE_URL}/attorney/getAllAttorney`, payload)
 const regAttorneyDetails = payload =>
   post(`${BASE_URL}/attorney/regAttorneyDetails`, payload)
+const attorneyInvite = payload =>
+  post(`${BASE_URL}/attorney/inviteAttorney`, payload)
 
 const addNewUser = payload => put(`${BASE_URL}/pchat/addtoGroup`, payload)
 //Removing the User from Group
@@ -205,4 +207,5 @@ export {
   pinMessage,
   userNotes,
   updatePassword,
+  attorneyInvite,
 }

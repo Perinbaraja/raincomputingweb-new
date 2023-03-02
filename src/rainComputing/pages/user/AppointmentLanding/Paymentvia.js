@@ -23,7 +23,7 @@ import * as Yup from "yup"
 import { useFormik } from "formik"
 import { attImages } from "../../../../helpers/mockData"
 import ReactTextareaAutosize from "react-textarea-autosize"
-import { appointmentRequest } from "rainComputing/helpers/backend_helper"
+import { appointmentRequest ,attorneyInvite} from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
@@ -39,6 +39,7 @@ const PaymentVia = () => {
   const [allFiles, setAllFiles] = useState([])
   const [isAttachments, setIsAttachments] = useState(false)
   const [caseData, setCaseData] = useState("")
+  const [email, setEmail] = useState("")
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -47,6 +48,12 @@ const PaymentVia = () => {
   const handleCancelClick = () => {
     history.push("/")
   }
+
+  const onSendEmail = async () => {
+    const mailRes = await attorneyInvite()
+    setEmail(mailRes.true)
+  }
+
   //SideEffect for setting isAttachments
   useEffect(() => {
     if (Array.from(allFiles)?.length > 0) {
@@ -117,7 +124,7 @@ const PaymentVia = () => {
       if (res.success) {
         toastr.success(`Appointment request send successfully `, "Success")
         localStorage.setItem("authUser", JSON.stringify(res))
-        history.push("/payment-page")
+        history.push(`/payment-page?uid=${currentAttorney}`)
       } else {
         toastr.error(`you have already send reqest`, "Failed!!!")
       }
@@ -137,6 +144,11 @@ const PaymentVia = () => {
       e.preventDefault()
       // handleSendMessage()
     }
+  }
+
+  const handleClick = () => {
+    handleAppointmentRequest();
+    onSendEmail();
   }
   return (
     <React.Fragment>
@@ -272,7 +284,7 @@ const PaymentVia = () => {
                                 color="primary"
                                 className="btn btn-primary ms-3 w-lg "
                                 disabled={isEmptyOrSpaces()}
-                                onClick={() => handleAppointmentRequest()}
+                                onClick={handleClick }
                               >
                                 Payment
                               </Button>

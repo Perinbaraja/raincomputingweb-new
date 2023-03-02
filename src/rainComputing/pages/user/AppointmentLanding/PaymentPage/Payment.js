@@ -20,8 +20,9 @@ const stripePromise = loadStripe(
 export default function Payment() {
   const [clientSecret, setClientSecret] = useState("")
   const { currentUser } = useUser()
-  const { currentAttorney } = useUser()
   let query = useQuery()
+
+  const currentAttorney= query.get("uid")
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
@@ -32,7 +33,7 @@ export default function Payment() {
         items: [{ id: "Rain Attorney" }],
         email: currentUser?.email,
         user: currentUser?.userID,
-        attorney: "62ec8de74fde4cb410073cc0",
+        attorney: currentAttorney,
       }),
     })
       .then(res => {
