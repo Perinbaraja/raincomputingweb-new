@@ -34,6 +34,7 @@ const LandingGrid = () => {
   const loadAttorney = async () => {
     const res = await getAllRegAttorneys({ page, limit, searchText })
     if (res.success) {
+      // console.log(first)
       setAttorneys(res.attorneys)
     } else {
       console.log("Error while fetching Attorneys", res)
@@ -77,7 +78,7 @@ const LandingGrid = () => {
         <div className="" id="landinggrid">
           <Container fluid>
             <div className="mb-2">
-              <div className="app-search position-relative">
+              <div className="app-search ">
                 <input
                   type="text-success"
                   className="form-control "
@@ -85,7 +86,7 @@ const LandingGrid = () => {
                   value={searchText}
                   onChange={e => setSearchText(e.target.value)}
                 />
-                <span className="bx bx-search-alt mt-3" />
+                {/* <span className="bx bx-search-alt mt-3" /> */}
               </div>
             </div>
             {loading ? (
@@ -141,16 +142,16 @@ const LandingGrid = () => {
           <img src= {banner} alt="banner background"  id="banner"/>
            
       </div> */}
-                <section className="aboutuspage">
-                  <div className="px-5 my-5">
-                    <div className="d-flex" id="abt">
-                      <div id="about">
+                <section className="">
+                  <div className="">
+                    <div className="d-flex flex-md-row flex-column" id="">
+                      <div id="" className="col-sm-8">
                         <div>
-                          <h2 className=" text-primary mb-5 " id="aboutus">
-                            About Us <div id="aboutline"></div>
+                          <h2 className=" text-primary mb-5 " id="">
+                            About Us <div id=""></div>
                           </h2>
                         </div>
-                        <p id="aboutpara">
+                        <p id="">
                           We pride ourselves on our down to earth and friendly
                           approach, with many of us being heavily involved in
                           our spare time in making the law a better and more
@@ -164,7 +165,7 @@ const LandingGrid = () => {
                           that want to help you and your family face the
                           criminal justice system with confidence.
                         </p>
-                        <p id="aboutpara">
+                        <p id="">
                           {" "}
                           At the same time we have the advantage of being
                           present in four different cities and therefore closer
@@ -176,8 +177,8 @@ const LandingGrid = () => {
                         </p>
                       </div>
 
-                      <div id="abt2">
-                        <img
+                      <div id=""className="flex-fill">
+                        <img 
                           src={illustration}
                           alt="about illustration"
                           className="img-fluid"
@@ -188,8 +189,8 @@ const LandingGrid = () => {
                   </div>
                 </section>
 
-                <section className="contactform d-flex px-5">
-                  <div id="contact1" className="col-md-6 col-sm-12">
+                <div className=" d-flex flex-md-row flex-column px-5 " style={{paddingTop:"50px",paddingBottom:"90px"}}>
+                  <div id="" className="col-md-6 col-sm-12">
                     {/* <h2 >Contact Us </h2>
                            <div id="contactline"></div> */}
 
@@ -199,7 +200,7 @@ const LandingGrid = () => {
                     <p>Stay Connected.....</p>
                   </div>
 
-                  <div id="contact2" className="col-md-6 col-sm-12">
+                  <div id="" className="col-md-6 col-sm-12">
                     <h2>Contact Us </h2>
                     <div id="contactline"></div>
 
@@ -234,7 +235,7 @@ const LandingGrid = () => {
                       </button>
                     </div>
                   </div>
-                </section>
+                </div>
               </>
             )}
           </Container>

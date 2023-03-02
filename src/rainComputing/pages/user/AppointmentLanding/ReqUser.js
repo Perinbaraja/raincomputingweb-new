@@ -89,7 +89,7 @@ const RequestUser = () => {
         cancelText="Cancel"
         onCloseClick={toggleModal}
       />
-      <div className="p-5 m-5">
+      <div className="page-content">
         <Container fluid>
           <>
             <Link to="/">

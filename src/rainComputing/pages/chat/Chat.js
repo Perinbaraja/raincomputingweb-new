@@ -932,7 +932,7 @@ const ChatRc = () => {
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
   return (
-    <div className="p-5 m-5">
+    <div className="page-content">
       <>
         {pageLoader ? (
           <ChatLoader />

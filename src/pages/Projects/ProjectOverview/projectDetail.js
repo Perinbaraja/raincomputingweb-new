@@ -10,14 +10,14 @@ const ProjectDetail = ({ project }) => {
   const imgIndex = Math.floor(Math.random() * 8)
 
   return (
-    <div id="projcard" className="bg-white">
+    <div id="" className="bg-white">
       <div >
-      <div style={{height:"550px",}} className="p-3">
+      <div  className="p-3">
          
         <div className="row">
           <div className="col-xs-12 col-lg-6 " >
             <div className="d-flex justify-content-center  p-5"  id="profilebox">
-              <img id="Attprofile" className="mt-5"
+              <img id="Attprofile" className="mt-5 row-sm-6"
                 src={
                   project?.regUser?.profilePic
                     ? project?.regUser?.profilePic
