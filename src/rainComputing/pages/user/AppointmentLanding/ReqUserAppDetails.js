@@ -215,13 +215,11 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
     }
     useEffect(() => {
       onGetAllAppointmentDetails()
-    return () =>null
     }, [currentAttorney])
 
 
   useEffect(() => {
     if (refetch) onGetAllAppointmentDetails()
-    return () =>null
     }, [refetch])
 
   
