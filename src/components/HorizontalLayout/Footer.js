@@ -3,77 +3,80 @@ import { Container, Row, Col, Button } from "reactstrap"
 import { Link } from 'react-router-dom'
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props"
 // import TwitterLogin from "react-twitter-auth"
-import { GoogleLogin } from "react-google-login"
+import { GoogleLogin } from "react-google-login" 
 
+import "./footerclr.scss"
 const Footer = () => {
   return (
     <React.Fragment>
-      <footer className="footer">
-        <Container fluid>
+      <footer className="footer" id="footclr">
+        <Container fluid  >
           <Row>
-            <div className="col-md-3 col-sm-10">
-              <ul className="list-unstyled ">
-                <h3>About</h3>
+            <div className="col-md-3 col-sm-10 " id="footmen">
+              <ul className="list-unstyled">
+                <h3 className="text-primary">ABOUT</h3>
                 <Link 
                 role = "button"
-                to = "#" >
-                <li className="mt-3 ">About Us</li>
-                <li className="mt-3 ">How it works</li>
-                <li className="mt-3 ">Security</li>
+                to = "#" className="text-dark">
+                <li className="mt-4 font-size-14 "> - About Us</li>
+                <li className="mt-3 font-size-14 "> - How it works</li>
+                <li className="mt-3  font-size-14"> - Security</li>
                 </Link>
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6">
+            <div className="col-md-3 col-sm-6" id="footmen">
               <ul className="list-unstyled ">
-                <h3>Solution</h3>
+                <h3 className="text-primary">SOLUTION</h3>
                 <Link 
                 role = "button"
-                to = "#" >
-                <li className="mt-3 ">Enterprise</li>
-                <li className="mt-3 ">Private Label</li>
-                <li className="mt-3 ">Management</li>
+                to = "#" className="text-dark">
+                <li className="mt-4 font-size-14 "> - Enterprise</li>
+                <li className="mt-3 font-size-14 "> - Private Label</li>
+                <li className="mt-3 font-size-14 "> - Management</li>
                 </Link>
               </ul>
             </div>
 
-            <div className="col-md-3 col-sm-6">
+            <div className="col-md-3 col-sm-6" id="footmen">
               <ul className="list-unstyled  ">
-                <h3>Contact</h3>
+                <h3 className="text-primary">CONTACT</h3>
                 <Link 
                 role = "button"
-                to = "#" >
-                <li className="mt-3 ">Contact Us </li>
-                <li className="mt-3">Careers</li>
-                <li className="mt-3 ">Security</li>
+                to = "#" className="text-dark">
+                <li className="mt-4 font-size-14 "> - Contact Us </li>
+                <li className="mt-3 font-size-14"> - Careers</li>
+                <li className="mt-3  font-size-14"> - Security</li>
                 </Link>
               </ul>
             </div>
 
             <div className="col-md-3 col-sm-6 ">
               <ul className="list-unstyled  ">
-                <h3>Follow Us</h3>
+                <h3 className="text-primary">FOLLOW US</h3>
                 <Link 
                 role = "button"
                 to = "#" >
-                <li className="mt-3 ">
-                  <i className="mdi mdi-facebook" />
+                <li className="mt-4 text-dark  font-size-14" >
+                  <i className="mdi mdi-facebook text-primary mx-2" />
                   Facebook{" "}
                 </li>
                 {/* <li><i className="mdi mdi-twitter"/>Twitter</li> */}
-                <li className="mt-3 ">
+                <li className="mt-3 text-dark  font-size-14">
                   {" "}
-                  <i className="mdi mdi-google" />
+                  <i className="mdi mdi-google text-primary mx-2" />
                   Google
                 </li>
                 </Link>
               </ul>
             </div>
 
-            <Col md={6}>{new Date().getFullYear()} © RainComputing.</Col>
+            <hr></hr>
+
+            <Col md={6}>{new Date().getFullYear()} © <a href="#" id="footlog" >RainComputing</a></Col>
             <Col md={6}>
-              <div className="text-sm-end d-none d-sm-block">
-                Design & Develop by RainComputing
+              <div className="text-sm-end d-none d-sm-block mb-4">
+                Design & Develop by <a href="#" id="footlog"><strong>RainComputing</strong></a>
               </div>
             </Col>
           </Row>

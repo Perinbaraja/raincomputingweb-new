@@ -27,7 +27,6 @@ const AttorneyList = () => {
   }
 
   const nameFormatter = (cell, row) => {
-    console.log("row", row)
     return row?.regUser?.firstname + " " + row?.regUser?.lastname
   }
 
@@ -128,7 +127,6 @@ const AttorneyList = () => {
   const getAllAttorneys = async () => {
     setLoading(true)
     const res = await allAttorneysList({})
-    // console.log("res", res)
     if (res.success) {
       setAttorneyData(res.attorneys)
     }

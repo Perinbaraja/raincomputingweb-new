@@ -23,26 +23,37 @@ import * as Yup from "yup"
 import { useFormik } from "formik"
 import { attImages } from "../../../../helpers/mockData"
 import ReactTextareaAutosize from "react-textarea-autosize"
-import { appointmentRequest } from "rainComputing/helpers/backend_helper"
+import { appointmentRequest ,attorneyInvite} from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 
 const PaymentVia = () => {
   const history = useHistory()
+ const query = useQuery()
+
   const { currentUser, setCurrentUser } = useUser()
   const imgIndex = Math.floor(Math.random() * 8)
   const [loading, setLoading] = useState(false)
   const [allFiles, setAllFiles] = useState([])
   const [isAttachments, setIsAttachments] = useState(false)
   const [caseData, setCaseData] = useState("")
+  const [email, setEmail] = useState("")
   toastr.options = {
     progressBar: true,
     closeButton: true,
   }
+  const currentAttorney= query.get("uid")
   const handleCancelClick = () => {
     history.push("/")
   }
+
+  const onSendEmail = async () => {
+    const mailRes = await attorneyInvite()
+    setEmail(mailRes.true)
+  }
+
   //SideEffect for setting isAttachments
   useEffect(() => {
     if (Array.from(allFiles)?.length > 0) {
@@ -62,7 +73,6 @@ const PaymentVia = () => {
     onSubmit: values => {
     },
   })
-  
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
     return caseData === null || caseData.match(/^ *$/) !== null
@@ -70,12 +80,11 @@ const PaymentVia = () => {
   const handleAppointmentRequest = async () => {
     setLoading(true)
     if (isEmptyOrSpaces()) {
-      // console.log("You can't send empty Case Details")
     } else {
       let attachmentsId = []
       let payload = {
         caseData: caseData,
-        attorney: "631202e3879cd1751698643c",
+        attorney: currentAttorney,
         User: currentUser.userID,
         isAttachments,
         appointmentstatus: "requested",
@@ -111,15 +120,13 @@ const PaymentVia = () => {
         }
       }
       payload.attachments = attachmentsId
-      console.log("req value: ", payload)
       const res = await appointmentRequest(payload)
       if (res.success) {
         toastr.success(`Appointment request send successfully `, "Success")
         localStorage.setItem("authUser", JSON.stringify(res))
-        history.push("/payment-page")
+        history.push(`/payment-page?uid=${currentAttorney}`)
       } else {
         toastr.error(`you have already send reqest`, "Failed!!!")
-        console.log("Failed to send request", res)
       }
       setAllFiles([])
       setCaseData("")
@@ -138,14 +145,14 @@ const PaymentVia = () => {
       // handleSendMessage()
     }
   }
+
+  const handleClick = () => {
+    handleAppointmentRequest();
+    onSendEmail();
+  }
   return (
     <React.Fragment>
-      <div className="page-content">
-        <MetaTags>
-          <title>
-            User Payment Details | Rain - Admin & Dashboard Template
-          </title>
-        </MetaTags>
+      <div className="p-5 m-5">
         <Container fluid>
           <>
             <Breadcrumb title="Rain" breadcrumbItem="User Payment Details" />
@@ -159,12 +166,12 @@ const PaymentVia = () => {
                           Attorney
                         </label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
-                          <label className="fw-bolder">
+                          <label className="fw-semibold text-primary">
                             {"Hsuanyeh Chang, PhD, Esq."}{" "}
                           </label>
                         </div>
                       </Row>
-                      <Row className="mb-5">
+                      <Row className="mb-3">
                         <label className="col-md-5 col-lg-2 col-form-label"></label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
                           <label className="text-muted">
@@ -186,7 +193,6 @@ const PaymentVia = () => {
                         className="needs-validation"
                         onSubmit={e => {
                           e.preventDefault()
-                          console.log("values")
                           validation.handleSubmit()
                         }}
                       >
@@ -278,7 +284,7 @@ const PaymentVia = () => {
                                 color="primary"
                                 className="btn btn-primary ms-3 w-lg "
                                 disabled={isEmptyOrSpaces()}
-                                onClick={() => handleAppointmentRequest()}
+                                onClick={handleClick }
                               >
                                 Payment
                               </Button>

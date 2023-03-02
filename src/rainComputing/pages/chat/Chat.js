@@ -58,7 +58,6 @@ import {
   sentEmail,
   pinMessage,
 } from "rainComputing/helpers/backend_helper"
-import { postReplies } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
@@ -83,6 +82,8 @@ import { Mention, MentionsInput } from "react-mentions"
 import { useDropzone } from "react-dropzone"
 // import ForwardMsg from "rainComputing/components/chat/ForwardMsg"
 import copy from "copy-to-clipboard"
+import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
+import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -139,9 +140,9 @@ const ChatRc = () => {
     messageStack,
   } = useChat()
 
-  const privateChatId=query.get('p_id')
-  const groupChatId=query.get('g_id')
-  const caseChatId=query.get('c_id')
+  const privateChatId = query.get("p_id")
+  const groupChatId = query.get("g_id")
+  const caseChatId = query.get("c_id")
 
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
@@ -160,6 +161,11 @@ const ChatRc = () => {
     toggleOpen: caseEditModalOpen,
     setToggleOpen: setCaseEditModalOpen,
     toggleIt: toggleCaseEditModal,
+  } = useToggle(false)
+  const {
+    toggleOpen: rplyMessageModalOpen,
+    setToggleOpen: setReplyMsgModalOpen,
+    toggleIt: toggleReplyMessageModal,
   } = useToggle(false)
   const [isChatScroll, setIsChatScroll] = useState(false)
   const [messageBox, setMessageBox] = useState(null)
@@ -186,18 +192,13 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
-  const [replyMessage, setReplyMessage] = useState("")
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
-  const [createReplyMsgModal, setCreateReplyMsgModal] = useState(false)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
   const [email, setEmail] = useState("")
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
-
-  const pinmessage = messages?.filter(msg => msg?.isPinned === true)
-  // console.log("pinmessage", pinmessage)
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -207,10 +208,18 @@ const ChatRc = () => {
   //Handle Body Scrolling
   isChatScroll ? disableBodyScroll(document) : enableBodyScroll(document)
 
+  const depMessages=messages?.slice()
+  
   //Scroll to messages bottom on load & message arrives
+  
   useEffect(() => {
-    if (!isEmpty(messages)) scrollToBottom()
-  }, [messages, currentChat, messageBox?.clientHeight])
+    const timer = setTimeout(()=> {if (!isEmpty(messages)) {
+        scrollToBottom()
+      }
+    },500)
+    return ()=> clearTimeout(timer)
+  }, [depMessages])
+
 
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
@@ -255,7 +264,6 @@ const ChatRc = () => {
     if (res.success) {
       setForwardMessages(res.Msg)
       //setcurMessage(res.messageData)
-      console.log("fmsg", res)
     } else {
       console.log("Failed to fetch message", res)
     }
@@ -347,11 +355,8 @@ const ChatRc = () => {
       searchText,
     })
     if (allCasesRes.success) {
-      if (!isSearch) {
-        setAllCases([...allCases, ...allCasesRes.cases])
-      } else {
-        setAllCases(allCasesRes.cases)
-      }
+      setAllCases(allCasesRes.cases)
+
       if (isSet) {
         setCurrentCase(allCasesRes?.cases[0])
       }
@@ -359,7 +364,6 @@ const ChatRc = () => {
       setAllCases([])
       setCurrentCase(null)
       setAllgroups(null)
-      console.log("Rendering ongetAllCases error", allCasesRes)
     }
     setCaseLoading(false)
   }
@@ -442,11 +446,6 @@ const ChatRc = () => {
       setPinnedMsg(res.message)
     }
   }
-  useEffect(() => {
-    if (!pinnedMsg) {
-      onPinnedMessage()
-    }
-  }, [pinnedMsg])
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -495,37 +494,9 @@ const ChatRc = () => {
 
     return curMessage === null || curMessage.match(/^ *$/) !== null
   }
-  //reply Message
-
-  const toggle_replyMsgModal = () => {
-    setCreateReplyMsgModal(!createReplyMsgModal)
-    document.body.classList.add("no_padding")
-  }
   const toggle_emailModal = () => {
     setEmailModal(!emailModal)
     document.body.classList.add("no_padding")
-  }
-
-  const handlereplyMsgCancel = () => {
-    setCreateReplyMsgModal(false)
-  }
-
-  const handleReplyMessage = async id => {
-    const payload = {
-      id,
-      sender: currentUser?.userID,
-      msg: replyMessage,
-    }
-
-    const res = await postReplies(payload)
-    const payloadMsg = {
-      groupId: currentChat?._id,
-      userId: currentUser?.userID,
-    }
-    await getMessagesByUserIdandGroupId(payloadMsg)
-    console.log("replies : ", res)
-    setReplyMessage("")
-    setCreateReplyMsgModal(false)
   }
 
   //Sending Message
@@ -543,6 +514,7 @@ const ChatRc = () => {
         messageData: curMessage,
         isAttachment,
         isForward: false,
+        // isPinned: false,
       }
       if (isAttachment) {
         const formData = new FormData()
@@ -577,7 +549,6 @@ const ChatRc = () => {
       }
       payLoad.attachments = attachmentsId
       handleSendingMessage(payLoad)
-      console.log("att", allFiles)
       setAllFiles([])
       setcurMessage("")
       setIsAttachment(false)
@@ -595,7 +566,6 @@ const ChatRc = () => {
           })
         )
       )
-      console.log("Result", getInputProps)
     },
   })
 
@@ -621,15 +591,12 @@ const ChatRc = () => {
   //Scrolling to bottom of message
   const scrollToBottom = () => {
     if (messageBox) {
-      // console.log("Scrolling to bottom before: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
       messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
-      // console.log("Scrolling to bottom after: ",messageBox?.scrollTop,messageBox?.offsetHeight,messageBox?.scrollHeight)
     }
   }
 
   useEffect(() => {
     if (messageBox) {
-      // console.log("Scrolling t: ",messageBox?.scrollHeight)
       messageBox.scrollTop = messageBox.scrollHeight
     }
   }, [messageBox?.scrollHeight])
@@ -734,7 +701,6 @@ const ChatRc = () => {
         : getChatName(currentChat?.groupMembers),
     }
     const mailRes = await sentEmail(payLoad)
-    // console.log ("mailRes :",mailRes);
     toastr.success(`Mail has been Send successfully`, "Success")
     setEmail(mailRes.true)
     setEmailModal(false)
@@ -787,7 +753,6 @@ const ChatRc = () => {
     if (searchedMessages?.length > 0) {
       const elementid = searchedMessages[0]?._id
       document.getElementById(elementid)?.scrollIntoView(false)
-      console.log(searchIndex, elementid, document.getElementById(elementid))
     } else {
       setSearchIndex(0)
     }
@@ -822,7 +787,6 @@ const ChatRc = () => {
     if (searchIndex >= 0) {
       const elementid = searchedMessages[searchIndex]?._id
       document.getElementById(elementid)?.scrollIntoView(false)
-      console.log(searchIndex, elementid, document.getElementById(elementid))
     }
   }, [searchIndex])
 
@@ -951,24 +915,24 @@ const ChatRc = () => {
     }
   }, [])
 
-  useEffect(()=>{
-    if(privateChatId && !pageLoader){
+  useEffect(() => {
+    if (privateChatId && !pageLoader) {
       const tempChat = chats?.find(ch => ch?._id === privateChatId)
       setCurrentChat(tempChat)
     }
-  },[privateChatId,pageLoader])
+  }, [privateChatId, pageLoader])
 
-  useEffect(()=>{
-    if(groupChatId && caseChatId && !pageLoader && !caseLoading ){
+  useEffect(() => {
+    if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
       const tempCase = allCases?.find(c => c?._id === caseChatId)
       setactiveTab("2")
       setCurrentCase(tempCase)
       setCurrentChat(groupChat)
     }
-  },[groupChatId,pageLoader,caseChatId,caseLoading])
+  }, [groupChatId, pageLoader, caseChatId, caseLoading])
   return (
-    <div className="page-content">
+    <div className="p-5 m-5">
       <>
         {pageLoader ? (
           <ChatLoader />
@@ -1024,105 +988,7 @@ const ChatRc = () => {
                 </div>
               </div>
             </Modal>
-            {/* Modal For PinnedMessage */}
-            <Modal
-              isOpen={pinModal}
-              toggle={() => {
-                tog_scroll()
-              }}
-              // scrollable={true}
-            >
-              <div className="modal-header">
-                <h5 className="modal-title mt-0">Pinned Message</h5>
-                <button
-                  type="button"
-                  onClick={() => setPinModal(false)}
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              {pinmessage &&
-                pinmessage?.map((msg, m) => (
-                  <div className="modal-body" key={m}>
-                    <p>{msg?.messageData}</p>
-                    <p className="chat-time mb-0">
-                      <i className="bx bx-comment-check align-middle me-1" />
-                      {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                      {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
-                    </p>
-                  </div>
-                ))}
-            </Modal>
             {/* Model for creating case*/}
-            <Modal
-              size="lg"
-              isOpen={createReplyMsgModal && curReplyMessageId}
-              toggle={() => {
-                toggle_replyMsgModal()
-              }}
-              backdrop={"static"}
-              id="staticBackdrop"
-              centered
-            >
-              <div className="modal-header">
-                <button
-                  onClick={() => {
-                    handlereplyMsgCancel()
-                  }}
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <h5>Reply :</h5>
-                <Row>
-                  <Col>
-                    <div className="position-relative">
-                      <MentionsInput
-                        type="text"
-                        value={replyMessage}
-                        onKeyPress={onKeyPress}
-                        style={{
-                          resize: "none",
-                        }}
-                        onChange={e => setReplyMessage(e.target.value)}
-                        className="form-control chat-input"
-                        placeholder="Enter Message..."
-                      >
-                        <Mention trigger="@" data={mentionsArray} />
-                      </MentionsInput>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handlereplyMsgCancel()
-                  }}
-                  className="btn btn-secondary "
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => handleReplyMessage(curReplyMessageId?._id)}
-                >
-                  Send
-                </button>
-              </div>
-            </Modal>
             <DynamicModel
               open={newCaseModelOpen}
               toggle={toggleNewCaseModelOpen}
@@ -1175,6 +1041,12 @@ const ChatRc = () => {
                 getSubGroups={onGettingSubgroups}
               />
             )}
+            <ReplyMsgModal
+              open={rplyMessageModalOpen}
+              setOpen={setReplyMsgModalOpen}
+              toggleOpen={toggleReplyMessageModal}
+              curMessageId={curReplyMessageId}
+            />
             {/* {contacts && (
               <ForwardMsg
                 open={forwardModalOpen}
@@ -1193,7 +1065,7 @@ const ChatRc = () => {
               onCloseClick={toggleCaseDeleteModal}
             />
             {messages &&
-              messages.map((msg, m) => (
+              messages?.map((msg, m) => (
                 <DeleteModal
                   key={m}
                   show={MsgDeleteModalOpen}
@@ -1210,7 +1082,7 @@ const ChatRc = () => {
             </MetaTags>
             <Container fluid>
               <Row>
-                <Col xs="12" lg="5">
+                <Col xs="12" lg="4">
                   <div className="pb-2 border-bottom">
                     <Link className="d-flex" to="/profile">
                       <div className="align-self-center me-3">
@@ -1427,7 +1299,7 @@ const ChatRc = () => {
                     </TabContent>
                   </div>
                 </Col>
-                <Col xs="12" lg="7" className="align-self-center">
+                <Col xs="12" lg="8" className="align-self-center" >
                   <div className="w-100 ">
                     {currentChat ? (
                       chatLoader ? (
@@ -1519,17 +1391,7 @@ const ChatRc = () => {
                                       isOpen={pinModal}
                                       toggle={tog_scroll}
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i
-                                          className="mdi mdi-pin-outline mdi-rotate-315"
-                                          onClick={() => {
-                                            tog_scroll()
-                                          }}
-                                        />
-                                      </DropdownToggle>
+                                      <PinnedModels />
                                     </Dropdown>
                                   </li>
                                   <li className="list-inline-item d-none d-sm-inline-block">
@@ -1561,8 +1423,6 @@ const ChatRc = () => {
                                         ) : (
                                           ""
                                         )}
-                                        <Form className="p-3">
-                                          <FormGroup className="m-0">
                                             <InputGroup>
                                               <Input
                                                 type="text"
@@ -1585,8 +1445,6 @@ const ChatRc = () => {
                                               </Button>
                                               {/* </InputGroupAddon> */}
                                             </InputGroup>
-                                          </FormGroup>
-                                        </Form>
                                       </DropdownMenu>
                                     </Dropdown>
                                   </li>
@@ -1598,13 +1456,35 @@ const ChatRc = () => {
                                       }
                                       className="float-end me-2"
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i className="bx bx-cog" />
-                                      </DropdownToggle>
-
+                                      {" "}
+                                      {currentCase?.admins?.includes(
+                                        currentUser?.userID
+                                      ) ? (
+                                        <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <div>
+                                            <i className="bx bx-cog" />
+                                          </div>
+                                        </DropdownToggle>
+                                      ) : (
+                                        currentChat &&
+                                        currentChat?.admins?.includes(
+                                          currentUser?.userID
+                                        ) && (
+                                        <div className="conversation-name">
+                                          <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <div>
+                                            <i className="bx bx-cog" />
+                                          </div>
+                                        </DropdownToggle>
+                                        </div>
+                                      ))}
+                                      
                                       {currentCase?.admins?.includes(
                                         currentUser?.userID
                                       ) ? (
@@ -1652,9 +1532,6 @@ const ChatRc = () => {
                                             >
                                               Archive Chat
                                             </DropdownItem>
-                                            <DropdownItem href="#">
-                                              Manage chat
-                                            </DropdownItem>
                                             <DropdownItem
                                               href="#"
                                               onClick={() =>
@@ -1676,13 +1553,11 @@ const ChatRc = () => {
                             </Row>
                           </div>
                           <div>
-                            <div className="chat-conversation p-3">
+                            <div className="chat-conversation p-5">
                               <ul className="list-unstyled">
                                 <PerfectScrollbar
-                                  style={{ height: "320px" }}
+                                  style={{ height: "380px" }}
                                   containerRef={ref => setMessageBox(ref)}
-                                  onMouseEnter={() => setIsChatScroll(true)}
-                                  onMouseLeave={() => setIsChatScroll(false)}
                                 >
                                   {messages &&
                                     messages.map((msg, m) => (
@@ -1730,7 +1605,7 @@ const ChatRc = () => {
                                                 href="#"
                                                 onClick={() => {
                                                   setCurReplyMessageId(msg)
-                                                  toggle_replyMsgModal()
+                                                  setReplyMsgModalOpen(true)
                                                 }}
                                               >
                                                 Reply
@@ -1780,6 +1655,17 @@ const ChatRc = () => {
                                                 {" "}
                                               </div>
                                             )} */}
+                                            <div>
+                                              {msg?.isPinned ? (
+                                                <div>
+                                                  <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                                </div>
+                                              ) : (
+                                                <div className="conversation-name">
+                                                  {" "}
+                                                </div>
+                                              )}
+                                            </div>
                                             <div className="conversation-name">
                                               {currentChat.isGroup
                                                 ? getMemberName(msg.sender)

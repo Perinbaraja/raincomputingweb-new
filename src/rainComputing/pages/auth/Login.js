@@ -31,6 +31,7 @@ import profile from "assets/images/profile-img.png"
 import logo from "assets/images/rain-drop.png"
 import computer from "assets/images/computer.png"
 import rainlogo from "assets/images/RainCom_Logo.webp"
+import login from "../../../assets/images/loginanimi.png"
 
 //Import config
 import { facebook } from "config"
@@ -94,19 +95,19 @@ const RainLogin = props => {
           <i className="fas fa-home h2" />
         </Link>
       </div>
-      <div className="d-flex  ">
-        <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
-          <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  ">
+      <div className="d-flex ">
+        <div className="d-none d-xl-block  ">
+          <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  p-5">
             <div className="justify-content-center">
-              <img src={computer} height="350" />
+              <img src={login} width="600" height="450" />
             </div>
-            <p className="fs-5 pt-5 ps-5 ">
+            {/* <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
-            </p>
+            </p> */}
           </div>
         </div>
-        <div className="container  ms-xl-1 mt-2 ">
-          <Container className="cont">
+        <div className="container">
+          <Container className="cont mt-5 mb-5">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={10}>
                 <Card className="overflow-hidden">
@@ -114,12 +115,12 @@ const RainLogin = props => {
                     <Row>
                       <Col xs={7}>
                         <div className="text-primary p-4">
-                          <h5 className="text-primary">Welcome to Rain</h5>
-                          <p>Sign in to continue to rain.</p>
+                          <h4 className="text-primary">Welcome</h4>
+                          <p>Sign in to continue</p>
                         </div>
                       </Col>
                       <Col className="col-5 align-self-end">
-                        <img src={profile} alt="" className="img-fluid" />
+                        <img src={profile} width="300"  height="200" className="img-fluid" />
                       </Col>
                     </Row>
                   </div>
@@ -238,7 +239,7 @@ const RainLogin = props => {
                             </button>
                           )}
                         </div>
-                        <div className="mt-5 text-center">
+                        <div className="mt-3 text-center">
                           <p>
                             Don&#39;t have an account ?{" "}
                             <Link
@@ -307,7 +308,7 @@ const RainLogin = props => {
                         </div> */}
 
                         <div className="mt-4 text-center">
-                          <Link to="/emailforgotPwd" className="text-muted">
+                          <Link to="/emailforgotPwd" className="text-black">
                             <i className="mdi mdi-lock me-1" />
                             Forgot your password?
                           </Link>

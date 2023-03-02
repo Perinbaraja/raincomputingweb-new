@@ -56,7 +56,6 @@ const CaseFilesGrid = ({ caseId }) => {
       fileNotes: "",
     },
     onSubmit: values => {
-      console.log("REQuest submitted")
     },
   })
 
@@ -64,8 +63,9 @@ const CaseFilesGrid = ({ caseId }) => {
   const handleTakeNotes = async () => {
     const payload = { ...currentFileStatus, note: notes }
     const res = await userNotes(payload)
-    // console.log("dk:", res)
     if (res.success) {
+      await handleFetchFiles()
+      setCurrentFileStatus(res?.isFound)
     }
     setAddNotesModal(false)
     setNotes("")
@@ -119,7 +119,6 @@ const CaseFilesGrid = ({ caseId }) => {
   }
 
   const downloadFormatter = (cell, row) => {
-    // console.log("downloadFormatter:", cell)
     return cell ? (
       <i className="mdi mdi-loading mdi-spin text-info mdi-24px" />
     ) : (

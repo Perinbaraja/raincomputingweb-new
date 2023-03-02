@@ -1,355 +1,104 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
+import "../../Projects/ProjectOverview/projectdetail.scss"
 import { map, get, attempt } from "lodash"
-import {
-  Card,
-  CardBody,
-  Col,
-  Row,
-  Label,
-  Button,
-  Input,
-  Form,
-  FormGroup,
-  FormFeedback,
-} from "reactstrap"
+import { Card, CardBody, Col, Row } from "reactstrap"
 import { Link } from "react-router-dom"
-import img1 from "../../../assets/images/img1m.png"
-import * as Yup from "yup"
-import { useFormik } from "formik"
-import PerfectScrollbar from "react-perfect-scrollbar"
 import { attImages } from "../../../helpers/mockData"
-import ReactTextareaAutosize from "react-textarea-autosize"
-import { appointmentRequest } from "rainComputing/helpers/backend_helper"
-import { useHistory } from "react-router-dom"
-import { useUser } from "rainComputing/contextProviders/UserProvider"
-import toastr from "toastr"
-import "toastr/build/toastr.min.css"
 
 const ProjectDetail = ({ project }) => {
-  const history = useHistory()
-  const { currentUser, setCurrentUser } = useUser()
   const imgIndex = Math.floor(Math.random() * 8)
-  const [loading, setLoading] = useState(false)
-  const [allFiles, setAllFiles] = useState([])
-  toastr.options = {
-    progressBar: true,
-    closeButton: true,
-  }
-
-  const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      caseData: "",
-    },
-    validationSchema: Yup.object({
-      caseData: Yup.string().required("Please Enter Your case detail"),
-    }),
-    onSubmit: values => {
-      handleAppointmentRequest({
-        caseData: values.caseData,
-        attorney: "62d2a70586e7821195591d80",
-        User: currentUser.userID,
-        appointmentstatus: "request",
-      })
-    },
-  })
-  const handleAppointmentRequest = async payload => {
-    console.log("req value: ", payload)
-    const res = await appointmentRequest(payload)
-    if (res.success) {
-      toastr.success(`Appointment request send successfully `, "Success")
-      localStorage.setItem("authUser", JSON.stringify(res))
-      setCurrentUser(res)
-      history.push("/payment-via")
-    } else {
-      toastr.error(`you have already send reqest`, "Failed!!!")
-      console.log("Failed to send request", res)
-    }
-  }
-  //Handling File change
-  const handleFileChange = e => {
-    setAllFiles(e.target.files)
-  }
-  const onKeyPress = e => {
-    const { key } = e
-    if (key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
 
   return (
-    <Card>
-      <CardBody>
-        <PerfectScrollbar style={{ height: "330px" }}>
-          <div className="d-flex">
-            <img
-              src={project.img ? project.img : attImages[imgIndex].url}
-              alt=""
-              className="avatar-lg rounded-circle me-4"
-            />
-            {/* src={user.img ? user.img : attImages[imgIndex].url} */}
-            <div className="flex-grow-1 overflow-hidden">
-              <h5 className="text-truncate font-size-16">
-                {project.firstname} {project.lastname}
-              </h5>
-              <p className="text-muted font-size-14">{project.firm}</p>
-              <p className="text-muted font-size-14">{project.type}</p>
+    <div id="projcard" className="bg-white">
+      <div >
+      <div style={{height:"550px",}} className="p-3">
+         
+        <div className="row">
+          <div className="col-xs-12 col-lg-6 " >
+            <div className="d-flex justify-content-center  p-5"  id="profilebox">
+              <img id="Attprofile" className="mt-5"
+                src={
+                  project?.regUser?.profilePic
+                    ? project?.regUser?.profilePic
+                    : attImages[imgIndex].url
+                }
+                alt=""
+                style={{width:"300px",height:"300px",objectFit:"cover",}}
+              />
             </div>
           </div>
-
-          <div>
-            {" "}
-            <h5 className="font-size-16 mt-4">Biography :</h5>
-            <p className="text-muted">{project.bio ? project.bio : null}</p>
-          </div>
-          <div>
-            {" "}
-            <h5 className="font-size-16 mt-4">Education :</h5>
-            <p className="text-muted">
+          <div className="col-xs-12 col-lg-6 ">
+            <div className="">
+              <h1 className="">
+                {project?.regUser?.firstname} {project?.regUser?.lastname}
+              </h1>
+            </div>
+            <div className="">
+              <h5 className="font-size-14">{project?.firm}</h5>
+            </div>
+            <div>
               {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l1 ? project.l1 : null}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project?.l2}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l3}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l4}
-            </p>
-          </div>
-          <div>
-            {""}
-            <h5 className="font-size-16 mt-4">Technical Expertise :</h5>
-            <p className="text-muted mb-1">
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l5}
-            </p>
-            <p className="text-muted mb-1">
-              {/* {" "} */}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l6}
-            </p>
-            <p className="text-muted mb-1">
-              {/* {" "} */}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l7}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l8}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l9}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l10}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l11}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l12}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l13}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l14}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l15}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l16}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l17}
-            </p>
-            <p className="text-muted mb-1">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l18}
-            </p>
-          </div>
-          <div>
-            {" "}
-            <h5 className="font-size-16 mt-4">Legal Experience :</h5>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l19}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project?.l20}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l21}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l22}
-            </p>
-            <p className="text-muted ">
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l23}
-            </p>
-            <p className="text-muted ">
-              {/* {" "} */}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l24}
-            </p>
-            <p className="text-muted ">
-              {/* {" "} */}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l25}
-            </p>
-            <p className="text-muted ">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l26}
-            </p>
-          </div>
-          <div>
-            {" "}
-            <h5 className="font-size-16 mt-4">Practice Admissions :</h5>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l27}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project?.l28}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l29}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l30}
-            </p>
-            <p className="text-muted ">
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l31}
-            </p>
-            <p className="text-muted ">
-              {/* {" "} */}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l32}
-            </p>
-          </div>
-          <div>
-            {" "}
-            <h5 className="font-size-16 mt-4">Recognition :</h5>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l33}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project?.l34}
-            </p>
-            <p className="text-muted">
-              {" "}
-              <i className="mdi mdi-chevron-right text-primary me-1" />
-              {project.l35}
-            </p>
-          </div>
-
-          <h5 className="font-size-16 mt-4">Attorney Address :</h5>
-          <p> </p>
-          <p className="text-muted ">
-            {project.address1}, {project.address2}{" "}
-          </p>
-          <p className="text-muted ">{project.city}</p>
-          <p className="text-muted ">{project.country}</p>
-          <p className="text-muted ">{project.phone}</p>
-
-          {/* {get(project, "projectDetails.description")} */}
-
-          <div className="text-muted mt-4">
-            {project.projectDetails &&
-              map(project.projectDetails.points, (point, index) => (
-                <p key={index}>
-                  <i className="mdi mdi-chevron-right text-primary me-1" />{" "}
-                  {point}
-                </p>
-              ))}
-          </div>
-
-          <Row className="task-dates">
-            {/* <Col sm="4" xs="6">
+              <h5 className="font-size-18  text-primary mt-3">Bio :</h5>
+              <p className="text-muted font-size-14">
+                {project.bio ? project.bio : null}
+              </p>
+            </div>
             <div className="mt-4">
-              <h5 className="font-size-14">
-                <i className="bx bx-calendar me-1 text-primary" /> Start Date
-              </h5>
-              <p className="text-muted mb-0">{project.startDate}</p>
+              <svg  
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-telephone"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+              </svg>
+              <span className="font-size-14 ms-3">{project?.phoneNumber}</span>
             </div>
-          </Col> */}
-
-            {/* <Col sm="4" xs="6">
             <div className="mt-4">
-              <h5 className="font-size-14">
-                <i className="bx bx-calendar-check me-1 text-primary" /> Due
-                Date
-              </h5>
-              <p className="text-muted mb-0">{project.dueDate}</p>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-envelope"
+                viewBox="0 0 16 16"
+              >
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+              </svg>
+              <span className="font-size-14  ms-3">{project?.regUser?.email}</span>
             </div>
-          </Col> */}
-          </Row>
-        </PerfectScrollbar>
-      </CardBody>
-      <Row>
-        <div className="d-flex justify-content-center ">
-          <Link to="/payment-via">
-            <button type="button" className="btn btn-primary ms-3 w-lg ">
-              Get Appointment
-            </button>
-          </Link>
+            <div className="mt-4">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-geo-alt"
+                viewBox="0 0 16 16"
+              >
+                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z" />
+                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+              </svg>
+              <span className="text-lowercase font-size-14 ms-3">
+                {project?.address},{project?.country},{project?.state},
+                {project?.city},{project?.postalCode}
+              </span>
+            </div>
+            <div className="d-flex  mt-5 ">
+              <Link to={`/payment-via?uid=${project._id}`}>
+                <button type="button" className="btn btn-primary  w-lg ">
+                  Get Appointment
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
-      </Row>
-    </Card>
+      </div>
+      </div>
+    </div>
   )
 }
 

@@ -5,15 +5,12 @@ import { LOGIN_USER, LOGOUT_USER, SOCIAL_LOGIN,UPDATE_PROFILE } from "./actionTy
 import { apiError, loginSuccess, logoutUserSuccess,profileSuccess } from "./actions"
 import { putProfileUpdate } from "../../../helpers/backend_helper"
 
-//Include Both Helper File with needed methods
-import { getFirebaseBackend } from "../../../helpers/firebase_helper"
 import {
   postFakeLogin,
   postJwtLogin,
   postSocialLogin,
 } from "../../../helpers/fakebackend_helper"
 import { postLogin } from "../../../helpers/backend_helper"
-const fireBaseBackend = getFirebaseBackend()
 
 function* loginUser({ payload: { user, history } }) {
   try {
@@ -22,15 +19,11 @@ function* loginUser({ payload: { user, history } }) {
       password: user.password,
     })
     if (response?.success) {
-      console.log(response, "response")
       localStorage.setItem("authUser", JSON.stringify(response))
       yield put(loginSuccess(response))
-      history.push("/contacts-grid")
     } else {
       yield put(apiError(response?.msg))
     }
-    console.log(response, "response")
-    // /history.push("/contacts-grid")
     //localStorage.setItem("authUser", JSON.stringify(response))
     //yield put(loginSuccess(response))
 
@@ -87,20 +80,16 @@ function* socialLogin({ payload: { data, history, type } }) {
     //   localStorage.setItem("authUser", JSON.stringify(response))
     //   yield put(loginSuccess(response))
     // }
-    // history.push("/contacts-grid")
   } catch (error) {
     yield put(apiError(error))
   }
 }
 function* updateProfile({ payload: { user } }) {
-  console.log(user,"user")
   try {
       const response = yield call(putProfileUpdate,user)
-      console.log(response,"put response");
       yield put(profileSuccess(response))
      
   } catch (error) {
-    console.log(error,'err');
   }
 }
 

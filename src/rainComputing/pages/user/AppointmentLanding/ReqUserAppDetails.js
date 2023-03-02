@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react"
-import { Row, Col, Card, CardBody, Button } from "reactstrap"
+import React, { lazy, useEffect, useState } from "react"
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  UncontrolledTooltip,
+} from "reactstrap"
 // datatable related plugins
 import BootstrapTable from "react-bootstrap-table-next"
 import paginationFactory, {
@@ -14,21 +21,70 @@ import ToolkitProvider from "react-bootstrap-table2-toolkit"
 import Breadcrumbs from "../../../../components/Common/Breadcrumb"
 import "../../../components/chat/style/datatables.scss"
 import ChatLoader from "../../../components/chat/ChatLoader"
-import { getAllAppointmentRequestById } from "rainComputing/helpers/backend_helper"
+import {
+  createOnevsOneChat,
+  getAllAppointmentRequestById,
+  getCasesByUserId,
+} from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import moment from "moment"
+import { useChat } from "rainComputing/contextProviders/ChatProvider"
+import { Link } from "react-router-dom"
+import DynamicModel from "rainComputing/components/modals/DynamicModal"
+import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
+import { initialNewCaseValues } from "rainComputing/helpers/initialFormValues"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+import PropTypes from "prop-types"
 
-const ReqUserAppointmentDetails = () => {
+const CreateCase = lazy(() =>
+import("rainComputing/components/chat/CreateCase")
+)
+
+const ReqUserAppointmentDetails = ({refetch=false}) => {
+  const { currentUser } = useUser()
+
   const [loading, setLoading] = useState(false)
   const { currentAttorney } = useUser()
+  const [newCase, setNewCase] = useState(initialNewCaseValues)
+  const [contacts, setContacts] = useState([])
   const [appointmentUser, setAppointmentUser] = useState([])
+  const [caseLoading, setCaseLoading] = useState(true)
+  const [currentCase, setCurrentCase] = useState(null)
+  const [allCases, setAllCases] = useState([])
+  const [casePage, setCasePage] = useState(1)
+  const [searchText, setSearchText] = useState("")
+  const [allgroups, setAllgroups] = useState([])
+  const {
+    toggleOpen: newCaseModelOpen,
+    setToggleOpen: setNewCaseModelOpen,
+    toggleIt: toggleNewCaseModelOpen,
+  } = useToggle(false)
 
+  const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
+    setCaseLoading(true)
+    const allCasesRes = await getCasesByUserId({
+      userId: currentUser.userID,
+      page: isSearch ? 1 : casePage,
+      searchText,
+    })
+    if (allCasesRes.success) {
+      setAllCases(allCasesRes.cases)
+
+      if (isSet) {
+        setCurrentCase(allCasesRes?.cases[0])
+      }
+    } else {
+      setAllCases([])
+      setCurrentCase(null)
+      setAllgroups(null)
+    }
+    setCaseLoading(false)
+  }
   const idFormatter = (cell, row, rowIndex) => {
     return rowIndex + 1
   }
 
   const nameFormatter = (cell, row) => {
-    console.log("row", row)
     return row?.User?.firstname + " " + row?.User?.lastname
   }
 
@@ -38,20 +94,52 @@ const ReqUserAppointmentDetails = () => {
 
   const statusFormatter = (cell, row) => {
     return row?.appointmentstatus
-    // (
-    //   <span
-    //     className={`label ${
-    //       row?.appointmentstatus? "text-success" : "text-danger"
-    //     }`}
-    //   >
-    //     {row?.appointmentstatus ? "Approved" : "Rejected"}
-    //   </span>
-    // )
+  }
+  const createcaseFormatter = (cell, row) => {
+    return row?.appointmentstatus === "approved" ? (
+      <>
+  
+        <DynamicModel
+          open={newCaseModelOpen}
+          toggle={toggleNewCaseModelOpen}
+          size="lg"
+          modalTitle="New Case"
+          footer={false}
+        >
+          <DynamicSuspense>
+            <CreateCase
+              formValues={newCase}
+              setFormValues={setNewCase}
+              contacts={contacts}
+              setModalOpen={setNewCaseModelOpen}
+              getAllCases={ongetAllCases}
+            />
+          </DynamicSuspense>
+        </DynamicModel>
+        <i
+          className="mdi mdi-notebook-edit-outline text-info mdi-24px"
+          id="create"
+        />
+        <UncontrolledTooltip placement="bottom" target="create">
+          Create Case
+        </UncontrolledTooltip>
+      </>
+    ) : (
+      <>
+        {" "}
+        <i
+          className="mdi  mdi-do-not-disturb-off text-danger mdi-24px"
+          id="rejected"
+        />
+        <UncontrolledTooltip placement="bottom" target="rejected">
+          Rejected
+        </UncontrolledTooltip>
+      </>
+    )
   }
   const dateFormatter = (cell, row) => {
-    return  moment(row?.updatedAt).format("DD-MM-YY HH:mm")
+    return moment(row?.updatedAt).format("DD-MM-YY HH:mm")
   }
-
   const columns = [
     {
       dataField: "_id",
@@ -78,11 +166,26 @@ const ReqUserAppointmentDetails = () => {
       formatter: statusFormatter,
     },
     {
-        dataField: "date",
-        text: "Date",
-        sort: true,
-        formatter: dateFormatter,
+      dataField: "date",
+      text: "Date",
+      sort: true,
+      formatter: dateFormatter,
+    },
+    {
+      dataField: "Create Case",
+      //   isDummyField: true,
+      text: "Create case",
+      formatter: createcaseFormatter,
+      headerAlign: "center",
+      style: {
+        textAlign: "center",
       },
+      events: {
+        onClick: async ( row) => {
+          await setNewCaseModelOpen(true)
+        },      
+      },
+    },
   ]
 
   const defaultSorted = [
@@ -94,104 +197,112 @@ const ReqUserAppointmentDetails = () => {
 
   const pageOptions = {
     sizePerPage: 5,
-    totalSize: appointmentUser.filter((a)=>a?.appointmentstatus !== "requested")?.length, // replace later with size(customers),
+    totalSize: appointmentUser.filter(a => a?.appointmentstatus !== "requested")
+      ?.length, // replace later with size(customers),
     custom: true,
   }
-//   const { SearchBar } = Search
+  //   const { SearchBar } = Search
 
-useEffect(() => {
     const onGetAllAppointmentDetails = async () => {
-        const RequestRes = await getAllAppointmentRequestById({
-          userID: currentAttorney._id,
-        })
-        if (RequestRes.success) {
-          setAppointmentUser(RequestRes.appointment)
-        } else {
-          setAppointmentUser([])
-        }
-        console.log("appointment", RequestRes)
+      const RequestRes = await getAllAppointmentRequestById({
+        userID: currentAttorney._id,
+      })
+      if (RequestRes.success) {
+        setAppointmentUser(RequestRes.appointment)
+      } else {
+        setAppointmentUser([])
       }
-    onGetAllAppointmentDetails()
-  }, [currentAttorney])
-  
+    }
+    useEffect(() => {
+      onGetAllAppointmentDetails()
+    }, [currentAttorney])
 
- 
+
+  useEffect(() => {
+    if (refetch) onGetAllAppointmentDetails()
+    }, [refetch])
+
+  
+  
 
   return (
     <React.Fragment>
-        {loading ? (
-          <ChatLoader />
-        ) : appointmentUser && appointmentUser.length > 0 ? (
-          <div >
-            <Row>
-              <Col className="col-12">
-                <Card>
-                  <CardBody>
-                    <PaginationProvider
-                      pagination={paginationFactory(pageOptions)}
-                      keyField="_id"
-                      columns={columns}
-                      data={appointmentUser.filter((a)=>a?.appointmentstatus !== "requested")}
-                    >
-                      {({ paginationProps, paginationTableProps }) => (
-                        <ToolkitProvider
-                          keyField="_id"
-                          columns={columns}
-                          data={appointmentUser.filter((a)=>a?.appointmentstatus !== "requested")}
-                        >
-                          {toolkitProps => (
-                            <React.Fragment>
+      {loading ? (
+        <ChatLoader />
+      ) : appointmentUser && appointmentUser.length > 0 ? (
+        <div>
+          <Row>
+            <Col className="col-12">
+              <Card>
+                <CardBody>
+                  <PaginationProvider
+                    pagination={paginationFactory(pageOptions)}
+                    keyField="_id"
+                    columns={columns}
+                    data={appointmentUser.filter(
+                      a => a?.appointmentstatus !== "requested"
+                    )}
+                  >
+                    {({ paginationProps, paginationTableProps }) => (
+                      <ToolkitProvider
+                        keyField="_id"
+                        columns={columns}
+                        data={appointmentUser.filter(
+                          a => a?.appointmentstatus !== "requested"
+                        )}
+                      >
+                        {toolkitProps => (
+                          <React.Fragment>
+                            <Row>
+                              <Col xl="12">
+                                <div className="table-responsive">
+                                  <BootstrapTable
+                                    keyField={"_id"}
+                                    responsive
+                                    bordered={false}
+                                    striped={false}
+                                    defaultSorted={defaultSorted}
+                                    // selectRow={selectRow}
+                                    classes={"table align-middle table-nowrap"}
+                                    headerWrapperClasses={"thead-light"}
+                                    {...toolkitProps.baseProps}
+                                    {...paginationTableProps}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
 
-                              <Row>
-                                <Col xl="12">
-                                  <div className="table-responsive">
-                                    <BootstrapTable
-                                      keyField={"_id"}
-                                      responsive
-                                      bordered={false}
-                                      striped={false}
-                                      defaultSorted={defaultSorted}
-                                      // selectRow={selectRow}
-                                      classes={
-                                        "table align-middle table-nowrap"
-                                      }
-                                      headerWrapperClasses={"thead-light"}
-                                      {...toolkitProps.baseProps}
-                                      {...paginationTableProps}
-                                    />
-                                  </div>
-                                </Col>
-                              </Row>
-
-                              <Row className="align-items-md-center mt-30">
-                                <Col className="inner-custom-pagination d-flex">
-                                  <div className="d-inline">
-                                    <SizePerPageDropdownStandalone
-                                      {...paginationProps}
-                                    />
-                                  </div>
-                                  <div className="text-md-right ms-auto">
-                                    <PaginationListStandalone
-                                      {...paginationProps}
-                                    />
-                                  </div>
-                                </Col>
-                              </Row>
-                            </React.Fragment>
-                          )}
-                        </ToolkitProvider>
-                      )}
-                    </PaginationProvider>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </div>
-        ) : (
-          <p className="text-center">You Don&apos;t have any Appointment User</p>
-        )}
+                            <Row className="align-items-md-center mt-30">
+                              <Col className="inner-custom-pagination d-flex">
+                                <div className="d-inline">
+                                  <SizePerPageDropdownStandalone
+                                    {...paginationProps}
+                                  />
+                                </div>
+                                <div className="text-md-right ms-auto">
+                                  <PaginationListStandalone
+                                    {...paginationProps}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          </React.Fragment>
+                        )}
+                      </ToolkitProvider>
+                    )}
+                  </PaginationProvider>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      ) : (
+        <p className="text-center">You Don&apos;t have any Appointment User</p>
+      )}
     </React.Fragment>
   )
 }
-
+ReqUserAppointmentDetails.propTypes = {
+  refetch: PropTypes.bool,
+}
 export default ReqUserAppointmentDetails

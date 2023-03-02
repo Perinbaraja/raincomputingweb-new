@@ -34,6 +34,8 @@ const getAllRegAttorneys = payload =>
   post(`${BASE_URL}/attorney/getAllAttorney`, payload)
 const regAttorneyDetails = payload =>
   post(`${BASE_URL}/attorney/regAttorneyDetails`, payload)
+const attorneyInvite = payload =>
+  post(`${BASE_URL}/attorney/inviteAttorney`, payload)
 
 const addNewUser = payload => put(`${BASE_URL}/pchat/addtoGroup`, payload)
 //Removing the User from Group
@@ -69,6 +71,8 @@ const getGroupsByUserIdandCaseId = payload =>
   post(`${BASE_URL}/group/getByUserandCaseId`, payload)
 const getMessageById = payload =>
   post(`${BASE_URL}/message/getmsgById`, payload)
+const getPinnedMsg = payload =>
+  post(`${BASE_URL}/message/getPinnedMsg`, payload)
 const deleteLastMsg = payload => post(`${BASE_URL}/message/deletemsg`, payload)
 
 const getMessagesByUserIdandGroupId = payload =>
@@ -164,6 +168,7 @@ export {
   createNewCase,
   getCasesByUserId,
   getGroupsByUserIdandCaseId,
+  getPinnedMsg,
   getMessagesByUserIdandGroupId,
   getFileFromGFS,
   createOnevsOneChat,
@@ -202,4 +207,5 @@ export {
   pinMessage,
   userNotes,
   updatePassword,
+  attorneyInvite,
 }

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import MetaTags from "react-meta-tags"
-import React ,{useState}from "react"
+import React, { useState } from "react"
 import {
   Row,
   Col,
@@ -19,10 +19,6 @@ import { withRouter, Link } from "react-router-dom"
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
-
-// // action
-// import { userForgetPassword } from "../../../store/actions"
-
 // import images
 import profile from "assets/images/profile-img.png"
 import logo from "assets/images/rain-drop.png"
@@ -64,12 +60,8 @@ const EmailForgetPassword = props => {
       <MetaTags>
         <title>Forget Password | Rain - Admin & Dashboard Template</title>
       </MetaTags>
-      <div className="home-btn d-none d-sm-block">
-        <Link to="/" className="text-dark">
-          <i className="fas fa-home h2" />
-        </Link>
-      </div>
-      <div className="account-pages my-5 pt-sm-5">
+      <div className="home-btn d-none d-sm-block"></div>
+      <div className="account-pages pt-sm-5">
         <Container>
           <Row className="justify-content-center">
             <Col md={8} lg={6} xl={5}>
@@ -77,20 +69,22 @@ const EmailForgetPassword = props => {
                 <div className="bg-primary bg-softbg-soft-primary">
                   <Row>
                     <Col xs={7}>
-                      <div className="text-primary p-4">
-                        <h5 className="text-primary">Welcome Back !</h5>
-                        <p>Sign in to continue to Skote.</p>
-                      </div>
+                    <div className="text-white p-4">
+                          <h5 className="text-white">Forgot your password ?</h5>
+                          <p>Enter your Email to retrive.</p>
+                        </div>
                     </Col>
-                    <Col className="col-5 align-self-end">
-                      <img src={profile} alt="" className="img-fluid" />
+                    <Col className="col-5 flex align-self-end ">
+                      
+                      <img src={profile}  height="100" width="800" alt="" className="img-fluid" />
+                      
                     </Col>
                   </Row>
                 </div>
                 <CardBody className="pt-0">
                   <div>
                     <Link to="/">
-                      <div className="avatar-md profile-user-wid mb-4">
+                      <div className="avatar-md profile-user-wid mb-2">
                         <span className="avatar-title rounded-circle bg-light">
                           <img
                             src={logo}

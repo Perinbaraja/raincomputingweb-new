@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Button, Col, Row } from "reactstrap"
+import { useHistory } from 'react-router-dom';
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
@@ -17,7 +18,7 @@ const CreateCase = ({
   getAllCases,
 }) => {
   const { currentUser } = useUser()
-
+  const history = useHistory();
   const [loading, setloading] = useState(false)
   const [contacts, setContacts] = useState([])
   const [searchText, setSearchText] = useState("")
@@ -79,10 +80,11 @@ const CreateCase = ({
         `Case ${formValues?.caseId} has been created successfully`,
         "Case creation success"
       )
-      await getAllCases({ isSet: false })
+      history.push(`/chat-rc?g_id=${caseRes?.group}&c_id=${caseRes?.case}`)
+      await getAllCases({ isSet: false }) 
+
       handleCaseCreationCancel()
     } else {
-      console.log("Case Creation Erron :", caseRes)
       toastr.error(
         ` ${caseRes?.msg} Failed to create case `,
         "Case creation failed!!!"
@@ -96,20 +98,20 @@ const CreateCase = ({
       if (searchText === "") {
         setContacts([])
       } else {
-      const contactRes = await getAllUsers({
-        userID: currentUser.userID,
-        searchText,
-      })
-      if (contactRes.success) {
-        setContacts(contactRes.users)
-      } else {
-        toastr.error(
-          `Failed to fetch contacts ${contactRes?.msg}`,
-          "Failed on fetching contacts"
-        )
-        setContacts([])
+        const contactRes = await getAllUsers({
+          userID: currentUser.userID,
+          searchText,
+        })
+        if (contactRes.success) {
+          setContacts(contactRes.users)
+        } else {
+          toastr.error(
+            `Failed to fetch contacts ${contactRes?.msg}`,
+            "Failed on fetching contacts"
+          )
+          setContacts([])
+        }
       }
-    }
     }
     handleFetchingContacts()
   }, [searchText])

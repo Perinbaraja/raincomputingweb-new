@@ -16,7 +16,7 @@ import {
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 import { Link } from "react-router-dom"
 
 // import images
@@ -24,10 +24,12 @@ import profileImg from "assets/images/profile-img.png"
 import computer from "assets/images/computer.png"
 import rainlogo from "assets/images/RainCom_Logo.webp"
 import logo from "assets/images/rain-drop.png"
+import login from "../../../assets/images/loginanimi.png"
 import { userRegisteration } from "rainComputing/helpers/backend_helper"
-
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 const RainRegister = () => {
-  let history = useHistory();
+  let history = useHistory()
   const [registrationError, setRegistrationError] = useState("")
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [loading, setLoading] = useState(false)
@@ -59,7 +61,8 @@ const RainRegister = () => {
         setRegistrationSuccess(res.msg)
         // onSubmitProps.setSubmitting(false) //Vidhya
         onSubmitProps.resetForm()
-        history.push("/login");
+        toastr.success(`Registered successfully `, "Success")
+        history.push("/login")
       } else {
         setRegistrationSuccess("")
         setRegistrationError(res.msg)
@@ -70,50 +73,43 @@ const RainRegister = () => {
 
   return (
     <React.Fragment>
+      <div className="p-5 m-5">
       <MetaTags>
         <title>Register | Raincomputing</title>
       </MetaTags>
-      <div className="d-none d-xl-block ps-lg-5 ms-lg-5">
-        <img src={rainlogo} height="50" />
-      </div>
-      <div className="home-btn d-none d-sm-block">
-        <Link to="/" className="text-dark">
-          <i className="fas fa-home h2" />
-        </Link>
-      </div>
       <div className="d-flex ">
         <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
           <div className="my-5">
             <div className="justify-content-center">
-              <img src={computer} height="350" />
+              <img src={login} height="450" width="600" />
             </div>
-            <p className="fs-5 pt-5 ps-5 ">
+            {/* <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
-            </p>
+            </p> */}
           </div>
         </div>
-        <div className="container  ms-xl-1 mt-2 ">
+        <div className="container ">
           <Container className="cont1">
             <Row className="justify-content-center">
               <Col md={8} lg={7} xl={9}>
                 <Card className="overflow-hidden">
                   <div className="bg-primary bg-soft">
                     <Row>
-                      <Col className="col-7">
-                        <div className="text-primary p-4">
+                      <Col className="col-7 ">
+                        <div className="text-primary p-3">
                           <h5 className="text-primary"> Register</h5>
                           <p>Get your rain account now.</p>
                         </div>
                       </Col>
                       <Col className="col-5 align-self-end">
-                        <img src={profileImg} alt="" className="img-fluid" />
+                        <img src={profileImg}  height="100" width="300" className="img-fluid" />
                       </Col>
                     </Row>
                   </div>
                   <CardBody className="pt-0">
                     <div>
                       <Link to="/">
-                        <div className="avatar-md profile-user-wid mb-3">
+                        <div className="avatar-md profile-user-wid mb-1">
                           <span className="avatar-title rounded-circle bg-light">
                             <img
                               src={logo}
@@ -125,7 +121,7 @@ const RainRegister = () => {
                         </div>
                       </Link>
                     </div>
-                    <div className="p-2">
+                    <div className="">
                       <Form
                         className="form-horizontal"
                         onSubmit={e => {
@@ -249,7 +245,20 @@ const RainRegister = () => {
                             </FormFeedback>
                           ) : null}
                         </div>
-
+                        <div className="mt-1">
+                          <p className="">
+                            <input
+                              className="form-check-input me-2"
+                              type="checkbox"
+                              required
+                              id="flexCheckDefault"
+                            />
+                            By registering you agree to the raincomputing{" "}
+                            <Link to="#" className="text-primary font-sm">
+                              Terms of Use
+                            </Link>
+                          </p>
+                        </div>
                         <div className="mt-3 d-grid">
                           {loading ? (
                             <button
@@ -282,15 +291,17 @@ const RainRegister = () => {
                             </Link>{" "}
                           </p>
                         </div>
-
-                        <div className="mt-2 text-center">
-                          <p className="mb-0">
-                            By registering you agree to the raincomputing{" "}
-                            <Link to="#" className="text-primary">
-                              Terms of Use
-                            </Link>
-                          </p>
-                        </div>
+                        {/* <div className="text-center ">
+                          <a href="https://www.google.co.in/">
+                          <i className="fab fa-google me-2 "></i>
+                          </a>
+                          <a href="">
+                          <i class="fab fa-linkedin-in  me-2"></i>
+                          </a>
+                          <a href="">      
+                          <i class="fab fa-twitter me-2"></i>
+                           </a>
+                        </div> */}
                       </Form>
                     </div>
                   </CardBody>
@@ -298,6 +309,7 @@ const RainRegister = () => {
               </Col>
             </Row>
           </Container>
+        </div>
         </div>
       </div>
     </React.Fragment>

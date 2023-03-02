@@ -26,7 +26,6 @@ const CaseGroupDetails = () => {
         const res = await getCasesByUserId({
           userId: query.get("id"),
         })
-        console.log("DkCase:",res)
         if (res.success) {
           setCasesById(res.cases)
           setCurrentCase(res?.cases)
@@ -42,7 +41,6 @@ const CaseGroupDetails = () => {
       if (allSubGroupres.success){
         setSubGroupsById(allSubGroupres.groups)
       }
-      console.log("DkSubGroup:",allSubGroupres)
     }
 
     useEffect(() => {

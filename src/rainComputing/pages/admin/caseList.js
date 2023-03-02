@@ -29,7 +29,6 @@ const CasesList = caseid => {
   }
 
   const casenameFormatter = (cell, row) => {
-    console.log("row", row)
     return row?.caseName
   }
 
@@ -127,7 +126,6 @@ const CasesList = caseid => {
   const getAllCases = async () => {
     setLoading(true)
     const res = await allCasesData({})
-    //console.log("res", res)
     if (res.success) {
       setCaseData(res.cases)
     } else {

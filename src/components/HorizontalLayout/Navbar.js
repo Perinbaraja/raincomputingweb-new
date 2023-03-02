@@ -2,7 +2,7 @@ import PropTypes from "prop-types"
 import React, { useState, useEffect } from "react"
 import { Row, Col, Collapse } from "reactstrap"
 import { Link, withRouter } from "react-router-dom"
-import classname from "classnames"
+import PDF from "assets/guide/guide.pdf"
 
 //i18n
 import { withTranslation } from "react-i18next"
@@ -69,7 +69,7 @@ const Navbar = props => {
               className="navbar-collapse"
               id="topnav-menu-content"
             >
-              <ul className="navbar-nav">
+              <ul className="navbar-nav text-white">
                 <li className="nav-item dropdown">
                   <Link className="nav-link dropdown-toggle arrow-none" to="/">
                     <i className="bx bx-home-circle me-2"></i>
@@ -115,13 +115,25 @@ const Navbar = props => {
                       <i className="mdi mdi-help me-2"></i>
                       {props.t("Help")} {props.menuOpen}
                     </Link>
+
                   </li>
+                   {/* <li className=" dropdown">
+                    <a href={PDF}  download="guide.pdf"
+                      className="nav-link dropdown-toggle arrow-none"
+                     
+                    >
+                      <i className="mdi mdi-download "></i>
+                      
+                    </a>
+
+                  </li> */}
+
               </ul>
             </Collapse>
           </nav>
         </div>
       </div>
-    </React.Fragment>
+    </React.Fragment> 
   )
 }
 

@@ -56,7 +56,7 @@ export default function CheckoutForm() {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "https://raincomputing.azurewebsites.net/payment-status",
+        return_url: "https://raincomputing.net/payment-status",
       },
     })
 

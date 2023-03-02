@@ -1,57 +1,51 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import MetaTags from "react-meta-tags"
 import PropTypes from "prop-types"
 import { useLocation, withRouter } from "react-router-dom"
-import { connect } from "react-redux"
 import { isEmpty } from "lodash"
 import { Col, Container, Row } from "reactstrap"
+
 //Import Breadcrumb
 import Breadcrumbs from "components/Common/Breadcrumb"
-import { getProjectDetail as onGetProjectDetail } from "store/projects/actions"
 import ProjectDetail from "./projectDetail"
-import TeamMembers from "./teamMembers"
-import OverviewChart from "./overviewChart"
-import { options, series } from "common/data/projects"
-import AttachedFiles from "./attachedFiles"
-import Comments from "./comments"
 //IMPORT ATTORNEY DETAILS
 import { getAttorneyByid as onGetAttorneyDetails } from "store/projects/actions"
 //redux
 import { useSelector, useDispatch } from "react-redux"
+import { regAttorneyDetails } from "rainComputing/helpers/backend_helper"
+
 function useQuery() {
   const { search } = useLocation()
   return React.useMemo(() => new URLSearchParams(search), [search])
 }
 const ProjectsOverview = props => {
-  const dispatch = useDispatch()
+  const [attorneyDetails,setAttorneyDetail] = useState({})
   let query = useQuery()
-  //Attorney Detail Update
-  const { projectDetail } = useSelector(state => ({
-    projectDetail: state.projects.attorney.msg,
-  }))
-  console.log("projectDetail ", projectDetail)
-  const {
-    match: { params },
-  } = props
-  //Attorney Details
-  useEffect(() => {
-    dispatch(onGetAttorneyDetails({ objectId: query.get("uid") }))
-  }, [])
+
+    const getAttorneyinfo = async () => {
+      const res = await regAttorneyDetails({id:query.get("uid")})
+      if (res) {
+        setAttorneyDetail(res.attorney)
+      }
+  }
+  useEffect(() =>{
+    getAttorneyinfo()
+  },[])
+
   return (
     <React.Fragment>
-      <div className="page-content">
-        <MetaTags>
-          <title>Project Overview | Rain - Admin & Dashboard Template</title>
-        </MetaTags>
+      <div className="py-5 my-5">
         <Container fluid>
           {/* Render Breadcrumbs */}
           {/* <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" /> */}
-          {!isEmpty(projectDetail) && (
+          {!isEmpty(attorneyDetails) && (
             <>
               <Row>
                 <Col>
-                  <ProjectDetail project={projectDetail} />
+                  <ProjectDetail project={attorneyDetails} />
                 </Col>
+
+                
                 {/* <Col lg="4">
                   <TeamMembers team={projectDetail.team} />
                 </Col> */}
@@ -67,6 +61,7 @@ const ProjectsOverview = props => {
                   <Comments comments={projectDetail.comments} />
                 </Col> */}
               </Row>
+             
             </>
           )}
         </Container>

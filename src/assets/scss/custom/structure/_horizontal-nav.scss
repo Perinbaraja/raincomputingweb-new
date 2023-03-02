@@ -60,6 +60,7 @@
 body[data-layout="horizontal"] {
     #page-topbar{
         left: 0;
+        margin-bottom: 50px;
     }
 }
 
@@ -68,7 +69,7 @@ body[data-layout="horizontal"] {
     body[data-layout="horizontal"] {
         .container-fluid,
         .navbar-header {
-            max-width: 85%;
+            max-width: 90%;
         }
     }
 }

@@ -3,9 +3,9 @@ import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import moment from "moment"
 import { getSenderNameById } from "rainComputing/helpers/backend_helper"
+import ChatLoader from "./ChatLoader"
 
 const PrivateMsg =(props) => {
-  // console.log("Rp notify : ",props)
 const {
   sender,
   messageData,
@@ -27,7 +27,10 @@ useEffect(()=> {
 getSenderName()
 },[sender])
   return (
-  !isLoading &&  
+    <>
+  {isLoading ?(
+    <ChatLoader/>
+    ):(
   <Link
    to={`/chat-rc?p_id=${groupId}`}
    className="text-reset notification-item">
@@ -55,6 +58,8 @@ getSenderName()
                  </div>
                </div>
              </Link>
+                      )}
+                      </>
 )
 }
 PrivateMsg.propTypes = {

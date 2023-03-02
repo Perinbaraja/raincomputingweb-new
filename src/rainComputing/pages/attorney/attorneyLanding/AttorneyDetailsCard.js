@@ -26,15 +26,22 @@ const AttorneyDetailsCard = () => {
   const { currentUser, setCurrentUser } = useUser()
   const [attorneyDetail, setAttorneyDetail] = useState({})
   const { currentAttorney } = useUser()
+  const [loading, setLoading] = useState(false)
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
     initialValues: {
-      attorneybarnumber: attorneyDetail?.barNumber,
+      attorneybarnumber: attorneyDetail?.registerNumber,
       phonenumber: attorneyDetail?.phoneNumber,
       email: currentUser.email,
+      firm: attorneyDetail?.firm,
+      bio: attorneyDetail?.bio,
       address: attorneyDetail?.address,
+      country: attorneyDetail?.country,
+      state: attorneyDetail?.state,
+      city: attorneyDetail?.city,
+      postalCode: attorneyDetail?.postalCode,
     },
     validationSchema: Yup.object({
       attorneybarnumber: Yup.string().required(
@@ -55,12 +62,11 @@ const AttorneyDetailsCard = () => {
 
   useEffect(() => {
     if (currentAttorney) {
-      const payload = { objectId: currentAttorney._id }
+      const payload = { id: currentAttorney._id }
       const getAttorneyinfo = async () => {
         const res = await regAttorneyDetails(payload)
         const { attorney } = res
         if (attorney) {
-          console.log("payload", attorney)
           setAttorneyDetail(attorney)
         }
       }
@@ -70,10 +76,11 @@ const AttorneyDetailsCard = () => {
 
   return (
     <React.Fragment>
-      <div >
+      <div>
         <MetaTags>
           <title>RainComputing | Rain - Admin & Dashboard Template</title>
         </MetaTags>
+
         <Container fluid={true}>
           <Row>
             <Col lg="12">
@@ -83,18 +90,19 @@ const AttorneyDetailsCard = () => {
                     className="needs-validation"
                     onSubmit={e => {
                       e.preventDefault()
-                      console.log("values")
                       validation.handleSubmit()
                     }}
                   >
-                    <h4 className="card-title mb-4"> My info</h4>
                     <div className="wizard clearfix">
                       <div className="steps clearfix">
                         <ul>
                           <NavItem>
-                            {/* <NavLink>
-                              <span className="number">1</span> ATTORNEY
-                            </NavLink> */}
+                            <NavLink>
+                              <h4 className="d-flex font-size-18 text-primary card-title mt-2">
+                                {" "}
+                                Personal Info
+                              </h4>{" "}
+                            </NavLink>
                           </NavItem>
                         </ul>
                       </div>
@@ -165,32 +173,184 @@ const AttorneyDetailsCard = () => {
                             </Col>
                           </Row>
                           <Row>
-                            <Col lg="6">
+                          <Col lg="6">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom04">
-                                  Email
-                                </Label>
+                                <Label htmlFor="validationCustom04">Firm</Label>
                                 <Input
-                                  type="email"
-                                  name="email"
+                                  type="text"
+                                  name="firm"
                                   readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
                                   onChange={validation.handleChange}
                                   onBlur={validation.handleBlur}
-                                  value={validation.values.email || ""}
+                                  value={validation.values.firm || ""}
                                   invalid={
-                                    validation.touched.email &&
-                                    validation.errors.email
+                                    validation.touched.firm &&
+                                    validation.errors.firm
                                       ? true
                                       : false
                                   }
                                 />
-                                {validation.touched.email &&
-                                validation.errors.email ? (
+                                {validation.touched.firm &&
+                                validation.errors.firm ? (
                                   <FormFeedback type="invalid">
-                                    {validation.errors.email}
+                                    {validation.errors.firm}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">
+                                  Address
+                                </Label>
+                                <Input
+                                  type="text"
+                                  name="address"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your address"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.address || ""}
+                                  invalid={
+                                    validation.touched.address &&
+                                    validation.errors.address
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.address &&
+                                validation.errors.address ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.address}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+
+                          
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">
+                                  Country
+                                </Label>
+                                <Input
+                                  type="text"
+                                  name="country"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.country || ""}
+                                  invalid={
+                                    validation.touched.country &&
+                                    validation.errors.country
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.country &&
+                                validation.errors.country ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.country}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">
+                                  State
+                                </Label>
+                                <Input
+                                  type="text"
+                                  name="state"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.state || ""}
+                                  invalid={
+                                    validation.touched.state &&
+                                    validation.errors.state
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.state &&
+                                validation.errors.state ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.state}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">City</Label>
+                                <Input
+                                  type="text"
+                                  name="city"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.city || ""}
+                                  invalid={
+                                    validation.touched.city &&
+                                    validation.errors.city
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.city &&
+                                validation.errors.city ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.city}
+                                  </FormFeedback>
+                                ) : null}
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom04">
+                                  PostalCode
+                                </Label>
+                                <Input
+                                  type="text"
+                                  name="postalCode"
+                                  readOnly
+                                  className="form-control"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.postalCode || ""}
+                                  invalid={
+                                    validation.touched.postalCode &&
+                                    validation.errors.postalCode
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.postalCode &&
+                                validation.errors.postalCode ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.postalCode}
                                   </FormFeedback>
                                 ) : null}
                               </FormGroup>
@@ -199,25 +359,37 @@ const AttorneyDetailsCard = () => {
                           <Row>
                             <Col lg="12">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom05">
-                                  Address
-                                </Label>
+                                <Label htmlFor="validationCustom04">Bio</Label>
                                 <textarea
-                                  name="address"
-                                  id="validationCustom05"
+                                  type="text"
+                                  name="bio"
+                                  readOnly
                                   className="form-control"
-                                  rows="2"
-                                  placeholder="Enter Your Address"
+                                  id="validationCustom04"
+                                  placeholder="Enter Your Email ID"
                                   onChange={validation.handleChange}
-                                  value={validation.values.address || ""}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.bio || ""}
+                                  invalid={
+                                    validation.touched.bio &&
+                                    validation.errors.bio
+                                      ? true
+                                      : false
+                                  }
                                 />
+                                {validation.touched.bio &&
+                                validation.errors.bio ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.bio}
+                                  </FormFeedback>
+                                ) : null}
                               </FormGroup>
                             </Col>
                           </Row>
                         </Form>
-                        <Button color="primary" type="submit">
+                        {/* <Button color="primary" type="submit">
                           SUBMIT
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </Form>

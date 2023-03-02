@@ -117,7 +117,6 @@ const UserList = userId => {
   const getAllUsers = async () => {
     setLoading(true)
     const res = await allUsersList({})
-    // console.log("res", res)
     if (res.success) {
       setUserData(res.users)
     }

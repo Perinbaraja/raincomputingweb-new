@@ -16,7 +16,10 @@ const AttorneyLanding = () => {
       {currentAttorney?.status && currentAttorney?.status === "approved" ? (
         <AttorneyDetails />
       ) : (
-        <AttorneyCard status={currentAttorney?.status} />
+        currentAttorney?.status === "approved" ?( <AttorneyCard status={currentAttorney?.status} />):(<div className="d-flex justify-content-center"><div class="spinner-border text-primary" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+      </div>)
       )}
     </div>
   )

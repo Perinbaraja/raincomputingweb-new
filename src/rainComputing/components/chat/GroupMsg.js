@@ -3,8 +3,8 @@ import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import moment from "moment"
 import { getGroupNameById } from "rainComputing/helpers/backend_helper"
+import ChatLoader from "./ChatLoader"
 const GroupMsg = props => {
-  // console.log("case notify : ", props)
   const { caseId, messageData, createdAt ,groupId} = props?.notification
 
   const [isLoading, setIsLoading] = useState(true)
@@ -14,14 +14,15 @@ const GroupMsg = props => {
     const getGroupName = async () => {
       const groupRes = await getGroupNameById({caseId})
       const groupData = groupRes?.caseDetails[0]?.caseId
-      // console.log("groupData",groupData)
       setCaseName(`${groupData?.caseName}`)
       setIsLoading(false)
     }
     getGroupName()
   }, [caseId])
   return (
-    !isLoading && 
+    <>    {isLoading ?(
+      <ChatLoader />
+    ):(
       <Link to={`/chat-rc?g_id=${groupId}&c_id=${caseId}`} className="text-reset notification-item">
         <div className="d-flex">
           <div className="avatar-xs me-3">
@@ -41,6 +42,9 @@ const GroupMsg = props => {
           </div>
         </div>
       </Link>
+    )}
+    </>
+
     )
 }
 GroupMsg.propTypes = {

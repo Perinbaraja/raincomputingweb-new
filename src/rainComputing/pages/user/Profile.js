@@ -64,7 +64,6 @@ const UserProfile = props => {
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
       const res = await userUpdate({ ...values, email: currentUser?.email })
-      console.log(res,'res name');
       if (res.success) {
         setUpdateError("")
         localStorage.setItem("authUser", JSON.stringify(res))
@@ -100,7 +99,6 @@ const UserProfile = props => {
   }
   }
   else
-  console.log('miss match password and confirm password');
     setProLoading(false)
   }
 

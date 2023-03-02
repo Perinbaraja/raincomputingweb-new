@@ -28,7 +28,6 @@ const CaseMembers = ({ members, admins, caseId }) => {
     }
     const res = await addAdmin(payload)
     toastr.success(`You has been Added Admin successfully`, "Success")
-    console.log("add admin response : ", res)
   }
   const MembersCard = ({ member }) => (
     <Card className="pointer member-card ">

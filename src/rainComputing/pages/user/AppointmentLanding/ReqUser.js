@@ -26,6 +26,7 @@ const RequestUser = () => {
     closeButton: true,
   }
   const [appointmentReq, setAppointmentReq] = useState([])
+  const [refetch,setRefetch]=useState(false)
   const handleFileDownload = async ({ id, filename }) => {
     getFileFromGFS(
       { id },
@@ -47,7 +48,6 @@ const RequestUser = () => {
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
     } 
-    console.log("appointment", RequestRes)
   }
   const handleAppointmentAccept = async ({ id }) => {
     const payload = {
@@ -56,12 +56,12 @@ const RequestUser = () => {
     }
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
+      setRefetch(true)
       toastr.success(`Appointment  has been Accepted `, "Success")
-      console.log(res)
       await onGetAllAppointmentRequest()
     } else {
+      setRefetch(false)
       toastr.error(`Failed to Accept Appointment `, "Failed!!!")
-      console.log("Error: ", res)
     }
   }
   const handleAppointmentReject = async ({ id }) => {
@@ -71,12 +71,12 @@ const RequestUser = () => {
     }
     const res = await appointmentStatusUpdate(payload)
     if (res.success) {
+      setRefetch(true)
       toastr.success(`Appointment  has been Rejected `, "Success")
-      console.log(res)
       await onGetAllAppointmentRequest()
     } else {
+      setRefetch(false)
       toastr.error(`Failed to Reject Appointment `, "Failed!!!")
-      console.log("Error: ", res)
     }
     setModalOpen(false)
   }
@@ -89,10 +89,7 @@ const RequestUser = () => {
         cancelText="Cancel"
         onCloseClick={toggleModal}
       />
-      <div className="page-content">
-        <MetaTags>
-          <title>Request User | Rain - Admin & Dashboard Template</title>
-        </MetaTags>
+      <div className="p-5 m-5">
         <Container fluid>
           <>
             <Link to="/">
@@ -202,7 +199,7 @@ const RequestUser = () => {
                           </Card>
                         )
                     )}
-                  <ReqUserAppointmentDetails />
+                  <ReqUserAppointmentDetails refetch = {refetch}/>
                 </Col>
               </Row>
             ) : (

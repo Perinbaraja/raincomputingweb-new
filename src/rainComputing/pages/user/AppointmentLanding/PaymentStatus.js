@@ -36,7 +36,6 @@ const PaymentStatus = () => {
     }
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      // console.log("paymentIntent : ",paymentIntent)
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!")
@@ -55,17 +54,15 @@ const PaymentStatus = () => {
   }, [stripe])
 
   useEffect(() => {
-    console.log("Getting payment")
     const getUserPaymentData = async () => {
       const res = await getPaymentId({ pi: query.get("payment_intent") })
-      // console.log("Got payment",res)
     }
     getUserPaymentData()
   }, [])
 
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="p-5 m-5">
         <MetaTags>
           <title>Status | Rain- Dashboard Template</title>
         </MetaTags>

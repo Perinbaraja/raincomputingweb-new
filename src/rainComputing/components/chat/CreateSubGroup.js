@@ -62,7 +62,6 @@ const CreateSubGroup = ({
       handleClose()
     } else {
       toastr.error(` ${subGroupName} ${res?.msg}`, "Failed to create Subgroup")
-      console.log("subgroup create error :", res)
     }
   }
 
