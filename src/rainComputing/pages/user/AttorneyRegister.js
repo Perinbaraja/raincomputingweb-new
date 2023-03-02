@@ -22,6 +22,8 @@ import { useFormik } from "formik"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { registerAttorney } from "rainComputing/helpers/backend_helper"
 import { useHistory } from "react-router-dom"
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 const AttorneyRegister = () => {
   const history = useHistory()
   const { currentUser, setCurrentUser } = useUser()
@@ -68,14 +70,14 @@ const AttorneyRegister = () => {
     },
   })
   const country = [
-    { value: "india", text: "india" },
-    { value: "singapore", text: "singapore" },
-    { value: "england", text: "england" },
-    { value: "china", text: "china" },
+    { value: "india", text: "India" },
+    { value: "usa", text: "USA" },
+    { value: "england", text: "England" },
+    { value: "china", text: "China" },
   ]
   const state = [
     { value: "tamilnadu", text: "Tamilnadu" },
-    { value: "hougang", text: "Hougang" },
+    { value: "california", text: "California" },
     { value: "zhejiang", text: "Zhejiang" },
     { value: "london", text: "London" },
   ]
@@ -85,6 +87,7 @@ const AttorneyRegister = () => {
       setUpdateError("")
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
+      toastr.success(`Registered us Attorney successfully `, "Success")
       setUpdateSuccess("Registering attorney Successfully")
       history.push("/")
     } else {
@@ -219,7 +222,7 @@ const AttorneyRegister = () => {
                                   
                                   className="form-control"
                                   id="validationCustom04"
-                                  placeholder="Enter Your Email ID"
+                                  placeholder="Enter Your Address"
                                   onChange={validation.handleChange}
                                   onBlur={validation.handleBlur}
                                   value={validation.values.address || ""}

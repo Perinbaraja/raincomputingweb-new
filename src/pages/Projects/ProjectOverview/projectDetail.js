@@ -83,8 +83,8 @@ const ProjectDetail = ({ project }) => {
                 <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
               </svg>
               <span className="text-lowercase font-size-14 ms-3">
-                {project?.address},{project?.country},{project?.state},
-                {project?.city},{project?.postalCode}
+                {project?.address},{project?.city},{project?.state},
+                {project?.country},{project?.postalCode}
               </span>
             </div>
             <div className="d-flex  mt-5 ">
