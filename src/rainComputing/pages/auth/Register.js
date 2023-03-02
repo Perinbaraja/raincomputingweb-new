@@ -24,6 +24,7 @@ import profileImg from "assets/images/profile-img.png"
 import computer from "assets/images/computer.png"
 import rainlogo from "assets/images/RainCom_Logo.webp"
 import logo from "assets/images/rain-drop.png"
+import login from "../../../assets/images/loginanimi.png"
 import { userRegisteration } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
@@ -80,11 +81,11 @@ const RainRegister = () => {
         <div className="d-none d-xl-block  ps-lg-5 ms-lg-5 mt-2 ">
           <div className="my-5">
             <div className="justify-content-center">
-              <img src={computer} height="350" width="500" />
+              <img src={login} height="450" width="600" />
             </div>
-            <p className="fs-5 pt-5 ps-5 ">
+            {/* <p className="fs-5 pt-5 ps-5 ">
               Manage all communication in one place
-            </p>
+            </p> */}
           </div>
         </div>
         <div className="container ">
