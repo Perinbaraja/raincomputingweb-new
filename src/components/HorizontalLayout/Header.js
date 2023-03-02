@@ -21,21 +21,21 @@ import rainlglogo from "assets/images/raincom_Logo1.png"
 //i18n
 import { withTranslation } from "react-i18next"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import useMediaQuery from "rainComputing/helpers/hooks/useMediaQuery"
+import MobileNav from "./MobileNav"
 
 const Header = props => {
   const { currentAttorney } = useUser()
   const { currentUser } = useUser()
+  const [isMobile]=useMediaQuery("764")
 
   return (
     <React.Fragment>
       <header id="page-topbar">
-        <div className="navbar-header">
-          <div className="d-flex">
+        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  px-md-5">
+           <div className="d-flex ">
             <div className="navbar-brand-box">
               <Link to="/" className="logo logo-dark">
-                <span className="logo-sm">
-                  <img src={rainlglogo} alt="" height="22" />
-                </span>
                 <span className="logo-lg">
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
@@ -51,9 +51,9 @@ const Header = props => {
               </Link>
             </div>
           </div>
-          <div className="d-flex justify-content-between" id="navsection">
+              <div className="d-flex justify-content-md-between " id="">
             {/* <div id="navbox"></div> */}
-            <div>
+            { isMobile ? <> <div>
               <ul id="menunav" className="d-flex">
                 <li id="navmen" className="">
                   <Link to="/">Home</Link>
@@ -77,18 +77,21 @@ const Header = props => {
                 )}
               </ul>
             </div>
+             <div className="d-flex align-items-center">
+             {currentUser && <NotificationDropdown />}
+             <ProfileMenu  />
+           </div></>
+            
+            : <div className="flex-fill"><MobileNav /></div>}
 
             {/* <div id="topinput">
             <form >
             <span className="bx bx-search-alt mx-2 bg-primary text-white px-2 py-1" id="topsearch"/>
-              <input type="text" placeholder="Search for Attorney..." className="border-0"/>
+              <input type="text" placeholder="Search for Attorney..." className="border-0"/>={}
             </form>
           </div> */}
 
-            <div className="d-flex align-items-center">
-              {currentUser && <NotificationDropdown />}
-              <ProfileMenu />
-            </div>
+
           </div>
         </div>
       </header>
