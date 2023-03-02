@@ -1,5 +1,5 @@
 import React from 'react'
-// import "./Terms.css"
+import "./Terms.css"
 import { useState } from 'react'
 function TermsModal() {
 

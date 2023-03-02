@@ -263,7 +263,7 @@ const RainRegister = () => {
                               open={termsModelOpen}
                               toggle={toggleTermsModelOpen}
                               size="lg"
-                              modalTitle="terms & condition"
+                              modalTitle="Terms & Condition"
                               footer={false}
                               isClose={true}
                             >
