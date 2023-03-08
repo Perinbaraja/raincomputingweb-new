@@ -142,13 +142,13 @@ const LandingGrid = () => {
           <img src= {banner} alt="banner background"  id="banner"/>
            
       </div> */}
-                <section className="">
+                <section style={{paddingTop:"50px",paddingBottom:"60px"}}>
                   <div className="">
                     <div className="d-flex flex-md-row flex-column" id="">
                       <div id="" className="col-sm-8">
                         <div>
                           <h2 className=" text-primary mb-5 " id="">
-                            About Us <div id=""></div>
+                            About Us <div style={{width:"70px",height:"3px",backgroundColor:"#556ee6",borderRadius:"10px"}}></div>
                           </h2>
                         </div>
                         <p id="">
