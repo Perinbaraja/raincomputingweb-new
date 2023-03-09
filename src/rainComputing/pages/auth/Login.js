@@ -83,18 +83,10 @@ const RainLogin = props => {
 
   return (
     <React.Fragment>
+      <div className="p-5 m-5">
       <MetaTags>
         <title>Login | Raincomputing</title>
       </MetaTags>
-
-      <div className="d-none d-xl-block ps-lg-5 ms-lg-5">
-        <img src={rainlogo} height="50" />
-      </div>
-      <div className="home-btn d-none d-sm-block">
-        <Link to="/" className="text-dark">
-          <i className="fas fa-home h2" />
-        </Link>
-      </div>
       <div className="d-flex ">
         <div className="d-none d-xl-block  ">
           <div className="d-none d-lg-block   my-5 pt-sm-5 ms-lg-5  p-5">
@@ -321,6 +313,7 @@ const RainLogin = props => {
             </Row>
           </Container>
         </div>
+      </div>
       </div>
     </React.Fragment>
   )

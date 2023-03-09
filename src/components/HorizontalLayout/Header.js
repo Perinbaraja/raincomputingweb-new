@@ -32,14 +32,14 @@ const Header = props => {
   return (
     <React.Fragment>
       <header id="page-topbar">
-        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  px-md-5">
+        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  ">
            <div className="d-flex ">
             <div className="navbar-brand-box">
               <Link to="/" className="logo logo-dark">
                 <span className="logo-lg">
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
-              </Link>
+              </Link> 
 
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
