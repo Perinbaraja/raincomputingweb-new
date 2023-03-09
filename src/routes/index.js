@@ -38,6 +38,7 @@ import AppointmentCard from "rainComputing/pages/user/AppointmentLanding/Appoint
 import PSwrapper from "rainComputing/pages/user/AppointmentLanding/PSwrapper"
 import PaymentTranaction from "rainComputing/pages/admin/adminLogin/TransactionDetails"
 import Guide from "rainComputing/pages/guide"
+import Reminder from "rainComputing/pages/reminder"
 
 const authProtectedRoutes = [
   //Projects
@@ -61,6 +62,7 @@ const authProtectedRoutes = [
   { path: "/payment-status", component: PSwrapper },
   { path: "/payment-via", component: PaymentVia },
   { path: "/appointment-status", component: AppointmentCard },
+  { path: "/reminder-data", component: Reminder },
 ]
 
 const publicRoutes = [

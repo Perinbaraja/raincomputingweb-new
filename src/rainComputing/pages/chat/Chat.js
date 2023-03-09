@@ -84,6 +84,7 @@ import { useDropzone } from "react-dropzone"
 import copy from "copy-to-clipboard"
 import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
+import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -106,6 +107,11 @@ const ChatRc = () => {
     toggleOpen: newCaseModelOpen,
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: remainderModelOpen,
+    setToggleOpen: setRemainderModelOpen,
+    toggleIt: toggleremainderModelOpen,
   } = useToggle(false)
   const {
     toggleOpen: subGroupModelOpen,
@@ -196,6 +202,7 @@ const ChatRc = () => {
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
+  const [curReminderMessageId, setCurReminderMessageId] = useState(null)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
   const [email, setEmail] = useState("")
@@ -1053,6 +1060,21 @@ useEffect(()=>{
                 </div>
               </div>
             </Modal>
+            {/* Model for Remainder*/}
+            <DynamicModel
+              open={remainderModelOpen}
+              toggle={toggleremainderModelOpen}
+              size="md"
+              modalTitle="NEW REMINDER"
+              footer={false}
+            >
+              <DynamicSuspense>
+                <ChatRemainder
+                  setModalOpen={setRemainderModelOpen}
+                  curMessageId={curReminderMessageId}
+                />
+              </DynamicSuspense>
+            </DynamicModel>
             {/* Model for creating case*/}
             <DynamicModel
               open={newCaseModelOpen}
@@ -1687,6 +1709,15 @@ useEffect(()=>{
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
+                                                  setCurReminderMessageId(msg)
+                                                  setRemainderModelOpen(true)
+                                                }}
+                                              >
+                                                Reminder
+                                              </DropdownItem>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
                                                   msg.sender ===
                                                   currentUser.userID
                                                     ? setMsgDeleteModalOpen(
@@ -1945,7 +1976,7 @@ useEffect(()=>{
                                     <Button
                                       type="button"
                                       color="primary"
-                                      onClick={() => handleSendMessage()}
+                                      onClick ref ={() => handleSendMessage()}
                                       className="btn btn-primary btn-rounded chat-send w-md"
                                       disabled={isEmptyOrSpaces()}
                                     >

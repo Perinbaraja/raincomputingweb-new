@@ -52,7 +52,8 @@ const removeFirmMember = payload =>
 
 const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
 
-const updatePassword = payload => put(`${BASE_URL}/user/changepassword`, payload)
+const updatePassword = payload =>
+  put(`${BASE_URL}/user/changepassword`, payload)
 
 const setForgettingPassword = payload =>
   post(`${BASE_URL}/user/verifyForgetPassword`, payload)
@@ -137,6 +138,11 @@ const appointmentUserStatus = payload =>
 
 const getPaymentId = payload =>
   post(`${BASE_URL}/payment/getPaymentId`, payload)
+
+const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
+
+const getReminder = payload => post(`${BASE_URL}/remainder/getreminder`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -208,4 +214,6 @@ export {
   userNotes,
   updatePassword,
   attorneyInvite,
+  createReminder,
+  getReminder,
 }

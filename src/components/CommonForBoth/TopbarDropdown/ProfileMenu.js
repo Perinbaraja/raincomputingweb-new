@@ -20,6 +20,7 @@ import { logoutUser } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import { useLocation } from 'react-router-dom';
 import "../TopbarDropdown/login.scss"
+import Reminder from "rainComputing/pages/reminder"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -27,6 +28,11 @@ const ProfileMenu = props => {
   const { currentUser,setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
+  const [modal_scroll, setmodal_scroll] = useState(false)
+
+  const tog_scroll = () => {
+    setmodal_scroll(!modal_scroll)
+  }
   
   const location = useLocation();
 
@@ -94,6 +100,7 @@ const ProfileMenu = props => {
                 )}
               </DropdownItem>
             )}
+              <Reminder toggle={tog_scroll} open ={modal_scroll} setOpen={setmodal_scroll}/>
 {/* 
             {currentUser?.attorneyStatus === "approved" && (
               <Link to="/firmlanding" className="dropdown-item">
