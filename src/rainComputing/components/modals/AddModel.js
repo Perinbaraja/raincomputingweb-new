@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Modal, ModalBody, ModalHeader } from "reactstrap"
 import "../chat/style/case-grid.scss"
+import add from "../../../assets/images/addadmin.png"
 
 const AddModal = ({
   size = "lg",
@@ -44,8 +45,12 @@ const AddModal = ({
           )}
         </div>
       </ModalHeader>
-      <ModalBody className="p-3" style={{ backgroundColor: "#fdfdfd" }}>
-        <>You want to create an admin?</>
+      <ModalBody className="p-3" >
+        <div className="d-flex justify-content-center pb-3" >
+        <img src={add} style={{height:"100px"}}></img>
+       
+        </div>
+        <p className="d-flex justify-content-center">Are you interested in creating an admin account?</p>
         {footer && (
           <div className="d-flex justify-content-center my-2 gap-3">
                <button className="btn btn-primary" onClick={AddClick}>
