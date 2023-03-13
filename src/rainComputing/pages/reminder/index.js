@@ -1,91 +1,79 @@
-import React, { useEffect, useState } from "react"
-import {
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
-  DropdownItem,
-  Modal,
-} from "reactstrap"
+import React, { useState } from "react"
+import { Modal, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap"
 import PropTypes from "prop-types"
-import { getReminder } from "rainComputing/helpers/backend_helper"
-import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { useChat } from "rainComputing/contextProviders/ChatProvider"
+import GroupReminder from "./GroupReminder"
+import SelfReminder from "./SelfReminder"
 
-const Reminder = ({ toggle, open, setOpen ,show = false }) => {
-  const [reminderData, setReminderData] = useState()
-  const { currentUser } = useUser()
-  useEffect(() => {
-  if(currentUser) { const getReminderData = async () => {
-      const res = await getReminder({ currentUserID: currentUser?.userID })
-      console.log("reminderData", currentUser?.userID)
-      if (res.success) {
-        setReminderData(res?.reminders)
-      }
+const Reminders = ({ toggle, open, setOpen, show = false }) => {
+  const [activeTab, setActiveTab] = useState("group")
 
-    }
-    getReminderData()}
-  }, [currentUser])
-
+  const toggleTab = tab => {
+    if (activeTab !== tab) setActiveTab(tab)
+  }
 
   return (
-    <>
-  
-
-        <i class="bi bi-alarm fs-4 w-3" 
-          onClick={() => {
-            toggle()
-          }}
-          data-toggle="modal"
-          style={{
-            cursor: "pointer"
-          }}
-        >
-        </i>
-     
-     <Modal
-        isOpen={open}
-        toggle={() => {
-          toggle()
+    <div >
+      <i
+        className="bi bi-alarm fs-4 w-3"
+        onClick={toggle}
+        data-toggle="modal"
+        style={{
+          cursor: "pointer",
         }}
-        scrollable={true}
-      >
-        
-          <h5 className="modal-title mt-0">Reminder</h5>
-          <button
-            type="button"
-            className="close"
-            data-dismiss="modal"
-            aria-label="Close"
-            style={{width:"20px"}}
-            onClick={() => setOpen(false)}
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-      
-        <div className="modal-body">
-          <Card>
-            <CardBody>
-              {reminderData?.map((i, k) => (
-                <>
-                  {" "}
-                  <CardTitle className="mt-0">Title :{i?.title}</CardTitle>
-                  <CardText> Date :{i?.date}</CardText>
-                  <CardText> Time :{i?.time}</CardText>{" "}
-                </>
-              ))}
-            </CardBody>
-          </Card>
-        </div>
+      ></i>
+
+      <Modal isOpen={open} toggle={toggle} scrollable={true}>
+        <h5 className="modal-title mt-0">Reminder</h5>
+        <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          style={{ width: "20px" }}
+          onClick={() => setOpen(false)}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <Nav tabs className="d-flex justify-content-center">
+          <NavItem>
+            <NavLink
+              className={activeTab === "group" ? "active " : ""}
+              onClick={() => {
+                toggleTab("group")
+              }}
+            >
+              Group Reminder
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={activeTab === "self" ? "active " : ""}
+              onClick={() => {
+                toggleTab("self")
+              }}
+            >
+              Self Reminder
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <TabContent activeTab={activeTab} className="modal-body">
+          <TabPane tabId="group">
+            <GroupReminder />
+          </TabPane>
+          <TabPane tabId="self">
+            <SelfReminder />
+          </TabPane>
+        </TabContent>
       </Modal>
-    </>
+    </div>
   )
 }
 
-Reminder.propTypes = {
+Reminders.propTypes = {
   open: PropTypes.bool,
   toggle: PropTypes.func,
   setOpen: PropTypes.func,
   show: PropTypes.func,
 }
-export default Reminder
+
+export default Reminders

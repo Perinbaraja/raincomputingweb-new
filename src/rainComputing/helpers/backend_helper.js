@@ -143,6 +143,7 @@ const getPaymentId = payload =>
 const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
 
 const getReminder = payload => post(`${BASE_URL}/remainder/getreminder`, payload)
+const getReminderSelf = payload => post(`${BASE_URL}/remainder/getreminderself`, payload)
 
 export {
   getAllAttorneys,
@@ -218,4 +219,5 @@ export {
   attorneyInvite,
   createReminder,
   getReminder,
+  getReminderSelf
 }
