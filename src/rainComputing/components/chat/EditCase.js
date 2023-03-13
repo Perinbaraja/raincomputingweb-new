@@ -204,9 +204,11 @@ const EditCase = ({
                         className="btn mx-1 mb-2"
                         onClick={() => handleAddingGroupMembers(contact)}
                       >
-                        <div className="d-flex ">
-                          {contact.firstname} {contact.lastname}
-                        </div>
+                        <div className="d-flex justify-content-between ">
+                     <div> {contact.firstname} {contact.lastname}   </div>                
+                     {contact?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+
+                    </div>
 
                         <div className="font-size-0 text-body ">
                           {contact.email}
@@ -237,9 +239,11 @@ const EditCase = ({
                         className="btn mx-1 mb-2"
                         onClick={() => handleAddingGroupMembers(member)}
                       >
-                        <div className="d-flex ">
-                          {member?.firstname + " " + member?.lastname}
-                        </div>
+                         <div className="d-flex justify-content-between">
+                   <div> {member?.firstname + " " + member?.lastname}</div>
+                    {member?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+
+                  </div>
 
                         <div className="font-size-0 text-body ">
                           {member?.email}

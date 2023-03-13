@@ -211,11 +211,10 @@ const ChatRc = () => {
   const [pinnedMsg, setPinnedMsg] = useState("")
   const containerRef = useRef(null);
   const [prevHeight, setPrevHeight] = useState(0);
-
+console.log("curReminderMessageId",curReminderMessageId?._id)
   const [visibleMessages, setVisibleMessages] = useState(
     messages.slice(-50)
   )
-  console.log("visi",visibleMessages)
   const handleScroll = event => {
     if (event && event.currentTarget) {
       const { scrollTop, clientHeight, scrollHeight, } = event.currentTarget
@@ -247,7 +246,6 @@ useEffect(()=>{
      
       const timer2 = setTimeout(() => {
         const tempHeight =containerRef?.current?.scrollHeight - prevHeight 
-        console.log("scroll : ",containerRef?.current?.scrollHeight,prevHeight,tempHeight)
         containerRef?.current?.scrollTo({ top: tempHeight ,behavior: "smooth",});
       }, 2000);
     
@@ -1071,7 +1069,7 @@ useEffect(()=>{
               <DynamicSuspense>
                 <ChatRemainder
                   setModalOpen={setRemainderModelOpen}
-                  curMessageId={curReminderMessageId}
+                  curMessageId={curReminderMessageId?._id}
                 />
               </DynamicSuspense>
             </DynamicModel>
@@ -1976,7 +1974,7 @@ useEffect(()=>{
                                     <Button
                                       type="button"
                                       color="primary"
-                                      onClick ref ={() => handleSendMessage()}
+                                      onClick  ={() => handleSendMessage()}
                                       className="btn btn-primary btn-rounded chat-send w-md"
                                       disabled={isEmptyOrSpaces()}
                                     >

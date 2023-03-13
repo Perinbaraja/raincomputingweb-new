@@ -28,11 +28,7 @@ const ProfileMenu = props => {
   const { currentUser,setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
-  const [modal_scroll, setmodal_scroll] = useState(false)
 
-  const tog_scroll = () => {
-    setmodal_scroll(!modal_scroll)
-  }
   
   const location = useLocation();
 
@@ -100,7 +96,6 @@ const ProfileMenu = props => {
                 )}
               </DropdownItem>
             )}
-              <Reminder toggle={tog_scroll} open ={modal_scroll} setOpen={setmodal_scroll}/>
 {/* 
             {currentUser?.attorneyStatus === "approved" && (
               <Link to="/firmlanding" className="dropdown-item">

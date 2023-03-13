@@ -4,8 +4,11 @@ import PropTypes from "prop-types"
 import { createReminder } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import { useChat } from "rainComputing/contextProviders/ChatProvider"
 
 const ChatRemainder = ({ setModalOpen, curMessageId }) => {
+  const { currentRoom: currentChat,setMessages,messages } = useChat()
+
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
@@ -20,6 +23,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
   }
   const handleReminderCreate = async () => {
     const payload = {
+      groupId: currentChat?._id,
       messageId: curMessageId,
       title: title,
       date: date,
@@ -27,6 +31,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
     }
     const reminderData = await createReminder(payload)
     if (reminderData.success) {
+      console.log("data",reminderData)
       toastr.success("Reminder Create success")
       setModalOpen(false)
     } else {
