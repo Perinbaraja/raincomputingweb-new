@@ -144,6 +144,7 @@ const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
 
 const getReminder = payload => post(`${BASE_URL}/remainder/getreminder`, payload)
 const getReminderSelf = payload => post(`${BASE_URL}/remainder/getreminderself`, payload)
+const removeReminder = payload => put(`${BASE_URL}/remainder/removeReminder`, payload)
 
 export {
   getAllAttorneys,
@@ -157,6 +158,7 @@ export {
   userUpdate,
   findMe,
   logoutUser,
+  removeReminder,
   registerAttorney,
   getAttorneyByUserID,
   getFirmsByAttorneyID,

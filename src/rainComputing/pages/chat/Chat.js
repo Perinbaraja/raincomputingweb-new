@@ -209,60 +209,52 @@ const ChatRc = () => {
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
-  const containerRef = useRef(null);
-  const [prevHeight, setPrevHeight] = useState(0);
-console.log("curReminderMessageId",curReminderMessageId?._id)
-  const [visibleMessages, setVisibleMessages] = useState(
-    messages.slice(-50)
-  )
+  const containerRef = useRef(null)
+  const [prevHeight, setPrevHeight] = useState(0)
+  const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
   const handleScroll = event => {
     if (event && event.currentTarget) {
-      const { scrollTop, clientHeight, scrollHeight, } = event.currentTarget
+      const { scrollTop, clientHeight, scrollHeight } = event.currentTarget
       if (scrollTop === 0) {
-        console.log("scrollHeight : ",scrollHeight)
         setPrevHeight(scrollHeight)
         setVisibleMessages([
           ...messages.slice(-(visibleMessages?.length + MESSAGE_CHUNK_SIZE)),
         ])
 
         if (visibleMessages?.length < messages?.length) {
-          
           event.currentTarget.scrollTop = clientHeight
-          
-        }
-        else if (scrollTop + clientHeight === scrollHeight) {
+        } else if (scrollTop + clientHeight === scrollHeight) {
           // User has scrolled to the bottom, scroll to bottom automatically
           event.currentTarget.scrollTop = scrollHeight
         }
       }
     }
   }
-  const scrollToBottom =() => {
-    containerRef.current?.scrollTo({left:0, top:containerRef.current.scrollHeight +1000,behavior: "smooth",});
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      left: 0,
+      top: containerRef.current.scrollHeight + 800,
+      behavior: "smooth",
+    })
   }
 
-useEffect(()=>{
-  
-     
-      const timer2 = setTimeout(() => {
-        const tempHeight =containerRef?.current?.scrollHeight - prevHeight 
-        containerRef?.current?.scrollTo({ top: tempHeight ,behavior: "smooth",});
-      }, 2000);
-    
-      return () => clearTimeout(timer2);
-},[visibleMessages?.length])
+  useEffect(() => {
+    const timer2 = setTimeout(() => {
+      const tempHeight = containerRef?.current?.scrollHeight - prevHeight
+      containerRef?.current?.scrollTo({ top: tempHeight, behavior: "smooth" })
+    }, 2000)
+
+    return () => clearTimeout(timer2)
+  }, [visibleMessages?.length])
 
   useEffect(() => {
-    setVisibleMessages(messages.slice(-50)
-    ); // Show the last 100 messages
+    setVisibleMessages(messages.slice(-49)) 
     const timer = setTimeout(() => {
       scrollToBottom()
-    }, 1000);
-  
-    return () => clearTimeout(timer);
-  
-  }, [messages]);
+    }, 1000)
 
+    return () => clearTimeout(timer)
+  }, [messages])
 
 
   //Toaster settings
@@ -509,9 +501,21 @@ useEffect(()=>{
     const payload = { Id: msgid }
     const res = await pinMessage(payload)
     if (res.success) {
+      const updatedMessages = messages.map(msg => {
+        if (msg._id === res.message._id) {
+          return {
+            ...msg,
+            isPinned: true
+          }
+        } else {
+          return msg
+        }
+      })
+      setMessages(updatedMessages)
       setPinnedMsg(res.message)
     }
   }
+  
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -660,11 +664,11 @@ useEffect(()=>{
   //     messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
   //   }
   // }
-// useEffect(()=>{
-//   if(containerRef.current){
-//     containerRef.current.scrollTop = containerRef.current.scrollHeight;
-//   }
-// },[messages])
+  // useEffect(()=>{
+  //   if(containerRef.current){
+  //     containerRef.current.scrollTop = containerRef.current.scrollHeight;
+  //   }
+  // },[messages])
   useEffect(() => {
     if (messageBox) {
       messageBox.scrollTop = messageBox.scrollHeight
@@ -1638,10 +1642,10 @@ useEffect(()=>{
                             <div className="chat-conversation p-5">
                               <ul className="list-unstyled">
                                 <div
-                                   ref={containerRef}
+                                  ref={containerRef}
                                   onScroll={event => handleScroll(event)}
                                   style={{
-                                    height: "500px",
+                                    height: "380px",
                                     overflowY: "scroll",
                                   }}
                                 >
@@ -1974,7 +1978,7 @@ useEffect(()=>{
                                     <Button
                                       type="button"
                                       color="primary"
-                                      onClick  ={() => handleSendMessage()}
+                                      onClick={() => handleSendMessage()}
                                       className="btn btn-primary btn-rounded chat-send w-md"
                                       disabled={isEmptyOrSpaces()}
                                     >

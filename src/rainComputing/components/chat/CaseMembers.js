@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import {
-  Card,
-  CardBody,
-  CardImg,
-  CardText,
-  CardTitle,
-} from "reactstrap"
+import { Card, CardBody, CardImg, CardText, CardTitle } from "reactstrap"
 import profile from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { addAdmin, removeAdmin } from "rainComputing/helpers/backend_helper"
@@ -17,8 +11,9 @@ import RemoveModal from "../modals/RemoveModel"
 
 const CaseMembers = ({ members, admins, caseId }) => {
   const { currentUser } = useUser()
-  const [addAdmins, setAddAdmin] = useState()
-  const [removeAdmins, setRemoveAdmin] = useState()
+  const [addAdmins, setAddAdmin] = useState([])
+  const [removeAdmins, setRemoveAdmin] = useState([])
+  const [caseAdmins, setCaseAdmins] = useState(admins)
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -30,32 +25,26 @@ const CaseMembers = ({ members, admins, caseId }) => {
       admin: addAdmins,
     }
     const res = await addAdmin(payload)
-    if(res.success){
-    toastr.success(`You have added an admin successfully`, "Success")
-    setAddAdmin(null)
-    setModelOpen(false)
-  }
+    if (res.success) {
+      toastr.success(`You have added an admin successfully`, "Success")
+      setAddAdmin([])
+      setModelOpen(false)
+      setCaseAdmins([...caseAdmins, addAdmins])
+    }
   }
 
-  // useEffect(()=>{
-  //   if(addAdmins)
-  //   onAddingAdmin()
-  // },[addAdmins])
-  // useEffect(()=>{
-  //   if(removeAdmins)
-  //   onAddingAdmin()
-  // },[removeAdmins])
-  // console.log("addAdmins",addAdmins)
   const onRemovingAdmin = async () => {
     const payload = {
       caseId,
       admin: removeAdmins,
     }
     const res = await removeAdmin(payload)
-    if(res.success){
-    toastr.success(`You have remove an admin successfully`, "Success")
-    setRemoveAdmin(null)
-    setModelOpen1(false)
+    if (res.success) {
+      toastr.success(`You have remove an admin successfully`, "Success")
+      setRemoveAdmin([])
+      setModelOpen1(false)
+      const newAdmins = caseAdmins.filter(admin => admin !== removeAdmins)
+      setCaseAdmins(newAdmins)
     }
   }
   const {
@@ -71,9 +60,11 @@ const CaseMembers = ({ members, admins, caseId }) => {
 
   const handleAdd = () => {
     onAddingAdmin(addAdmins)
+    setModelOpen(true)
   }
   const handleRemove = () => {
     onRemovingAdmin(removeAdmins)
+    setModelOpen1(true)
   }
   const MembersCard = ({ member }) => (
     <Card className="pointer member-card ">
@@ -118,50 +109,48 @@ const CaseMembers = ({ members, admins, caseId }) => {
         isClose={true}
         RemoveClick={handleRemove}
       />
-    <div
-  className="mt-5 d-flex gap-5 p-2 custom-scrollbar"
-  style={{ overflowX: "auto" }}
->
-  {members.map((member, m) => (
-    <div key={m} className="position-relative " style={{ width: 240 }}>
-      <MembersCard member={member} />
-      {admins?.includes(currentUser?.userID) &&
-      !admins?.includes(member?.id?._id) ? (
-        <span
-          style={{ position: "absolute", top: 10, right: 10 }}
-          onClick={() => {
-            setAddAdmin(member?.id?._id)
-            setModelOpen(true)
-          }}
-        >
-          <i
-            className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium "
-            id="Admin"
-          />
-        </span>
-      ) : (
-        <>
-          {admins?.includes(currentUser?.userID) &&
-            admins?.includes(member?.id?._id) && member?.id?._id !== admins[0] && member?.id?._id !== currentUser.userID &&(
+      <div
+        className="mt-5 d-flex gap-5 p-2 custom-scrollbar"
+        style={{ overflowX: "auto" }}
+      >
+        {members.map((member, m) => (
+          <div key={m} className="position-relative " style={{ width: 240 }}>
+            <MembersCard member={member} />
+            {admins?.includes(currentUser?.userID) &&
+            !caseAdmins?.includes(member?.id?._id) ? (
               <span
                 style={{ position: "absolute", top: 10, right: 10 }}
                 onClick={() => {
-                  setRemoveAdmin(member?.id?._id)
-                  setModelOpen1(true)
+                  setAddAdmin(member?.id?._id)
+                  setModelOpen(true)
                 }}
               >
-              <i
-            className="bx bx-minus bg-danger font-size-16 rounded-circle text-white fw-medium "
-            
-          />
+                <i
+                  className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium "
+                  id="Admin"
+                />
               </span>
+            ) : (
+              <>
+                {admins?.includes(currentUser?.userID) &&
+                  caseAdmins?.includes(member?.id?._id) &&
+                  member?.id?._id !== caseAdmins[0] &&
+                  member?.id?._id !== currentUser.userID && (
+                    <span
+                      style={{ position: "absolute", top: 10, right: 10 }}
+                      onClick={() => {
+                        setRemoveAdmin(member?.id?._id)
+                        setModelOpen1(true)
+                      }}
+                    >
+                      <i className="bx bx-minus bg-danger font-size-16 rounded-circle text-white fw-medium " />
+                    </span>
+                  )}
+              </>
             )}
-        </>
-      )}
-    </div>
-  ))}
-</div>
-
+          </div>
+        ))}
+      </div>
     </>
   )
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Card, CardBody, CardText, CardTitle, Modal } from "reactstrap"
-import { getReminder } from "rainComputing/helpers/backend_helper"
+import { getReminder, removeReminder } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import toastr from "toastr"
 
 const GroupReminder = () => {
   const [groupReminder, setGoupReminder] = useState()
@@ -17,6 +18,17 @@ const GroupReminder = () => {
       getReminderData()
     }
   }, [currentUser])
+  const handleRemove = async (groupRemind) => {
+    console.log("self", groupRemind)
+    const payload = {
+      reminderId: groupRemind?._id
+    }
+    const res = await removeReminder(payload)
+    if (res.success) {
+      toastr.success(`You have reminder remove  successfully`, "Success")
+      setGoupReminder(prevState => prevState.filter(reminder => reminder._id !== groupRemind._id))
+    }
+  }
   return (
     <div className="modal-body">
       {groupReminder?.length > 0 ? (
@@ -26,9 +38,20 @@ const GroupReminder = () => {
             <div key={k}>
               <Card>
                 <CardBody>
+                <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          style={{ width: "20px" }}
+          onClick={() => handleRemove(groupRemind)}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
                   <CardTitle className="mt-0">
                     Title :{groupRemind?.title}
                   </CardTitle>
+                  <CardText> Message Data :{groupRemind?.messageId?.messageData}</CardText>
                   <CardText> Date :{groupRemind?.date}</CardText>
                   <CardText> Time :{groupRemind?.time}</CardText>{" "}
                 </CardBody>
