@@ -84,7 +84,7 @@ const Header = props => {
             </div>
              <div className="d-flex align-items-center gap-2">
              {currentUser && <NotificationDropdown />}
-             {
+             {currentUser&&
              <Reminder toggle={tog_scroll} open ={modal_scroll} setOpen={setmodal_scroll} />
               }
              <ProfileMenu  />
