@@ -47,18 +47,14 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
       payload.userId = currentUser?.userID;
     }
     const reminderData = await createReminder(payload)
-    console.log("payload", payload)
     if (reminderData.success) {
-      console.log("data", reminderData)
-      toastr.success("Reminder Create success")
+      toastr.success("Reminder Create Successfully")
       setModalOpen(false)
     } else {
       toastr.error(`${reminderData?.msg}`)
       setModalOpen(false)
     }
   }
-
-  console.log("userId",userId)
   return (
     <>
       <Row>
@@ -130,7 +126,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
         className="form-check-label ms-2"
         htmlFor="flexCheckDefault"
       >
-        Create a Self Reminder
+        ** Keep it as a reminder for yourself
       </label>
     </div>
   </div>

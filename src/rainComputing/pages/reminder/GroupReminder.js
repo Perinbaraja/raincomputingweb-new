@@ -19,7 +19,6 @@ const GroupReminder = () => {
     }
   }, [currentUser])
   const handleRemove = async (groupRemind) => {
-    console.log("self", groupRemind)
     const payload = {
       reminderId: groupRemind?._id
     }
@@ -52,8 +51,8 @@ const GroupReminder = () => {
                     Title :{groupRemind?.title}
                   </CardTitle>
                   <CardText> Message Data :{groupRemind?.messageId?.messageData}</CardText>
-                  <CardText> Date :{groupRemind?.date}</CardText>
-                  <CardText> Time :{groupRemind?.time}</CardText>{" "}
+                  <CardText className="text-primary"> Date :{groupRemind?.date}</CardText>
+                  <CardText className="text-primary"> Time :{groupRemind?.time}</CardText>{" "}
                 </CardBody>
               </Card>
             </div>

@@ -14,9 +14,7 @@ import paginationFactory, {
   PaginationListStandalone,
   SizePerPageDropdownStandalone,
 } from "react-bootstrap-table2-paginator"
-
 import ToolkitProvider from "react-bootstrap-table2-toolkit"
-
 //Import Breadcrumb
 import Breadcrumbs from "../../../../components/Common/Breadcrumb"
 import "../../../components/chat/style/datatables.scss"
@@ -35,14 +33,11 @@ import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import { initialNewCaseValues } from "rainComputing/helpers/initialFormValues"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import PropTypes from "prop-types"
-
 const CreateCase = lazy(() =>
-import("rainComputing/components/chat/CreateCase")
+  import("rainComputing/components/chat/CreateCase")
 )
-
-const ReqUserAppointmentDetails = ({refetch=false}) => {
+const ReqUserAppointmentDetails = ({ refetch = false }) => {
   const { currentUser } = useUser()
-
   const [loading, setLoading] = useState(false)
   const { currentAttorney } = useUser()
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -59,7 +54,6 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
   } = useToggle(false)
-
   const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
     setCaseLoading(true)
     const allCasesRes = await getCasesByUserId({
@@ -69,7 +63,6 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
     })
     if (allCasesRes.success) {
       setAllCases(allCasesRes.cases)
-
       if (isSet) {
         setCurrentCase(allCasesRes?.cases[0])
       }
@@ -83,63 +76,23 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
   const idFormatter = (cell, row, rowIndex) => {
     return rowIndex + 1
   }
-
   const nameFormatter = (cell, row) => {
     return row?.User?.firstname + " " + row?.User?.lastname
   }
-
   const emailFormatter = (cell, row) => {
     return row?.User?.email
   }
-
   const statusFormatter = (cell, row) => {
     return row?.appointmentstatus
-  }
-  const createcaseFormatter = (cell, row) => {
-    return row?.appointmentstatus === "approved" ? (
-      <>
-  
-        <DynamicModel
-          open={newCaseModelOpen}
-          toggle={toggleNewCaseModelOpen}
-          size="lg"
-          modalTitle="New Case"
-          footer={false}
-        >
-          <DynamicSuspense>
-            <CreateCase
-              formValues={newCase}
-              setFormValues={setNewCase}
-              contacts={contacts}
-              setModalOpen={setNewCaseModelOpen}
-              getAllCases={ongetAllCases}
-            />
-          </DynamicSuspense>
-        </DynamicModel>
-        <i
-          className="mdi mdi-notebook-edit-outline text-info mdi-24px"
-          id="create"
-        />
-        <UncontrolledTooltip placement="bottom" target="create">
-          Create Case
-        </UncontrolledTooltip>
-      </>
-    ) : (
-      <>
-        {" "}
-        <i
-          className="mdi  mdi-do-not-disturb-off text-danger mdi-24px"
-          id="rejected"
-        />
-        <UncontrolledTooltip placement="bottom" target="rejected">
-          Rejected
-        </UncontrolledTooltip>
-      </>
-    )
   }
   const dateFormatter = (cell, row) => {
     return moment(row?.updatedAt).format("DD-MM-YY HH:mm")
   }
+  const handleAdd = (row) => {
+    if (row?.appointmentstatus === "approved" ) {
+      setNewCaseModelOpen(true);
+    }
+  };
   const columns = [
     {
       dataField: "_id",
@@ -171,30 +124,44 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
       sort: true,
       formatter: dateFormatter,
     },
-    {
-      dataField: "Create Case",
-      //   isDummyField: true,
-      text: "Create case",
-      formatter: createcaseFormatter,
-      headerAlign: "center",
-      style: {
-        textAlign: "center",
-      },
-      events: {
-        onClick: async ( row) => {
-          await setNewCaseModelOpen(true)
-        },      
-      },
-    },
+   {
+  dataField: "Create Case",
+  //   isDummyField: true,
+  text: "Create case",
+  formatter: (cell, row) => {
+    return (
+      row?.appointmentstatus==="approved"?(
+      <i
+        className="mdi mdi-notebook-edit-outline text-info mdi-24px"
+        title="Create case"
+        id="create"
+        
+        onClick={() => handleAdd(row)}
+      />
+      ):(
+        <>
+        <i
+        className="mdi  mdi-do-not-disturb-off text-danger mdi-24px"
+        title="Rejected"
+        id="rejected"
+      />
+        </>
+        ))
+    
+  },
+  headerAlign: "center",
+  style: {
+    textAlign: "center",
+  },
+},
+,
   ]
-
   const defaultSorted = [
     {
       dataField: "_id",
       order: "desc",
     },
   ]
-
   const pageOptions = {
     sizePerPage: 5,
     totalSize: appointmentUser.filter(a => a?.appointmentstatus !== "requested")
@@ -202,31 +169,41 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
     custom: true,
   }
   //   const { SearchBar } = Search
-
-    const onGetAllAppointmentDetails = async () => {
-      const RequestRes = await getAllAppointmentRequestById({
-        userID: currentAttorney._id,
-      })
-      if (RequestRes.success) {
-        setAppointmentUser(RequestRes.appointment)
-      } else {
-        setAppointmentUser([])
-      }
+  const onGetAllAppointmentDetails = async () => {
+    const RequestRes = await getAllAppointmentRequestById({
+      userID: currentAttorney._id,
+    })
+    if (RequestRes.success) {
+      setAppointmentUser(RequestRes.appointment)
+    } else {
+      setAppointmentUser([])
     }
-    useEffect(() => {
-      onGetAllAppointmentDetails()
-    }, [currentAttorney])
-
-
+  }
+  useEffect(() => {
+    onGetAllAppointmentDetails()
+  }, [currentAttorney])
   useEffect(() => {
     if (refetch) onGetAllAppointmentDetails()
-    }, [refetch])
-
-  
-  
-
+  }, [refetch])
   return (
     <React.Fragment>
+      <DynamicModel
+          open={newCaseModelOpen}
+          toggle={toggleNewCaseModelOpen}
+          size="lg"
+          modalTitle="New Case"
+          footer={false}
+        >
+          <DynamicSuspense>
+            <CreateCase
+              formValues={newCase}
+              setFormValues={setNewCase}
+              contacts={contacts}
+              setModalOpen={setNewCaseModelOpen}
+              getAllCases={ongetAllCases}
+            />
+          </DynamicSuspense>
+        </DynamicModel>
       {loading ? (
         <ChatLoader />
       ) : appointmentUser && appointmentUser.length > 0 ? (
@@ -271,7 +248,6 @@ const ReqUserAppointmentDetails = ({refetch=false}) => {
                                 </div>
                               </Col>
                             </Row>
-
                             <Row className="align-items-md-center mt-30">
                               <Col className="inner-custom-pagination d-flex">
                                 <div className="d-inline">
@@ -306,3 +282,9 @@ ReqUserAppointmentDetails.propTypes = {
   refetch: PropTypes.bool,
 }
 export default ReqUserAppointmentDetails
+
+
+
+
+
+

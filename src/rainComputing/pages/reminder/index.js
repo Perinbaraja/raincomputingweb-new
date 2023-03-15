@@ -12,7 +12,7 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
   }
 
   return (
-    <div >
+    <div>
       <i
         className="bi bi-alarm fs-4 w-3"
         onClick={toggle}
@@ -23,7 +23,10 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
       ></i>
 
       <Modal isOpen={open} toggle={toggle} scrollable={true}>
-        <h5 className="modal-title mt-0">Reminder</h5>
+        <div className="d-flex justify-content-center p-4">
+          <i className="bi bi-alarm fs-3 w-2 me-1" />
+          <h3 className="modal-title  text-primary ">Reminder</h3>
+        </div>
         <button
           type="button"
           className="close"

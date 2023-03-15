@@ -26,7 +26,6 @@ const SelfReminder = () => {
    
    
   const handleRemove = async (selfRemind) => {
-    console.log("self", selfRemind)
     const payload = {
       reminderId: selfRemind?._id
     }
@@ -57,8 +56,8 @@ const SelfReminder = () => {
                   Title :{selfRemind?.title}
                 </CardTitle>
                 <CardText> Message Data :{selfRemind?.messageId?.messageData}</CardText>
-                <CardText> Date :{selfRemind?.date}</CardText>
-                <CardText> Time :{selfRemind?.time}</CardText>{" "}
+                <CardText className="text-primary"> Date :{selfRemind?.date}</CardText>
+                <CardText className="text-primary"> Time :{selfRemind?.time}</CardText>{" "}
               </CardBody>
             </Card>
         

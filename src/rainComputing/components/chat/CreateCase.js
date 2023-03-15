@@ -115,7 +115,6 @@ const CreateCase = ({
     }
     handleFetchingContacts()
   }, [searchText])
-  console.log("currentUser:",currentUser)
 
   return (
     <>

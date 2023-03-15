@@ -1645,7 +1645,7 @@ const ChatRc = () => {
                                   ref={containerRef}
                                   onScroll={event => handleScroll(event)}
                                   style={{
-                                    height: "380px",
+                                    height: "360px",
                                     overflowY: "scroll",
                                   }}
                                 >
