@@ -209,6 +209,7 @@ const ChatRc = () => {
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
+  const [msgDelete, setMsgDelete] = useState()
   const containerRef = useRef(null)
   const [prevHeight, setPrevHeight] = useState(0)
   const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
@@ -248,14 +249,13 @@ const ChatRc = () => {
   }, [visibleMessages?.length])
 
   useEffect(() => {
-    setVisibleMessages(messages.slice(-49)) 
+    setVisibleMessages(messages.slice(-49))
     const timer = setTimeout(() => {
       scrollToBottom()
     }, 1000)
 
     return () => clearTimeout(timer)
   }, [messages])
-
 
   //Toaster settings
   toastr.options = {
@@ -505,7 +505,7 @@ const ChatRc = () => {
         if (msg._id === res.message._id) {
           return {
             ...msg,
-            isPinned: true
+            isPinned: true,
           }
         } else {
           return msg
@@ -515,7 +515,7 @@ const ChatRc = () => {
       setPinnedMsg(res.message)
     }
   }
-  
+
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -537,11 +537,12 @@ const ChatRc = () => {
     setCaseDeleteModalOpen(false)
   }
   //Deleting Last Message
-  const onDeletingMsg = async (msgid, createdAt) => {
+  const onDeletingMsg = async () => {
     const payload = {
-      id: msgid,
+      id: msgDelete?._id,
       deleteIt: true,
-      createdAt: createdAt,
+      createdAt:msgDelete.createdAt
+      
     }
     const res = await deleteLastMsg(payload)
     if (res.success) {
@@ -555,6 +556,10 @@ const ChatRc = () => {
       toastr.error("Unable to delete Message after 1 min", "Failed!!!")
     }
     setMsgDeleteModalOpen(false)
+  }
+  const handleDelete = msg => {
+    setMsgDelete(msg)
+    setMsgDeleteModalOpen(true)
   }
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
@@ -1153,19 +1158,15 @@ const ChatRc = () => {
               cancelText="Cancel"
               onCloseClick={toggleCaseDeleteModal}
             />
-            {messages &&
-              messages?.map((msg, m) => (
-                <DeleteModal
-                  key={m}
-                  show={MsgDeleteModalOpen}
-                  onDeleteClick={() =>
-                    onDeletingMsg(msg._id, msg.createdAt, msg.messageData)
-                  }
-                  confirmText="Yes,Remove"
-                  cancelText="Cancel"
-                  onCloseClick={toggleMsgDeleteModal}
-                />
-              ))}
+
+            <DeleteModal
+              show={MsgDeleteModalOpen}
+              onDeleteClick={onDeletingMsg}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleMsgDeleteModal}
+            />
+
             <MetaTags>
               <title>Chat RC</title>
             </MetaTags>
@@ -1599,9 +1600,7 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           <DropdownItem
                                             href="#"
-                                            onClick={() =>
-                                              setCaseDeleteModalOpen(true)
-                                            }
+                                            onClick={() => onDeletingCase()}
                                           >
                                             Delete case
                                           </DropdownItem>
@@ -1722,9 +1721,7 @@ const ChatRc = () => {
                                                 onClick={() => {
                                                   msg.sender ===
                                                   currentUser.userID
-                                                    ? setMsgDeleteModalOpen(
-                                                        true
-                                                      )
+                                                    ? handleDelete(msg)
                                                     : toastr.info(
                                                         "Unable to  delete other's message"
                                                       )
