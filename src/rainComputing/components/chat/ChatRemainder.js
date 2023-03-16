@@ -86,7 +86,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
     const reminderData = await createReminder(payload);
   
     if (reminderData.success) {
-      console.log("remindata :",reminderData)
+      // console.log("remindata :",reminderData)
       toastr.success("Reminder Create Successfully");
       setModalOpen(false);
     } else {
