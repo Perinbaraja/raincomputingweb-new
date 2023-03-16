@@ -242,12 +242,12 @@ const LandingGrid = () => {
               </>
             )}
           </Container>
-          <div className="py-5">
+          {/* <div className="py-5">
             <iframe
               src="https://webchat.botframework.com/embed/testrainbot-bot?s=8ugnF6uTJL4.-geCgZnAB57pnDg_qR3LdDFbCrZ0cQd4ObBVhmNUaSQ"
               style={{ minWidth: "400px", width: "100px", height: "500px" }}
             ></iframe>
-          </div>
+          </div> */}
         </div>
       </div>
     </React.Fragment>
