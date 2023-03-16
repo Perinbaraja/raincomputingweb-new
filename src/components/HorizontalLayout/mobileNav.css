@@ -52,3 +52,11 @@
  .show.burger-bar{
      background: transparent;
  }
+ 
+ 
+    .flex-container {
+      display: flex;
+      justify-content:space-between;
+      gap: 200px;
+    }
+  

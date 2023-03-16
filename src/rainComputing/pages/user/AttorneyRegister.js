@@ -98,7 +98,7 @@ const AttorneyRegister = () => {
 
   return (
     <React.Fragment>
-      <div className="p-5 m-5">
+      <div className="page-content">
         {updateError && <Alert color="danger">{updateError}</Alert>}
         {updateSuccess && <Alert color="success">{updateSuccess}</Alert>}
         {profileUpdateError && (

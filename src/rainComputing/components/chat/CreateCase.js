@@ -193,9 +193,12 @@ const CreateCase = ({
                     className="btn mx-1 mb-2"
                     onClick={() => handleAddingGroupMembers(contact)}
                   >
-                    <div className="d-flex ">
-                      {contact.firstname} {contact.lastname}
+                    <div className="d-flex justify-content-between ">
+                     <div> {contact.firstname} {contact.lastname}   </div>                
+                     {contact?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+
                     </div>
+
 
                     <div className="font-size-0 text-body ">
                       {contact.email}
@@ -208,8 +211,9 @@ const CreateCase = ({
           <span className="text-muted">Case Members</span>
           <div className="d-flex flex-wrap gap-2 my-2">
             <Button color="success" className="btn mx-1 mb-2">
-              <div className="d-flex ">
-                {currentUser?.firstname} {currentUser?.lastname}
+              <div className="d-flex  ">
+                <div>{currentUser?.firstname} {currentUser?.lastname}</div>
+
               </div>
 
               <div className="font-size-0 text-body ">{currentUser?.email}</div>
@@ -222,8 +226,10 @@ const CreateCase = ({
                   className="btn mx-1 mb-2"
                   onClick={() => handleAddingGroupMembers(member)}
                 >
-                  <div className="d-flex ">
-                    {member?.firstname + " " + member?.lastname}
+                  <div className="d-flex justify-content-between">
+                   <div> {member?.firstname + " " + member?.lastname}</div>
+                    {member?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+
                   </div>
 
                   <div className="font-size-0 text-body ">{member?.email}</div>

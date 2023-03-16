@@ -1,33 +1,70 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import {
-  Card,
-  CardBody,
-  CardImg,
-  CardText,
-  CardTitle,
-  UncontrolledTooltip,
-} from "reactstrap"
+import { Card, CardBody, CardImg, CardText, CardTitle } from "reactstrap"
 import profile from "assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { addAdmin } from "rainComputing/helpers/backend_helper"
+import { addAdmin, removeAdmin } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+import AddModal from "../modals/AddModel"
+import RemoveModal from "../modals/RemoveModel"
 
 const CaseMembers = ({ members, admins, caseId }) => {
   const { currentUser } = useUser()
-
+  const [addAdmins, setAddAdmin] = useState([])
+  const [removeAdmins, setRemoveAdmin] = useState([])
+  const [caseAdmins, setCaseAdmins] = useState(admins)
   toastr.options = {
     progressBar: true,
     closeButton: true,
   }
 
-  const onAddingAdmin = async id => {
+  const onAddingAdmin = async () => {
     const payload = {
       caseId,
-      admin: id,
+      admin: addAdmins,
     }
     const res = await addAdmin(payload)
-    toastr.success(`You has been Added Admin successfully`, "Success")
+    if (res.success) {
+      toastr.success(`You have added an admin successfully`, "Success")
+      setAddAdmin([])
+      setModelOpen(false)
+      setCaseAdmins([...caseAdmins, addAdmins])
+    }
+  }
+
+  const onRemovingAdmin = async () => {
+    const payload = {
+      caseId,
+      admin: removeAdmins,
+    }
+    const res = await removeAdmin(payload)
+    if (res.success) {
+      toastr.success(`You have remove an admin successfully`, "Success")
+      setRemoveAdmin([])
+      setModelOpen1(false)
+      const newAdmins = caseAdmins.filter(admin => admin !== removeAdmins)
+      setCaseAdmins(newAdmins)
+    }
+  }
+  const {
+    toggleOpen: modelOpen,
+    setToggleOpen: setModelOpen,
+    toggleIt: toggleAddModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: modelOpen1,
+    setToggleOpen: setModelOpen1,
+    toggleIt: toggleRemoveModelOpen,
+  } = useToggle(false)
+
+  const handleAdd = () => {
+    onAddingAdmin(addAdmins)
+    setModelOpen(true)
+  }
+  const handleRemove = () => {
+    onRemovingAdmin(removeAdmins)
+    setModelOpen1(true)
   }
   const MembersCard = ({ member }) => (
     <Card className="pointer member-card ">
@@ -57,6 +94,21 @@ const CaseMembers = ({ members, admins, caseId }) => {
 
   return (
     <>
+      <AddModal
+        size="md"
+        open={modelOpen}
+        toggle={toggleAddModelOpen}
+        isClose={true}
+        AddClick={handleAdd}
+        // children={"You want to create an admin?"}
+      />
+      <RemoveModal
+        size="md"
+        open={modelOpen1}
+        toggle={toggleRemoveModelOpen}
+        isClose={true}
+        RemoveClick={handleRemove}
+      />
       <div
         className="mt-5 d-flex gap-5 p-2 custom-scrollbar"
         style={{ overflowX: "auto" }}
@@ -65,27 +117,39 @@ const CaseMembers = ({ members, admins, caseId }) => {
           <div key={m} className="position-relative " style={{ width: 240 }}>
             <MembersCard member={member} />
             {admins?.includes(currentUser?.userID) &&
-              !admins?.includes(member?.id?._id) && (
-                <span
-                  style={{ position: "absolute", top: 10, right: 10 }}
-                  onClick={() => onAddingAdmin(member?.id?._id)}
-                >
-                  <i className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium " id="Admin" />
-                  <UncontrolledTooltip placement="bottom" target={"Admin"}>
-                    Make a Admin
-                  </UncontrolledTooltip>
-                </span>
-              )}
+            !caseAdmins?.includes(member?.id?._id) ? (
+              <span
+                style={{ position: "absolute", top: 10, right: 10 }}
+                onClick={() => {
+                  setAddAdmin(member?.id?._id)
+                  setModelOpen(true)
+                }}
+              >
+                <i
+                  className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium "
+                  id="Admin"
+                />
+              </span>
+            ) : (
+              <>
+                {admins?.includes(currentUser?.userID) &&
+                  caseAdmins?.includes(member?.id?._id) &&
+                  member?.id?._id !== caseAdmins[0] &&
+                  member?.id?._id !== currentUser.userID && (
+                    <span
+                      style={{ position: "absolute", top: 10, right: 10 }}
+                      onClick={() => {
+                        setRemoveAdmin(member?.id?._id)
+                        setModelOpen1(true)
+                      }}
+                    >
+                      <i className="bx bx-minus bg-danger font-size-16 rounded-circle text-white fw-medium " />
+                    </span>
+                  )}
+              </>
+            )}
           </div>
         ))}
-        {/* {admins?.includes(currentUser?.userID) && (
-          <Card
-            className="rounded border border-light d-flex flex-column text-black-50 justify-content-center align-items-center"
-            style={{ minWidth: 240 }}
-          >
-            <i className="mdi mdi-plus-circle-outline mdi-48px pointer" />
-          </Card>
-        )} */}
       </div>
     </>
   )

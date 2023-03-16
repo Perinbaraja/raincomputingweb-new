@@ -142,13 +142,13 @@ const LandingGrid = () => {
           <img src= {banner} alt="banner background"  id="banner"/>
            
       </div> */}
-                <section className="">
+                <section style={{paddingTop:"50px",paddingBottom:"60px"}}>
                   <div className="">
                     <div className="d-flex flex-md-row flex-column" id="">
                       <div id="" className="col-sm-8">
                         <div>
                           <h2 className=" text-primary mb-5 " id="">
-                            About Us <div id=""></div>
+                            About Us <div style={{width:"70px",height:"3px",backgroundColor:"#556ee6",borderRadius:"10px"}}></div>
                           </h2>
                         </div>
                         <p id="">
@@ -177,8 +177,8 @@ const LandingGrid = () => {
                         </p>
                       </div>
 
-                      <div id=""className="flex-fill">
-                        <img 
+                      <div id="" className="flex-fill">
+                        <img
                           src={illustration}
                           alt="about illustration"
                           className="img-fluid"
@@ -189,7 +189,10 @@ const LandingGrid = () => {
                   </div>
                 </section>
 
-                <div className=" d-flex flex-md-row flex-column px-5 " style={{paddingTop:"50px",paddingBottom:"90px"}}>
+                <div
+                  className=" d-flex flex-md-row flex-column px-5 "
+                  style={{ paddingTop: "50px", paddingBottom: "90px" }}
+                >
                   <div id="" className="col-md-6 col-sm-12">
                     {/* <h2 >Contact Us </h2>
                            <div id="contactline"></div> */}
@@ -239,7 +242,12 @@ const LandingGrid = () => {
               </>
             )}
           </Container>
-          <ChatBot />
+          {/* <div className="py-5">
+            <iframe
+              src="https://webchat.botframework.com/embed/testrainbot-bot?s=8ugnF6uTJL4.-geCgZnAB57pnDg_qR3LdDFbCrZ0cQd4ObBVhmNUaSQ"
+              style={{ minWidth: "400px", width: "100px", height: "500px" }}
+            ></iframe>
+          </div> */}
         </div>
       </div>
     </React.Fragment>

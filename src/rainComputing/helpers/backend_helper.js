@@ -52,7 +52,8 @@ const removeFirmMember = payload =>
 
 const verifyUserEmail = payload => post(`${BASE_URL}/user/verifyEmail`, payload)
 
-const updatePassword = payload => put(`${BASE_URL}/user/changepassword`, payload)
+const updatePassword = payload =>
+  put(`${BASE_URL}/user/changepassword`, payload)
 
 const setForgettingPassword = payload =>
   post(`${BASE_URL}/user/verifyForgetPassword`, payload)
@@ -113,6 +114,7 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
+const removeAdmin = payload => post(`${BASE_URL}/case/removeAdmin`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 const sentEmail = payload => post(`${BASE_URL}/message/mailChat`, payload)
@@ -137,6 +139,13 @@ const appointmentUserStatus = payload =>
 
 const getPaymentId = payload =>
   post(`${BASE_URL}/payment/getPaymentId`, payload)
+
+const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
+
+const getReminder = payload => post(`${BASE_URL}/remainder/getreminder`, payload)
+const getReminderSelf = payload => post(`${BASE_URL}/remainder/getreminderself`, payload)
+const removeReminder = payload => put(`${BASE_URL}/remainder/removeReminder`, payload)
+
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -149,6 +158,7 @@ export {
   userUpdate,
   findMe,
   logoutUser,
+  removeReminder,
   registerAttorney,
   getAttorneyByUserID,
   getFirmsByAttorneyID,
@@ -185,6 +195,7 @@ export {
   allCasesData,
   removeUser,
   addAdmin,
+  removeAdmin,
   removeAttorney,
   allReqAttorneyList,
   attorneyStatusUpdate,
@@ -208,4 +219,7 @@ export {
   userNotes,
   updatePassword,
   attorneyInvite,
+  createReminder,
+  getReminder,
+  getReminderSelf
 }

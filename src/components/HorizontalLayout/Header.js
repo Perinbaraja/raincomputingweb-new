@@ -23,23 +23,28 @@ import { withTranslation } from "react-i18next"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import useMediaQuery from "rainComputing/helpers/hooks/useMediaQuery"
 import MobileNav from "./MobileNav"
+import Reminder from "rainComputing/pages/reminder"
 
 const Header = props => {
   const { currentAttorney } = useUser()
   const { currentUser } = useUser()
   const [isMobile]=useMediaQuery("764")
+  const [modal_scroll, setmodal_scroll] = useState(false)
 
+  const tog_scroll = () => {
+    setmodal_scroll(!modal_scroll)
+  }
   return (
     <React.Fragment>
       <header id="page-topbar">
-        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  px-md-5">
+        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  ">
            <div className="d-flex ">
             <div className="navbar-brand-box">
               <Link to="/" className="logo logo-dark">
                 <span className="logo-lg">
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
-              </Link>
+              </Link> 
 
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
@@ -77,8 +82,11 @@ const Header = props => {
                 )}
               </ul>
             </div>
-             <div className="d-flex align-items-center">
+             <div className="d-flex align-items-center gap-2">
              {currentUser && <NotificationDropdown />}
+             {currentUser&&
+             <Reminder toggle={tog_scroll} open ={modal_scroll} setOpen={setmodal_scroll} />
+              }
              <ProfileMenu  />
            </div></>
             

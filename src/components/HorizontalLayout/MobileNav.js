@@ -5,22 +5,24 @@ import { Link, NavLink } from "react-router-dom"
 import "../HorizontalLayout/mobileNav.css"
 import rainlglogo from "assets/images/raincom_Logo1.png"
 import NotificationDropdown from "components/CommonForBoth/TopbarDropdown/NotificationDropdown"
+import Reminders from "rainComputing/pages/reminder"
 
 const MobileNav = () => {
   const [isMobile, setIsMobile] = useState(false)
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ")
   }
+  const [modal_scroll, setmodal_scroll] = useState(false)
+
   const { currentAttorney } = useUser()
   const { currentUser } = useUser()
+  const tog_scroll = () => {
+    setmodal_scroll(!modal_scroll)
+  }
   return (
     <div>
       {isMobile && (
-        <ul
-          id=""
-          className=" ul  "
-          style={{ zIndex: 300 }}
-        >
+        <ul id="" className=" ul  " style={{ zIndex: 300 }}>
           <li id="" className="">
             <Link to="/">Home</Link>
           </li>
@@ -44,9 +46,14 @@ const MobileNav = () => {
           )}
         </ul>
       )}
-      <div className="d-flex justify-content-between item-center px-2" style={{gap: "200px "}}>
-        <div className="flex justify-content-start ">
-          <button  onClick={() => setIsMobile(!isMobile)} className="border-0 bg-transparent">
+      <div
+        className=" flex-container "
+      >
+        <div className="  ">
+          <button
+            onClick={() => setIsMobile(!isMobile)}
+            className="border-0 bg-transparent"
+          >
             {isMobile ? (
               <div className="burger-bar show "></div>
             ) : (
@@ -59,13 +66,26 @@ const MobileNav = () => {
             </span>
           </Link>{" "}
         </div>
-       <div> {currentUser && <NotificationDropdown />}
-             <ProfileMenu  /></div>
+        <div className="d-flex  ">
+          <div> {currentUser && <NotificationDropdown />}</div>
+          <div className="mt-3 p-1">
+            {" "}
+            {currentUser && (
+              <Reminders
+                toggle={tog_scroll}
+                open={modal_scroll}
+                setOpen={setmodal_scroll}
+              />
+            )}
+          </div>
+          <div>
+            {" "}
+            <ProfileMenu />
+          </div>{" "}
+        </div>
       </div>
-      
     </div>
   )
 }
-
 
 export default MobileNav

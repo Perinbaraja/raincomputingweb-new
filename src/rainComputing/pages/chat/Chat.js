@@ -84,6 +84,7 @@ import { useDropzone } from "react-dropzone"
 import copy from "copy-to-clipboard"
 import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
+import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -106,6 +107,11 @@ const ChatRc = () => {
     toggleOpen: newCaseModelOpen,
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: remainderModelOpen,
+    setToggleOpen: setRemainderModelOpen,
+    toggleIt: toggleremainderModelOpen,
   } = useToggle(false)
   const {
     toggleOpen: subGroupModelOpen,
@@ -167,6 +173,9 @@ const ChatRc = () => {
     setToggleOpen: setReplyMsgModalOpen,
     toggleIt: toggleReplyMessageModal,
   } = useToggle(false)
+
+  const MESSAGE_CHUNK_SIZE = 50
+
   const [isChatScroll, setIsChatScroll] = useState(false)
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
@@ -193,12 +202,61 @@ const ChatRc = () => {
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
+  const [curReminderMessageId, setCurReminderMessageId] = useState(null)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
   const [email, setEmail] = useState("")
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
+  const [msgDelete, setMsgDelete] = useState()
+  const containerRef = useRef(null)
+  const [prevHeight, setPrevHeight] = useState(0)
+  const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
+  const handleScroll = event => {
+    if (event && event.currentTarget) {
+      const { scrollTop, clientHeight, scrollHeight } = event.currentTarget
+      if (scrollTop === 0) {
+        setPrevHeight(scrollHeight)
+        setVisibleMessages([
+          ...messages.slice(-(visibleMessages?.length + MESSAGE_CHUNK_SIZE)),
+        ])
+
+        if (visibleMessages?.length < messages?.length) {
+          event.currentTarget.scrollTop = clientHeight
+        } else if (scrollTop + clientHeight === scrollHeight) {
+          // User has scrolled to the bottom, scroll to bottom automatically
+          event.currentTarget.scrollTop = scrollHeight
+        }
+      }
+    }
+  }
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      left: 0,
+      top: containerRef.current.scrollHeight + 1000,
+      behavior: "smooth",
+    })
+  }
+
+  useEffect(() => {
+    const timer2 = setTimeout(() => {
+      const tempHeight = containerRef?.current?.scrollHeight - prevHeight
+      containerRef?.current?.scrollTo({ top: tempHeight, behavior: "smooth" })
+    }, 2000)
+
+    return () => clearTimeout(timer2)
+  }, [visibleMessages?.length])
+
+  useEffect(() => {
+    setVisibleMessages(messages.slice(-49))
+    const timer = setTimeout(() => {
+      scrollToBottom()
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [messages])
+
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -208,18 +266,18 @@ const ChatRc = () => {
   //Handle Body Scrolling
   isChatScroll ? disableBodyScroll(document) : enableBodyScroll(document)
 
-  const depMessages=messages?.slice()
-  
-  //Scroll to messages bottom on load & message arrives
-  
-  useEffect(() => {
-    const timer = setTimeout(()=> {if (!isEmpty(messages)) {
-        scrollToBottom()
-      }
-    },500)
-    return ()=> clearTimeout(timer)
-  }, [depMessages])
+  // const depMessages = visibleMessages?.slice()
 
+  // //Scroll to messages bottom on load & message arrives
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (!isEmpty(visibleMessages)) {
+  //       scrollToBottom()
+  //     }
+  //   }, 500)
+  //   return () => clearTimeout(timer)
+  // }, [depMessages])
 
   //Toggle Active tab in chat-left-side
   const toggleTab = tab => {
@@ -443,9 +501,21 @@ const ChatRc = () => {
     const payload = { Id: msgid }
     const res = await pinMessage(payload)
     if (res.success) {
+      const updatedMessages = messages.map(msg => {
+        if (msg._id === res.message._id) {
+          return {
+            ...msg,
+            isPinned: true,
+          }
+        } else {
+          return msg
+        }
+      })
+      setMessages(updatedMessages)
       setPinnedMsg(res.message)
     }
   }
+
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -467,11 +537,12 @@ const ChatRc = () => {
     setCaseDeleteModalOpen(false)
   }
   //Deleting Last Message
-  const onDeletingMsg = async (msgid, createdAt) => {
+  const onDeletingMsg = async () => {
     const payload = {
-      id: msgid,
+      id: msgDelete?._id,
       deleteIt: true,
-      createdAt: createdAt,
+      createdAt:msgDelete.createdAt
+      
     }
     const res = await deleteLastMsg(payload)
     if (res.success) {
@@ -485,6 +556,10 @@ const ChatRc = () => {
       toastr.error("Unable to delete Message after 1 min", "Failed!!!")
     }
     setMsgDeleteModalOpen(false)
+  }
+  const handleDelete = msg => {
+    setMsgDelete(msg)
+    setMsgDeleteModalOpen(true)
   }
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
@@ -589,12 +664,16 @@ const ChatRc = () => {
   }
 
   //Scrolling to bottom of message
-  const scrollToBottom = () => {
-    if (messageBox) {
-      messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
-    }
-  }
-
+  // const scrollToBottom = () => {
+  //   if (messageBox) {
+  //     messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
+  //   }
+  // }
+  // useEffect(()=>{
+  //   if(containerRef.current){
+  //     containerRef.current.scrollTop = containerRef.current.scrollHeight;
+  //   }
+  // },[messages])
   useEffect(() => {
     if (messageBox) {
       messageBox.scrollTop = messageBox.scrollHeight
@@ -737,7 +816,7 @@ const ChatRc = () => {
   useEffect(() => {
     if (searchMessageText) {
       setSearchedMessages(
-        messages?.filter(m =>
+        visibleMessages?.filter(m =>
           m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
         )
       )
@@ -988,6 +1067,21 @@ const ChatRc = () => {
                 </div>
               </div>
             </Modal>
+            {/* Model for Remainder*/}
+            <DynamicModel
+              open={remainderModelOpen}
+              toggle={toggleremainderModelOpen}
+              size="md"
+              modalTitle="NEW REMINDER"
+              footer={false}
+            >
+              <DynamicSuspense>
+                <ChatRemainder
+                  setModalOpen={setRemainderModelOpen}
+                  curMessageId={curReminderMessageId?._id}
+                />
+              </DynamicSuspense>
+            </DynamicModel>
             {/* Model for creating case*/}
             <DynamicModel
               open={newCaseModelOpen}
@@ -1064,19 +1158,15 @@ const ChatRc = () => {
               cancelText="Cancel"
               onCloseClick={toggleCaseDeleteModal}
             />
-            {messages &&
-              messages?.map((msg, m) => (
-                <DeleteModal
-                  key={m}
-                  show={MsgDeleteModalOpen}
-                  onDeleteClick={() =>
-                    onDeletingMsg(msg._id, msg.createdAt, msg.messageData)
-                  }
-                  confirmText="Yes,Remove"
-                  cancelText="Cancel"
-                  onCloseClick={toggleMsgDeleteModal}
-                />
-              ))}
+
+            <DeleteModal
+              show={MsgDeleteModalOpen}
+              onDeleteClick={onDeletingMsg}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleMsgDeleteModal}
+            />
+
             <MetaTags>
               <title>Chat RC</title>
             </MetaTags>
@@ -1299,7 +1389,7 @@ const ChatRc = () => {
                     </TabContent>
                   </div>
                 </Col>
-                <Col xs="12" lg="8" className="align-self-center" >
+                <Col xs="12" lg="8" className="align-self-center">
                   <div className="w-100 ">
                     {currentChat ? (
                       chatLoader ? (
@@ -1423,28 +1513,25 @@ const ChatRc = () => {
                                         ) : (
                                           ""
                                         )}
-                                            <InputGroup>
-                                              <Input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Search ..."
-                                                aria-label="Recipient's username"
-                                                value={searchMessageText}
-                                                onChange={e =>
-                                                  setSearchMessagesText(
-                                                    e.target.value
-                                                  )
-                                                }
-                                              />
-                                              {/* <InputGroupAddon addonType="append"> */}
-                                              <Button
-                                                color="primary"
-                                                type="submit"
-                                              >
-                                                <i className="mdi mdi-magnify" />
-                                              </Button>
-                                              {/* </InputGroupAddon> */}
-                                            </InputGroup>
+                                        <InputGroup>
+                                          <Input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Search ..."
+                                            aria-label="Recipient's username"
+                                            value={searchMessageText}
+                                            onChange={e =>
+                                              setSearchMessagesText(
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          {/* <InputGroupAddon addonType="append"> */}
+                                          <Button color="primary" type="submit">
+                                            <i className="mdi mdi-magnify" />
+                                          </Button>
+                                          {/* </InputGroupAddon> */}
+                                        </InputGroup>
                                       </DropdownMenu>
                                     </Dropdown>
                                   </li>
@@ -1473,18 +1560,18 @@ const ChatRc = () => {
                                         currentChat?.admins?.includes(
                                           currentUser?.userID
                                         ) && (
-                                        <div className="conversation-name">
-                                          <DropdownToggle
-                                          className="btn nav-btn"
-                                          tag="i"
-                                        >
-                                          <div>
-                                            <i className="bx bx-cog" />
+                                          <div className="conversation-name">
+                                            <DropdownToggle
+                                              className="btn nav-btn"
+                                              tag="i"
+                                            >
+                                              <div>
+                                                <i className="bx bx-cog" />
+                                              </div>
+                                            </DropdownToggle>
                                           </div>
-                                        </DropdownToggle>
-                                        </div>
-                                      ))}
-                                      
+                                        )
+                                      )}
                                       {currentCase?.admins?.includes(
                                         currentUser?.userID
                                       ) ? (
@@ -1513,9 +1600,7 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           <DropdownItem
                                             href="#"
-                                            onClick={() =>
-                                              setCaseDeleteModalOpen(true)
-                                            }
+                                            onClick={() => onDeletingCase()}
                                           >
                                             Delete case
                                           </DropdownItem>
@@ -1555,12 +1640,16 @@ const ChatRc = () => {
                           <div>
                             <div className="chat-conversation p-5">
                               <ul className="list-unstyled">
-                                <PerfectScrollbar
-                                  style={{ height: "380px" }}
-                                  containerRef={ref => setMessageBox(ref)}
+                                <div
+                                  ref={containerRef}
+                                  onScroll={event => handleScroll(event)}
+                                  style={{
+                                    height: "360px",
+                                    overflowY: "scroll",
+                                  }}
                                 >
                                   {messages &&
-                                    messages.map((msg, m) => (
+                                    visibleMessages.map((msg, m) => (
                                       <li
                                         key={"test_k" + m}
                                         className={
@@ -1621,11 +1710,18 @@ const ChatRc = () => {
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
+                                                  setCurReminderMessageId(msg)
+                                                  setRemainderModelOpen(true)
+                                                }}
+                                              >
+                                                Reminder
+                                              </DropdownItem>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
                                                   msg.sender ===
                                                   currentUser.userID
-                                                    ? setMsgDeleteModalOpen(
-                                                        true
-                                                      )
+                                                    ? handleDelete(msg)
                                                     : toastr.info(
                                                         "Unable to  delete other's message"
                                                       )
@@ -1779,7 +1875,7 @@ const ChatRc = () => {
                                         </div>
                                       </li>
                                     ))}
-                                </PerfectScrollbar>
+                                </div>
                               </ul>
                             </div>
                             {currentChat?.isGroup && (

@@ -152,7 +152,7 @@ const PaymentVia = () => {
   }
   return (
     <React.Fragment>
-      <div className="p-5 m-5">
+      <div className="page-content">
         <Container fluid>
           <>
             <Breadcrumb title="Rain" breadcrumbItem="User Payment Details" />

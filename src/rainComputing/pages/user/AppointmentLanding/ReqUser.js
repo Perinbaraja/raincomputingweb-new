@@ -26,7 +26,7 @@ const RequestUser = () => {
     closeButton: true,
   }
   const [appointmentReq, setAppointmentReq] = useState([])
-  const [refetch,setRefetch]=useState(false)
+  const [refetch, setRefetch] = useState(false)
   const handleFileDownload = async ({ id, filename }) => {
     getFileFromGFS(
       { id },
@@ -47,7 +47,7 @@ const RequestUser = () => {
     })
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
-    } 
+    }
   }
   const handleAppointmentAccept = async ({ id }) => {
     const payload = {
@@ -89,12 +89,21 @@ const RequestUser = () => {
         cancelText="Cancel"
         onCloseClick={toggleModal}
       />
+
       <div className="page-content">
         <Container fluid>
           <>
             <Link to="/">
-              <Breadcrumb title="Rain" breadcrumbItem="Request User" />
+              <button
+                className="border-0 mb-2 "
+                style={{ backgroundColor: "#f6f6f6" }}
+              >
+                Home /{" "}
+              </button>{" "}
             </Link>
+          </>
+          <>
+            {" "}
             {appointmentReq && appointmentReq.length > 0 ? (
               <Row>
                 <Col lg="12">
@@ -199,7 +208,7 @@ const RequestUser = () => {
                           </Card>
                         )
                     )}
-                  <ReqUserAppointmentDetails refetch = {refetch}/>
+                  <ReqUserAppointmentDetails refetch={refetch} />
                 </Col>
               </Row>
             ) : (
