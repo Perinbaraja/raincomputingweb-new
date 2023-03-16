@@ -6,13 +6,14 @@ import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-
+import moment from "moment"
 const ChatRemainder = ({ setModalOpen, curMessageId }) => {
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
+  const [scheduledTime, setScheduledTime] = useState("")
   const [selectedMembers, setSelectedMembers] = useState([])
 
   const [userId, setUserId] = useState(null)
@@ -45,28 +46,55 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
   const handlereminderCancel = () => {
     setModalOpen(false)
   }
+  // const handleReminderCreate = async () => {
+  //   const payload = {
+  //     groupId: currentChat?._id,
+  //     selectedMembers: [currentUser?.userID, ...selectedMembers],
+  //     messageId: curMessageId,
+  //     title: title,
+  //     date: date,
+  //     time: time,
+  //   }
+  //   if (isChecked) {
+  //     payload.userId = currentUser?.userID
+  //   }
+  //   const reminderData = await createReminder(payload)
+  //   if (reminderData.success) {
+  //     console.log("remindata :",reminderData)
+  //     toastr.success("Reminder Create Successfully")
+  //     setModalOpen(false)
+  //   } else {
+  //     toastr.error(`${reminderData?.msg}`)
+  //     setModalOpen(false)
+  //   }
+  // }
   const handleReminderCreate = async () => {
+    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString();
+  
     const payload = {
       groupId: currentChat?._id,
       selectedMembers: [currentUser?.userID, ...selectedMembers],
       messageId: curMessageId,
       title: title,
-      date: date,
-      time: time,
-    }
+      scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
+    };
+  
     if (isChecked) {
-      payload.userId = currentUser?.userID
+      payload.userId = currentUser?.userID;
     }
-    const reminderData = await createReminder(payload)
+  
+    const reminderData = await createReminder(payload);
+  
     if (reminderData.success) {
       console.log("remindata :",reminderData)
-      toastr.success("Reminder Create Successfully")
-      setModalOpen(false)
+      toastr.success("Reminder Create Successfully");
+      setModalOpen(false);
     } else {
-      toastr.error(`${reminderData?.msg}`)
-      setModalOpen(false)
+      toastr.error(`${reminderData?.msg}`);
+      setModalOpen(false);
     }
-  }
+  };
+  
   const getMemberName = id => {
     const memberName = currentChat?. groupMembers?.find(member => member?.id?._id === id)
     if (memberName)

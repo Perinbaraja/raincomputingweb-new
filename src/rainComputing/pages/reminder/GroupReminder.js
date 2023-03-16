@@ -8,12 +8,12 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DeleteModal from "components/Common/DeleteModal"
+import moment from "moment"
 
 const GroupReminder = () => {
   const [groupReminder, setGoupReminder] = useState()
   const { currentUser } = useUser()
   const [removeData, setRemoveData] = useState()
-
   const {
     toggleOpen: groupReminderDeleteModalOpen,
     setToggleOpen: setReminderDeleteModalOpen,
@@ -24,12 +24,42 @@ const GroupReminder = () => {
       const getReminderData = async () => {
         const res = await getReminder({ currentUserID: currentUser?.userID })
         if (res.success) {
-          setGoupReminder(res?.reminders)
+          const reminders = res?.reminders.filter(reminder => {
+            return reminder.selectedMembers.some(
+              member => member.id === currentUser?.userID
+            )
+          })
+          // Schedule the reminders
+          reminders.forEach(reminder => {
+            const scheduledTime = reminder?.scheduledTime
+            const notificationTime = moment(scheduledTime, moment.ISO_8601)
+              .subtract(5, "hours")
+              .subtract(30, "minutes")
+              .toDate()
+            console.log(
+              `Scheduling reminder for ${reminder.title} at ${notificationTime}`
+            )
+
+            // Schedule the notification to show when the notification time is reached
+            const now = new Date().getTime()
+            const timeDiff = notificationTime.getTime() - now
+            if (timeDiff > 0) {
+              setTimeout(() => {
+                // Display the notification here
+                toastr.success(
+                  `You have ${reminder.title} successfully`,
+                  "Success"
+                )
+                console.log(`Showing notification for ${reminder.title}`)
+              }, timeDiff)
+            }
+          })
         }
       }
       getReminderData()
     }
   }, [currentUser])
+
   const handleRemove = async () => {
     const payload = {
       reminderId: removeData?._id,
@@ -47,6 +77,7 @@ const GroupReminder = () => {
     setRemoveData(groupRemind)
     setReminderDeleteModalOpen(true)
   }
+
   return (
     <div className="modal-body">
       <DeleteModal

@@ -234,7 +234,7 @@ const ChatRc = () => {
   const scrollToBottom = () => {
     containerRef.current?.scrollTo({
       left: 0,
-      top: containerRef.current.scrollHeight + 800,
+      top: containerRef.current.scrollHeight + 1000,
       behavior: "smooth",
     })
   }
