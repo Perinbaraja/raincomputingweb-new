@@ -48,7 +48,7 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
               Group Reminder
             </NavLink>
           </NavItem>
-          <NavItem>
+          {/* <NavItem>
             <NavLink
               className={activeTab === "self" ? "active " : ""}
               onClick={() => {
@@ -57,15 +57,15 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
             >
               Self Reminder
             </NavLink>
-          </NavItem>
+          </NavItem> */}
         </Nav>
         <TabContent activeTab={activeTab} className="modal-body">
           <TabPane tabId="group">
             <GroupReminder />
           </TabPane>
-          <TabPane tabId="self">
+          {/* <TabPane tabId="self">
             <SelfReminder />
-          </TabPane>
+          </TabPane> */}
         </TabContent>
       </Modal>
     </div>

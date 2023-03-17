@@ -120,12 +120,12 @@ const GroupReminder = () => {
                   </CardText>
                   <CardText className="text-primary">
                     {" "}
-                    Date :{groupRemind?.date}
+                    Date & Time:{groupRemind?.scheduledTime}
                   </CardText>
-                  <CardText className="text-primary">
+                  {/* <CardText className="text-primary">
                     {" "}
                     Time :{groupRemind?.time}
-                  </CardText>{" "}
+                  </CardText>{" "} */}
                 </CardBody>
               </Card>
             </div>
