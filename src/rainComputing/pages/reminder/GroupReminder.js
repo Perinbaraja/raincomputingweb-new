@@ -11,7 +11,8 @@ import DeleteModal from "components/Common/DeleteModal"
 import moment from "moment"
 
 const GroupReminder = () => {
-  const [groupReminder, setGoupReminder] = useState()
+  const [groupReminder, setGoupReminder] = useState([])
+  const [reminderReceived, setReminderReceived] = useState(false);
   const { currentUser } = useUser()
   const [removeData, setRemoveData] = useState()
   const {
@@ -20,45 +21,50 @@ const GroupReminder = () => {
     toggleIt: togglegroupReminderDeleteModal,
   } = useToggle(false)
   useEffect(() => {
-    if (currentUser) {
-      const getReminderData = async () => {
-        const res = await getReminder({ currentUserID: currentUser?.userID })
+    const getReminderData = async () => {
+      if (currentUser) {
+        const res = await getReminder({ currentUserID: currentUser?.userID });
         if (res.success) {
-          const reminders = res?.reminders.filter(reminder => {
+          const reminders = res?.reminders.filter((reminder) => {
             return reminder.selectedMembers.some(
-              member => member.id === currentUser?.userID
-            )
-          })
+              (member) => member.id === currentUser?.userID
+            );
+          });
           // Schedule the reminders
-          reminders.forEach(reminder => {
-            const scheduledTime = reminder?.scheduledTime
+          reminders.forEach((reminder) => {
+            const scheduledTime = reminder?.scheduledTime;
             const notificationTime = moment(scheduledTime, moment.ISO_8601)
               .subtract(5, "hours")
               .subtract(30, "minutes")
-              .toDate()
-            // console.log(
-            //   `Scheduling reminder for ${reminder.title} at ${notificationTime}`
-            // )
-
+              .toDate();
+            console.log(
+              `Scheduling reminder for ${reminder.title} at ${notificationTime}`
+            );
+  
             // Schedule the notification to show when the notification time is reached
-            const now = new Date().getTime()
-            const timeDiff = notificationTime.getTime() - now
+            const now = new Date().getTime();
+            const timeDiff = notificationTime.getTime() - now;
             if (timeDiff > 0) {
+              // Set a timeout for the notification to be received
               setTimeout(() => {
+                setGoupReminder((prevState) => [...prevState, reminder]);
+                setReminderReceived(true);
                 // Display the notification here
                 toastr.success(
                   `You have ${reminder.title} successfully`,
                   "Success"
-                )
+                );
                 // console.log(`Showing notification for ${reminder.title}`)
-              }, timeDiff)
-              setGoupReminder(res?.reminders)
+              }, timeDiff);
+            } else {
+              // If the time for the notification has already passed, set the reminder as received
+              setGoupReminder((prevState) => [...prevState, reminder]);
             }
-          })
+          });
         }
       }
-      getReminderData()
-    }
+    };
+    getReminderData();
   }, [currentUser])
 
   const handleRemove = async () => {
@@ -78,16 +84,7 @@ const GroupReminder = () => {
     setRemoveData(groupRemind)
     setReminderDeleteModalOpen(true)
   }
-  const map = groupReminder?.map((groupRemind, k) =>{
-  const scheduledTime = groupRemind?.scheduledTime
-  const notificationTime = moment(scheduledTime, moment.ISO_8601).toDate();
-  const now = new Date().getTime()
-  const wow = notificationTime.getTime() - now
-  
 
-  return wow >= 0 && wow <=1 
-  })
-  // console.log("map:", map )
   return (
     <div className="modal-body">
       <DeleteModal
@@ -100,50 +97,39 @@ const GroupReminder = () => {
       {groupReminder?.length > 0 ? (
         <>
           {" "}
-          {groupReminder?.map((groupRemind, k) => {
-  const now = new Date().getTime();
-  const scheduledTime = groupRemind?.scheduledTime;
-  const notificationTime = moment(scheduledTime, moment.ISO_8601).toDate().getTime();
-  const timeDiff = notificationTime - now;
-
-  if (timeDiff >= 0  ) {
-    // groupRemind.scheduledTime is equal or greater than current time
-    // execute your code here
-    return (
-      <div key={k}>
-        <Card>
-          <CardBody>
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close"
-              style={{ width: "20px" }}
-              onClick={() => handleDelete(groupRemind)}
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <CardTitle className="mt-0">
-              Title: {groupRemind?.title}
-            </CardTitle>
-            <CardText>
-              Message Data: {groupRemind?.messageId?.messageData}
-            </CardText>
-            <CardText className="text-primary">
-              Date: {groupRemind?.date}
-            </CardText>
-            <CardText className="text-primary">
-              Time: {groupRemind?.time}
-            </CardText>
-          </CardBody>
-        </Card>
-      </div>
-    );
-  } else {
-    // groupRemind.scheduledTime is in the past, skip this group reminder
-    return null;
-  }
-})}
+          {groupReminder?.map((groupRemind, k) => (
+            <div key={k}>
+              <Card>
+                <CardBody>
+                  <button
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                    style={{ width: "20px" }}
+                    onClick={() => handleDelete(groupRemind)}
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <CardTitle className="mt-0">
+                    Title :{groupRemind?.title}
+                  </CardTitle>
+                  <CardText>
+                    {" "}
+                    Message Data :{groupRemind?.messageId?.messageData}
+                  </CardText>
+                  <CardText className="text-primary">
+                    {" "}
+                    Date & Time:{groupRemind?.scheduledTime}
+                  </CardText>
+                  {/* <CardText className="text-primary">
+                    {" "}
+                    Time :{groupRemind?.time}
+                  </CardText>{" "} */}
+                </CardBody>
+              </Card>
+            </div>
+          ))}
         </>
       ) : (
         <p>No Reminders</p>

@@ -160,7 +160,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
       <Row className="my-md-3">
         <div className=" d-flex pt-2">
           <div className="form-check pl-4">
-            <input
+            {/* <input
               className="form-check-input "
               type="checkbox"
               id="flexCheckDefault"
@@ -170,7 +170,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
             />
             <label className="form-check-label ms-2" htmlFor="flexCheckDefault">
               ** Keep it as a reminder for yourself
-            </label>
+            </label> */}
 
             <Row>
               <Col xs={6} className="px-3 border-end border-info">
