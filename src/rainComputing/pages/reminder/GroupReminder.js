@@ -9,10 +9,11 @@ import toastr from "toastr"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DeleteModal from "components/Common/DeleteModal"
 import moment from "moment"
+import PropTypes from "prop-types"
 
-const GroupReminder = () => {
-  const [groupReminder, setGoupReminder] = useState([])
+const GroupReminder = ({groupReminder,setGoupReminder}) => {
   const [reminderReceived, setReminderReceived] = useState(false);
+  
   const { currentUser } = useUser()
   const [removeData, setRemoveData] = useState()
   const {
@@ -20,52 +21,58 @@ const GroupReminder = () => {
     setToggleOpen: setReminderDeleteModalOpen,
     toggleIt: togglegroupReminderDeleteModal,
   } = useToggle(false)
-  useEffect(() => {
-    const getReminderData = async () => {
-      if (currentUser) {
-        const res = await getReminder({ currentUserID: currentUser?.userID });
-        if (res.success) {
-          const reminders = res?.reminders.filter((reminder) => {
-            return reminder.selectedMembers.some(
-              (member) => member.id === currentUser?.userID
-            );
-          });
-          // Schedule the reminders
-          reminders.forEach((reminder) => {
-            const scheduledTime = reminder?.scheduledTime;
-            const notificationTime = moment(scheduledTime, moment.ISO_8601)
-              .subtract(5, "hours")
-              .subtract(30, "minutes")
-              .toDate();
-            console.log(
-              `Scheduling reminder for ${reminder.title} at ${notificationTime}`
-            );
+  // useEffect(() => {
+  //   const getReminderData = async () => {
+  //     if (currentUser) {
+  //       const res = await getReminder({ currentUserID: currentUser?.userID });
+  //       if (res.success) {
+  //         const reminders = res?.reminders.filter((reminder) => {
+  //           return reminder.selectedMembers.some(
+  //             (member) => member.id === currentUser?.userID
+  //           );
+  //         });
+  //         // Schedule the reminders
+  //         reminders.forEach((reminder) => {
+  //           const scheduledTime = reminder?.scheduledTime;
+  //           const notificationTime = moment(scheduledTime, moment.ISO_8601)
+  //             .subtract(5, "hours")
+  //             .subtract(30, "minutes")
+  //             .toDate();
+  //           console.log(
+  //             `Scheduling reminder for ${reminder.title} at ${notificationTime}`
+  //           );
   
-            // Schedule the notification to show when the notification time is reached
-            const now = new Date().getTime();
-            const timeDiff = notificationTime.getTime() - now;
-            if (timeDiff > 0) {
-              // Set a timeout for the notification to be received
-              setTimeout(() => {
-                setGoupReminder((prevState) => [...prevState, reminder]);
-                setReminderReceived(true);
-                // Display the notification here
-                toastr.success(
-                  `You have ${reminder.title} successfully`,
-                  "Success"
-                );
-                // console.log(`Showing notification for ${reminder.title}`)
-              }, timeDiff);
-            } else {
-              // If the time for the notification has already passed, set the reminder as received
-              setGoupReminder((prevState) => [...prevState, reminder]);
-            }
-          });
-        }
-      }
-    };
-    getReminderData();
-  }, [currentUser])
+  //           // Schedule the notification to show when the notification time is reached
+  //           const now = new Date().getTime();
+  //           const timeDiff = notificationTime.getTime() - now;
+  //           if (timeDiff > 0) {
+  //             // Set a timeout for the notification to be received
+  //             setTimeout(() => {
+  //               setGoupReminder((prevState) => [...prevState, reminder]);
+  //               setReminderReceived(true);
+  //               // Display the notification here
+  //               toastr.success(
+  //                 `You have ${reminder.title} successfully`,
+  //                 "Success"
+  //               );
+  //               // console.log(`Showing notification for ${reminder.title}`)
+  //             }, timeDiff);
+  //           } else {
+  //             // If the time for the notification has already passed, set the reminder as received
+  //             setGoupReminder((prevState) => [...prevState, reminder]);
+  //           }
+  //         });
+  //       }
+  //     }
+  //   };
+  //   getReminderData();
+  //   const interval = setInterval(() => {
+  //     getReminderData();
+  //   }, 60 * 1000); // Call the function every minute
+  
+  //   // Clean up the interval when the component unmounts
+  //   return () => clearInterval(interval);
+  // }, [currentUser])
 
   const handleRemove = async () => {
     const payload = {
@@ -138,4 +145,12 @@ const GroupReminder = () => {
   )
 }
 
+GroupReminder.propTypes = {
+  open: PropTypes.bool,
+  toggle: PropTypes.func,
+  setOpen: PropTypes.func,
+  show: PropTypes.fun,
+  groupReminder: PropTypes.any,
+  setGoupReminder: PropTypes.any,
+}
 export default GroupReminder
