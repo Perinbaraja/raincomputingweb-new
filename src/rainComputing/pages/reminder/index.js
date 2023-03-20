@@ -11,8 +11,6 @@ import toastr from "toastr"
 const Reminders = ({ toggle, open, setOpen, show = false }) => {
   const [activeTab, setActiveTab] = useState("group")
   const [groupReminder, setGoupReminder] = useState([])
-  const [reminderReceived, setReminderReceived] = useState(false)
-  const [hasUserSetReminder, setHasUserSetReminder] = useState(false)
   const { currentUser } = useUser()
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab)
@@ -43,7 +41,6 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
               // Set a timeout for the notification to be received
               setTimeout(() => {
                 setGoupReminder(prevState => [...prevState, reminder])
-                setReminderReceived(true)
 
                 // Display the notification here
                 toastr.success(

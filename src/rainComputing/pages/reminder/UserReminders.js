@@ -91,16 +91,22 @@ const UserReminders = () => {
                       >
                         {" "}
                         <CardBody>
-                          <button
-                            type="button"
-                            className="close"
-                            data-dismiss="modal"
-                            aria-label="Close"
-                            style={{ width: "20px" }}
-                            onClick={() => handleDelete(reminders)}
-                          >
-                            <span aria-hidden="true">&times;</span>
-                          </button>
+                          <div className="d-flex justify-content-end px-4">
+                            {i === 0 ? (
+                              <i className="fa fa-bell icon "></i>
+                            ) : null}
+
+                            <button
+                              type="button"
+                              className="close py-4"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                              style={{ width: "20px" }}
+                              onClick={() => handleDelete(reminders)}
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
                           <div>
                             <div className=" d-flex px-4 pt-3">
                               <h6 className="mt-1 text-black-50 font-size-14 d-flex">

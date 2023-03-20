@@ -10,7 +10,7 @@
   }
   .icon{
     animation:notification 2s infinite;
-    font-size:12px;
+    font-size:16px;
     color:blue;
 }
 @keyframes notification{
