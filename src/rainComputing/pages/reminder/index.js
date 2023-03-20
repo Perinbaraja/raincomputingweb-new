@@ -11,67 +11,62 @@ import toastr from "toastr"
 const Reminders = ({ toggle, open, setOpen, show = false }) => {
   const [activeTab, setActiveTab] = useState("group")
   const [groupReminder, setGoupReminder] = useState([])
-  const [reminderReceived, setReminderReceived] = useState(false);
-  const [hasUserSetReminder, setHasUserSetReminder] = useState(false);
+  const [reminderReceived, setReminderReceived] = useState(false)
+  const [hasUserSetReminder, setHasUserSetReminder] = useState(false)
   const { currentUser } = useUser()
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab)
   }
- useEffect(() => {
+  useEffect(() => {
     const getReminderData = async () => {
       if (currentUser) {
-        const res = await getReminder({ currentUserID: currentUser?.userID });
+        const res = await getReminder({ currentUserID: currentUser?.userID })
         if (res.success) {
-          const reminders = res?.reminders.filter((reminder) => {
+          const reminders = res?.reminders.filter(reminder => {
             return reminder.selectedMembers.some(
-              (member) => member.id === currentUser?.userID
-            );
-          });
+              member => member.id === currentUser?.userID
+            )
+          })
           setGoupReminder([])
           // Schedule the reminders
-          reminders.forEach((reminder) => {
-            const scheduledTime = reminder?.scheduledTime;
+          reminders.forEach(reminder => {
+            const scheduledTime = reminder?.scheduledTime
             const notificationTime = moment(scheduledTime, moment.ISO_8601)
               .subtract(5, "hours")
               .subtract(30, "minutes")
-              .toDate();
-            console.log(
-              `Scheduling reminder for ${reminder.title} at ${notificationTime}`
-            );
-  
+              .toDate()
+
             // Schedule the notification to show when the notification time is reached
-            const now = new Date().getTime();
-            const timeDiff = notificationTime.getTime() - now;
+            const now = new Date().getTime()
+            const timeDiff = notificationTime.getTime() - now
             if (timeDiff > 0) {
               // Set a timeout for the notification to be received
               setTimeout(() => {
-                setGoupReminder((prevState) => [...prevState, reminder]);
+                setGoupReminder(prevState => [...prevState, reminder])
                 setReminderReceived(true)
-             
+
                 // Display the notification here
                 toastr.success(
                   `You have ${reminder.title} successfully`,
                   "Success"
-                );
-                setOpen(true);
-                // console.log(`Showing notification for ${reminder.title}`)
-              }, timeDiff);
-            } 
-            else {
+                )
+                setOpen(true)
+              }, timeDiff)
+            } else {
               // If the time for the notification has already passed, set the reminder as received
-              setGoupReminder((prevState) => [...prevState, reminder]);
+              setGoupReminder(prevState => [...prevState, reminder])
             }
-          });
+          })
         }
       }
-    };
-    getReminderData();
+    }
+    getReminderData()
     const interval = setInterval(() => {
-      getReminderData();
-    }, 60 * 1000); // Call the function every minute
-  
+      getReminderData()
+    }, 60 * 1000) // Call the function every minute
+
     // Clean up the interval when the component unmounts
-    return () => clearInterval(interval);
+    return () => clearInterval(interval)
   }, [currentUser])
   return (
     <div>
@@ -99,36 +94,11 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
         >
           <span aria-hidden="true">&times;</span>
         </button>
-        <Nav tabs className="d-flex justify-content-center">
-          <NavItem>
-            <NavLink
-              className={activeTab === "group" ? "active " : ""}
-              onClick={() => {
-                toggleTab("group")
-              }}
-            >
-              Group Reminder
-            </NavLink>
-          </NavItem>
-          {/* <NavItem>
-            <NavLink
-              className={activeTab === "self" ? "active " : ""}
-              onClick={() => {
-                toggleTab("self")
-              }}
-            >
-              Self Reminder
-            </NavLink>
-          </NavItem> */}
-        </Nav>
-        <TabContent activeTab={activeTab} className="modal-body">
-          <TabPane tabId="group">
-            <GroupReminder setGoupReminder={setGoupReminder} groupReminder={groupReminder} />
-          </TabPane>
-          {/* <TabPane tabId="self">
-            <SelfReminder />
-          </TabPane> */}
-        </TabContent>
+
+        <GroupReminder
+          setGoupReminder={setGoupReminder}
+          groupReminder={groupReminder}
+        />
       </Modal>
     </div>
   )

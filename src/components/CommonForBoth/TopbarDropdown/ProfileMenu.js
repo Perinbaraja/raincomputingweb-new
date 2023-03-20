@@ -18,21 +18,22 @@ import user1 from "../../../assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { logoutUser } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom"
 import "../TopbarDropdown/login.scss"
 import Reminder from "rainComputing/pages/reminder"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
   const histroy = useHistory()
-  const { currentUser,setCurrentUser } = useUser()
+  const { currentUser, setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
 
-  
-  const location = useLocation();
+  const location = useLocation()
 
-  const isLoginButton = location.pathname.includes('/login') ||location.pathname.includes('/register');
+  const isLoginButton =
+    location.pathname.includes("/login") ||
+    location.pathname.includes("/register")
 
   const handleLogout = async () => {
     const res = await logoutUser()
@@ -96,7 +97,11 @@ const ProfileMenu = props => {
                 )}
               </DropdownItem>
             )}
-{/* 
+            <DropdownItem tag="a" href="/reminders">
+              <i className="bx bx-alarm font-size-16 align-middle me-1" />
+              {props.t("Reminders")}
+            </DropdownItem>
+            {/* 
             {currentUser?.attorneyStatus === "approved" && (
               <Link to="/firmlanding" className="dropdown-item">
                 <span className="badge bg-success float-end"></span>
@@ -144,15 +149,18 @@ const ProfileMenu = props => {
           </DropdownMenu>
         </Dropdown>
       ) : (
-        !isLoginButton &&
-        <Link to="/login" className="dropdown">
-          {/* <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" /> */}
-          <button id="logbtn" type="button"><span>{props.t("Login")}</span></button>
-        </Link>
+        !isLoginButton && (
+          <Link to="/login" className="dropdown">
+            {/* <i className="bx bx-log-in-circle font-size-20 align-middle me-1 text-primary" /> */}
+            <button id="logbtn" type="button">
+              <span>{props.t("Login")}</span>
+            </button>
+          </Link>
+        )
       )}
-    </React.Fragment> 
+    </React.Fragment>
   )
-} 
+}
 
 ProfileMenu.propTypes = {
   success: PropTypes.any,

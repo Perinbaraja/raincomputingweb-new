@@ -142,9 +142,16 @@ const getPaymentId = payload =>
 
 const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
 
-const getReminder = payload => post(`${BASE_URL}/remainder/getreminder`, payload)
-const getReminderSelf = payload => post(`${BASE_URL}/remainder/getreminderself`, payload)
-const removeReminder = payload => put(`${BASE_URL}/remainder/removeReminder`, payload)
+const getReminder = payload =>
+  post(`${BASE_URL}/remainder/getreminder`, payload)
+const getAllReminders = payload =>
+  post(`${BASE_URL}/remainder/getAllReminders`, payload)
+const createCommenReminders = payload =>
+  post(`${BASE_URL}/remainder/createReminders`, payload)
+const getReminderSelf = payload =>
+  post(`${BASE_URL}/remainder/getreminderself`, payload)
+const removeReminder = payload =>
+  put(`${BASE_URL}/remainder/removeReminder`, payload)
 
 export {
   getAllAttorneys,
@@ -221,5 +228,7 @@ export {
   attorneyInvite,
   createReminder,
   getReminder,
-  getReminderSelf
+  getReminderSelf,
+  getAllReminders,
+  createCommenReminders,
 }

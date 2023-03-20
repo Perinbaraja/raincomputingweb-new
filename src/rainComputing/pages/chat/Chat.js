@@ -85,6 +85,7 @@ import copy from "copy-to-clipboard"
 import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
+import Reminders from "../reminder"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -541,8 +542,7 @@ const ChatRc = () => {
     const payload = {
       id: msgDelete?._id,
       deleteIt: true,
-      createdAt:msgDelete.createdAt
-      
+      createdAt: msgDelete.createdAt,
     }
     const res = await deleteLastMsg(payload)
     if (res.success) {
@@ -1476,6 +1476,23 @@ const ChatRc = () => {
                                       </Dropdown>
                                     </li>
                                   )}
+                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                    <Dropdown
+                                      toggle={() =>
+                                        toggleremainderModelOpen(true)
+                                      }
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i
+                                          className="bx bx-alarm "
+                                          title="Reminder"
+                                        />
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
                                   <li className="list-inline-item d-none d-sm-inline-block">
                                     <Dropdown
                                       isOpen={pinModal}
