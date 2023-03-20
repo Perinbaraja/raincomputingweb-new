@@ -69,34 +69,36 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
   //   }
   // }
   const handleReminderCreate = async () => {
-    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString();
-  
+    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
+
     const payload = {
       groupId: currentChat?._id,
       selectedMembers: [currentUser?.userID, ...selectedMembers],
       messageId: curMessageId,
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
-    };
-  
-    if (isChecked) {
-      payload.userId = currentUser?.userID;
     }
-  
-    const reminderData = await createReminder(payload);
-  
+
+    if (isChecked) {
+      payload.userId = currentUser?.userID
+    }
+
+    const reminderData = await createReminder(payload)
+
     if (reminderData.success) {
       // console.log("remindata :",reminderData)
-      toastr.success("Reminder Create Successfully");
-      setModalOpen(false);
+      toastr.success("Reminder Create Successfully")
+      setModalOpen(false)
     } else {
-      toastr.error(`${reminderData?.msg}`);
-      setModalOpen(false);
+      toastr.error(`${reminderData?.msg}`)
+      setModalOpen(false)
     }
-  };
-  
+  }
+
   const getMemberName = id => {
-    const memberName = currentChat?. groupMembers?.find(member => member?.id?._id === id)
+    const memberName = currentChat?.groupMembers?.find(
+      member => member?.id?._id === id
+    )
     if (memberName)
       return memberName?.id?.firstname + " " + memberName?.id?.lastname
     return id
