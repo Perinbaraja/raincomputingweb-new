@@ -10,11 +10,13 @@ import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DeleteModal from "components/Common/DeleteModal"
 import moment from "moment"
 import PropTypes from "prop-types"
+import "./reminder.css"
 
 const GroupReminder = ({groupReminder,setGoupReminder}) => {
   const [reminderReceived, setReminderReceived] = useState(false);
   
   const { currentUser } = useUser()
+  const [highlightedReminder, setHighlightedReminder] = useState(null);
   const [removeData, setRemoveData] = useState()
   const {
     toggleOpen: groupReminderDeleteModalOpen,
@@ -91,6 +93,11 @@ const GroupReminder = ({groupReminder,setGoupReminder}) => {
     setRemoveData(groupRemind)
     setReminderDeleteModalOpen(true)
   }
+  const now = new Date();
+const upcomingTimeRange = 15 * 60 * 1000; // 15 minutes in milliseconds
+const firstreminder = groupReminder[0]
+ console.log("groupRemind", firstreminder)
+
 
   return (
     <div className="modal-body">
@@ -101,16 +108,21 @@ const GroupReminder = ({groupReminder,setGoupReminder}) => {
         cancelText="Cancel"
         onCloseClick={togglegroupReminderDeleteModal}
       />
+
       {groupReminder?.length > 0 ? (
         <>
           {" "}
-          {groupReminder?.map((groupRemind, k) => (
-            <div key={k}>
+   
+{groupReminder?.sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)).map((groupRemind, k) => (
+  
+  <div key={k}  >      
+       
               <Card>
                 <CardBody>
+                {k === 0 ? <i className="fa fa-bell icon "></i> : null}
                   <button
                     type="button"
-                    className="close"
+                    className="close" 
                     data-dismiss="modal"
                     aria-label="Close"
                     style={{ width: "20px" }}
