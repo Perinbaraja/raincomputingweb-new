@@ -1398,13 +1398,13 @@ const ChatRc = () => {
                         <Card className="chat-card">
                           <div className="py-2 px-3 border-bottom">
                             <Row>
-                              <Col md="4" xs="9">
-                                <h5 className="font-size-15 mb-1">
+                              <Col md="4" xs="6">
+                                <h5 className="font-size-15 mb-1 text-sm-primary">
                                   {currentChat.isGroup
                                     ? currentCase?.caseName || "Case Chat"
                                     : getChatName(currentChat.groupMembers)}
                                 </h5>
-                                <h5 className="font-size-12 mb-1 text-primary">
+                                <h5 className="font-size-12 mb-1 text-primary d-none d-sm-inline-block">
                                   {!currentChat.isGroup &&
                                     getChatEmail(currentChat.groupMembers)}
                                 </h5>
@@ -1421,7 +1421,7 @@ const ChatRc = () => {
                                 )}
                               </Col>
                               <Col md="8" xs="3">
-                                <ul className="list-inline user-chat-nav text-end mb-0">
+                                <ul className="list-inline user-chat-nav d-flex justify-content-sm-end text-end mb-0">
                                   {currentChat?.isGroup && (
                                     <li className="list-inline-item d-none d-sm-inline-block align-middle">
                                       <Dropdown
@@ -1476,7 +1476,7 @@ const ChatRc = () => {
                                       </Dropdown>
                                     </li>
                                   )}
-                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                  <li className="list-inline-item ">
                                     <Dropdown
                                       toggle={() =>
                                         toggleremainderModelOpen(true)
@@ -1493,7 +1493,7 @@ const ChatRc = () => {
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
-                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                  <li className="list-inline-item d-sm-flex">
                                     <Dropdown
                                       isOpen={pinModal}
                                       toggle={tog_scroll}
