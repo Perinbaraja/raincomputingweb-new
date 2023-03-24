@@ -14,46 +14,45 @@ const { currentUser } = useUser()
 const getReminderData = async () => {
   try {
     if (!currentUser) {
-      return
+      return;
     }
-    const res = await getReminder({ currentUserID: currentUser?.userID })
+    const res = await getReminder({ currentUserID: currentUser?.userID });
     if (!res.success) {
-      return
+      return;
     }
-    const reminders = res?.reminders
-    const newReminders = []
-    reminders.forEach(reminder => {
-      const scheduledTime = reminder?.scheduledTime
+    const reminders = res?.reminders;
+    const newReminders = [];
+    for (const reminder of reminders) {
+      const scheduledTime = reminder?.scheduledTime;
       const notificationTime = moment(scheduledTime, moment.ISO_8601)
         .subtract(5, "hours")
         .subtract(30, "minutes")
-        .toDate()
-
-      const now = new Date().getTime()
-      const timeDiff = notificationTime.getTime() - now
+        .toDate();
+      const now = new Date().getTime();
+      const timeDiff = notificationTime.getTime() - now;
       if (timeDiff > 0) {
         setTimeout(() => {
-          newReminders.push(reminder)
-          toastr.success(
-            `You have ${reminder.title} successfully`,
-            "Success"
-          )
-          setOpen(true)
-        }, timeDiff)
-      } 
-    })
-    setGroupReminder(prevState => [...prevState,reminders, ...newReminders])
+          setGroupReminder(prevState => [...prevState, reminder]);
+          toastr.success(`You have ${reminder.title} successfully`, "Success");
+          setOpen(true);
+        }, timeDiff);
+      } else {
+        newReminders.push(reminder);
+      }
+    }
+    setGroupReminder(prevState => [...prevState, ...newReminders]);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-}
+};
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    getReminderData()
-  }, 60 * 1000) // Call the function every minute
-  return () => clearInterval(interval)
-}, [currentUser])
+// console.log("dk:",groupReminder);
+// useEffect(() => {
+//   const interval = setInterval(() => {
+//     getReminderData()
+//   }, 60 * 1000) // Call the function every minute
+//   return () => clearInterval(interval)
+// }, [currentUser])
 
 useEffect(() => {
   getReminderData()

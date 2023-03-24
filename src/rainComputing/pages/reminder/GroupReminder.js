@@ -37,7 +37,6 @@ const GroupReminder = ({ groupReminder, setGroupReminder }) => {
     setRemoveData(groupRemind)
     setReminderDeleteModalOpen(true)
   }
-
   return (
     <div className="modal-body">
       <DeleteModal
@@ -55,13 +54,12 @@ const GroupReminder = ({ groupReminder, setGroupReminder }) => {
             ?.sort(
               (a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)
             )
-            .map((groupRemind, k) => (
-              groupRemind.map((group,i)=>(
-              <div key={k}>
+            .map((group,i) => (
+              <div key={i}>
                 <Card>
                   <CardBody>
                     <div className="d-flex justify-content-end px-4">
-                      {k === 0 ? <i className="fa fa-bell icon "></i> : null}
+                      {i === 0 ? <i className="fa fa-bell icon "></i> : null}
                       <button
                         type="button"
                         className="close py-4"
@@ -94,7 +92,7 @@ const GroupReminder = ({ groupReminder, setGroupReminder }) => {
                   </CardBody>
                 </Card>
               </div>
-            ))))}
+            ))}
         </>
       ) : (
         <p>No Reminders</p>
@@ -107,7 +105,7 @@ GroupReminder.propTypes = {
   open: PropTypes.bool,
   toggle: PropTypes.func,
   setOpen: PropTypes.func,
-  show: PropTypes.fun,
+  show: PropTypes.func,
   groupReminder: PropTypes.any,
   setGroupReminder: PropTypes.any,
 }
