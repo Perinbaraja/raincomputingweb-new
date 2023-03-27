@@ -40,6 +40,7 @@ import PaymentTranaction from "rainComputing/pages/admin/adminLogin/TransactionD
 import Guide from "rainComputing/pages/guide"
 import Reminder from "rainComputing/pages/reminder"
 import UserReminders from "rainComputing/pages/reminder/UserReminders"
+import Calender from "rainComputing/pages/Calendar/Calendar"
 
 const authProtectedRoutes = [
   //Projects
@@ -65,6 +66,7 @@ const authProtectedRoutes = [
   { path: "/appointment-status", component: AppointmentCard },
   { path: "/reminder-data", component: Reminder },
   { path: "/reminders", component: UserReminders },
+  { path: "/calendar", component: Calender },
 ]
 
 const publicRoutes = [
@@ -89,5 +91,6 @@ const adminRoutes = [
   { path: "/user-Detail", component: UserDetails },
   { path: "/attorney-Detail", component: AttorneyDetails },
   { path: "/payment-Detail", component: PaymentTranaction },
+
 ]
 export { authProtectedRoutes, publicRoutes, adminRoutes }

@@ -1,24 +1,46 @@
 import React, { useEffect, useState } from "react"
 import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap"
 import PropTypes from "prop-types"
-import { createReminder } from "rainComputing/helpers/backend_helper"
+import {
+  createReminder,
+  getAllReminders,
+  UpdateReminder,
+} from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import moment from "moment"
-const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
+const EditReminder = ({ setEditModalOpen, reminder }) => {
+  const remindere = new Date(reminder.scheduledTime)
+  remindere.setHours(remindere.getHours() - 5)
+  remindere.setMinutes(remindere.getMinutes() - 30)
+  const formattedTime = remindere.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false,
+  })
+
+  const options = { year: "numeric", month: "2-digit", day: "2-digit" }
+  const formattedDate = remindere
+    .toLocaleDateString("en-US", options)
+    .split("/")
+    .join("-")
+    .replace(/(\d{2})-(\d{2})-(\d{4})/, "$3-$1-$2")
+  // const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const { currentUser } = useUser()
-  const [title, setTitle] = useState("")
-  const [date, setDate] = useState(selectdate)
-  const [time, setTime] = useState("")
-  const [scheduledTime, setScheduledTime] = useState("")
-  const [selectedMembers, setSelectedMembers] = useState([])
-
+  const [title, setTitle] = useState(reminder?.title)
+  const [date, setDate] = useState(formattedDate)
+  const [time, setTime] = useState(formattedTime)
+  const reminderSelectedMembers = reminder?.selectedMembers
+  const [selectedMembers, setSelectedMembers] = useState(
+    reminderSelectedMembers
+  )
   const [userId, setUserId] = useState(null)
   const [isChecked, setIsChecked] = useState("")
 
+  console.log("reminder", reminder)
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -31,79 +53,49 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
     }
   }, [isChecked, currentUser])
 
-  const handleAddingNewSelectedgroupMembers = id => {
-    if (selectedMembers.includes(id)) {
-      const membersAfterRemove = selectedMembers.filter(m => m !== id)
-      setSelectedMembers(membersAfterRemove)
+  const handleAddingNewSelectedgroupMembers = member => {
+    if (selectedMembers.some(m => m.id === member.id)) {
+      setSelectedMembers(selectedMembers.filter(m => m.id !== member.id))
     } else {
-      setSelectedMembers([...selectedMembers, id])
+      setSelectedMembers([...selectedMembers, member])
     }
   }
 
+  const getSelectedReminderMembers = selectedMembers?.map(
+    member => member.id._id
+  )
   const handleChange = e => {
     setIsChecked(e.target.checked)
   }
   const handlereminderCancel = () => {
-    setModalOpen(false)
+    setEditModalOpen(false)
   }
-  // const handleReminderCreate = async () => {
-  //   const payload = {
-  //     groupId: currentChat?._id,
-  //     selectedMembers: [currentUser?.userID, ...selectedMembers],
-  //     messageId: curMessageId,
-  //     title: title,
-  //     date: date,
-  //     time: time,
-  //   }
-  //   if (isChecked) {
-  //     payload.userId = currentUser?.userID
-  //   }
-  //   const reminderData = await createReminder(payload)
-  //   if (reminderData.success) {
-  //     console.log("remindata :",reminderData)
-  //     toastr.success("Reminder Create Successfully")
-  //     setModalOpen(false)
-  //   } else {
-  //     toastr.error(`${reminderData?.msg}`)
-  //     setModalOpen(false)
-  //   }
-  // }
-  const handleReminderCreate = async () => {
+  const handleReminderUpdate = async () => {
     const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
 
     const payload = {
-      groupId: currentChat?._id,
-      selectedMembers: [currentUser?.userID, ...selectedMembers],
-      messageId: curMessageId,
+      reminderId: reminder?._id,
+      selectedMembers: getSelectedReminderMembers,
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
-      createdBy:currentUser?.userID,
-    }
 
+      // scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
+    }
     if (isChecked) {
       payload.userId = currentUser?.userID
     }
 
-    const reminderData = await createReminder(payload)
+    const reminderData = await UpdateReminder(payload)
 
     if (reminderData.success) {
       // console.log("remindata :",reminderData)
-      toastr.success("Reminder Create Successfully")
-      setModalOpen(false)
+      toastr.success("Reminder update Successfully")
+      setEditModalOpen(false)
     } else {
       toastr.error(`${reminderData?.msg}`)
-      setModalOpen(false)
     }
   }
 
-  const getMemberName = id => {
-    const memberName = currentChat?.groupMembers?.find(
-      member => member?.id?._id === id
-    )
-    if (memberName)
-      return memberName?.id?.firstname + " " + memberName?.id?.lastname
-    return id
-  }
   return (
     <>
       <Row>
@@ -163,66 +155,61 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
       <Row className="my-md-3">
         <div className=" d-flex pt-2">
           <div className="form-check pl-4">
-            {/* <input
-              className="form-check-input "
-              type="checkbox"
-              id="flexCheckDefault"
-              value={userId}
-              onChange={handleChange}
-              checked={isChecked}
-            />
-            <label className="form-check-label ms-2" htmlFor="flexCheckDefault">
-              ** Keep it as a reminder for yourself
-            </label> */}
-
             <Row>
               <Col xs={6} className="px-3 border-end border-info">
                 <span className="text-muted">Group Member</span>
                 <div className="d-flex flex-wrap gap-4 my-2">
-                  {currentChat &&
-                    currentChat.groupMembers
-                      .filter(f => !selectedMembers.some(g => g === f?.id?._id))
-                      .filter(a => a?.id?._id !== currentUser?.userID)
-                      .map((member, m) => (
-                        <div
-                          key={m}
-                          className="bg-light px-2 py-1 rounded pointer"
-                          onClick={() =>
-                            handleAddingNewSelectedgroupMembers(member?.id?._id)
-                          }
-                        >
-                          <span>
-                            {member?.id?.firstname} {member?.id?.lastname}
-                          </span>
-                          <i className="mdi mdi-plus-circle-outline pt-1 px-1" />
-                        </div>
-                      ))}
+                  {reminder?.groupId?.groupMembers
+                    .filter(member => member.id._id !== currentUser.userID)
+                    .filter(
+                      member =>
+                        !selectedMembers.find(
+                          selected => selected.id._id === member.id._id
+                        )
+                    )
+                    .map((member, m) => (
+                      <div
+                        key={m}
+                        className="bg-light px-2 py-1 rounded pointer"
+                        onClick={() =>
+                          handleAddingNewSelectedgroupMembers(member)
+                        }
+                      >
+                        <span>
+                          {member.id.firstname} {member.id.lastname}
+                        </span>
+                        <i className="mdi mdi-plus-circle-outline pt-1 px-1" />
+                      </div>
+                    ))}
                 </div>
               </Col>
               <Col xs={6} className="px-3">
-                <span className="text-muted">Selected group Member</span>
+                <span className="text-muted">Selected group Members</span>
                 <div className="d-flex flex-wrap gap-4 my-2">
                   <div
                     className="bg-success px-2 py-1 rounded pointer"
-                    onClick={() => handleAddingNewSelectedgroupMembers(member)}
+                    // onClick={() =>
+                    //   handleAddingNewSelectedgroupMembers(currentUser?.userID)
+                    // }
                   >
                     <span>
                       {currentUser?.firstname} {currentUser?.lastname}
                     </span>
                     <i className="mdi mdi-account-remove-outline pt-1 px-2" />
                   </div>
-                  {selectedMembers &&
-                    selectedMembers.map((member, m) => (
+                  {selectedMembers
+                    .filter(member => member.id._id !== currentUser.userID)
+                    .map((member, i) => (
                       <div
-                        key={m}
+                        key={i}
                         className="bg-success px-2 py-1 rounded pointer"
                         onClick={() =>
                           handleAddingNewSelectedgroupMembers(member)
                         }
                       >
                         <span>
-                          {getMemberName(member)}
-                          {/* {member?.id?.firstname} {member?.id?.lastname} */}
+                          {member?.id?.firstname}
+                          {member?.id?.lastname}
                         </span>
                         <i className="mdi mdi-account-remove-outline pt-1 px-2" />
                       </div>
@@ -249,9 +236,9 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => handleReminderCreate()}
+            onClick={() => handleReminderUpdate()}
           >
-            Confirm
+            Update
           </button>
         </div>
       </Row>
@@ -259,10 +246,9 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
   )
 }
 
-ChatRemainder.propTypes = {
-  setModalOpen: PropTypes.func,
-  curMessageId: PropTypes.any,
-  selectdate: PropTypes.any
+EditReminder.propTypes = {
+  setEditModalOpen: PropTypes.func,
+  reminder: PropTypes.func,
 }
 
-export default ChatRemainder
+export default EditReminder
