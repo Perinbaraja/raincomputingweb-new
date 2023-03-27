@@ -77,6 +77,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId }) => {
       messageId: curMessageId,
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
+      createdBy:currentUser?.userID,
     }
 
     if (isChecked) {
