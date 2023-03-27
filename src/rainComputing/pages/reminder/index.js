@@ -9,62 +9,54 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 
 const Reminders = ({ toggle, open, setOpen, show = false }) => {
-  const [activeTab, setActiveTab] = useState("group")
-  const [groupReminder, setGoupReminder] = useState([])
-  const { currentUser } = useUser()
-  const toggleTab = tab => {
-    if (activeTab !== tab) setActiveTab(tab)
-  }
-  useEffect(() => {
-    const getReminderData = async () => {
-      if (currentUser) {
-        const res = await getReminder({ currentUserID: currentUser?.userID })
-        if (res.success) {
-          const reminders = res?.reminders.filter(reminder => {
-            return reminder.selectedMembers.some(
-              member => member.id === currentUser?.userID
-            )
-          })
-          setGoupReminder([])
-          // Schedule the reminders
-          reminders.forEach(reminder => {
-            const scheduledTime = reminder?.scheduledTime
-            const notificationTime = moment(scheduledTime, moment.ISO_8601)
-              .subtract(5, "hours")
-              .subtract(30, "minutes")
-              .toDate()
-
-            // Schedule the notification to show when the notification time is reached
-            const now = new Date().getTime()
-            const timeDiff = notificationTime.getTime() - now
-            if (timeDiff > 0) {
-              // Set a timeout for the notification to be received
-              setTimeout(() => {
-                setGoupReminder(prevState => [...prevState, reminder])
-
-                // Display the notification here
-                toastr.success(
-                  `You have ${reminder.title} successfully`,
-                  "Success"
-                )
-                setOpen(true)
-              }, timeDiff)
-            } else {
-              // If the time for the notification has already passed, set the reminder as received
-              setGoupReminder(prevState => [...prevState, reminder])
-            }
-          })
-        }
+const [groupReminder, setGroupReminder] = useState([])
+const { currentUser } = useUser()
+const getReminderData = async () => {
+  try {
+    if (!currentUser) {
+      return;
+    }
+    const res = await getReminder({ currentUserID: currentUser?.userID });
+    if (!res.success) {
+      return;
+    }
+    const reminders = res?.reminders;
+    const newReminders = [];
+    for (const reminder of reminders) {
+      const scheduledTime = reminder?.scheduledTime;
+      const notificationTime = moment(scheduledTime, moment.ISO_8601)
+        .subtract(5, "hours")
+        .subtract(30, "minutes")
+        .toDate();
+      const now = new Date().getTime();
+      const timeDiff = notificationTime.getTime() - now;
+      if (timeDiff > 0) {
+        setTimeout(() => {
+          setGroupReminder(prevState => [...prevState, reminder]);
+          toastr.success(`You have ${reminder.title} successfully`, "Success");
+          setOpen(true);
+        }, timeDiff);
+      } else {
+        newReminders.push(reminder);
       }
     }
-    getReminderData()
-    const interval = setInterval(() => {
-      getReminderData()
-    }, 60 * 1000) // Call the function every minute
+    setGroupReminder(prevState => [...prevState, ...newReminders]);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(interval)
-  }, [currentUser])
+// console.log("dk:",groupReminder);
+// useEffect(() => {
+//   const interval = setInterval(() => {
+//     getReminderData()
+//   }, 60 * 1000) // Call the function every minute
+//   return () => clearInterval(interval)
+// }, [currentUser])
+
+useEffect(() => {
+  getReminderData()
+}, [currentUser])
   return (
     <div>
       <i
@@ -93,7 +85,7 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
         </button>
 
         <GroupReminder
-          setGoupReminder={setGoupReminder}
+          setGroupReminder={setGroupReminder}
           groupReminder={groupReminder}
         />
       </Modal>

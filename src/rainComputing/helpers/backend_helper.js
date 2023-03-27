@@ -152,10 +152,13 @@ const getReminderSelf = payload =>
   post(`${BASE_URL}/remainder/getreminderself`, payload)
 const removeReminder = payload =>
   put(`${BASE_URL}/remainder/removeReminder`, payload)
+const UpdateReminder = payload =>
+  put(`${BASE_URL}/remainder/updateReminder`, payload)
 
 export {
   getAllAttorneys,
   getAttorneysCount,
+  UpdateReminder,
   getAllUsers,
   getAllChatRooms,
   createChatRoom,

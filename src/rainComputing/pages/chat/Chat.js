@@ -86,6 +86,7 @@ import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
 import Reminders from "../reminder"
+import Calender from "../Calendar/Calendar"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -113,6 +114,11 @@ const ChatRc = () => {
     toggleOpen: remainderModelOpen,
     setToggleOpen: setRemainderModelOpen,
     toggleIt: toggleremainderModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: CalendarModelOpen,
+    setToggleOpen: setCalendarModelOpen,
+    toggleIt: toggleCalendarModelOpen,
   } = useToggle(false)
   const {
     toggleOpen: subGroupModelOpen,
@@ -213,6 +219,7 @@ const ChatRc = () => {
   const [msgDelete, setMsgDelete] = useState()
   const containerRef = useRef(null)
   const [prevHeight, setPrevHeight] = useState(0)
+  const prevMessageCountRef = useRef(0)
   const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
   const handleScroll = event => {
     if (event && event.currentTarget) {
@@ -232,11 +239,12 @@ const ChatRc = () => {
       }
     }
   }
+
   const scrollToBottom = () => {
     containerRef.current?.scrollTo({
       left: 0,
-      top: containerRef.current.scrollHeight + 1000,
-      behavior: "smooth",
+      top: containerRef.current.scrollHeight,
+      behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
     })
   }
 
@@ -251,9 +259,12 @@ const ChatRc = () => {
 
   useEffect(() => {
     setVisibleMessages(messages.slice(-49))
+
+    scrollToBottom() // Call the scrollToBottom function to start at the bottom
+
     const timer = setTimeout(() => {
       scrollToBottom()
-    }, 1000)
+    }, 500)
 
     return () => clearTimeout(timer)
   }, [messages])
@@ -516,7 +527,6 @@ const ChatRc = () => {
       setPinnedMsg(res.message)
     }
   }
-
   //Deleting Case
   const onDeletingCase = async () => {
     const payload = {
@@ -674,11 +684,11 @@ const ChatRc = () => {
   //     containerRef.current.scrollTop = containerRef.current.scrollHeight;
   //   }
   // },[messages])
-  useEffect(() => {
-    if (messageBox) {
-      messageBox.scrollTop = messageBox.scrollHeight
-    }
-  }, [messageBox?.scrollHeight])
+  // useEffect(() => {
+  //   if (messageBox) {
+  //     messageBox.scrollTop = messageBox.scrollHeight
+  //   }
+  // }, [messageBox?.scrollHeight])
 
   //Handling File change
   const handleFileChange = e => {
@@ -1082,6 +1092,19 @@ const ChatRc = () => {
                 />
               </DynamicSuspense>
             </DynamicModel>
+            <DynamicModel
+              open={CalendarModelOpen}
+              toggle={toggleCalendarModelOpen}
+              size="xl"
+              footer={false}
+            >
+              <DynamicSuspense>
+                <Calender
+                  setcalendarModalOpen={setCalendarModelOpen}
+                
+                />
+              </DynamicSuspense>
+            </DynamicModel>
             {/* Model for creating case*/}
             <DynamicModel
               open={newCaseModelOpen}
@@ -1398,13 +1421,13 @@ const ChatRc = () => {
                         <Card className="chat-card">
                           <div className="py-2 px-3 border-bottom">
                             <Row>
-                              <Col md="4" xs="9">
-                                <h5 className="font-size-15 mb-1">
+                              <Col md="4" xs="6">
+                                <h5 className="font-size-15 mb-1 text-sm-primary">
                                   {currentChat.isGroup
                                     ? currentCase?.caseName || "Case Chat"
                                     : getChatName(currentChat.groupMembers)}
                                 </h5>
-                                <h5 className="font-size-12 mb-1 text-primary">
+                                <h5 className="font-size-12 mb-1 text-primary d-none d-sm-inline-block">
                                   {!currentChat.isGroup &&
                                     getChatEmail(currentChat.groupMembers)}
                                 </h5>
@@ -1421,7 +1444,7 @@ const ChatRc = () => {
                                 )}
                               </Col>
                               <Col md="8" xs="3">
-                                <ul className="list-inline user-chat-nav text-end mb-0">
+                                <ul className="list-inline user-chat-nav d-flex justify-content-sm-end text-end mb-0">
                                   {currentChat?.isGroup && (
                                     <li className="list-inline-item d-none d-sm-inline-block align-middle">
                                       <Dropdown
@@ -1476,24 +1499,24 @@ const ChatRc = () => {
                                       </Dropdown>
                                     </li>
                                   )}
-                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                  <li className="list-inline-item ">
                                     <Dropdown
-                                      toggle={() =>
-                                        toggleremainderModelOpen(true)
-                                      }
+                                    toggle={()=>toggleCalendarModelOpen(true)}
                                     >
                                       <DropdownToggle
                                         className="btn nav-btn"
                                         tag="i"
-                                      >
-                                        <i
-                                          className="bx bx-alarm "
-                                          title="Reminder"
-                                        />
+                                      
+                                      >  
+                                          <i
+                                            className="bx bx-alarm"
+                                            title="Reminder"
+                                          />
+                                   
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
-                                  <li className="list-inline-item d-none d-sm-inline-block">
+                                  <li className="list-inline-item d-sm-flex">
                                     <Dropdown
                                       isOpen={pinModal}
                                       toggle={tog_scroll}
