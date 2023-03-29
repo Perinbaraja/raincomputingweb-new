@@ -114,8 +114,7 @@ const Calender = ({ setcalendarModalOpen }) => {
           <ChatRemainder
             setModalOpen={setRemainderModelOpen}
             selectdate={selectedday?.dateStr}
-            setGetReminders={setGetReminders}
-            getReminders={getReminders}
+            getAllReminderById={getAllReminderById}
           />
         </DynamicSuspense>
       </DynamicModel>

@@ -12,8 +12,6 @@ const ChatRemainder = ({
   setModalOpen,
   curMessageId,
   selectdate,
-  setGetReminders,
-  getReminders,
   getAllReminderById,
 }) => {
   const { currentRoom: currentChat, setMessages, messages } = useChat()
@@ -122,11 +120,9 @@ const ChatRemainder = ({
     const res = await createReminder(payload)
 
     if (res.success) {
+      await getAllReminderById()
       // console.log("remindata :",reminderData)
       toastr.success("Reminder Create Successfully")
-
-      const newReminder = res.reminder
-      setGetReminders(prevState => [...prevState, newReminder])
       setModalOpen(false)
     } else {
       toastr.error(`${reminderData?.msg}`)
@@ -315,9 +311,7 @@ const ChatRemainder = ({
 
 ChatRemainder.propTypes = {
   setModalOpen: PropTypes.func,
-  setGetReminders: PropTypes.func,
   getAllReminderById: PropTypes.func,
-  getReminders: PropTypes.func,
   curMessageId: PropTypes.any,
   selectdate: PropTypes.any,
 }
