@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import {
   createReminder,
   getAllReminders,
+  removeReminder,
   UpdateReminder,
 } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
@@ -11,7 +12,16 @@ import "toastr/build/toastr.min.css"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import moment from "moment"
-const EditReminder = ({ setEditModalOpen, reminder }) => {
+import { async } from "q"
+import { removeData } from "jquery"
+import DeleteModal from "components/Common/DeleteModal"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+const EditReminder = ({
+  setEditModalOpen,
+  reminder,
+  setGetReminders,
+  getReminders,
+}) => {
   const remindere = new Date(reminder.scheduledTime)
   remindere.setHours(remindere.getHours() - 5)
   remindere.setMinutes(remindere.getMinutes() - 30)
@@ -33,14 +43,19 @@ const EditReminder = ({ setEditModalOpen, reminder }) => {
   const [title, setTitle] = useState(reminder?.title)
   const [date, setDate] = useState(formattedDate)
   const [time, setTime] = useState(formattedTime)
+  const [removeData, setRemoveData] = useState()
+
   const reminderSelectedMembers = reminder?.selectedMembers
   const [selectedMembers, setSelectedMembers] = useState(
     reminderSelectedMembers
   )
   const [userId, setUserId] = useState(null)
   const [isChecked, setIsChecked] = useState("")
-
-  console.log("reminder", reminder)
+  const {
+    toggleOpen: groupReminderDeleteModalOpen,
+    setToggleOpen: setReminderDeleteModalOpen,
+    toggleIt: togglegroupReminderDeleteModal,
+  } = useToggle(false)
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -70,6 +85,21 @@ const EditReminder = ({ setEditModalOpen, reminder }) => {
   const handlereminderCancel = () => {
     setEditModalOpen(false)
   }
+  const getAllReminderById = async () => {
+    const res = await getAllReminders({
+      currentUserID: currentUser?.userID,
+    })
+    if (res.success) {
+      setGetReminders(res?.reminders)
+    }
+  }
+
+  useEffect(() => {
+    if (currentUser) {
+      getAllReminderById()
+    }
+  }, [currentUser])
+
   const handleReminderUpdate = async () => {
     const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
 
@@ -77,27 +107,56 @@ const EditReminder = ({ setEditModalOpen, reminder }) => {
       reminderId: reminder?._id,
       selectedMembers: getSelectedReminderMembers,
       title: title,
-      scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
-
-      // scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
-    }
-    if (isChecked) {
-      payload.userId = currentUser?.userID
+      scheduledTime: scheduledTime,
     }
 
     const reminderData = await UpdateReminder(payload)
 
     if (reminderData.success) {
-      // console.log("remindata :",reminderData)
-      toastr.success("Reminder update Successfully")
+      await getAllReminderById()
+      toastr.success("Reminder updated successfully")
       setEditModalOpen(false)
     } else {
       toastr.error(`${reminderData?.msg}`)
     }
   }
 
+  const handleRemove = async () => {
+    const payload = {
+      reminderId: removeData?._id,
+    }
+    const res = await removeReminder(payload)
+    if (res.success) {
+      toastr.success(`You have reminder remove  successfully`, "Success")
+
+      setGetReminders(prevState =>
+        prevState.filter(reminder => reminder._id !== removeData._id)
+      )
+
+      setEditModalOpen(false)
+    }
+  }
+  const handleDelete = reminder => {
+    setRemoveData(reminder)
+    setReminderDeleteModalOpen(true)
+  }
   return (
     <>
+      <i
+        className="bi bi-trash text-danger  d-flex justify-content-end"
+        title="Delete"
+        onClick={() => handleDelete(reminder)}
+        style={{ fontSize: "20px" }}
+      ></i>
+
+      <DeleteModal
+        show={groupReminderDeleteModalOpen}
+        onDeleteClick={handleRemove}
+        confirmText="Yes,Remove"
+        cancelText="Cancel"
+        onCloseClick={togglegroupReminderDeleteModal}
+      />
+
       <Row>
         <label
           htmlFor="example-text-input"
@@ -116,6 +175,7 @@ const EditReminder = ({ setEditModalOpen, reminder }) => {
           />
         </div>
       </Row>
+
       <Row className="my-md-3">
         <label
           htmlFor="example-text-input"
@@ -248,6 +308,8 @@ const EditReminder = ({ setEditModalOpen, reminder }) => {
 
 EditReminder.propTypes = {
   setEditModalOpen: PropTypes.func,
+  setGetReminders: PropTypes.func,
+  getReminders: PropTypes.func,
   reminder: PropTypes.func,
 }
 
