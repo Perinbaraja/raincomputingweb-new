@@ -15,8 +15,8 @@ const Guide = () => {
   return (
     <div >
       <div className="card " >
-      <div class="card-body ">
-      <p class="card-text d-flex justify-content-center fs-2 ">
+      <div className="card-body ">
+      <p className="card-text d-flex justify-content-center fs-2 ">
         <i className='mdi mdi-account text-primary '></i>USER MANUAL</p>
 
   </div>
