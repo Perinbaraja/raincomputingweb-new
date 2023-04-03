@@ -141,7 +141,7 @@ const AttorneyList = () => {
     <React.Fragment>
       <div className="page-content">
         <MetaTags>
-          <title>Attorney List | Rain - Admin & Dashboard Template</title>
+          <title>Attorney List | RainComputing </title>
         </MetaTags>
         {loading ? (
           <ChatLoader />

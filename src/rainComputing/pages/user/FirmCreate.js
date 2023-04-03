@@ -97,7 +97,7 @@ const FirmCreate = () => {
     <React.Fragment>
       <div className="page-content">
         <MetaTags>
-          <title>RainComputing | Rain - Admin & Dashboard Template</title>
+          <title>RainComputing | RainComputing</title>
         </MetaTags>
         <Container fluid={true}>
           <Breadcrumbs title="Forms" breadcrumbItem="Form Rain" />

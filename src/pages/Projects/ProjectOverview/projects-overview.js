@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react"
-import MetaTags from "react-meta-tags"
 import PropTypes from "prop-types"
 import { Link, useLocation, withRouter } from "react-router-dom"
 import { isEmpty } from "lodash"
 import { Col, Container, Row } from "reactstrap"
 
 //Import Breadcrumb
-import Breadcrumbs from "components/Common/Breadcrumb"
 import ProjectDetail from "./projectDetail"
-//IMPORT ATTORNEY DETAILS
-import { getAttorneyByid as onGetAttorneyDetails } from "store/projects/actions"
-//redux
-import { useSelector, useDispatch } from "react-redux"
 import { regAttorneyDetails } from "rainComputing/helpers/backend_helper"
 
 function useQuery() {

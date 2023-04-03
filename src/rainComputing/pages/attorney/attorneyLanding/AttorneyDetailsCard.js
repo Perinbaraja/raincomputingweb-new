@@ -105,7 +105,7 @@ const AttorneyDetailsCard = () => {
     <React.Fragment>
       <div>
         <MetaTags>
-          <title>RainComputing | Rain - Admin & Dashboard Template</title>
+          <title>RainComputing </title>
         </MetaTags>
 
         <Container fluid={true}>

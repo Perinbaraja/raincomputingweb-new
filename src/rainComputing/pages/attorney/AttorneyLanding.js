@@ -11,7 +11,7 @@ const AttorneyLanding = () => {
   return (
     <div className="page-content ">
       <MetaTags>
-        <title>Request Page | Rain - Admin & Dashboard Template</title>
+        <title>Request Page | RainComputing </title>
       </MetaTags>
       {currentAttorney?.status && currentAttorney?.status === "approved" ? (
         <AttorneyDetails />

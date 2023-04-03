@@ -104,7 +104,7 @@ const Admin = () => {
     <React.Fragment>
       <div className="page-content">
         <MetaTags>
-          <title>Admin Page | Rain - Admin & Dashboard Template</title>
+          <title>Admin Page | RainComputing </title>
         </MetaTags>
         <Container fluid>
           <Breadcrumbs title={"Rain"} breadcrumbItem={"Admin Dashboard"} />
