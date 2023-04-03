@@ -206,7 +206,7 @@ const EditCase = ({
                       >
                         <div className="d-flex justify-content-between ">
                      <div> {contact.firstname} {contact.lastname}   </div>                
-                     {contact?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+                     {contact?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
 
                     </div>
 
@@ -241,7 +241,7 @@ const EditCase = ({
                       >
                          <div className="d-flex justify-content-between">
                    <div> {member?.firstname + " " + member?.lastname}</div>
-                    {member?.attorneyStatus === "approved" &&<div> <i class="fas fa-star text-warning"></i></div>}
+                    {member?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
 
                   </div>
 

@@ -23,7 +23,7 @@ import * as Yup from "yup"
 import { useFormik } from "formik"
 import { attImages } from "../../../../helpers/mockData"
 import ReactTextareaAutosize from "react-textarea-autosize"
-import { appointmentRequest ,attorneyInvite} from "rainComputing/helpers/backend_helper"
+import { appointmentRequest ,attorneyInvite, regAttorneyDetails} from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
@@ -39,6 +39,7 @@ const PaymentVia = () => {
   const [allFiles, setAllFiles] = useState([])
   const [isAttachments, setIsAttachments] = useState(false)
   const [caseData, setCaseData] = useState("")
+  const [attorneyDetails,setAttorneyDetail] = useState({})
   const [email, setEmail] = useState("")
   toastr.options = {
     progressBar: true,
@@ -48,9 +49,19 @@ const PaymentVia = () => {
   const handleCancelClick = () => {
     history.push("/")
   }
-
+  const getAttorneyinfo = async () => {
+    setLoading(true)
+    const res = await regAttorneyDetails({id:query.get("uid")})
+    if (res) {
+      setAttorneyDetail(res.attorney)
+    setLoading(false)
+  }
+}
+useEffect(() =>{
+  getAttorneyinfo()
+},[])
   const onSendEmail = async () => {
-    const mailRes = await attorneyInvite()
+    const mailRes = await attorneyInvite({id:query.get("uid")})
     setEmail(mailRes.true)
   }
 
@@ -167,7 +178,7 @@ const PaymentVia = () => {
                         </label>
                         <div className="col-md-5 col-lg-5 col-form-label ">
                           <label className="fw-semibold text-primary">
-                            {"Hsuanyeh Chang, PhD, Esq."}{" "}
+                          {attorneyDetails?.regUser?.firstname} {attorneyDetails?.regUser?.lastname}
                           </label>
                         </div>
                       </Row>

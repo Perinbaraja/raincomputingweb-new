@@ -41,7 +41,7 @@ const CaseDetails = () => {
       />
       <div className="page-content">
         <MetaTags>
-          <title>Case Details | Rain - Admin & Dashboard Template</title>
+          <title>Case Details | RainComputing </title>
         </MetaTags>
         <Container fluid>
           <Link to="/attorneylist-page">

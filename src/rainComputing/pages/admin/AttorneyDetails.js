@@ -61,7 +61,7 @@ const AttorneyDetails = () => {
       />
       <div className="page-content">
         <MetaTags>
-          <title>Attorney Details | Rain - Admin & Dashboard Template</title>
+          <title>Attorney Details | RainComputing </title>
         </MetaTags>
         <Container fluid>
           <Link to="/attorneylist-page">

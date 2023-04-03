@@ -73,10 +73,10 @@ const Footer = () => {
 
             <hr></hr>
 
-            <Col md={6}>{new Date().getFullYear()} © <a href="#" id="footlog" >RainComputing</a></Col>
+            <Col md={6}>{new Date().getFullYear()} © <Link to="#" id="footlog" >RainComputing</Link></Col>
             <Col md={6}>
               <div className="text-sm-end d-none d-sm-block mb-4">
-                Design & Develop by <a href="#" id="footlog"><strong>RainComputing</strong></a>
+                Design & Develop by <Link to="#" id="footlog"><strong>RainComputing</strong></Link>
               </div>
             </Col>
           </Row>

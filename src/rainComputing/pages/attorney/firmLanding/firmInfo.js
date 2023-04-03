@@ -138,7 +138,7 @@ const FirmInfo = () => {
         onCloseClick={toggleIt}
       />
       <MetaTags>
-        <title>Firm | Rain - Admin & Dashboard Template</title>
+        <title>Firm | RainComputing </title>
       </MetaTags>
       <div className="page-content">
         <>

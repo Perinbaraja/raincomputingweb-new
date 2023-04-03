@@ -25,6 +25,8 @@ const findMe = () => get(`${BASE_URL}/user/whoiam`)
 const logoutUser = () => get(`${BASE_URL}/user/logout`)
 const registerAttorney = payload =>
   post(`${BASE_URL}/attorney/register`, payload)
+const attorneyDetailsUpdate = payload =>
+  put(`${BASE_URL}/attorney/attorneyUpdate`, payload)
 const getAttorneyByUserID = payload =>
   post(`${BASE_URL}/attorney/getByUserId`, payload)
 const getFirmsByAttorneyID = payload =>
@@ -34,6 +36,10 @@ const getAllRegAttorneys = payload =>
   post(`${BASE_URL}/attorney/getAllAttorney`, payload)
 const regAttorneyDetails = payload =>
   post(`${BASE_URL}/attorney/regAttorneyDetails`, payload)
+const regScheduleDates = payload =>
+  post(`${BASE_URL}/attorney/create`, payload)
+const regAttorneyUpdate = payload =>
+  put(`${BASE_URL}/attorney/updateSchedule`, payload)
 const attorneyInvite = payload =>
   post(`${BASE_URL}/attorney/inviteAttorney`, payload)
 
@@ -160,11 +166,14 @@ export {
   getAttorneysCount,
   UpdateReminder,
   getAllUsers,
+  attorneyDetailsUpdate,
   getAllChatRooms,
   createChatRoom,
   getRoomMessages,
   userRegisteration,
   userLogin,
+  regScheduleDates,
+  regAttorneyUpdate,
   userUpdate,
   findMe,
   logoutUser,

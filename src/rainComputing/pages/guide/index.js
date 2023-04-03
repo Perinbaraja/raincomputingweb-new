@@ -3,6 +3,7 @@ import { Document, Page ,pdfjs } from 'react-pdf';
 
 import PDF from "assets/guide/guide.pdf"
 import { Card } from 'reactstrap';
+import { Link } from 'react-router-dom';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const Guide = () => {
   const [numPages, setNumPages] = useState(null);
@@ -16,12 +17,12 @@ const Guide = () => {
   return (
     <div >
       <div className="card " >
-      <div class="card-body ">
-      <p class="card-text d-flex justify-content-center fs-2 ">
+      <div className="card-body ">
+      <p className="card-text d-flex justify-content-center fs-2 ">
         <i className='mdi mdi-account text-primary '></i>USER MANUAL</p>
         <buton className="bg-primary py-2 px-5">  
         <i className="mdi mdi-download text-white"></i>    
-            <a href={PDF} download="guide.pdf" className='text-white'> Download Here </a>
+            <Link to={PDF} download="guide.pdf" className='text-white'> Download Here </Link>
         </buton>
 
 

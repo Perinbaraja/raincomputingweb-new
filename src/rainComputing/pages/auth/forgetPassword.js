@@ -70,7 +70,7 @@ const handleSetPasswordLink = async(pw) =>{
     <React.Fragment>
       <MetaTags>
         <title>
-          Forget Password | Rain - Admin & Dashboard Template
+          Forget Password | RainComputing 
         </title>
       </MetaTags>
       <div className="home-btn d-none d-sm-block">

@@ -131,7 +131,7 @@ const UserList = userId => {
     <React.Fragment>
       <div className="page-content">
         <MetaTags>
-          <title>User List | Rain - Admin & Dashboard Template</title>
+          <title>User List | RainComputing </title>
         </MetaTags>
         {loading ? (
           <ChatLoader />

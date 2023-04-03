@@ -11,12 +11,12 @@ const AttorneyLanding = () => {
   return (
     <div className="page-content ">
       <MetaTags>
-        <title>Request Page | Rain - Admin & Dashboard Template</title>
+        <title>Request Page | RainComputing </title>
       </MetaTags>
       {currentAttorney?.status && currentAttorney?.status === "approved" ? (
         <AttorneyDetails />
       ) : (
-        currentAttorney?.status === "approved" ?( <AttorneyCard status={currentAttorney?.status} />):(<div className="d-flex justify-content-center"><div class="spinner-border text-primary" role="status">
+        currentAttorney?.status === "approved" ?( <AttorneyCard status={currentAttorney?.status} />):(<div className="d-flex justify-content-center"><div className="spinner-border text-primary" role="status">
         <span className="sr-only">Loading...</span>
       </div>
       </div>)

@@ -7,7 +7,13 @@ import "toastr/build/toastr.min.css"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import moment from "moment"
-const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
+import DeleteModal from "../modals/DeleteModal"
+const ChatRemainder = ({
+  setModalOpen,
+  curMessageId,
+  selectdate,
+  getAllReminderById,
+}) => {
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [title, setTitle] = useState("")
@@ -77,7 +83,7 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
       messageId: curMessageId,
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
-      createdBy:currentUser?.userID,
+      createdBy: currentUser?.userID,
     }
 
     if (isChecked) {
@@ -87,6 +93,34 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
     const reminderData = await createReminder(payload)
 
     if (reminderData.success) {
+      // console.log("remindata :",reminderData)
+      toastr.success("Reminder Create Successfully")
+
+      setModalOpen(false)
+    } else {
+      toastr.error(`${reminderData?.msg}`)
+      setModalOpen(false)
+    }
+  }
+  const handleCreate = async () => {
+    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
+
+    const payload = {
+      groupId: currentChat?._id,
+      selectedMembers: [currentUser?.userID, ...selectedMembers],
+      title: title,
+      scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
+      createdBy: currentUser?.userID,
+    }
+
+    if (isChecked) {
+      payload.userId = currentUser?.userID
+    }
+
+    const res = await createReminder(payload)
+
+    if (res.success) {
+      await getAllReminderById()
       // console.log("remindata :",reminderData)
       toastr.success("Reminder Create Successfully")
       setModalOpen(false)
@@ -131,16 +165,22 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
         >
           Date
         </label>
-        <div className="col-md-8">
-          <input
-            className="form-control"
-            type="date"
-            placeholder="DD/MM/YYYY"
-            value={date}
-            name="date"
-            onChange={e => setDate(e.target.value)}
-          />
-        </div>
+        {selectdate ? (
+          <div className="col-md-8">
+            <input className="form-control" value={date} />
+          </div>
+        ) : (
+          <div className="col-md-8">
+            <input
+              className="form-control"
+              type="date"
+              placeholder="DD/MM/YYYY"
+              value={date}
+              name="date"
+              onChange={e => setDate(e.target.value)}
+            />
+          </div>
+        )}
       </Row>
       <Row className="my-md-3">
         <label
@@ -246,13 +286,23 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
           >
             Close
           </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleReminderCreate()}
-          >
-            Confirm
-          </button>
+          {selectdate ? (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleCreate()}
+            >
+              Confirm
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleReminderCreate()}
+            >
+              Confirm
+            </button>
+          )}
         </div>
       </Row>
     </>
@@ -261,8 +311,9 @@ const ChatRemainder = ({ setModalOpen, curMessageId,selectdate }) => {
 
 ChatRemainder.propTypes = {
   setModalOpen: PropTypes.func,
+  getAllReminderById: PropTypes.func,
   curMessageId: PropTypes.any,
-  selectdate: PropTypes.any
+  selectdate: PropTypes.any,
 }
 
 export default ChatRemainder

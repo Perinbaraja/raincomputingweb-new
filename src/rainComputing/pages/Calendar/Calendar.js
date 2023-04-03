@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {
-  Card,
-  CardBody,
-  Col,
-  Container,
-  Row,
-} from "reactstrap"
+import { Card, CardBody, Col, Container, Row } from "reactstrap"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction"
@@ -62,41 +56,41 @@ const Calender = ({ setcalendarModalOpen }) => {
   const handleCalendarCancel = () => {
     setcalendarModalOpen(false)
   }
-  
-  useEffect(() => {
-    const getAllReminderById = async () => {
-      if (currentUser) {
-        const res = await getAllReminders({
-          currentUserID: currentUser?.userID,
-        })
-        if (res.success) {
-          setGetReminders(res?.reminders)
-        }
-      }
+
+  const getAllReminderById = async () => {
+    const res = await getAllReminders({
+      currentUserID: currentUser?.userID,
+    })
+    if (res.success) {
+      setGetReminders(res?.reminders)
     }
-    getAllReminderById()
+  }
+
+  useEffect(() => {
+    if (currentUser) {
+      getAllReminderById()
+    }
   }, [currentUser])
 
-    const calendarEvents = getReminders.map((reminder) => {
-      const startTime = new Date(reminder.scheduledTime);
-      startTime.setHours(startTime.getHours() - 5);
-      startTime.setMinutes(startTime.getMinutes() - 30);
-      return {
-        id: reminder._id,
-        title: reminder.title,
-        start: startTime,
-        allDay: false,
-      };
-    });
+  const calendarEvents = getReminders.map(reminder => {
+    const startTime = new Date(reminder.scheduledTime)
+    startTime.setHours(startTime.getHours() - 5)
+    startTime.setMinutes(startTime.getMinutes() - 30)
+    return {
+      id: reminder._id,
+      title: reminder.title,
+      start: startTime,
+      allDay: false,
+    }
+  })
 
-    const handleEventClick = (e) => {
-      const event = e.event;
-      const reminder = getReminders.find((r) => r?._id === event?.id);
-      setSelectedEvent(reminder);
-      setEditRemainderModelOpen(true);
-    };
+  const handleEventClick = e => {
+    const event = e.event
+    const reminder = getReminders.find(r => r?._id === event?.id)
+    setSelectedEvent(reminder)
+    setEditRemainderModelOpen(true)
+  }
 
-    
   return (
     <React.Fragment>
       <button
@@ -120,6 +114,7 @@ const Calender = ({ setcalendarModalOpen }) => {
           <ChatRemainder
             setModalOpen={setRemainderModelOpen}
             selectdate={selectedday?.dateStr}
+            getAllReminderById={getAllReminderById}
           />
         </DynamicSuspense>
       </DynamicModel>
@@ -133,7 +128,9 @@ const Calender = ({ setcalendarModalOpen }) => {
         <DynamicSuspense>
           <EditReminder
             setEditModalOpen={setEditRemainderModelOpen}
-            reminder = {selectedEvent}
+            reminder={selectedEvent}
+            setGetReminders={setGetReminders}
+            getReminders={getReminders}
           />
         </DynamicSuspense>
       </DynamicModel>

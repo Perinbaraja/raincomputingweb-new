@@ -80,7 +80,7 @@ const UserDetails = () => {
       />
       <div className="page-content">
         <MetaTags>
-          <title>User Deatails | Rain - Admin & Dashboard Template</title>
+          <title>User Deatails | RainComputing </title>
         </MetaTags>
         <Container fluid>
           <Link to="/userlist-page">

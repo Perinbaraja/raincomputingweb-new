@@ -58,7 +58,7 @@ const EmailForgetPassword = props => {
   return (
     <React.Fragment>
       <MetaTags>
-        <title>Forget Password | Rain - Admin & Dashboard Template</title>
+        <title>Forget Password | RainComputing </title>
       </MetaTags>
       <div className="home-btn d-none d-sm-block"></div>
       <div className="account-pages pt-sm-5">
