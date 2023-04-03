@@ -15,19 +15,33 @@ import {
   Row,
   FormFeedback,
   Button,
+  DropdownToggle,
+  Dropdown,
 } from "reactstrap"
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { regAttorneyDetails } from "rainComputing/helpers/backend_helper"
+import {
+  attorneyDetailsUpdate,
+  regAttorneyDetails,
+} from "rainComputing/helpers/backend_helper"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+import DynamicModel from "rainComputing/components/modals/DynamicModal"
+import Calender from "rainComputing/pages/Calendar/Calendar"
+import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
+import AttorneyCalendar from "rainComputing/pages/Calendar/AttorneyCalendar"
 
 const AttorneyDetailsCard = () => {
   const { currentUser, setCurrentUser } = useUser()
   const [attorneyDetail, setAttorneyDetail] = useState({})
   const { currentAttorney } = useUser()
   const [loading, setLoading] = useState(false)
-
+  const {
+    toggleOpen: CalendarModelOpen,
+    setToggleOpen: setCalendarModelOpen,
+    toggleIt: toggleCalendarModelOpen,
+  } = useToggle(false)
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -49,14 +63,11 @@ const AttorneyDetailsCard = () => {
       ),
       phonenumber: Yup.string().required("Please Enter Your Phone Number"),
     }),
-    onSubmit: values => {
-      handleAttorneyReg({
-        // barNumber: values.attorneybarnumber,
-        // phoneNumber: values.phonenumber,
-        // address: values.address,
-        // userID: currentUser.userID,
-        // status: "requested",
-      })
+    onSubmit: async values => {
+      const res = await attorneyDetailsUpdate({ ...values })
+      if (res.success) {
+        toastr.success("Profile updated successfully")
+      }
     },
   })
 
@@ -86,13 +97,7 @@ const AttorneyDetailsCard = () => {
             <Col lg="12">
               <Card>
                 <CardBody>
-                  <Form
-                    className="needs-validation"
-                    onSubmit={e => {
-                      e.preventDefault()
-                      validation.handleSubmit()
-                    }}
-                  >
+                  <Form>
                     <div className="wizard clearfix">
                       <div className="steps clearfix">
                         <ul>
@@ -106,8 +111,36 @@ const AttorneyDetailsCard = () => {
                           </NavItem>
                         </ul>
                       </div>
+
+                      <DynamicModel
+                        open={CalendarModelOpen}
+                        toggle={toggleCalendarModelOpen}
+                        size="lg"
+                        footer={false}
+                      >
+                        <DynamicSuspense>
+                          <AttorneyCalendar
+                            setcalendarModalOpen={setCalendarModelOpen}
+                          />
+                        </DynamicSuspense>
+                      </DynamicModel>
+                      <div className="d-flex justify-content-end">
+                        <Dropdown toggle={() => toggleCalendarModelOpen(true)}>
+                          <DropdownToggle className="btn nav-btn" tag="i">
+                            <button type="button" class="btn btn-primary">
+                              <span class="fas fa-plus"></span> ScheduleDates
+                            </button>
+                          </DropdownToggle>
+                        </Dropdown>
+                      </div>
                       <div className="content clearfix mt-4">
-                        <Form>
+                        <Form
+                          className="needs-validation"
+                          onSubmit={e => {
+                            e.preventDefault()
+                            validation.handleSubmit()
+                          }}
+                        >
                           <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
@@ -173,13 +206,12 @@ const AttorneyDetailsCard = () => {
                             </Col>
                           </Row>
                           <Row>
-                          <Col lg="6">
+                            <Col lg="6">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom04">Firm</Label>
                                 <Input
                                   type="text"
                                   name="firm"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -209,7 +241,6 @@ const AttorneyDetailsCard = () => {
                                 <Input
                                   type="text"
                                   name="address"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your address"
@@ -231,8 +262,6 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-
-                          
                           </Row>
                           <Row>
                             <Col lg="6">
@@ -243,7 +272,6 @@ const AttorneyDetailsCard = () => {
                                 <Input
                                   type="text"
                                   name="country"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -273,7 +301,6 @@ const AttorneyDetailsCard = () => {
                                 <Input
                                   type="text"
                                   name="state"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -303,7 +330,6 @@ const AttorneyDetailsCard = () => {
                                 <Input
                                   type="text"
                                   name="city"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -333,7 +359,6 @@ const AttorneyDetailsCard = () => {
                                 <Input
                                   type="text"
                                   name="postalCode"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -363,7 +388,6 @@ const AttorneyDetailsCard = () => {
                                 <textarea
                                   type="text"
                                   name="bio"
-                                  readOnly
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Email ID"
@@ -385,6 +409,13 @@ const AttorneyDetailsCard = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
+                          </Row>
+                          <Row>
+                            <div className=" pt-2 d-flex justify-content-end">
+                              <button type="submit" className="btn btn-primary">
+                                Update
+                              </button>
+                            </div>
                           </Row>
                         </Form>
                         {/* <Button color="primary" type="submit">
