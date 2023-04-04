@@ -64,11 +64,10 @@ function VoiceMessage({ msg }) {
   src={audioUrl.audioUrl}
   controls
   onLoadedMetadata={() => console.log("Audio loaded")}
-  className="rounded-circle d-block d-sm-none"
+  className="d-block d-sm-none"
   style={{
-    borderRadius: "253px",
     height: "40px",
-    paddingRight: "180px",
+    paddingRight: "185px",
   }}
 />
 <audio
