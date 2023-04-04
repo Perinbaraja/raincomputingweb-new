@@ -32,6 +32,8 @@ import {
   ModalHeader,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
+
+import fileDownload from "js-file-download"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
@@ -59,7 +61,7 @@ import {
   pinMessage,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
-import { indexOf, isEmpty, map, now } from "lodash"
+import { indexOf, isEmpty, map, now, set } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
@@ -86,7 +88,10 @@ import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
 import Reminders from "../reminder"
+import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import Calender from "../Calendar/Calendar"
+import RecordRTC from "recordrtc"
+import VoiceMessage from "rainComputing/components/audio"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -198,7 +203,10 @@ const ChatRc = () => {
   const [receivers, setReceivers] = useState([])
   const [curMessage, setcurMessage] = useState("")
   const [isAttachment, setIsAttachment] = useState(false)
+  const [isVoiceMessage, setIsVoiceMessage] = useState(false)
+  const [recorder, setRecorder] = useState([])
   const [allFiles, setAllFiles] = useState([])
+  const [allVoicemsg, setAllVoicemsg] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [totalPages, setTotalPages] = useState(initialPageCount)
@@ -220,8 +228,32 @@ const ChatRc = () => {
   const [msgDelete, setMsgDelete] = useState()
   const containerRef = useRef(null)
   const [prevHeight, setPrevHeight] = useState(0)
-  const prevMessageCountRef = useRef(0)
   const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
+  const [blobURL, setBlobURL] = useState(null)
+  const startRecording = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(stream => {
+        const newRecorder = RecordRTC(stream, { type: "audio" })
+        newRecorder.startRecording()
+        setRecorder(newRecorder)
+      })
+      .catch(err => console.log(err))
+    setBlobURL(null)
+  }
+
+  const stopRecording = () => {
+    if (recorder && recorder.state === "recording") {
+      recorder.stopRecording(() => {
+        const blob = recorder.getBlob()
+        const url = URL.createObjectURL(blob)
+        setBlobURL(url)
+        setIsVoiceMessage(true)
+        // send the recorded message as a message here using a messaging API
+      })
+    }
+  }
+
   const handleScroll = event => {
     if (event && event.currentTarget) {
       const { scrollTop, clientHeight, scrollHeight } = event.currentTarget
@@ -458,7 +490,7 @@ const ChatRc = () => {
     let regex = /@\[.+?\]\(.+?\)/gm
     let displayRegex = /@\[.+?\]/g
     let idRegex = /\(.+?\)/g
-    let matches = comment.match(regex)
+    let matches = comment?.match(regex)
     let arr = []
     matches &&
       matches.forEach(m => {
@@ -467,11 +499,11 @@ const ChatRc = () => {
 
         arr.push({ id: id, display: display })
       })
-    let newComment = comment.split(regex)
+    let newComment = comment?.split(regex)
     let output = ""
-    for (let i = 0; i < newComment.length; i++) {
+    for (let i = 0; i < newComment?.length; i++) {
       const c = newComment[i]
-      if (i === newComment.length - 1) {
+      if (i === newComment?.length - 1) {
         output += c
       } else {
         output += c + `${arr[i].display}`
@@ -576,6 +608,8 @@ const ChatRc = () => {
   const isEmptyOrSpaces = () => {
     if (isAttachment) {
       return false
+    } else if (isVoiceMessage) {
+      return false
     }
 
     return curMessage === null || curMessage.match(/^ *$/) !== null
@@ -584,6 +618,11 @@ const ChatRc = () => {
     setEmailModal(!emailModal)
     document.body.classList.add("no_padding")
   }
+  useEffect(() => {
+    if (isVoiceMessage === true) {
+      setAllVoicemsg([recorder])
+    }
+  }, [recorder, isVoiceMessage])
 
   //Sending Message
   const handleSendMessage = async () => {
@@ -591,6 +630,7 @@ const ChatRc = () => {
     if (isEmptyOrSpaces()) {
       console.log("You can't send empty message")
     } else {
+      let voiceMessageId = []
       let attachmentsId = []
       let payLoad = {
         caseId: currentCase?._id,
@@ -599,6 +639,7 @@ const ChatRc = () => {
         receivers,
         messageData: curMessage,
         isAttachment,
+        isVoiceMessage,
         isForward: false,
         // isPinned: false,
       }
@@ -632,18 +673,60 @@ const ChatRc = () => {
         } else {
           setLoading(false)
         }
+      } else if (isVoiceMessage) {
+        const formData = new FormData()
+
+        for (let i = 0; i < allVoicemsg.length; i++) {
+          const audioBlob = new Blob([allVoicemsg[i].getBlob()], {
+            type: "audio/webm",
+          })
+
+          formData.append("file", audioBlob, `audio-${i}.webm`)
+        }
+
+        const fileUploadRes = await axios.post(
+          `${SERVER_URL}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": `multipart/form-data`,
+            },
+          }
+        )
+
+        const { data } = fileUploadRes
+        if (data.success) {
+          await data?.files?.map(file =>
+            voiceMessageId.push({
+              type: file?.contentType,
+              size: file?.size,
+              id: file.id,
+              name: file.originalname,
+              dbName: file.filename,
+              aflag: true,
+            })
+          )
+        } else {
+          setLoading(false)
+        }
       }
       payLoad.attachments = attachmentsId
+      payLoad.voiceMessage = voiceMessageId
       handleSendingMessage(payLoad)
       setAllFiles([])
+      setAllVoicemsg([])
       setcurMessage("")
       setIsAttachment(false)
+      setIsVoiceMessage(false)
+      setRecorder([])
+      setBlobURL(null)
     }
     setLoading(false)
   }
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip",
+    accept:
+      ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
     onDrop: acceptedFiles => {
       setAllFiles(
         acceptedFiles.map(allFiles =>
@@ -652,9 +735,13 @@ const ChatRc = () => {
           })
         )
       )
+      // const updatedVoicemsg = recorder.map(allVoicemsg => Object.assign(allVoicemsg, {
+      //   preview: URL.createObjectURL(allVoicemsg),
+      // }));
+      // setAllVoicemsg(updatedVoicemsg);
+      // setRecorder(updatedVoicemsg);
     },
   })
-
   //Detecting Enter key Press in textbox
   const onKeyPress = e => {
     const { key } = e
@@ -839,6 +926,17 @@ const ChatRc = () => {
     }
   }, [searchMessageText])
 
+  const handleFileDownload = async ({ id, filename }) => {
+    getFileFromGFS(
+      { id },
+      {
+        responseType: "blob",
+      }
+    ).then(res => {
+      fileDownload(res, filename)
+    })
+  }
+
   useEffect(() => {
     if (searchedMessages?.length > 0) {
       const elementid = searchedMessages[0]?._id
@@ -896,6 +994,13 @@ const ChatRc = () => {
       setIsAttachment(false)
     }
   }, [allFiles])
+  useEffect(() => {
+    if (Array.from(recorder)?.length > 0) {
+      setIsVoiceMessage(true)
+    } else {
+      setIsVoiceMessage(false)
+    }
+  }, [recorder])
 
   //SideEffect for fetching Subgroups after case selected
   useEffect(() => {
@@ -1815,6 +1920,7 @@ const ChatRc = () => {
                                                     }
                                                     text={msg.messageData}
                                                   />
+
                                                   <div className="mt-3">
                                                     {" "}
                                                     {stringFormatter(
@@ -1853,7 +1959,13 @@ const ChatRc = () => {
                                                 // />
                                               )}
                                             </div>
-
+                                            <div>
+                                              <div>
+                                                <div>
+                                                  <VoiceMessage msg={msg} />
+                                                </div>
+                                              </div>
+                                            </div>
                                             <p className="chat-time mb-0">
                                               <i className="bx bx-comment-check align-middle me-1" />
                                               {/* <i className="bx bx-time-five align-middle me-1" /> */}
@@ -1931,60 +2043,104 @@ const ChatRc = () => {
                               <Row {...getRootProps()}>
                                 <Col>
                                   <div className="position-relative">
-                                    <MentionsInput
-                                      type="text"
-                                      value={curMessage}
-                                      onKeyPress={onKeyPress}
-                                      style={{
-                                        resize: "none",
-                                      }}
-                                      onChange={e =>
-                                        setcurMessage(e.target.value)
-                                      }
-                                      className="form-control chat-input"
-                                      placeholder="Enter Message..."
-                                    >
-                                      <Mention
-                                        trigger="@"
-                                        data={mentionsArray}
-                                      />
-                                    </MentionsInput>
-
-                                    <div className="chat-input-links">
-                                      <ul className="list-inline mb-0">
-                                        <li className="list-inline-item">
+                                    {recorder &&
+                                    recorder.state === "recording" ? (
+                                      <>
+                                        {" "}
+                                        <div>
+                                          <audio
+                                            className="w-100 w-sm-100"
+                                            style={{
+                                              height: "40px",
+                                              paddingLeft: "10px",
+                                            }}
+                                            src={blobURL}
+                                            controls="controls"
+                                          />
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <>
+                                        {blobURL ? (
                                           <div>
-                                            <div>
-                                              <Input
-                                                type="file"
-                                                name="file"
-                                                multiple={true}
-                                                id="hidden-file"
-                                                className="d-none"
-                                                accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip"
-                                                onChange={e => {
-                                                  handleFileChange(e)
-                                                }}
-                                                {...getInputProps()}
-                                              />
-
-                                              <Label
-                                                htmlFor="hidden-file"
-                                                style={{ margin: 0 }}
-                                              >
-                                                <i
-                                                  className="mdi mdi-attachment mdi-rotate-315"
-                                                  style={{
-                                                    color: "#556EE6",
-                                                    fontSize: 16,
-                                                  }}
-                                                />
-                                              </Label>
-                                            </div>
+                                            <audio
+                                              className="w-100 w-sm-100"
+                                              style={{
+                                                height: "40px",
+                                                paddingLeft: "10px",
+                                              }}
+                                              src={blobURL}
+                                              controls="controls"
+                                            />
                                           </div>
-                                        </li>
-                                      </ul>
-                                    </div>
+                                        ) : (
+                                          <MentionsInput
+                                            type="text"
+                                            value={curMessage}
+                                            onKeyPress={onKeyPress}
+                                            style={{
+                                              resize: "none",
+                                            }}
+                                            onChange={e =>
+                                              setcurMessage(e.target.value)
+                                            }
+                                            className="form-control chat-input"
+                                            placeholder="Enter Message..."
+                                          >
+                                            <Mention
+                                              trigger="@"
+                                              data={mentionsArray}
+                                            />
+                                          </MentionsInput>
+                                        )}
+                                      </>
+                                    )}
+
+                                    {(recorder &&
+                                      recorder.state === "recording") ||
+                                    recorder?.state === "stopped" ? (
+                                      <></>
+                                    ) : (
+                                      <div className="chat-input-links">
+                                        <ul className="list-inline mb-0">
+                                          <li className="list-inline-item">
+                                            <div>
+                                              <div>
+                                                <Input
+                                                  type="file"
+                                                  name="file"
+                                                  multiple={true}
+                                                  id="hidden-file"
+                                                  className="d-none"
+                                                  accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
+                                                  onChange={e => {
+                                                    handleFileChange(e)
+                                                  }}
+                                                  {...getInputProps()}
+                                                />
+
+                                                <Label
+                                                  htmlFor="hidden-file"
+                                                  style={{ margin: 0 }}
+                                                >
+                                                  <i
+                                                    className="mdi mdi-attachment mdi-rotate-315"
+                                                    disabled={
+                                                      recorder?.state ===
+                                                      "recording"
+                                                    }
+                                                    style={{
+                                                      color: "#556EE6",
+                                                      fontSize: 16,
+                                                    }}
+                                                  />
+                                                </Label>
+                                              </div>
+                                            </div>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    )}
                                   </div>
 
                                   {Array.from(allFiles)?.length > 0 && (
@@ -2000,27 +2156,48 @@ const ChatRc = () => {
                                     </div>
                                   )}
                                 </Col>
-                                <Col className="col-auto">
+                                <Col className="col-auto d-flex">
+                                  <div>
+                                    {recorder &&
+                                    recorder.state === "recording" ? (
+                                      <i
+                                        className="mdi mdi-microphone font-size-24 text-danger me-2"
+                                        onClick={stopRecording}
+                                        disabled={recorder?.state === "stopped"}
+                                        style={{ cursor: "pointer" }}
+                                      ></i>
+                                    ) : (
+                                      <i
+                                        className="mdi mdi-microphone  font-size-24 text-primary me-2"
+                                        onClick={startRecording}
+                                        disabled={
+                                          recorder?.state === "recording"
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      ></i>
+                                    )}
+                                  </div>
+
                                   {loading ? (
                                     <Button
                                       type="button"
-                                      className="btn btn-primary btn-rounded chat-send w-md "
+                                      className="btn btn-primary btn-rounded chat-send  "
                                       color="primary"
                                       style={{ cursor: "not-allowed" }}
                                     >
-                                      <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle me-2"></i>
+                                      <i className="bx  bx-loader-alt bx-spin font-size-20 align-middle "></i>
                                     </Button>
                                   ) : (
                                     <Button
                                       type="button"
                                       color="primary"
                                       onClick={() => handleSendMessage()}
-                                      className="btn btn-primary btn-rounded chat-send w-md"
+                                      className="btn btn-primary btn-rounded chat-send "
                                       disabled={isEmptyOrSpaces()}
                                     >
-                                      <span className="d-none d-sm-inline-block me-2">
+                                      {/* <span className="d-none d-sm-inline-block me-2">
                                         Send
-                                      </span>
+                                      </span> */}
                                       <i className="mdi mdi-send" />
                                     </Button>
                                   )}

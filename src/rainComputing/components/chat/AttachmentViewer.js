@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import "./style/attachment-viewer.scss"
 import ImageViewer from "./ImageViewer"
@@ -6,16 +6,16 @@ import { SERVER_URL } from "rainComputing/helpers/configuration"
 import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import fileDownload from "js-file-download"
 const AttachmentViewer = ({ attachments, text }) => {
-  const handleFileDownload = async ({ id, filename }) => {
-    getFileFromGFS(
-      { id },
-      {
-        responseType: "blob",
-      }
-    ).then(res => {
-      fileDownload(res, filename)
-    })
-  }
+  const [audioUrl, setAudioUrl] = useState(null);
+  const handleFileDownload = ({ id, filename }) => {
+    getFileFromGFS({ id }, { responseType: "blob" }).then(res => {
+      fileDownload(res, filename);
+
+      // Create a new audio object URL
+      const audioBlob = new Blob([res]);
+      setAudioUrl(URL.createObjectURL(audioBlob));
+    });
+  };
   return (
     <div className="att_wrapper">
       {attachments?.map((att, a) => (
@@ -43,7 +43,7 @@ const AttachmentViewer = ({ attachments, text }) => {
               ) : (
                 <div className="aligner_item">
                   <i
-                    className="mdi mdi-file-document-multiple text-success mdi-36px"
+                    className="mdi mdi-music text-success mdi-36px"
                     onClick={() =>
                       handleFileDownload({
                         id: att?.id,
@@ -51,8 +51,9 @@ const AttachmentViewer = ({ attachments, text }) => {
                       })
                     }
                   />
-
+   {audioUrl && <audio src={audioUrl} controls />}
                   <div style={{ wordBreak: "break-all" }}> {att?.name} </div>
+                
                 </div>
               )}
             </div>
