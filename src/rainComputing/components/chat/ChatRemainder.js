@@ -221,7 +221,12 @@ const ChatRemainder = ({
                 <div className="d-flex flex-wrap gap-4 my-2">
                   {currentChat &&
                     currentChat.groupMembers
-                      .filter(f => !selectedMembers.some(g => g === f?.id?._id))
+                      .filter(
+                        f =>
+                          f?.id?._id &&
+                          !selectedMembers.some(g => g === f?.id?._id) &&
+                          f?.id?._id !== currentUser?.userID
+                      )
                       .filter(a => a?.id?._id !== currentUser?.userID)
                       .map((member, m) => (
                         <div

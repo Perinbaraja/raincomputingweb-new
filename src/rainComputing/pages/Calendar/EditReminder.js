@@ -220,7 +220,10 @@ const EditReminder = ({
                 <span className="text-muted">Group Member</span>
                 <div className="d-flex flex-wrap gap-4 my-2">
                   {reminder?.groupId?.groupMembers
-                    .filter(member => member.id._id !== currentUser.userID)
+                    .filter(
+                      member =>
+                        member.id && member.id._id !== currentUser.userID
+                    )
                     .filter(
                       member =>
                         !selectedMembers.find(
@@ -236,7 +239,7 @@ const EditReminder = ({
                         }
                       >
                         <span>
-                          {member.id.firstname} {member.id.lastname}
+                          {member.id?.firstname} {member.id?.lastname}
                         </span>
                         <i className="mdi mdi-plus-circle-outline pt-1 px-1" />
                       </div>

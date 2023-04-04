@@ -208,6 +208,7 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
+  console.log("mentionsArray", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
@@ -903,19 +904,20 @@ const ChatRc = () => {
     }
   }, [currentCase])
 
-  //SideEffect of setting receivers after currentchat changes
   useEffect(() => {
     if (currentChat) {
       setcurMessage("")
       setMentionsArray(
-        currentChat.groupMembers.map(m => ({
-          id: m?.id?._id,
-          display: m?.id?.firstname + " " + m?.id?.lastname,
-        }))
+        currentChat.groupMembers
+          .filter(m => m?.id?._id) // filter out members with null IDs
+          .map(m => ({
+            id: m?.id?._id,
+            display: m?.id?.firstname + " " + m?.id?.lastname,
+          }))
       )
       setReceivers(
         currentChat.groupMembers
-          .filter(m => m.id?._id !== currentUser.userID)
+          .filter(m => m?.id?._id && m.id?._id !== currentUser.userID) // filter out members with null IDs and current user
           .map(r => r.id?._id)
       )
 
@@ -1099,10 +1101,7 @@ const ChatRc = () => {
               footer={false}
             >
               <DynamicSuspense>
-                <Calender
-                  setcalendarModalOpen={setCalendarModelOpen}
-                
-                />
+                <Calender setcalendarModalOpen={setCalendarModelOpen} />
               </DynamicSuspense>
             </DynamicModel>
             {/* Model for creating case*/}
@@ -1501,18 +1500,18 @@ const ChatRc = () => {
                                   )}
                                   <li className="list-inline-item ">
                                     <Dropdown
-                                    toggle={()=>toggleCalendarModelOpen(true)}
+                                      toggle={() =>
+                                        toggleCalendarModelOpen(true)
+                                      }
                                     >
                                       <DropdownToggle
                                         className="btn nav-btn"
                                         tag="i"
-                                      
-                                      >  
-                                          <i
-                                            className="bx bx-alarm"
-                                            title="Reminder"
-                                          />
-                                   
+                                      >
+                                        <i
+                                          className="bx bx-alarm"
+                                          title="Reminder"
+                                        />
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
