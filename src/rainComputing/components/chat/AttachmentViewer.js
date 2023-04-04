@@ -6,16 +6,16 @@ import { SERVER_URL } from "rainComputing/helpers/configuration"
 import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import fileDownload from "js-file-download"
 const AttachmentViewer = ({ attachments, text }) => {
-  const [audioUrl, setAudioUrl] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null)
   const handleFileDownload = ({ id, filename }) => {
     getFileFromGFS({ id }, { responseType: "blob" }).then(res => {
-      fileDownload(res, filename);
+      fileDownload(res, filename)
 
       // Create a new audio object URL
-      const audioBlob = new Blob([res]);
-      setAudioUrl(URL.createObjectURL(audioBlob));
-    });
-  };
+      const audioBlob = new Blob([res])
+      setAudioUrl(URL.createObjectURL(audioBlob))
+    })
+  }
   return (
     <div className="att_wrapper">
       {attachments?.map((att, a) => (
@@ -51,15 +51,39 @@ const AttachmentViewer = ({ attachments, text }) => {
                       })
                     }
                   />
-   {audioUrl && <audio src={audioUrl} controls />}
+                  
                   <div style={{ wordBreak: "break-all" }}> {att?.name} </div>
-                
+                  
                 </div>
               )}
+              
             </div>
           )}
         </div>
+        
       ))}
+      <div className="p">
+      {audioUrl && (
+                    <audio
+                      src={audioUrl}
+                      controls
+                      className="d-block d-sm-none"
+                      style={{
+                        height: "40px",
+                        paddingRight: "164px",
+                        marginLeft: "-18px",
+                        paddingTop: "6px",
+                  
+                      }}
+                    />
+                  )}
+                  {audioUrl && (
+                    <audio
+                      src={audioUrl}
+                      controls
+                      className="d-none d-sm-block"
+                    />
+                  )}</div>
     </div>
   )
 }

@@ -67,7 +67,10 @@ function VoiceMessage({ msg }) {
   className="d-block d-sm-none"
   style={{
     height: "40px",
-    paddingRight: "185px",
+    paddingRight: "164px",
+    marginLeft: "-18px",
+    paddingTop: "6px",
+
   }}
 />
 <audio
