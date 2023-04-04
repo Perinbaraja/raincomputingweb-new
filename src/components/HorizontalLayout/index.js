@@ -41,7 +41,7 @@ const Layout = props => {
     const title = props.location.pathname
     let currentage = title.charAt(1).toUpperCase() + title.slice(2)
 
-    document.title = currentage + " | Rain - Admin & Dashboard Template"
+    document.title = currentage + " | Rain Computing"
   }, [props.location.pathname])
 
   useEffect(() => {
