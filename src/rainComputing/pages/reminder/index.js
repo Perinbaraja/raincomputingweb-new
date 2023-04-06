@@ -7,56 +7,80 @@ import { getReminder } from "rainComputing/helpers/backend_helper"
 import moment from "moment"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
+import { date } from "yup"
 
 const Reminders = ({ toggle, open, setOpen, show = false }) => {
-const [groupReminder, setGroupReminder] = useState([])
-const { currentUser } = useUser()
-const getReminderData = async () => {
-  try {
-    if (!currentUser) {
-      return;
-    }
-    const res = await getReminder({ currentUserID: currentUser?.userID });
-    if (!res.success) {
-      return;
-    }
-    const reminders = res?.reminders;
-    const newReminders = [];
-    for (const reminder of reminders) {
-      const scheduledTime = reminder?.scheduledTime;
-      const notificationTime = moment(scheduledTime, moment.ISO_8601)
-        .subtract(5, "hours")
-        .subtract(30, "minutes")
-        .toDate();
-      const now = new Date().getTime();
-      const timeDiff = notificationTime.getTime() - now;
-      if (timeDiff > 0) {
-        setTimeout(() => {
-          setGroupReminder(prevState => [...prevState, reminder]);
-          toastr.success(`You have ${reminder.title} successfully`, "Success");
-          setOpen(true);
-        }, timeDiff);
-      } else {
-        newReminders.push(reminder);
+  const [groupReminder, setGroupReminder] = useState([])
+  const { currentUser } = useUser()
+
+  // console.log("groupReminder",groupReminder)
+  const getReminderData = async () => {
+    try {
+      if (!currentUser) {
+        return
       }
+      const res = await getReminder({ currentUserID: currentUser?.userID })
+      if (!res.success) {
+        return
+      }
+      const reminders = res?.nextReminders[0]
+
+      const nextNotify = res.nextNotificationTime
+
+      const newReminders = []
+
+      const now = new Date()
+
+      // for (const notificationTime of scheduledTime) {
+      const currentNotify = new Date(nextNotify)
+      currentNotify.setHours(currentNotify.getHours() - 5)
+      currentNotify.setMinutes(currentNotify.getMinutes() - 30)
+
+      console.log("currentNotify", currentNotify)
+      const timeDiff = currentNotify - now
+      // console.log("now",now)
+      // console.log("notificationTime",notificationTime.getTime())
+      // console.log("timeDiff",timeDiff)
+
+      if (timeDiff < 30000) {
+        setTimeout(() => {
+          // setGroupReminder(reminders);
+
+          toastr.success(`You have new  remainder`)
+          setOpen(true)
+        }, timeDiff)
+      } else {
+        newReminders.push(reminders)
+      }
+
+      // }
+
+      setGroupReminder(reminders)
+    } catch (error) {
+      console.error(error)
     }
-    setGroupReminder(prevState => [...prevState, ...newReminders]);
-  } catch (error) {
-    console.error(error);
   }
-};
 
-// console.log("dk:",groupReminder);
-// useEffect(() => {
-//   const interval = setInterval(() => {
-//     getReminderData()
-//   }, 60 * 1000) // Call the function every minute
-//   return () => clearInterval(interval)
-// }, [currentUser])
+  const intervalTime = 60000 // 30 seconds in milliseconds
 
-useEffect(() => {
-  getReminderData()
-}, [currentUser])
+  useEffect(() => {
+    // define a function to run the getReminderData function at the specified interval
+    const intervalId = setInterval(getReminderData, intervalTime)
+    // clear the interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [])
+
+  // console.log("dk:",groupReminder);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getReminderData()
+  //   }, 60 * 1000) // Call the function every minute
+  //   return () => clearInterval(interval)
+  // }, [currentUser])
+
+  useEffect(() => {
+    getReminderData()
+  }, [currentUser])
   return (
     <div>
       <i
@@ -84,10 +108,7 @@ useEffect(() => {
           <span aria-hidden="true">&times;</span>
         </button>
 
-        <GroupReminder
-          setGroupReminder={setGroupReminder}
-          groupReminder={groupReminder}
-        />
+        <GroupReminder groupReminder={groupReminder} />
       </Modal>
     </div>
   )

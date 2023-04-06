@@ -21,7 +21,8 @@ const ChatRemainder = ({
   const [time, setTime] = useState("")
   const [scheduledTime, setScheduledTime] = useState("")
   const [selectedMembers, setSelectedMembers] = useState([])
-
+  const [selectedDates, setSelectedDates] = useState([])
+  console.log("selected dates", selectedDates)
   const [userId, setUserId] = useState(null)
   const [isChecked, setIsChecked] = useState("")
 
@@ -52,31 +53,78 @@ const ChatRemainder = ({
   const handlereminderCancel = () => {
     setModalOpen(false)
   }
-  // const handleReminderCreate = async () => {
-  //   const payload = {
-  //     groupId: currentChat?._id,
-  //     selectedMembers: [currentUser?.userID, ...selectedMembers],
-  //     messageId: curMessageId,
-  //     title: title,
-  //     date: date,
-  //     time: time,
-  //   }
-  //   if (isChecked) {
-  //     payload.userId = currentUser?.userID
-  //   }
-  //   const reminderData = await createReminder(payload)
-  //   if (reminderData.success) {
-  //     console.log("remindata :",reminderData)
-  //     toastr.success("Reminder Create Successfully")
-  //     setModalOpen(false)
-  //   } else {
-  //     toastr.error(`${reminderData?.msg}`)
-  //     setModalOpen(false)
-  //   }
-  // }
-  const handleReminderCreate = async () => {
-    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
 
+  const handleChanges = event => {
+    const selectedValue = event.target.value
+    // Do something based on the selected value
+    if (selectedValue === "daily") {
+      handleDaily()
+    } else if (selectedValue === "weekly") {
+      handleWeekly()
+    } else if (selectedValue === "monthly") {
+      handleMonthly()
+    }
+  }
+  const handleWeekly = () => {
+    const startDate = new Date(date) // replace with desired start date
+    const endDate = new Date() // replace with desired end date
+    endDate.setDate(startDate.getDate() + 365) // set end date to 1 year from start date
+
+    const selectedDates = []
+    const currentDate = new Date(startDate)
+    while (currentDate <= endDate) {
+      selectedDates.push(currentDate.toISOString().slice(0, 10))
+      currentDate.setDate(currentDate.getDate() + 7) // increment by 7 days for every week
+    }
+
+    setSelectedDates(selectedDates)
+  }
+  const handleMonthly = () => {
+    const selectedDates = []
+    const selectedDate = new Date(date)
+    const endDate = new Date()
+    endDate.setFullYear(selectedDate.getFullYear() + 1)
+
+    let currentDate = new Date(selectedDate)
+
+    while (currentDate <= endDate) {
+      const dayOfMonth = selectedDate.getDate()
+      const currentMonth = currentDate.getMonth()
+      const currentYear = currentDate.getFullYear()
+
+      let reminderDate = new Date(currentYear, currentMonth, dayOfMonth + 1)
+
+      // If the reminder date is in the past, move it to the next month
+      if (reminderDate < currentDate) {
+        reminderDate.setMonth(currentMonth + 1)
+      }
+
+      selectedDates.push(reminderDate.toISOString().slice(0, 10))
+
+      currentDate.setMonth(currentMonth + 1)
+    }
+
+    setSelectedDates(selectedDates)
+  }
+
+  const handleDaily = () => {
+    const startDate = new Date(date)
+    const endDate = new Date(startDate.getFullYear(), 11, 31) // set end date to 31st December of current year
+    const days = []
+
+    // loop through each day from start date to end date and add to array
+    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+      days.push(new Date(d).toISOString().slice(0, 10))
+    }
+
+    setDate(startDate.toISOString().slice(0, 10))   
+    setSelectedDates(days)
+  }
+  const handleReminderCreate = async () => {
+    const scheduledTime = selectedDates.map(selectedDate => {
+      return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
+    })
+    console.log("scheduled time: " , scheduledTime)
     const payload = {
       groupId: currentChat?._id,
       selectedMembers: [currentUser?.userID, ...selectedMembers],
@@ -103,8 +151,11 @@ const ChatRemainder = ({
     }
   }
   const handleCreate = async () => {
-    const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
-
+    // const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
+    const scheduledTime = selectedDates.map(selectedDate => {
+      return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
+    })
+    console.log("scheduled time: " + scheduledTime)
     const payload = {
       groupId: currentChat?._id,
       selectedMembers: [currentUser?.userID, ...selectedMembers],
@@ -125,7 +176,7 @@ const ChatRemainder = ({
       toastr.success("Reminder Create Successfully")
       setModalOpen(false)
     } else {
-      toastr.error(`${reminderData?.msg}`)
+      toastr.error(`${res?.msg}`)
       setModalOpen(false)
     }
   }
@@ -182,6 +233,12 @@ const ChatRemainder = ({
           </div>
         )}
       </Row>
+      <select onChange={handleChanges}>
+      <option value="">Select</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
       <Row className="my-md-3">
         <label
           htmlFor="example-text-input"

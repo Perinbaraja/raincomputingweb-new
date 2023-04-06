@@ -12,78 +12,77 @@ import moment from "moment"
 import PropTypes from "prop-types"
 import "./reminder.css"
 
-const GroupReminder = ({ groupReminder, setGroupReminder }) => {
-  const [removeData, setRemoveData] = useState()
-  const {
-    toggleOpen: groupReminderDeleteModalOpen,
-    setToggleOpen: setReminderDeleteModalOpen,
-    toggleIt: togglegroupReminderDeleteModal,
-  } = useToggle(false)
+const GroupReminder = ({ groupReminder, }) => {
 
-  const handleRemove = async () => {
-    const payload = {
-      reminderId: removeData?._id,
-    }
-    const res = await removeReminder(payload)
-    if (res.success) {
-      toastr.success(`You have reminder remove  successfully`, "Success")
-      setGroupReminder(prevState =>
-        prevState.filter(reminder => reminder._id !== removeData._id)
-      )
-      setReminderDeleteModalOpen(false)
-    }
-  }
-  const handleDelete = groupRemind => {
-    setRemoveData(groupRemind)
-    setReminderDeleteModalOpen(true)
-  }
+  console.log("groupReminder",groupReminder)
+
+  // const [removeData, setRemoveData] = useState()
+  // const {
+  //   toggleOpen: groupReminderDeleteModalOpen,
+  //   setToggleOpen: setReminderDeleteModalOpen,
+  //   toggleIt: togglegroupReminderDeleteModal,
+  // } = useToggle(false)
+
+  // const handleRemove = async () => {
+  //   const payload = {
+  //     reminderId: removeData?._id,
+  //   }
+  //   const res = await removeReminder(payload)
+  //   if (res.success) {
+  //     toastr.success(`You have reminder remove  successfully`, "Success")
+  //     setGroupReminder(prevState =>
+  //       prevState.filter(reminder => reminder._id !== removeData._id)
+  //     )
+  //     setReminderDeleteModalOpen(false)
+  //   }
+  // }
+  // const handleDelete = groupRemind => {
+  //   setRemoveData(groupRemind)
+  //   setReminderDeleteModalOpen(true)
+  // }
   return (
     <div className="modal-body">
-      <DeleteModal
+      {/* <DeleteModal
         show={groupReminderDeleteModalOpen}
         onDeleteClick={handleRemove}
         confirmText="Yes,Remove"
         cancelText="Cancel"
         onCloseClick={togglegroupReminderDeleteModal}
-      />
+      /> */}
 
-      {groupReminder?.length > 0 ? (
+      {groupReminder?.scheduledTime ? (
         <>
           {" "}
-          {groupReminder
-            ?.sort(
-              (a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)
-            )
-            .map((group,i) => (
-              <div key={i}>
+          
+              <div >
                 <Card>
                   <CardBody>
                     <div className="d-flex justify-content-end px-4">
-                      {i === 0 ? <i className="fa fa-bell icon "></i> : null}
-                      <button
+                      <i className="fa fa-bell icon "></i> 
+                      {/* <button
                         type="button"
                         className="close py-4"
                         data-dismiss="modal"
                         aria-label="Close"
                         style={{ width: "20px" }}
-                        onClick={() => handleDelete(group)}
+                        onClick={() => handleDelete(groupReminder)}
                       >
                         <span aria-hidden="true">&times;</span>
-                      </button>
+                      </button> */}
                     </div>
                     <CardTitle className="mt-0">
-                      Title :{group?.title}
+                      Title :{groupReminder?.title}
                     </CardTitle>
 
-                    {group?.messageId?.messageData && (
+                    {groupReminder?.messageId?.messageData && (
                       <CardText>
                         {" "}
-                        Message Data :{group?.messageId?.messageData}
+                        Message Data :{groupReminder?.messageId?.messageData}
                       </CardText>
                     )}
                     <CardText className="text-primary">
                       {" "}
-                      Date & Time:{group?.scheduledTime}
+                      Date & Time:{groupReminder?.scheduledTime[0]}
                     </CardText>
                     {/* <CardText className="text-primary">
                     {" "}
@@ -92,7 +91,7 @@ const GroupReminder = ({ groupReminder, setGroupReminder }) => {
                   </CardBody>
                 </Card>
               </div>
-            ))}
+            
         </>
       ) : (
         <p>No Reminders</p>
