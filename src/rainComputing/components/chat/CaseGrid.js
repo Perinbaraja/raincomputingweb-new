@@ -74,7 +74,7 @@ const CaseGrid = ({
         </DynamicModel>
       </>
       <li className={classNames("px-3 py-2", selected && "active-case-bg")}>
-        <Row className="align-middle py-1" style={{ maxWidth: "100%" }}>
+      <Row className="align-middle py-1 text-break" style={{ maxWidth: "100%" }}>
           <Col
             xs={10}
             className="pointer"
