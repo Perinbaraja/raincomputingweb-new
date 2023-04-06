@@ -13,6 +13,9 @@ import PropTypes from "prop-types"
 import "./reminder.css"
 
 const GroupReminder = ({ groupReminder, setGroupReminder }) => {
+
+  console.log("groupReminder",groupReminder)
+
   const [removeData, setRemoveData] = useState()
   const {
     toggleOpen: groupReminderDeleteModalOpen,
@@ -83,7 +86,7 @@ const GroupReminder = ({ groupReminder, setGroupReminder }) => {
                     )}
                     <CardText className="text-primary">
                       {" "}
-                      Date & Time:{group?.scheduledTime}
+                      Date & Time:{group?.scheduledTime[0]}
                     </CardText>
                     {/* <CardText className="text-primary">
                     {" "}

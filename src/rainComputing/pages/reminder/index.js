@@ -7,10 +7,12 @@ import { getReminder } from "rainComputing/helpers/backend_helper"
 import moment from "moment"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
+import { date } from "yup"
 
 const Reminders = ({ toggle, open, setOpen, show = false }) => {
 const [groupReminder, setGroupReminder] = useState([])
 const { currentUser } = useUser()
+
 const getReminderData = async () => {
   try {
     if (!currentUser) {
@@ -21,30 +23,60 @@ const getReminderData = async () => {
       return;
     }
     const reminders = res?.reminders;
+    
+    const nextNotify=res.nextNotificationTime
+
+    console.log("nextNotify",nextNotify)
     const newReminders = [];
+    console.log("reminders",reminders)
     for (const reminder of reminders) {
-      const scheduledTime = reminder?.scheduledTime;
-      const notificationTime = moment(scheduledTime, moment.ISO_8601)
-        .subtract(5, "hours")
-        .subtract(30, "minutes")
-        .toDate();
-      const now = new Date().getTime();
-      const timeDiff = notificationTime.getTime() - now;
-      if (timeDiff > 0) {
-        setTimeout(() => {
-          setGroupReminder(prevState => [...prevState, reminder]);
-          toastr.success(`You have ${reminder.title} successfully`, "Success");
-          setOpen(true);
-        }, timeDiff);
-      } else {
-        newReminders.push(reminder);
-      }
+      const scheduledTime = reminders.filter((reminder) => {
+        return reminder.scheduledTime.some((time) => {
+          return moment(time).isSame(nextNotify);
+        });
+      });
+console.log("scheduledTime",scheduledTime)
+ 
+      
+      const now = new Date()
+
+      // for (const notificationTime of scheduledTime) {
+ const currentNotify= new Date(nextNotify)
+ currentNotify.setHours(currentNotify.getHours() - 5);
+currentNotify.setMinutes(currentNotify.getMinutes() - 30);
+ console.log("currentNotify",currentNotify)
+        const timeDiff = currentNotify - now
+          console.log("now",now)
+          // console.log("notificationTime",notificationTime.getTime())
+          console.log("timeDiff",timeDiff)
+      
+        if (timeDiff < 50000) {
+          setTimeout(() => {
+            setGroupReminder(  scheduledTime);
+            toastr.success(`You have ${scheduledTime[0].title} successfully`, "Success");
+            setOpen(true);
+          }, timeDiff);
+        } else {
+          newReminders.push(scheduledTime);
+        }
+       
+      // }
     }
-    setGroupReminder(prevState => [...prevState, ...newReminders]);
+    
+    setGroupReminder( ...newReminders);
   } catch (error) {
     console.error(error);
   }
 };
+
+const intervalTime = 30000; // 30 seconds in milliseconds
+
+useEffect(() => {
+  // define a function to run the getReminderData function at the specified interval
+  const intervalId = setInterval(getReminderData, intervalTime);
+  // clear the interval on component unmount
+  return () => clearInterval(intervalId);
+}, [getReminderData]);
 
 // console.log("dk:",groupReminder);
 // useEffect(() => {

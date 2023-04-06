@@ -37,6 +37,7 @@ const Calender = ({ setcalendarModalOpen }) => {
     const year = date.getFullYear()
 
     const currectDate = new Date()
+    console.log("currectDate",currectDate)
     const currentHour = currectDate.getHours()
     const currentMin = currectDate.getMinutes()
     const currentSec = currectDate.getSeconds()
@@ -71,21 +72,37 @@ const Calender = ({ setcalendarModalOpen }) => {
       getAllReminderById()
     }
   }, [currentUser])
-
-  const calendarEvents = getReminders.map(reminder => {
-    const startTime = new Date(reminder.scheduledTime)
-    startTime.setHours(startTime.getHours() - 5)
-    startTime.setMinutes(startTime.getMinutes() - 30)
-    return {
-      id: reminder._id,
-      title: reminder.title,
-      start: startTime,
-      allDay: false,
-    }
+console.log("getReminder",getReminders)
+  // const calendarEvents = getReminders.map(reminder => {
+  //   const startTime = new Date(reminder.scheduledTime)
+  //   startTime.setHours(startTime.getHours() - 5)
+  //   startTime.setMinutes(startTime.getMinutes() - 30)
+  //   return {
+  //     id: reminder._id,
+  //     title: reminder.title,
+  //     start: startTime,
+  //     allDay: false,
+  //   }
+  // })
+  const calendarEvents = []
+  getReminders.forEach(reminder => {
+    reminder.scheduledTime.forEach(date => {
+      const startTime = new Date(date)
+      console.log("startTime: ", startTime)
+      startTime.setHours(startTime.getHours() - 5)
+      startTime.setMinutes(startTime.getMinutes() - 30)
+      calendarEvents.push({
+        id: reminder._id,
+        title: reminder.title,
+        start: startTime,
+        allDay: false,
+      })
+    })
   })
-
+  
   const handleEventClick = e => {
     const event = e.event
+    console.log("event: " , event)
     const reminder = getReminders.find(r => r?._id === event?.id)
     setSelectedEvent(reminder)
     setEditRemainderModelOpen(true)
