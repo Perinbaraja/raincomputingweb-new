@@ -45,8 +45,8 @@ const EditReminder = ({
   const [date, setDate] = useState(formattedDate)
   const [time, setTime] = useState(formattedTime)
   const [removeData, setRemoveData] = useState()
-  const [selectedDates, setSelectedDates] = useState([])
-
+  const [selectedDates, setSelectedDates] = useState([date])
+  console.log("selectedDates", selectedDates)
   const reminderSelectedMembers = reminder?.selectedMembers
   const [selectedMembers, setSelectedMembers] = useState(
     reminderSelectedMembers
@@ -110,6 +110,8 @@ const EditReminder = ({
       handleWeekly()
     } else if (selectedValue === "monthly") {
       handleMonthly()
+    } else if (selectedValue === "select") {
+      handleSelect()
     }
   }
   const handleWeekly = () => {
@@ -153,7 +155,6 @@ const EditReminder = ({
 
     setSelectedDates(selectedDates)
   }
-
   const handleDaily = () => {
     const startDate = new Date(date)
     const endDate = new Date(startDate.getFullYear(), 11, 31) // set end date to 31st December of current year
@@ -164,7 +165,6 @@ const EditReminder = ({
       days.push(new Date(d).toISOString().slice(0, 10))
     }
 
-    setDate(startDate.toISOString().slice(0, 10))
     setSelectedDates(days)
   }
   const handleReminderUpdate = async () => {
@@ -176,6 +176,9 @@ const EditReminder = ({
       selectedMembers: getSelectedReminderMembers,
       title: title,
       scheduledTime: scheduledTime,
+      nextScheduledTime: new Date(
+        `${selectedDates[0]}T${time}:00.000Z`
+      ).toISOString(),
     }
 
     const reminderData = await UpdateReminder(payload)
@@ -208,6 +211,34 @@ const EditReminder = ({
     setRemoveData(reminder)
     setReminderDeleteModalOpen(true)
   }
+  const handleSelect = () => {
+    setSelectedDates([date])
+  }
+  const handleTimeChange = e => {
+    setTime(e.target.value)
+  }
+  const getTimeOptions = () => {
+    const options = []
+    const now = new Date()
+    const currentMinutes = Math.ceil(now.getMinutes() / 15) * 15
+    for (let i = now.getHours(); i <= 23; i++) {
+      const hour = i < 10 ? `0${i}` : `${i}`
+      for (let j = 0; j <= 45; j += 15) {
+        const minutes = j < 10 ? `0${j}` : `${j}`
+        const time = `${hour}:${minutes}`
+        if (i === now.getHours() && j < currentMinutes) {
+          continue
+        }
+        options.push(
+          <option key={time} value={time}>
+            {time}
+          </option>
+        )
+      }
+    }
+    return options
+  }
+
   return (
     <>
       <i
@@ -251,7 +282,7 @@ const EditReminder = ({
         >
           Date
         </label>
-        <div className="col-md-8">
+        <div className="col-md-4">
           <input
             className="form-control"
             type="date"
@@ -261,13 +292,15 @@ const EditReminder = ({
             onChange={e => setDate(e.target.value)}
           />
         </div>
+        <div className="col-md-4">
+          <select className="form-select" onChange={handleChanges}>
+            <option value="select">Select</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
       </Row>
-      <select onChange={handleChanges}>
-      <option value="">Select</option>
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-      </select>
       <Row className="my-md-3">
         <label
           htmlFor="example-text-input"
@@ -276,14 +309,14 @@ const EditReminder = ({
           Time
         </label>
         <div className="col-md-8">
-          <input
+          <select
             className="form-control"
-            type="time"
-            placeholder="HH:MM"
             value={time}
-            name="time"
-            onChange={e => setTime(e.target.value)}
-          />
+            name="select-time"
+            onChange={handleTimeChange}
+          >
+            {getTimeOptions()}
+          </select>
         </div>
       </Row>
       <Row className="my-md-3">
