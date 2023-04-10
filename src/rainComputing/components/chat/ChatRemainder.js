@@ -14,15 +14,19 @@ const ChatRemainder = ({
   selectdate,
   getAllReminderById,
 }) => {
+  console.log("selectdate123", selectdate)
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [title, setTitle] = useState("")
   const [date, setDate] = useState(selectdate)
-  const [time, setTime] = useState("")
+  console.log("date", date)
+  const timeOption = getTimeOptions()
+  const [time, setTime] = useState(timeOption[0]?.key)
+
   const [scheduledTime, setScheduledTime] = useState("")
   const [selectedMembers, setSelectedMembers] = useState([])
-  const [selectedDates, setSelectedDates] = useState([])
-  console.log("selected dates", selectedDates)
+  const [selectedDates, setSelectedDates] = useState([date])
+
   const [userId, setUserId] = useState(null)
   const [isChecked, setIsChecked] = useState("")
 
@@ -63,7 +67,12 @@ const ChatRemainder = ({
       handleWeekly()
     } else if (selectedValue === "monthly") {
       handleMonthly()
+    } else if (selectedValue === "select") {
+      handleSelect()
     }
+  }
+  const handleSelect = () => {
+    setSelectedDates([date])
   }
   const handleWeekly = () => {
     const startDate = new Date(date) // replace with desired start date
@@ -117,14 +126,20 @@ const ChatRemainder = ({
       days.push(new Date(d).toISOString().slice(0, 10))
     }
 
-    setDate(startDate.toISOString().slice(0, 10))   
     setSelectedDates(days)
   }
+
   const handleReminderCreate = async () => {
-    const scheduledTime = selectedDates.map(selectedDate => {
-      return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
-    })
-    console.log("scheduled time: " , scheduledTime)
+    const scheduledTime = selectedDates
+      .sort((a, b) => {
+        const dateA = new Date(a)
+        const dateB = new Date(b)
+        return dateA - dateB
+      })
+      .map(selectedDate => {
+        return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
+      })
+    console.log("scheduled time: ", selectedDates[0])
     const payload = {
       groupId: currentChat?._id,
       selectedMembers: [currentUser?.userID, ...selectedMembers],
@@ -132,6 +147,9 @@ const ChatRemainder = ({
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
       createdBy: currentUser?.userID,
+      nextScheduledTime: new Date(
+        `${selectedDates[0]}T${time}:00.000Z`
+      ).toISOString(),
     }
 
     if (isChecked) {
@@ -152,9 +170,15 @@ const ChatRemainder = ({
   }
   const handleCreate = async () => {
     // const scheduledTime = new Date(`${date}T${time}:00.000Z`).toISOString()
-    const scheduledTime = selectedDates.map(selectedDate => {
-      return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
-    })
+    const scheduledTime = selectedDates
+      .sort((a, b) => {
+        const dateA = new Date(a)
+        const dateB = new Date(b)
+        return dateA - dateB
+      })
+      .map(selectedDate => {
+        return new Date(`${selectedDate}T${time}:00.000Z`).toISOString()
+      })
     console.log("scheduled time: " + scheduledTime)
     const payload = {
       groupId: currentChat?._id,
@@ -162,6 +186,9 @@ const ChatRemainder = ({
       title: title,
       scheduledTime: scheduledTime, // Pass the scheduledTime value to the API
       createdBy: currentUser?.userID,
+      nextScheduledTime: new Date(
+        `${selectedDates[0]}T${time}:00.000Z`
+      ).toISOString(),
     }
 
     if (isChecked) {
@@ -188,6 +215,30 @@ const ChatRemainder = ({
     if (memberName)
       return memberName?.id?.firstname + " " + memberName?.id?.lastname
     return id
+  }
+  function getTimeOptions() {
+    const options = []
+    const now = new Date()
+    const currentMinutes = Math.ceil(now.getMinutes() / 15) * 15
+    for (let i = now.getHours(); i <= 23; i++) {
+      const hour = i < 10 ? `0${i}` : `${i}`
+      for (let j = 0; j <= 45; j += 15) {
+        const minutes = j < 10 ? `0${j}` : `${j}`
+        const time = `${hour}:${minutes}`
+        if (i === now.getHours() && j < currentMinutes) {
+          continue
+        }
+        options.push(
+          <option key={time} value={time}>
+            {time}
+          </option>
+        )
+      }
+    }
+    return options
+  }
+  const handleTimeChange = e => {
+    setTime(e.target.value)
   }
   return (
     <>
@@ -216,12 +267,10 @@ const ChatRemainder = ({
         >
           Date
         </label>
-        {selectdate ? (
-          <div className="col-md-8">
+        <div className="col-md-4">
+          {selectdate ? (
             <input className="form-control" value={date} />
-          </div>
-        ) : (
-          <div className="col-md-8">
+          ) : (
             <input
               className="form-control"
               type="date"
@@ -230,15 +279,18 @@ const ChatRemainder = ({
               name="date"
               onChange={e => setDate(e.target.value)}
             />
-          </div>
-        )}
+          )}
+        </div>
+        <div className="col-md-4">
+          <select className="form-select" onChange={handleChanges}>
+            <option value="select">Select</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
       </Row>
-      <select onChange={handleChanges}>
-      <option value="">Select</option>
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-      </select>
+
       <Row className="my-md-3">
         <label
           htmlFor="example-text-input"
@@ -247,14 +299,14 @@ const ChatRemainder = ({
           Time
         </label>
         <div className="col-md-8">
-          <input
+          <select
             className="form-control"
-            type="time"
-            placeholder="HH:MM"
             value={time}
-            name="time"
-            onChange={e => setTime(e.target.value)}
-          />
+            name="select-time"
+            onChange={handleTimeChange}
+          >
+            {timeOption}
+          </select>
         </div>
       </Row>
       <Row className="my-md-3">
