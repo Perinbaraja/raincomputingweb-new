@@ -1127,7 +1127,7 @@ const ChatRc = () => {
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
   return (
-    <div className="page-content">
+    <div className="page-contents" style={{marginTop:100}}>
       <>
         {pageLoader ? (
           <ChatLoader />
@@ -1296,10 +1296,10 @@ const ChatRc = () => {
             <MetaTags>
               <title>Chat RC</title>
             </MetaTags>
-            <Container fluid>
+            
               <Row>
-                <Col xs="12" lg="4">
-                  <div className="pb-2 border-bottom">
+                <Col xs="12" lg="4" >
+                  <div className="pb-2 px-2 border-bottom">
                     <Link className="d-flex" to="/profile">
                       <div className="align-self-center me-3">
                         <img
@@ -1338,7 +1338,7 @@ const ChatRc = () => {
                       />
                     </div>
                   )}
-                  <div className="my-1">
+                  <div className="my-1 px-2">
                     <Nav pills justified>
                       {sidebarNavItems.map((navItem, n) => (
                         <NavItem key={n}>
@@ -1361,7 +1361,7 @@ const ChatRc = () => {
                           className="list-unstyled chat-list"
                           id="recent-list"
                         >
-                          <PerfectScrollbar style={{ height: "300px" }}>
+                          <PerfectScrollbar style={{ height: "510px" }}>
                             {map(chats, chat => (
                               <li
                                 key={chat._id}
@@ -1438,7 +1438,7 @@ const ChatRc = () => {
                           <ChatLoader />
                         ) : (
                           <PerfectScrollbar
-                            style={{ height: "300px" }}
+                            style={{ height: "410px" }}
                             onScroll={e => handleCaseScroll(e?.target)}
                           >
                             <ul className="list-unstyled chat-list ">
@@ -1467,7 +1467,7 @@ const ChatRc = () => {
                             <ChatLoader />
                           ) : (
                             <PerfectScrollbar
-                              style={{ height: "300px" }}
+                              style={{ height: "470px" }}
                               onScroll={e => handleContactScroll(e?.target)}
                             >
                               {contacts &&
@@ -1781,13 +1781,13 @@ const ChatRc = () => {
                             </Row>
                           </div>
                           <div>
-                            <div className="chat-conversation p-5">
+                            <div className="chat-conversation px-3 py-1">
                               <ul className="list-unstyled">
                                 <div
                                   ref={containerRef}
                                   onScroll={event => handleScroll(event)}
                                   style={{
-                                    height: "360px",
+                                    height: "490px",
                                     overflowY: "scroll",
                                   }}
                                 >
@@ -2212,7 +2212,7 @@ const ChatRc = () => {
                   </div>
                 </Col>
               </Row>
-            </Container>
+            
           </>
         )}
       </>

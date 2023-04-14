@@ -145,13 +145,13 @@ const LandingGrid = () => {
                 <section style={{paddingTop:"50px",paddingBottom:"60px"}}>
                   <div className="">
                     <div className="d-flex flex-md-row flex-column" id="">
-                      <div id="" className="col-sm-8">
+                      <div id="" className="col-lg-7 col-sm-6">
                         <div>
                           <h2 className=" text-primary mb-5 " id="">
                             About Us <div style={{width:"70px",height:"3px",backgroundColor:"#556ee6",borderRadius:"10px"}}></div>
                           </h2>
                         </div>
-                        <p id="">
+                        <p id="" style={{fontSize:15}}>
                           We pride ourselves on our down to earth and friendly
                           approach, with many of us being heavily involved in
                           our spare time in making the law a better and more
@@ -165,7 +165,7 @@ const LandingGrid = () => {
                           that want to help you and your family face the
                           criminal justice system with confidence.
                         </p>
-                        <p id="">
+                        <p id="" style={{fontSize:15}}>
                           {" "}
                           At the same time we have the advantage of being
                           present in four different cities and therefore closer
@@ -177,7 +177,7 @@ const LandingGrid = () => {
                         </p>
                       </div>
 
-                      <div id="" className="flex-fill">
+                      <div id="" className="flex-fill col-lg-5 col-sm-12 d-flex justify-content-end ">
                         <img
                           src={illustration}
                           alt="about illustration"
@@ -190,10 +190,10 @@ const LandingGrid = () => {
                 </section>
 
                 <div
-                  className=" d-flex flex-md-row flex-column px-5 "
-                  style={{ paddingTop: "50px", paddingBottom: "90px" }}
+                  className=" d-flex flex-md-row flex-column  "
+                  style={{ paddingTop: "50px", paddingBottom: "120px" }}
                 >
-                  <div id="" className="col-md-6 col-sm-12">
+                  <div id="" className="col-md-6 col-sm-12 text-center ">
                     {/* <h2 >Contact Us </h2>
                            <div id="contactline"></div> */}
 
