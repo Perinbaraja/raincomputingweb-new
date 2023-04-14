@@ -229,6 +229,7 @@ const ChatRc = () => {
   const [prevHeight, setPrevHeight] = useState(0)
   const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
   const [blobURL, setBlobURL] = useState(null)
+  
   const startRecording = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -327,6 +328,7 @@ const ChatRc = () => {
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setactiveTab(tab)
+      setCurrentChat(null)
     }
   }
   //copy group Id

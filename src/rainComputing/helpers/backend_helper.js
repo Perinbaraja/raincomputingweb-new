@@ -27,6 +27,8 @@ const registerAttorney = payload =>
   post(`${BASE_URL}/attorney/register`, payload)
 const attorneyDetailsUpdate = payload =>
   put(`${BASE_URL}/attorney/attorneyUpdate`, payload)
+const messageUpdate = payload =>
+  post(`${BASE_URL}/message/updateMsg`, payload)
 const getAttorneyByUserID = payload =>
   post(`${BASE_URL}/attorney/getByUserId`, payload)
 const getFirmsByAttorneyID = payload =>
@@ -167,6 +169,7 @@ export {
   UpdateReminder,
   getAllUsers,
   attorneyDetailsUpdate,
+  messageUpdate,
   getAllChatRooms,
   createChatRoom,
   getRoomMessages,
