@@ -216,7 +216,6 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
-  console.log("mentionsArray", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
