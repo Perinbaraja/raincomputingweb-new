@@ -289,7 +289,6 @@ const ChatRc = () => {
         setVisibleMessages([
           ...messages.slice(-(visibleMessages?.length + MESSAGE_CHUNK_SIZE)),
         ])
-
         if (visibleMessages?.length < messages?.length) {
           event.currentTarget.scrollTop = clientHeight
         } else if (scrollTop + clientHeight === scrollHeight) {
@@ -338,14 +337,11 @@ const ChatRc = () => {
   }, [searchText, isSearchTextCleared])
 
   useEffect(() => {
-    const timer2 = setTimeout(() => {
+    if (visibleMessages?.length < messages?.length) {
       const tempHeight = containerRef?.current?.scrollHeight - prevHeight
-      containerRef?.current?.scrollTo({ top: tempHeight, behavior: "smooth" })
-    }, 2000)
-
-    return () => clearTimeout(timer2)
-  }, [visibleMessages?.length])
-
+      containerRef?.current?.scrollTo({ top: tempHeight, behavior: "auto" }) // Use "auto" instead of "smooth"
+    }
+  }, [visibleMessages?.length, messages])
   useEffect(() => {
     setVisibleMessages(messages.slice(-49))
 
@@ -530,7 +526,7 @@ const ChatRc = () => {
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
     if (countRes?.success) {
-      const limit = 10
+      const limit = 50
       const { userCount, chatCount, caseCount } = countRes
       setTotalPages({
         ...totalPages,
@@ -1069,7 +1065,7 @@ const ChatRc = () => {
     if (currentChat) {
       setRecorder([])
       setcurMessage("")
-        setMentionsArray(
+      setMentionsArray(
         currentChat.groupMembers
           .filter(m => m?.id?._id) // filter out members with null IDs
           .map(m => ({
@@ -1531,20 +1527,26 @@ const ChatRc = () => {
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
-                              allCases.map((ca, j) => (
-                                <CaseGrid
-                                  caseData={ca}
-                                  index={j}
-                                  key={j}
-                                  active={activeAccordian}
-                                  onAccordionButtonClick={
-                                    handleSettingActiveAccordion
-                                  }
-                                  handleSelectingCase={onSelectingCase}
-                                  selected={currentCase?._id === ca?._id}
-                                  notifyCountforCase={notifyCountforCase}
-                                />
-                              ))}
+                              allCases
+                                .sort(
+                                  (a, b) =>
+                                    new Date(b.createdAt) -
+                                    new Date(a.createdAt)
+                                )
+                                .map((ca, j) => (
+                                  <CaseGrid
+                                    caseData={ca}
+                                    index={j}
+                                    key={j}
+                                    active={activeAccordian}
+                                    onAccordionButtonClick={
+                                      handleSettingActiveAccordion
+                                    }
+                                    handleSelectingCase={onSelectingCase}
+                                    selected={currentCase?._id === ca?._id}
+                                    notifyCountforCase={notifyCountforCase}
+                                  />
+                                ))}
                           </ul>
                         </PerfectScrollbar>
                       )}

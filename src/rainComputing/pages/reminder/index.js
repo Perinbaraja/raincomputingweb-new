@@ -25,7 +25,7 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
       }
       const reminders = res?.nextReminders[0]
 
-      const nextNotify = res.nextNotificationTime
+      const nextNotify = res?.nextNotificationTime
 
       const newReminders = []
 
@@ -36,7 +36,6 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
       currentNotify.setHours(currentNotify.getHours() - 5)
       currentNotify.setMinutes(currentNotify.getMinutes() - 30)
 
-      console.log("currentNotify", currentNotify)
       const timeDiff = currentNotify - now
       // console.log("now",now)
       // console.log("notificationTime",notificationTime.getTime())
