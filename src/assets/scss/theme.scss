@@ -430,8 +430,9 @@ span.flatpickr-weekday {
 // }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
   height: 10px;
+  overflow: hidden;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {

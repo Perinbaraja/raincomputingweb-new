@@ -92,6 +92,7 @@ import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import Calender from "../Calendar/Calendar"
 import RecordRTC from "recordrtc"
 import VoiceMessage from "rainComputing/components/audio"
+import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -157,6 +158,8 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+  // console.log("chats v:", chats?.map(chat => chat.groupMembers.map(member => member.id)));
+
 
   const privateChatId = query.get("p_id")
   const groupChatId = query.get("g_id")
@@ -179,6 +182,11 @@ const ChatRc = () => {
     toggleOpen: caseEditModalOpen,
     setToggleOpen: setCaseEditModalOpen,
     toggleIt: toggleCaseEditModal,
+  } = useToggle(false)
+  const {
+    toggleOpen: messageEditModalOpen,
+    setToggleOpen: setMessageEditModalOpen,
+    toggleIt: toggleMessageEditModal,
   } = useToggle(false)
   const {
     toggleOpen: rplyMessageModalOpen,
@@ -217,6 +225,7 @@ const ChatRc = () => {
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
+  const [curEditMessageId, setCurEditMessageId] = useState("")
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
   const [isDeleteMsg, setIsDeleteMsg] = useState(false)
   const [emailModal, setEmailModal] = useState(false)
@@ -229,6 +238,28 @@ const ChatRc = () => {
   const [prevHeight, setPrevHeight] = useState(0)
   const [visibleMessages, setVisibleMessages] = useState(messages.slice(-50))
   const [blobURL, setBlobURL] = useState(null)
+  const [privateSearchResults, setPrivateSearchResults] = useState([]);
+// console.log("searchtext,",searchText)
+ 
+useEffect(() => {
+
+  const filterChats = () => {
+    if(searchText !== "" ){
+    const filteredChats = chats?.filter((chat) =>
+      chat.groupMembers.some(
+        (member) =>
+          member?.id?.firstname?.toLowerCase().includes(searchText.toLowerCase()) // Change to the property you want to search by
+      )
+    );
+    setChats(filteredChats);}
+
+    else setChats(chats)
+  };
+
+  // Call the filterChats function whenever the searchText or chats prop changes
+  filterChats();
+
+}, [searchText]);
   
   const startRecording = () => {
     navigator.mediaDevices
@@ -449,7 +480,6 @@ const ChatRc = () => {
       return chatMember.id?.firstname + " " + chatMember.id?.lastname
     return senderId
   }
-
   //Getting all the cases
   const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
     setCaseLoading(true)
@@ -1131,9 +1161,18 @@ const ChatRc = () => {
   return (
     <div className="page-contents" style={{marginTop:100}}>
       <>
-        {pageLoader ? (
-          <ChatLoader />
-        ) : (
+      {loading ? (
+              <Row>
+                <Col xs="12">
+                  <div className="text-center my-3">
+                    <Link to="#" className="text-success">
+                      <i className="bx bx-hourglass bx-spin me-2" />
+                      Loading. . .
+                    </Link>
+                  </div>
+                </Col>
+              </Row>
+            ) : (
           <>
             {/*modal for Email*/}
             <Modal
@@ -1263,6 +1302,16 @@ const ChatRc = () => {
                 getSubGroups={onGettingSubgroups}
               />
             )}
+           
+              <EditMessageModel
+                open={messageEditModalOpen}
+                setOpen={setMessageEditModalOpen}
+                toggleOpen={toggleMessageEditModal}
+                curMessageId={curEditMessageId}
+                msgData={curEditMessageId?.messageData}
+                
+              />
+        
             <ReplyMsgModal
               open={rplyMessageModalOpen}
               setOpen={setReplyMsgModalOpen}
@@ -1340,6 +1389,19 @@ const ChatRc = () => {
                       />
                     </div>
                   )}
+                  {activeTab === "1" && (
+                    <div className="mx-2 mt-2  border-bottom">
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="user-search-text"
+                        placeholder="Search here"
+                        value={searchText}
+                        name="searchText"
+                        onChange={e => setSearchText(e.target.value)}
+                      />
+                    </div>
+                  )}
                   <div className="my-1 px-2">
                     <Nav pills justified>
                       {sidebarNavItems.map((navItem, n) => (
@@ -1363,7 +1425,7 @@ const ChatRc = () => {
                           className="list-unstyled chat-list"
                           id="recent-list"
                         >
-                          <PerfectScrollbar style={{ height: "510px" }}>
+                          <PerfectScrollbar style={{ height: "450px" }}>
                             {map(chats, chat => (
                               <li
                                 key={chat._id}
@@ -1441,7 +1503,7 @@ const ChatRc = () => {
                         ) : (
                           <PerfectScrollbar
                             style={{ height: "410px" }}
-                            onScroll={e => handleCaseScroll(e?.target)}
+                            // onScroll={e => handleCaseScroll(e?.target)}
                           >
                             <ul className="list-unstyled chat-list ">
                               {allCases.length > 0 &&
@@ -1520,9 +1582,18 @@ const ChatRc = () => {
                 <Col xs="12" lg="8" className="align-self-center">
                   <div className="w-100 ">
                     {currentChat ? (
-                      chatLoader ? (
-                        <ChatLoader />
-                      ) : (
+                     loading ? (
+                      <Row>
+                        <Col xs="12">
+                          <div className="text-center my-3">
+                            <Link to="#" className="text-success">
+                              <i className="bx bx-hourglass bx-spin me-2" />
+                              Loading. . .
+                            </Link>
+                          </div>
+                        </Col>
+                      </Row>
+                    ) : (
                         <Card className="chat-card">
                           <div className="py-2 px-3 border-bottom">
                             <Row>
@@ -1847,6 +1918,15 @@ const ChatRc = () => {
                                               <DropdownItem
                                                 href="#"
                                                 onClick={() => {
+                                                  setCurEditMessageId(msg)
+                                                  setMessageEditModalOpen(true)
+                                                }}
+                                              >
+                                                Edit
+                                              </DropdownItem>
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
                                                   onPinnedMessage(msg)
                                                 }}
                                               >
@@ -1900,6 +1980,17 @@ const ChatRc = () => {
                                               {msg?.isPinned ? (
                                                 <div>
                                                   <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                                </div>
+                                              ) : (
+                                                <div className="conversation-name">
+                                                  {" "}
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div>
+                                              {msg?.isEdit ? (
+                                                <div>
+                                                  <p className="text-primary">Edited</p>
                                                 </div>
                                               ) : (
                                                 <div className="conversation-name">
