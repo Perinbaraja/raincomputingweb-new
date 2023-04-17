@@ -220,7 +220,7 @@ const ChatRemainder = ({
     const options = []
     const now = new Date()
     const currentMinutes = Math.ceil(now.getMinutes() / 15) * 15
-    for (let i = now.getHours(); i <= 23; i++) {
+    for (let i = 0; i <= 23; i++) { // changed start time to 0
       const hour = i < 10 ? `0${i}` : `${i}`
       for (let j = 0; j <= 45; j += 15) {
         const minutes = j < 10 ? `0${j}` : `${j}`
@@ -237,6 +237,8 @@ const ChatRemainder = ({
     }
     return options
   }
+  
+
   const handleTimeChange = e => {
     setTime(e.target.value)
   }
