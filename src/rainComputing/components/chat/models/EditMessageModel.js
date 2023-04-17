@@ -109,7 +109,7 @@ EditMessageModel.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
   toggleOpen: PropTypes.func,
-  curMessageId: PropTypes.object,
+  curMessageId: PropTypes.any,
   msgData: PropTypes.array,
 }
 
