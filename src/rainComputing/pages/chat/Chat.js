@@ -1447,6 +1447,9 @@ const ChatRc = () => {
                   <TabContent activeTab={activeTab} className="py-1">
                     <TabPane tabId="1">
                       <ul className="list-unstyled chat-list" id="recent-list">
+                      {caseLoading ? (
+                        <ChatLoader />
+                      ) : (
                         <PerfectScrollbar style={{ height: "450px" }}>
                           {map(chats, chat => (
                             <li
@@ -1504,7 +1507,7 @@ const ChatRc = () => {
                               </Link>
                             </li>
                           ))}
-                        </PerfectScrollbar>
+                        </PerfectScrollbar>)}
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
@@ -1606,16 +1609,7 @@ const ChatRc = () => {
                 <div className="w-100 ">
                   {currentChat ? (
                     loading ? (
-                      <Row>
-                        <Col xs="12">
-                          <div className="text-center my-3">
-                            <Link to="#" className="text-success">
-                              <i className="bx bx-hourglass bx-spin me-2" />
-                              Loading. . .
-                            </Link>
-                          </div>
-                        </Col>
-                      </Row>
+                      <ChatLoader/>
                     ) : (
                       <Card className="chat-card">
                         <div className="py-2 px-3 border-bottom">
