@@ -422,12 +422,12 @@ span.flatpickr-weekday {
   background: rgba(0, 0, 0, 0.15) !important;
 }
 
-// ::-webkit-scrollbar {
-//   width: 0;
-//   /* Remove scrollbar space */
-//   background: transparent;
-//   /* Optional: just make scrollbar invisible */
-// }
+::-webkit-scrollbar {
+  width: 0;
+  /* Remove scrollbar space */
+  background: transparent;
+  /* Optional: just make scrollbar invisible */
+}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 0px;
