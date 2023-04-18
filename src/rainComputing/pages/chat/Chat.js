@@ -1181,9 +1181,9 @@ const ChatRc = () => {
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
   return (
-    <div className="page-contents" style={{ marginTop: 100 }}>
+    <div className="page-contents " style={{ marginTop: 100 }}>
       <>
-        {loading ? (
+        {pageLoader ? (
           <Row>
             <Col xs="12">
               <div className="text-center my-3">
@@ -1447,9 +1447,6 @@ const ChatRc = () => {
                   <TabContent activeTab={activeTab} className="py-1">
                     <TabPane tabId="1">
                       <ul className="list-unstyled chat-list" id="recent-list">
-                      {caseLoading ? (
-                        <ChatLoader />
-                      ) : (
                         <PerfectScrollbar style={{ height: "450px" }}>
                           {map(chats, chat => (
                             <li
@@ -1507,7 +1504,7 @@ const ChatRc = () => {
                               </Link>
                             </li>
                           ))}
-                        </PerfectScrollbar>)}
+                        </PerfectScrollbar>
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
@@ -1608,8 +1605,17 @@ const ChatRc = () => {
               <Col xs="12" lg="8" className="align-self-center">
                 <div className="w-100 ">
                   {currentChat ? (
-                    loading ? (
-                      <ChatLoader/>
+                    chatLoader ? (
+                      <Row>
+                        <Col xs="12">
+                          <Card className="">
+                            <div className="text-center my-3 text-success align-self-center col-12 col-lg-8">
+                              <i className="bx bx-hourglass bx-spin me-2" />
+                              Loading. . .
+                            </div>
+                          </Card>
+                        </Col>
+                      </Row>
                     ) : (
                       <Card className="chat-card">
                         <div className="py-2 px-3 border-bottom">
