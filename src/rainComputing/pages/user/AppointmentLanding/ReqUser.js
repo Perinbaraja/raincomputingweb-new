@@ -20,6 +20,7 @@ import ReqUserAppointmentDetails from "./ReqUserAppDetails"
 const RequestUser = () => {
   const { currentAttorney } = useUser()
   const [modalOpen, setModalOpen, toggleModal] = useModal(false)
+  const [pageLoader, setPageLoader] = useState(true)
   const [selectedAppointmentReq, setSelectedAppointmentReq] = useState(null)
   toastr.options = {
     progressBar: true,
@@ -42,12 +43,14 @@ const RequestUser = () => {
     onGetAllAppointmentRequest()
   }, [currentAttorney])
   const onGetAllAppointmentRequest = async () => {
+    setPageLoader(true)
     const RequestRes = await getAllAppointmentRequestById({
       userID: currentAttorney._id,
     })
     if (RequestRes.success) {
       setAppointmentReq(RequestRes.appointment)
     }
+    setPageLoader(false)
   }
   const handleAppointmentAccept = async ({ id }) => {
     const payload = {
@@ -91,17 +94,18 @@ const RequestUser = () => {
       />
 
       <div className="page-content">
-        <Container fluid>
-          <>
-            <Link to="/">
-              <button
-                className="border-0 mb-2 "
-                style={{ backgroundColor: "#f6f6f6" }}
-              >
-                Home /{" "}
-              </button>{" "}
-            </Link>
-          </>
+        {pageLoader ? (
+          <Row>
+            <Col xs="12">
+              <div className="text-center my-3">
+                <Link to="#" className="text-success">
+                  <i className="bx bx-hourglass bx-spin me-2" />
+                  Loading. . .
+                </Link>
+              </div>
+            </Col>
+          </Row>
+        ) : (
           <>
             {" "}
             {appointmentReq && appointmentReq.length > 0 ? (
@@ -217,7 +221,7 @@ const RequestUser = () => {
               </p>
             )}
           </>
-        </Container>
+        )}
       </div>
     </React.Fragment>
   )
