@@ -1499,7 +1499,7 @@ const ChatRc = () => {
                   <TabContent activeTab={activeTab} className="py-1">
                     <TabPane tabId="1">
                       <ul className="list-unstyled chat-list" id="recent-list">
-                        <PerfectScrollbar style={{ height: "450px" }}>
+                        <PerfectScrollbar style={{ height: "500px" }}>
                           {map(chats, chat => (
                             <li
                               key={chat._id}
@@ -1601,7 +1601,7 @@ const ChatRc = () => {
                         <ChatLoader />
                       ) : (
                         <PerfectScrollbar
-                          style={{ height: "410px" }}
+                          style={{ height: "500px" }}
                           // onScroll={e => handleCaseScroll(e?.target)}
                         >
                           <ul className="list-unstyled chat-list ">
@@ -1630,7 +1630,7 @@ const ChatRc = () => {
                           <ChatLoader />
                         ) : (
                           <PerfectScrollbar
-                            style={{ height: "470px" }}
+                            style={{ height: "500px" }}
                             onScroll={e => handleContactScroll(e?.target)}
                           >
                             {contacts &&
@@ -1952,7 +1952,7 @@ const ChatRc = () => {
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "490px",
+                                  height: "500px",
                                   overflowY: "scroll",
                                 }}
                               >
