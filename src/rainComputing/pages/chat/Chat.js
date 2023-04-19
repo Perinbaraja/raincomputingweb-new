@@ -311,35 +311,33 @@ const ChatRc = () => {
       behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
     })
   }
+
   const filterChats = () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
-        chat.groupMembers.some(
-          member =>
-            member?.id?.firstname
-              ?.toLowerCase()
-              .includes(searchText.toLowerCase()) // Change to the property you want to search by
+        chat.groupMembers.some(member =>
+          member?.id?.firstname
+            ?.toLowerCase()
+            .includes(searchText.toLowerCase())
         )
       )
-      setFilteredChats(chats)
+      setFilteredChats(filteredChats)
       setChats(filteredChats)
-      setIsSearchTextCleared(false) // Update chats state with filtered chats
+      setIsSearchTextCleared(false)
     } else {
-      if (isSearchTextCleared) {
-        setFilteredChats(chats)
-        // Reset chats state to initial value
-        setChats(chats)
+      if (!isSearchTextCleared) {
+        ongetAllChatRooms() // Call the function to get all chats
         setIsSearchTextCleared(true)
       }
     }
   }
+
   useEffect(() => {
     if (searchText === "") {
-      setChats(chats)
+      setIsSearchTextCleared(true)
     }
-
     filterChats()
-  }, [searchText, isSearchTextCleared])
+  }, [searchText])
 
   useEffect(() => {
     if (visibleMessages?.length < messages?.length) {
