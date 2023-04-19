@@ -2223,26 +2223,25 @@ const ChatRc = () => {
                           <div className="p-2 chat-input-section">
                             <Row {...getRootProps()}>
                               <Col>
-                                <div className="position-relativ">
+                                <div className="position-relative">
                                   {recorder &&
                                   recorder.state === "recording" ? (
                                     <>
                                       {" "}
                                       <div className="d-flex justify-content-center">
                                         <i
-                                          className="w-100 w-sm-100 mdi mdi-microphone font-size-24 text-primary d-flex justify-content-center"
+                                          className=" mdi mdi-microphone font-size-18 text-primary"
                                           style={{
-                                            height: "40px",
+                                            height: "30px",
                                             paddingLeft: "10px",
                                           }}
                                           src={blobURL}
                                           controls="controls"
                                         />
-                                        <div className="d-flex justify-content-center">
-                                          <p className=" text-primary ">
-                                            {duration}Secs
-                                          </p>
-                                        </div>
+
+                                        <p className="text-primary mt-1 font-size-12">
+                                          {duration}Secs
+                                        </p>
                                       </div>
                                     </>
                                   ) : (
@@ -2252,7 +2251,7 @@ const ChatRc = () => {
                                           <audio
                                             className="w-100 w-sm-100"
                                             style={{
-                                              height: "40px",
+                                              height: "33px",
                                               paddingLeft: "10px",
                                             }}
                                             src={blobURL}
@@ -2348,6 +2347,7 @@ const ChatRc = () => {
                                   recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-24 text-danger me-2"
+                                      title="Stop Recording"
                                       onClick={stopRecording}
                                       disabled={recorder?.state === "stopped"}
                                       style={{ cursor: "pointer" }}
@@ -2355,6 +2355,7 @@ const ChatRc = () => {
                                   ) : (
                                     <i
                                       className="mdi mdi-microphone  font-size-24 text-primary me-2"
+                                      title="Start Recording"
                                       onClick={startRecording}
                                       disabled={recorder?.state === "recording"}
                                       style={{ cursor: "pointer" }}
