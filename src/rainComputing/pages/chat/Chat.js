@@ -142,6 +142,11 @@ const ChatRc = () => {
     toggleIt: toggleGroupIdOpen,
   } = useToggle(false)
   const {
+    toggleOpen: caseSortingOpen,
+    setToggleOpen: setCaseSortingOpen,
+    toggleIt: toggleCaseSortingOpen,
+  } = useToggle(false)
+  const {
     toggleOpen: forwardModalOpen,
     setToggleOpen: setForwardModalOpen,
     toggleIt: toggleForwardModal,
@@ -509,19 +514,27 @@ const ChatRc = () => {
       page: isSearch ? 1 : casePage,
       searchText,
     })
+
     if (allCasesRes.success) {
-      setAllCases(allCasesRes.cases)
+      // Sort the cases array by createdAt in descending order
+      const sortedCases = allCasesRes.cases.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+
+      setAllCases(sortedCases)
 
       if (isSet) {
-        setCurrentCase(allCasesRes?.cases[0])
+        setCurrentCase(sortedCases[0])
       }
     } else {
       setAllCases([])
       setCurrentCase(null)
       setAllgroups(null)
     }
+
     setCaseLoading(false)
   }
+
   //Fetching user,case,group count
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
@@ -1180,6 +1193,47 @@ const ChatRc = () => {
       setCurrentChat(groupChat)
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
+
+  const handlecreatedAt = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const dateA = new Date(a.createdAt)
+      const dateB = new Date(b.createdAt)
+      return dateB - dateA // Compare date objects in descending order
+    })
+    setAllCases(sortedCases) // Update the component state with the sorted allCases array
+  }
+  const handlecaseName = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const caseNameA = a.caseName.toUpperCase() // Convert case names to uppercase for case-insensitive sorting
+      const caseNameB = b.caseName.toUpperCase()
+
+      if (caseNameA < caseNameB) {
+        return -1
+      }
+      if (caseNameA > caseNameB) {
+        return 1
+      }
+      return 0
+    })
+    setAllCases(sortedCases) // Update the component state with
+    // Use the sortedCases array for further processing
+  }
+
+  const handleCaseId = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const caseNameA = a.caseId.toUpperCase() // Convert case names to uppercase for case-insensitive sorting
+      const caseNameB = b.caseId.toUpperCase()
+
+      if (caseNameA < caseNameB) {
+        return -1
+      }
+      if (caseNameA > caseNameB) {
+        return 1
+      }
+      return 0
+    })
+    setAllCases(sortedCases)
+  }
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1508,15 +1562,42 @@ const ChatRc = () => {
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
-                      <div className="d-grid gap-2 my-2">
+                      <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-info btn-rounded mb-2"
+                          className="btn btn-info btn-rounded mb-2 col-9"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
                           <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                         </button>
+                        <div>
+                          <Dropdown
+                            isOpen={caseSortingOpen}
+                            toggle={() => toggleCaseSortingOpen(!open)}
+                          >
+                            <DropdownToggle
+                              className="btn nav-btn d-flex"
+                              tag="i"
+                            >
+                              <i
+                                className=" mdi mdi-sort-variant font-size-24"
+                                title="Filter"
+                              />
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem onClick={handleCaseId}>
+                                caseId
+                              </DropdownItem>
+                              <DropdownItem onClick={handlecaseName}>
+                                caseName
+                              </DropdownItem>
+                              <DropdownItem onClick={handlecreatedAt}>
+                                createdAt
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
                       </div>
                       {caseLoading ? (
                         <ChatLoader />
@@ -1527,26 +1608,20 @@ const ChatRc = () => {
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
-                              allCases
-                                .sort(
-                                  (a, b) =>
-                                    new Date(b.createdAt) -
-                                    new Date(a.createdAt)
-                                )
-                                .map((ca, j) => (
-                                  <CaseGrid
-                                    caseData={ca}
-                                    index={j}
-                                    key={j}
-                                    active={activeAccordian}
-                                    onAccordionButtonClick={
-                                      handleSettingActiveAccordion
-                                    }
-                                    handleSelectingCase={onSelectingCase}
-                                    selected={currentCase?._id === ca?._id}
-                                    notifyCountforCase={notifyCountforCase}
-                                  />
-                                ))}
+                              allCases.map((ca, j) => (
+                                <CaseGrid
+                                  caseData={ca}
+                                  index={j}
+                                  key={j}
+                                  active={activeAccordian}
+                                  onAccordionButtonClick={
+                                    handleSettingActiveAccordion
+                                  }
+                                  handleSelectingCase={onSelectingCase}
+                                  selected={currentCase?._id === ca?._id}
+                                  notifyCountforCase={notifyCountforCase}
+                                />
+                              ))}
                           </ul>
                         </PerfectScrollbar>
                       )}
