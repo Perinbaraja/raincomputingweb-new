@@ -53,9 +53,9 @@
   li{
     &.active{
       a{
-        background-color: $card-bg;
-        border-color: transparent;
-        box-shadow: $box-shadow;
+        background-color:  rgba($primary,0.1);
+        border-color:  rgba($primary,0.2);
+        box-shadow:  rgba($primary,0.1);
       }
     }
     a{
@@ -63,12 +63,12 @@
       padding: 14px 16px;
       color: $gray-600;
       transition: all 0.4s;
-      border-top: 1px solid $border-color;
+      border-bottom: 1px solid $border-color;
       border-radius: 4px;
       &:hover{
-        background-color: $card-bg;
-        border-color: transparent;
-        box-shadow: $box-shadow;
+        background-color: rgba($primary,0.1);
+        border-color: blue;
+        box-shadow: rgba($primary,0.1);
 
       }
     }

@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { Col, Row } from "reactstrap"
 import "./style/subgroup-bar.scss"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import "../../pages/landing/landingcard.scss"
 
 const SubgroupBar = ({
   groups,
@@ -13,24 +14,26 @@ const SubgroupBar = ({
   notifyCount,
 }) => {
   const { currentUser } = useUser()
-  const [isShowMenu, setIsShowMenu] = useState(false)
+  // const [isShowMenu, setIsShowMenu] = useState(false)
   const itemStyle = sub => {
     const color = sub?.color ? sub?.color : "#0000FF"
 
     return {
-      backgroundColor: selectedGroup?._id === sub?._id ? color : color + "22",
+      backgroundColor: selectedGroup?._id === sub?._id ? color : color + "12",
       color: selectedGroup?._id === sub?._id ? "white" : color,
     }
   }
 
   return (
     <div className="sg-wrapper">
+      <p className="font-size-12 text-primary mb-0">Sub Groups:</p>
       <Row
-        onMouseEnter={() => setIsShowMenu(true)}
-        onMouseLeave={() => setIsShowMenu(false)}
+        // onMouseEnter={() => setIsShowMenu(true)}
+        // onMouseLeave={() => setIsShowMenu(false)}
         className="align-items-center"
       >
-        <Col xs={11} className="">
+        <Col xs={11} className=" " style={{border: "2px dotted #556ee6"}}
+>
           <div className="sg-container">
             {groups &&
               groups.map((sub, s) => (
@@ -55,10 +58,12 @@ const SubgroupBar = ({
               ))}
           </div>
         </Col>
-        {currentCase?.admins?.includes(currentUser?.userID) && isShowMenu && (
+        {currentCase?.admins?.includes(currentUser?.userID)  && 
+        // isShowMenu&&
+        (
           <Col xs={1}>
             <i
-              className="bx bx-dots-vertical-rounded font-size-17 mt-1 pointer"
+              className="bx bx-dots-vertical-rounded text-primary font-size-24 mt-1 pointer "
               onClick={() => openSubGroupmodel(true)}
             />
           </Col>

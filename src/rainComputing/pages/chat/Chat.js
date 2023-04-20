@@ -142,6 +142,11 @@ const ChatRc = () => {
     toggleIt: toggleGroupIdOpen,
   } = useToggle(false)
   const {
+    toggleOpen: caseSortingOpen,
+    setToggleOpen: setCaseSortingOpen,
+    toggleIt: toggleCaseSortingOpen,
+  } = useToggle(false)
+  const {
     toggleOpen: forwardModalOpen,
     setToggleOpen: setForwardModalOpen,
     toggleIt: toggleForwardModal,
@@ -306,35 +311,33 @@ const ChatRc = () => {
       behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
     })
   }
+
   const filterChats = () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
-        chat.groupMembers.some(
-          member =>
-            member?.id?.firstname
-              ?.toLowerCase()
-              .includes(searchText.toLowerCase()) // Change to the property you want to search by
+        chat.groupMembers.some(member =>
+          member?.id?.firstname
+            ?.toLowerCase()
+            .includes(searchText.toLowerCase())
         )
       )
-      setFilteredChats(chats)
+      setFilteredChats(filteredChats)
       setChats(filteredChats)
-      setIsSearchTextCleared(false) // Update chats state with filtered chats
+      setIsSearchTextCleared(false)
     } else {
-      if (isSearchTextCleared) {
-        setFilteredChats(chats)
-        // Reset chats state to initial value
-        setChats(chats)
+      if (!isSearchTextCleared) {
+        ongetAllChatRooms() // Call the function to get all chats
         setIsSearchTextCleared(true)
       }
     }
   }
+
   useEffect(() => {
     if (searchText === "") {
-      setChats(chats)
+      setIsSearchTextCleared(true)
     }
-
     filterChats()
-  }, [searchText, isSearchTextCleared])
+  }, [searchText])
 
   useEffect(() => {
     if (visibleMessages?.length < messages?.length) {
@@ -509,19 +512,27 @@ const ChatRc = () => {
       page: isSearch ? 1 : casePage,
       searchText,
     })
+
     if (allCasesRes.success) {
-      setAllCases(allCasesRes.cases)
+      // Sort the cases array by createdAt in descending order
+      const sortedCases = allCasesRes.cases.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+
+      setAllCases(sortedCases)
 
       if (isSet) {
-        setCurrentCase(allCasesRes?.cases[0])
+        setCurrentCase(sortedCases[0])
       }
     } else {
       setAllCases([])
       setCurrentCase(null)
       setAllgroups(null)
     }
+
     setCaseLoading(false)
   }
+
   //Fetching user,case,group count
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
@@ -1180,6 +1191,47 @@ const ChatRc = () => {
       setCurrentChat(groupChat)
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
+
+  const handlecreatedAt = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const dateA = new Date(a.createdAt)
+      const dateB = new Date(b.createdAt)
+      return dateB - dateA // Compare date objects in descending order
+    })
+    setAllCases(sortedCases) // Update the component state with the sorted allCases array
+  }
+  const handlecaseName = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const caseNameA = a.caseName.toUpperCase() // Convert case names to uppercase for case-insensitive sorting
+      const caseNameB = b.caseName.toUpperCase()
+
+      if (caseNameA < caseNameB) {
+        return -1
+      }
+      if (caseNameA > caseNameB) {
+        return 1
+      }
+      return 0
+    })
+    setAllCases(sortedCases) // Update the component state with
+    // Use the sortedCases array for further processing
+  }
+
+  const handleCaseId = () => {
+    const sortedCases = [...allCases].sort((a, b) => {
+      const caseNameA = a.caseId.toUpperCase() // Convert case names to uppercase for case-insensitive sorting
+      const caseNameB = b.caseId.toUpperCase()
+
+      if (caseNameA < caseNameB) {
+        return -1
+      }
+      if (caseNameA > caseNameB) {
+        return 1
+      }
+      return 0
+    })
+    setAllCases(sortedCases)
+  }
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1447,7 +1499,7 @@ const ChatRc = () => {
                   <TabContent activeTab={activeTab} className="py-1">
                     <TabPane tabId="1">
                       <ul className="list-unstyled chat-list" id="recent-list">
-                        <PerfectScrollbar style={{ height: "450px" }}>
+                        <PerfectScrollbar style={{ height: "500px" }}>
                           {map(chats, chat => (
                             <li
                               key={chat._id}
@@ -1508,45 +1560,66 @@ const ChatRc = () => {
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
-                      <div className="d-grid gap-2 my-2">
+                      <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-info btn-rounded mb-2"
+                          className="btn btn-info btn-rounded mb-2 col-9"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
                           <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                         </button>
+                        <div>
+                          <Dropdown
+                            isOpen={caseSortingOpen}
+                            toggle={() => toggleCaseSortingOpen(!open)}
+                          >
+                            <DropdownToggle
+                              className="btn nav-btn d-flex"
+                              tag="i"
+                            >
+                              <i
+                                className=" mdi mdi-sort-variant font-size-24"
+                                title="Filter"
+                              />
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem onClick={handleCaseId}>
+                                caseId
+                              </DropdownItem>
+                              <DropdownItem onClick={handlecaseName}>
+                                caseName
+                              </DropdownItem>
+                              <DropdownItem onClick={handlecreatedAt}>
+                                createdAt
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
                       </div>
                       {caseLoading ? (
                         <ChatLoader />
                       ) : (
                         <PerfectScrollbar
-                          style={{ height: "410px" }}
+                          style={{ height: "500px" }}
                           // onScroll={e => handleCaseScroll(e?.target)}
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
-                              allCases
-                                .sort(
-                                  (a, b) =>
-                                    new Date(b.createdAt) -
-                                    new Date(a.createdAt)
-                                )
-                                .map((ca, j) => (
-                                  <CaseGrid
-                                    caseData={ca}
-                                    index={j}
-                                    key={j}
-                                    active={activeAccordian}
-                                    onAccordionButtonClick={
-                                      handleSettingActiveAccordion
-                                    }
-                                    handleSelectingCase={onSelectingCase}
-                                    selected={currentCase?._id === ca?._id}
-                                    notifyCountforCase={notifyCountforCase}
-                                  />
-                                ))}
+                              allCases.map((ca, j) => (
+                                <CaseGrid
+                                  caseData={ca}
+                                  index={j}
+                                  key={j}
+                                  active={activeAccordian}
+                                  onAccordionButtonClick={
+                                    handleSettingActiveAccordion
+                                  }
+                                  handleSelectingCase={onSelectingCase}
+                                  selected={currentCase?._id === ca?._id}
+                                  notifyCountforCase={notifyCountforCase}
+                                />
+                              ))}
                           </ul>
                         </PerfectScrollbar>
                       )}
@@ -1557,7 +1630,7 @@ const ChatRc = () => {
                           <ChatLoader />
                         ) : (
                           <PerfectScrollbar
-                            style={{ height: "470px" }}
+                            style={{ height: "500px" }}
                             onScroll={e => handleContactScroll(e?.target)}
                           >
                             {contacts &&
@@ -1879,7 +1952,7 @@ const ChatRc = () => {
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "490px",
+                                  height: "500px",
                                   overflowY: "scroll",
                                 }}
                               >
@@ -2150,26 +2223,25 @@ const ChatRc = () => {
                           <div className="p-2 chat-input-section">
                             <Row {...getRootProps()}>
                               <Col>
-                                <div className="position-relativ">
+                                <div className="position-relative">
                                   {recorder &&
                                   recorder.state === "recording" ? (
                                     <>
                                       {" "}
                                       <div className="d-flex justify-content-center">
                                         <i
-                                          className="w-100 w-sm-100 mdi mdi-microphone font-size-24 text-primary d-flex justify-content-center"
+                                          className=" mdi mdi-microphone font-size-18 text-primary"
                                           style={{
-                                            height: "40px",
+                                            height: "30px",
                                             paddingLeft: "10px",
                                           }}
                                           src={blobURL}
                                           controls="controls"
                                         />
-                                        <div className="d-flex justify-content-center">
-                                          <p className=" text-primary ">
-                                            {duration}Secs
-                                          </p>
-                                        </div>
+
+                                        <p className="text-primary mt-1 font-size-12">
+                                          {duration}Secs
+                                        </p>
                                       </div>
                                     </>
                                   ) : (
@@ -2179,7 +2251,7 @@ const ChatRc = () => {
                                           <audio
                                             className="w-100 w-sm-100"
                                             style={{
-                                              height: "40px",
+                                              height: "33px",
                                               paddingLeft: "10px",
                                             }}
                                             src={blobURL}
@@ -2275,6 +2347,7 @@ const ChatRc = () => {
                                   recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-24 text-danger me-2"
+                                      title="Stop Recording"
                                       onClick={stopRecording}
                                       disabled={recorder?.state === "stopped"}
                                       style={{ cursor: "pointer" }}
@@ -2282,6 +2355,7 @@ const ChatRc = () => {
                                   ) : (
                                     <i
                                       className="mdi mdi-microphone  font-size-24 text-primary me-2"
+                                      title="Start Recording"
                                       onClick={startRecording}
                                       disabled={recorder?.state === "recording"}
                                       style={{ cursor: "pointer" }}
