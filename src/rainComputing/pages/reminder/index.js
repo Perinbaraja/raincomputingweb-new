@@ -60,8 +60,8 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
     }
   }
 
-  const intervalTime = 600000 // 10 minutes
-
+  const intervalTime = 30000 // 30 seconds in milliseconds
+  
   useEffect(() => {
     // define a function to run the getReminderData function at the specified interval
     const intervalId = setInterval(getReminderData, intervalTime)
