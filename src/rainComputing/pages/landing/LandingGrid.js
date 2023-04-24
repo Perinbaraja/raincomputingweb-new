@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import MetaTags from "react-meta-tags"
 import { Link, withRouter } from "react-router-dom"
-import { Col, Container, Row } from "reactstrap"
+import { Col, Container, Modal, Row } from "reactstrap"
 import { map } from "lodash"
 import banner from "../../../assets/images/background-img/banner.jpg"
 import illustration from "../../../assets/images/law-illustration.jpg"
@@ -20,8 +20,8 @@ import LandingCard from "./LandingCard"
 import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
 
 import Pagination from "components/pagination/Pagination"
-import ChatBot from "../chatbot"
 import { useDropzone } from "react-dropzone"
+import ChatBot from "../chatbot/ChatBotButton"
 
 const LandingGrid = () => {
   const [searchText, setSearchText] = useState("")
@@ -30,6 +30,7 @@ const LandingGrid = () => {
   const [attorneysCount, setAttorneysCount] = useState(0)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(12)
+  const [modal_standard, setmodal_standard] = useState(false)
 
   const loadAttorney = async () => {
     const res = await getAllRegAttorneys({ page, limit, searchText })
@@ -197,7 +198,23 @@ const LandingGrid = () => {
                   </div>
                 </div>
               </section>
-
+              <button
+                className="border-0 rounded-circle btn-large "
+                variant="primary"
+                onClick={setmodal_standard}
+                style={{
+                  cursor: "pointer",
+                  position: "fixed",
+                  bottom: "40px",
+                  right: "12px",
+                }}
+              >
+                <ChatBot
+                  modal_standard={modal_standard}
+                  setmodal_standard={setmodal_standard}
+                />
+                <i className="mdi mdi-chat mdi text-primary"></i>
+              </button>
               <div
                 className=" d-flex flex-md-row flex-column  "
                 style={{ paddingTop: "50px", paddingBottom: "120px" }}
