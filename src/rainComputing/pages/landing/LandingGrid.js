@@ -20,7 +20,6 @@ import LandingCard from "./LandingCard"
 import { getAllRegAttorneys } from "rainComputing/helpers/backend_helper"
 
 import Pagination from "components/pagination/Pagination"
-import ChatBot from "../chatbot"
 import { useDropzone } from "react-dropzone"
 
 const LandingGrid = () => {
@@ -197,7 +196,6 @@ const LandingGrid = () => {
                   </div>
                 </div>
               </section>
-
               <div
                 className=" d-flex flex-md-row flex-column  "
                 style={{ paddingTop: "50px", paddingBottom: "120px" }}

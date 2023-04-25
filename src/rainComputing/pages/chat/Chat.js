@@ -860,7 +860,6 @@ const ChatRc = () => {
     }
     setChatLoader(false)
   }
-
   //Archieve Chat
   const onArchievingChat = () => {
     setChatLoader(true)
@@ -1563,35 +1562,42 @@ const ChatRc = () => {
                       <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-info btn-rounded mb-2 col-9"
+                          className="btn btn-info btn-rounded mb-2 col-6"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
                           <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                         </button>
-                        <div>
+                        <div className="d-flex justify-content-center align-items-center">
                           <Dropdown
                             isOpen={caseSortingOpen}
-                            toggle={() => toggleCaseSortingOpen(!open)}
+                            toggle={() =>
+                              toggleCaseSortingOpen(!caseSortingOpen)
+                            }
                           >
                             <DropdownToggle
                               className="btn nav-btn d-flex"
                               tag="i"
                             >
-                              <i
-                                className=" mdi mdi-sort-variant font-size-24"
-                                title="Filter"
-                              />
+                              <div className="d-flex justify-content-center align-items-center gap-2 ">
+                                <i
+                                  className="mdi mdi-sort-variant font-size-24 mr-2"
+                                  title="Filter"
+                                />
+                                <label className="mb-0  font-size-16">
+                                  Sort By
+                                </label>
+                              </div>
                             </DropdownToggle>
                             <DropdownMenu>
                               <DropdownItem onClick={handleCaseId}>
-                                caseId
+                                Case Id
                               </DropdownItem>
                               <DropdownItem onClick={handlecaseName}>
-                                caseName
+                                Case Name
                               </DropdownItem>
                               <DropdownItem onClick={handlecreatedAt}>
-                                createdAt
+                              Case Date
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
@@ -1618,6 +1624,7 @@ const ChatRc = () => {
                                   handleSelectingCase={onSelectingCase}
                                   selected={currentCase?._id === ca?._id}
                                   notifyCountforCase={notifyCountforCase}
+                                  ongetAllCases={ongetAllCases}
                                 />
                               ))}
                           </ul>
