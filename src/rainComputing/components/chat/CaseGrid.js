@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import { Col, Collapse, Row, Tooltip } from "reactstrap"
@@ -10,7 +10,10 @@ import OnOffSwitch from "../switch/OnOffSwitch"
 import DynamicModel from "../modals/DynamicModal"
 import CaseMembers from "./CaseMembers"
 import CaseFilesGrid from "./CaseFilesGrid"
-
+import DeleteModal from "../modals/DeleteModal"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+import { LeaveGroup } from "rainComputing/helpers/backend_helper"
+import toastr from "toastr"
 const CaseGrid = ({
   caseData,
   index,
@@ -19,18 +22,29 @@ const CaseGrid = ({
   handleSelectingCase,
   selected,
   notifyCountforCase,
+  ongetAllCases,
 }) => {
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
+  const { currentUser } = useUser()
+  const [casedetails, setCaseDetails] = useState(caseData)
   const {
     toggleOpen: membersModelOpen,
     setToggleOpen: setMembersModelOpen,
     toggleIt: toggleMembersModelOpen,
   } = useToggle(false)
   const {
+    toggleOpen: leavegroupModalOpen,
+    setToggleOpen: setLeaveGroupModalOpen,
+    toggleIt: toggleleavegroupModal,
+  } = useToggle(false)
+  const {
     toggleOpen: filesModelOpen,
     setToggleOpen: setFilesModelOpen,
     toggleIt: toggleFilesModelOpen,
   } = useToggle(false)
+  const handleLeave = () => {
+    setLeaveGroupModalOpen(true)
+  }
   const AccordionContainer = ({ children, handleAccordionClick }) => (
     <Row
       className="align-items-baseline my-2 text-muted pointer"
@@ -43,10 +57,28 @@ const CaseGrid = ({
       </Col>
     </Row>
   )
-
+  const handleLeaveGroup = async () => {
+    const payload = {
+      caseId: casedetails?._id,
+      memberId: currentUser?.userID,
+    }
+    const res = await LeaveGroup(payload)
+    if (res.success) {
+      await ongetAllCases({ isSet: false })
+      toastr.success(`case left  successfully`, "Success")
+      setLeaveGroupModalOpen(false)
+    }
+  }
   return (
     <>
       <>
+        <DeleteModal
+          show={leavegroupModalOpen}
+          onDeleteClick={handleLeaveGroup}
+          confirmText="Yes,Remove"
+          cancelText="Cancel"
+          onCloseClick={toggleleavegroupModal}
+        />
         {/*Case files Model*/}
         <DynamicModel
           open={filesModelOpen}
@@ -74,7 +106,10 @@ const CaseGrid = ({
         </DynamicModel>
       </>
       <li className={classNames("px-3 py-2", selected && "active-case-bg")}>
-      <Row className="align-middle py-1 text-break" style={{ maxWidth: "100%" }}>
+        <Row
+          className="align-middle py-1 text-break"
+          style={{ maxWidth: "100%" }}
+        >
           <Col
             xs={10}
             className="pointer"
@@ -147,6 +182,14 @@ const CaseGrid = ({
               <span>Shared Files</span>
             </AccordionContainer>
           </div>
+          <div className="d-flex justify-content-end">
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleLeave}
+          
+          >Exit Case</button>
+          </div>
           {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>
             <div className="d-flex justify-content-between me-3">
@@ -169,6 +212,7 @@ CaseGrid.propTypes = {
   active: PropTypes.number,
   onAccordionButtonClick: PropTypes.func,
   handleSelectingCase: PropTypes.func,
+  ongetAllCases: PropTypes.func,
   children: PropTypes.any,
   selected: PropTypes.bool,
   notifyCountforCase: PropTypes.func,

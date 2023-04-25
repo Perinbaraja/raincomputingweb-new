@@ -123,6 +123,7 @@ const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const removeAdmin = payload => post(`${BASE_URL}/case/removeAdmin`, payload)
+const LeaveGroup = payload => post(`${BASE_URL}/case/leaveGroup`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
 const sentEmail = payload => post(`${BASE_URL}/message/mailChat`, payload)
@@ -168,6 +169,7 @@ export {
   getAttorneysCount,
   UpdateReminder,
   getAllUsers,
+  LeaveGroup,
   attorneyDetailsUpdate,
   messageUpdate,
   getAllChatRooms,
