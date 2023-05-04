@@ -16,7 +16,6 @@ export function ChatProvider({ socket, children }) {
   const [currentRoom, setCurrentRoom] = useState(null)
   const [messages, setMessages] = useState([])
   const [messageStack, setMessageStack] = useState([])
-
   const getRoomsonEveryMessage = async () => {
     const chatRoomsRes = await getAllChatRooms({ userID: currentUser.userID })
     if (chatRoomsRes.success) {
@@ -28,6 +27,11 @@ export function ChatProvider({ socket, children }) {
   const handleSendingMessage = async msgData => {
     setMessageStack(prevStae => [...prevStae, msgData])
     await socket.emit("s_m", msgData)
+  }
+
+  const handleSendingReplyMessage = async msgData => {
+    setMessageStack(prevStae => [...prevStae, msgData])
+    await socket.emit("s_r", msgData)
   }
 
   //   useEffect(() => {
@@ -70,7 +74,7 @@ export function ChatProvider({ socket, children }) {
         setNotifications([msgData, ...notifications])
       })
     }
-  }, [socket, handleSendingMessage])
+  }, [socket, handleSendingMessage, handleSendingReplyMessage])
 
   useEffect(() => {
     if (currentRoom) {
@@ -86,7 +90,7 @@ export function ChatProvider({ socket, children }) {
             icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
             dir: "ltr",
             // tag: "tag",
-            click_action: "http://localhost:3000/chat-rc"
+            click_action: "http://localhost:3000/chat-rc",
           }
           const notification = new Notification(
             "Rain Computing Notification",
@@ -97,6 +101,25 @@ export function ChatProvider({ socket, children }) {
       socket.off("s_s").once("s_s", async msgData => {
         setMessageStack([])
         setMessages([...messages, msgData])
+      })
+      socket.off("r_r").once("r_r", async msgData => {
+        if (msgData?.groupId === currentRoom._id) {
+          setMessages([...messages, msgData])
+        } else {
+          setNotifications([msgData, ...notifications])
+          const options = {
+            title: "Rain Computing",
+            body: `New Message From Rain Computing ${msgData?.msg}`,
+            icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
+            dir: "ltr",
+            // tag: "tag",
+            click_action: "http://localhost:3000/chat-rc",
+          }
+          const notification = new Notification(
+            "Rain Computing Notification",
+            options
+          )
+        }
       })
     } else {
       if (socket == null) return
@@ -109,7 +132,24 @@ export function ChatProvider({ socket, children }) {
           dir: "ltr",
           // tag: "tag",
           href: "http://localhost:3000/chat-rc",
-          click_action: "http://localhost:3000/chat-rc"
+          click_action: "http://localhost:3000/chat-rc",
+        }
+        const notification = new Notification(
+          "Rain Computing Notification",
+          options
+        )
+      })
+      if (socket == null) return
+      socket.off("r_r").once("r_r", async msgData => {
+        setNotifications([msgData, ...notifications])
+        const options = {
+          title: "Rain Computing",
+          body: `New Message From Rain Computing ${msgData?.msg}`,
+          icon: "https://t3.ftcdn.net/jpg/00/96/93/40/360_F_96934079_NnI7vUzC4f3q4Z15ZA3OoC7sG9cRNELb.jpg?    auto=compress&cs=tinysrgb&dpr=1&w=500",
+          dir: "ltr",
+          // tag: "tag",
+          href: "http://localhost:3000/chat-rc",
+          click_action: "http://localhost:3000/chat-rc",
         }
         const notification = new Notification(
           "Rain Computing Notification",
@@ -120,7 +160,7 @@ export function ChatProvider({ socket, children }) {
     socket.off("u_l").once("u_l", async msgData => {
       setNotifications([...msgData, ...notifications])
     })
-  }, [socket, handleSendingMessage])
+  }, [socket, handleSendingMessage, handleSendingReplyMessage])
   return (
     <ChatContext.Provider
       value={{
@@ -130,6 +170,7 @@ export function ChatProvider({ socket, children }) {
         setCurrentRoom,
         getRoomsonEveryMessage,
         handleSendingMessage,
+        handleSendingReplyMessage,
         messages,
         setMessages,
         messageStack,

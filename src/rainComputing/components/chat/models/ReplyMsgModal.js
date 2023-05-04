@@ -8,12 +8,13 @@ import {
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
+import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 
-const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId }) => {
+const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId,receivers,currentChat,caseId }) => {
   const { currentUser } = useUser()
-  const { setMessages,messages } = useChat()
+  const { socket } = useSocket()
+  const { setMessages, messages } = useChat()
   const [replyMessage, setReplyMessage] = useState("")
-
   const handlereplyMsgCancel = () => {
     setOpen(false)
   }
@@ -22,17 +23,23 @@ const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId }) => {
     const payload = {
       id,
       sender: currentUser?.userID,
+      currentChat,
+      groupId:currentChat?._id,
+      caseId : caseId,
+      receivers,
       msg: replyMessage,
+      isReply : true,
     }
 
     const res = await postReplies(payload)
+
     if (res?.success) {
-      setMessages(
-        messages?.map(m => m?._id === id ? res?.replyMessage : m)
-      )
+      setMessages(messages?.map(m => (m?._id === id ? res?.replyMessage : m)))
+      socket.emit("s_r", payload)
+
       setReplyMessage("")
+      setOpen(false)
     }
-    setOpen(false)
   }
 
   return (
@@ -109,5 +116,9 @@ ReplyMsgModal.propTypes = {
   setOpen: PropTypes.func,
   toggleOpen: PropTypes.func,
   curMessageId: PropTypes.any,
+  socket: PropTypes.any,
+  receivers: PropTypes.any,
+  currentChat: PropTypes.any,
+  caseId: PropTypes.any,
 }
 export default ReplyMsgModal

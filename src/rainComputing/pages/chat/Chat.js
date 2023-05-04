@@ -59,6 +59,7 @@ import {
   deleteLastMsg,
   sentEmail,
   pinMessage,
+  getCaseFiles,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -92,6 +93,8 @@ import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import Calender from "../Calendar/Calendar"
 import RecordRTC from "recordrtc"
 import VoiceMessage from "rainComputing/components/audio"
+import JSZip from "jszip"
+import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 
 const CreateCase = lazy(() =>
@@ -163,10 +166,12 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
-
   const privateChatId = query.get("p_id")
+  const privateReplyChatId = query.get("rp_id")
   const groupChatId = query.get("g_id")
   const caseChatId = query.get("c_id")
+  const groupReplyChatId = query.get("rg_id")
+  const caseReplyChatId = query.get("rc_id")
 
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
@@ -245,6 +250,8 @@ const ChatRc = () => {
   const [filteredChats, setFilteredChats] = useState(chats)
   const [duration, setDuration] = useState(0)
   const [durationIntervalId, setDurationIntervalId] = useState(null)
+  const [caseFile, setCaseFile] = useState([])
+
   const startRecording = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -860,19 +867,41 @@ const ChatRc = () => {
     }
     setChatLoader(false)
   }
-  //Archieve Chat
-  const onArchievingChat = () => {
+
+  const handleFetchFiles = async () => {
+    const filesRes = await getCaseFiles(currentCase?._id)
+    if (filesRes.success && filesRes?.files?.length > 0) {
+      let tempArray = []
+      filesRes?.files?.map(f => {
+        const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
+        tempArray.push({ ...f, time: sendAt, isDownloading: true })
+      })
+      setCaseFile(tempArray)
+    }
+  }
+  useEffect(() => {
+    handleFetchFiles()
+
+    return () => {
+      setCaseFile([])
+    }
+  }, [])
+
+  // Archive Chat
+  const onArchievingChat = async () => {
     setChatLoader(true)
+
+    // Get chat transcript
     const doc = new jsPDF()
     const header = [
-      ["Sender", "message", "Time", "Group name", "Case name", "Attachments"],
+      ["Sender", "Message", "Time", "Group Name", "Case Name", "Attachments"],
     ]
     let rows = []
-    const caseName = currentCase?.caseName ? currentCase?.caseName : "-"
+    const caseName = currentCase?.caseName ?? "-"
     const groupName = currentChat?.isGroup
       ? currentChat?.groupName
       : getChatName(currentChat?.groupMembers)
-    messages.map(m => {
+    messages.forEach(m => {
       const sender = m?.caseId
         ? getMemberName(m?.sender)
         : getSenderOneChat(m?.sender)
@@ -880,15 +909,11 @@ const ChatRc = () => {
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
       const attachments = m.isAttachment ? m.attachments?.length : "-"
       const tempRow = [sender, message, time, groupName, caseName, attachments]
-
       rows.push(tempRow)
     })
-    // doc.autoTable(col, rows, { startY: 10 })
     autoTable(doc, {
       bodyStyles: { valign: "top" },
-      margin: {
-        top: 30,
-      },
+      margin: { top: 30 },
       head: header,
       body: rows,
       theme: "grid",
@@ -914,18 +939,66 @@ const ChatRc = () => {
         doc.setFontSize(20)
         doc.setTextColor(40)
         doc.text(
-          `${
-            currentCase?.caseName ? currentCase?.caseName : "Private Chat"
-          }-${groupName}`,
+          `${currentCase?.caseName ?? "Private Chat"} - ${groupName}`,
           data.settings.margin.left,
           20
         )
       },
     })
-    const docName = `${
-      currentCase?.caseName ? currentCase?.caseName : "Private Chat"
-    }-${groupName}-${moment(Date.now()).format("DD-MM-YY HH:mm")}`
-    doc.save(docName)
+    const chatDocName = `${
+      currentCase?.caseName ?? "Private Chat"
+    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocBlob = doc.output("blob")
+
+    // Generate ZIP file containing chat transcript and case files
+    const caseFileBlobs = await Promise.all(
+      caseFile.map(async (file) => {
+        try {
+          const res = await fetch(file.id.url);
+          const blob = await res.blob();
+          return { name: file.name, blob };
+        } catch (err) {
+          console.error(`Error fetching case file ${file.name}: ${err}`);
+          return null;
+        }
+      })
+    );
+    
+    // Filter out any case files that failed to fetch
+    const validCaseFileBlobs = caseFileBlobs.filter(file => file !== null);
+    
+    const zip = new JSZip();
+    zip.file(`${chatDocName}.pdf`, chatDocBlob);
+    
+    const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat");
+    validCaseFileBlobs.forEach((file) => {
+      caseFolder.file(file.name, file.blob);
+    });
+    
+    zip.generateAsync({ type: "blob" }).then(async (content) => {
+      try {
+        // Create a URL for the ZIP blob
+        const zipURL = window.URL.createObjectURL(content);
+    
+        // Create an <a> element with the URL and download attributes
+        const downloadLink = document.createElement("a");
+        downloadLink.href = zipURL;
+        downloadLink.download = `${chatDocName} + Case Files.zip`;
+    
+        // Simulate a click on the download link to trigger the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    
+        // Clean up the <a> element and the URL object
+        document.body.removeChild(downloadLink);
+        window.URL.revokeObjectURL(zipURL);
+      } catch (err) {
+        console.error(`Error creating download link: ${err}`);
+      }
+    }).catch((err) => {
+      console.error(`Error generating ZIP file: ${err}`);
+    });
+    
     setChatLoader(false)
   }
 
@@ -1088,10 +1161,26 @@ const ChatRc = () => {
           .filter(m => m?.id?._id && m.id?._id !== currentUser.userID) // filter out members with null IDs and current user
           .map(r => r.id?._id)
       )
-
+      // const filteredNotifications1 = notifications?.filter(
+      //   n =>{
+      //   const a = n?.groupId !== currentChat?._id
+      //    return  a
+      // }
+      // )
+      // console.log("FN1:",filteredNotifications1)
+      // const filteredNotifications = filteredNotifications1?.filter(
+      //   n =>{
+      //     const b = n?.currentChat?._id !== currentChat?._id
+      //     console.log("b ",n?.currentChat?._id,currentChat?._id)
+      //    return  b
+      // }
+      // )
+      // console.log("FN:",filteredNotifications)
+      
+      // setNotifications(filteredNotifications)
       setNotifications(
-        notifications.filter(n => n.groupId !== currentChat?._id)
-      )
+        notifications.filter(n => n.groupId !== currentChat?._id))
+      
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
         const payload = {
@@ -1180,7 +1269,22 @@ const ChatRc = () => {
       setCurrentChat(tempChat)
     }
   }, [privateChatId, pageLoader])
+  useEffect(() => {
+    if (privateReplyChatId && !pageLoader) {
+      const tempChat = chats?.find(ch => ch?._id === privateReplyChatId)
+      setCurrentChat(tempChat)
+    }
+  }, [privateReplyChatId, pageLoader])
 
+  useEffect(() => {
+    if (groupReplyChatId && caseReplyChatId && !pageLoader && !caseLoading) {
+      const groupChat = allgroups?.find(gch => gch?._id === groupReplyChatId)
+      const tempCase = allCases?.find(c => c?._id === caseReplyChatId)
+      setactiveTab("2")
+      setCurrentCase(tempCase)
+      setCurrentChat(groupChat)
+    }
+  }, [groupReplyChatId, pageLoader, caseReplyChatId, caseLoading])
   useEffect(() => {
     if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
@@ -1389,6 +1493,9 @@ const ChatRc = () => {
               setOpen={setReplyMsgModalOpen}
               toggleOpen={toggleReplyMessageModal}
               curMessageId={curReplyMessageId}
+              receivers={receivers}
+              currentChat={currentChat}
+              caseId={currentCase?._id}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -1597,7 +1704,7 @@ const ChatRc = () => {
                                 Case Name
                               </DropdownItem>
                               <DropdownItem onClick={handlecreatedAt}>
-                              Case Date
+                                Case Date
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
