@@ -163,10 +163,12 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
-
   const privateChatId = query.get("p_id")
+  const privateReplyChatId = query.get("rp_id")
   const groupChatId = query.get("g_id")
   const caseChatId = query.get("c_id")
+  const groupReplyChatId = query.get("rg_id")
+  const caseReplyChatId = query.get("rc_id")
 
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
@@ -1088,10 +1090,26 @@ const ChatRc = () => {
           .filter(m => m?.id?._id && m.id?._id !== currentUser.userID) // filter out members with null IDs and current user
           .map(r => r.id?._id)
       )
-
+      // const filteredNotifications1 = notifications?.filter(
+      //   n =>{
+      //   const a = n?.groupId !== currentChat?._id
+      //    return  a
+      // }
+      // )
+      // console.log("FN1:",filteredNotifications1)
+      // const filteredNotifications = filteredNotifications1?.filter(
+      //   n =>{
+      //     const b = n?.currentChat?._id !== currentChat?._id
+      //     console.log("b ",n?.currentChat?._id,currentChat?._id)
+      //    return  b
+      // }
+      // )
+      // console.log("FN:",filteredNotifications)
+      
+      // setNotifications(filteredNotifications)
       setNotifications(
-        notifications.filter(n => n.groupId !== currentChat?._id)
-      )
+        notifications.filter(n => n.groupId !== currentChat?._id))
+      
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
         const payload = {
@@ -1180,7 +1198,22 @@ const ChatRc = () => {
       setCurrentChat(tempChat)
     }
   }, [privateChatId, pageLoader])
+  useEffect(() => {
+    if (privateReplyChatId && !pageLoader) {
+      const tempChat = chats?.find(ch => ch?._id === privateReplyChatId)
+      setCurrentChat(tempChat)
+    }
+  }, [privateReplyChatId, pageLoader])
 
+  useEffect(() => {
+    if (groupReplyChatId && caseReplyChatId && !pageLoader && !caseLoading) {
+      const groupChat = allgroups?.find(gch => gch?._id === groupReplyChatId)
+      const tempCase = allCases?.find(c => c?._id === caseReplyChatId)
+      setactiveTab("2")
+      setCurrentCase(tempCase)
+      setCurrentChat(groupChat)
+    }
+  }, [groupReplyChatId, pageLoader, caseReplyChatId, caseLoading])
   useEffect(() => {
     if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
@@ -1389,6 +1422,9 @@ const ChatRc = () => {
               setOpen={setReplyMsgModalOpen}
               toggleOpen={toggleReplyMessageModal}
               curMessageId={curReplyMessageId}
+              receivers={receivers}
+              currentChat={currentChat}
+              caseId={currentCase?._id}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -1597,7 +1633,7 @@ const ChatRc = () => {
                                 Case Name
                               </DropdownItem>
                               <DropdownItem onClick={handlecreatedAt}>
-                              Case Date
+                                Case Date
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
