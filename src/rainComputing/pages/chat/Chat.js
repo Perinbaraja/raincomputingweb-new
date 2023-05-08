@@ -60,6 +60,8 @@ import {
   sentEmail,
   pinMessage,
   getCaseFiles,
+  completedCase,
+  allCompletedCases,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -96,6 +98,7 @@ import VoiceMessage from "rainComputing/components/audio"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
+import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -118,6 +121,11 @@ const ChatRc = () => {
     toggleOpen: newCaseModelOpen,
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: completeCaseModelOpen,
+    setToggleOpen: setCompleteCaseModelOpen,
+    toggleIt: toggleCompleteCaseModelOpen,
   } = useToggle(false)
   const {
     toggleOpen: remainderModelOpen,
@@ -166,6 +174,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+  const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
   const groupChatId = query.get("g_id")
@@ -251,6 +260,7 @@ const ChatRc = () => {
   const [duration, setDuration] = useState(0)
   const [durationIntervalId, setDurationIntervalId] = useState(null)
   const [caseFile, setCaseFile] = useState([])
+  const [modal_scroll, setmodal_scroll] = useState(false)
 
   const startRecording = () => {
     navigator.mediaDevices
@@ -409,6 +419,7 @@ const ChatRc = () => {
   //PinnedMessage
   const tog_scroll = () => {
     setPinModal(!pinModal)
+    setmodal_scroll(!modal_scroll)
   }
   //Getting Notofication Count
   const getNotificationCount = id => {
@@ -869,28 +880,31 @@ const ChatRc = () => {
   }
 
   const handleFetchFiles = async () => {
-    const filesRes = await getCaseFiles(currentCase?._id)
-    if (filesRes.success && filesRes?.files?.length > 0) {
-      let tempArray = []
-      filesRes?.files?.map(f => {
-        const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
-        tempArray.push({ ...f, time: sendAt, isDownloading: true })
-      })
-      setCaseFile(tempArray)
+    try {
+      const filesRes = await getCaseFiles(currentCase?._id)
+      if (filesRes.success && filesRes?.files?.length > 0) {
+        const updatedFiles = filesRes.files.map(file => {
+          const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
+          return { ...file, time: sendAt, isDownloading: true }
+        })
+        setCaseFile(updatedFiles)
+      } else {
+        setCaseFile([])
+      }
+    } catch (error) {
+      console.error(`Error fetching case files: ${error}`)
+      setCaseFile([])
     }
   }
   useEffect(() => {
     handleFetchFiles()
-
     return () => {
       setCaseFile([])
     }
   }, [])
-
   // Archive Chat
   const onArchievingChat = async () => {
     setChatLoader(true)
-
     // Get chat transcript
     const doc = new jsPDF()
     const header = [
@@ -949,56 +963,44 @@ const ChatRc = () => {
       currentCase?.caseName ?? "Private Chat"
     } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
-
-    // Generate ZIP file containing chat transcript and case files
-    const caseFileBlobs = await Promise.all(
-      caseFile.map(async (file) => {
+    const zip = new JSZip()
+    zip.file(`${chatDocName}.pdf`, chatDocBlob)
+    const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat")
+    // Loop through each case file and add it to the ZIP file
+    for (const file of caseFile) {
+      try {
+        // Fetch the file from MongoDB
+        const res = await fetch(`${SERVER_URL}/file/${file.id}`)
+        const blob = await res.blob()
+        caseFolder.file(file.name, blob)
+      } catch (err) {
+        console.error(`Error fetching case file ${file.name}: ${err}`)
+      }
+    }
+    // Generate the ZIP file and download it
+    zip
+      .generateAsync({ type: "blob" })
+      .then(content => {
         try {
-          const res = await fetch(file.id.url);
-          const blob = await res.blob();
-          return { name: file.name, blob };
+          // Create a URL for the ZIP blob
+          const zipURL = window.URL.createObjectURL(content)
+          // Create an <a> element with the URL and download attributes
+          const downloadLink = document.createElement("a")
+          downloadLink.href = zipURL
+          downloadLink.download = `${chatDocName} + Case Files.zip`
+          // Simulate a click on the download link to trigger the download
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          // Clean up the <a> element and the URL object
+          document.body.removeChild(downloadLink)
+          window.URL.revokeObjectURL(zipURL)
         } catch (err) {
-          console.error(`Error fetching case file ${file.name}: ${err}`);
-          return null;
+          console.error(`Error creating download link: ${err}`)
         }
       })
-    );
-    
-    // Filter out any case files that failed to fetch
-    const validCaseFileBlobs = caseFileBlobs.filter(file => file !== null);
-    
-    const zip = new JSZip();
-    zip.file(`${chatDocName}.pdf`, chatDocBlob);
-    
-    const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat");
-    validCaseFileBlobs.forEach((file) => {
-      caseFolder.file(file.name, file.blob);
-    });
-    
-    zip.generateAsync({ type: "blob" }).then(async (content) => {
-      try {
-        // Create a URL for the ZIP blob
-        const zipURL = window.URL.createObjectURL(content);
-    
-        // Create an <a> element with the URL and download attributes
-        const downloadLink = document.createElement("a");
-        downloadLink.href = zipURL;
-        downloadLink.download = `${chatDocName} + Case Files.zip`;
-    
-        // Simulate a click on the download link to trigger the download
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-    
-        // Clean up the <a> element and the URL object
-        document.body.removeChild(downloadLink);
-        window.URL.revokeObjectURL(zipURL);
-      } catch (err) {
-        console.error(`Error creating download link: ${err}`);
-      }
-    }).catch((err) => {
-      console.error(`Error generating ZIP file: ${err}`);
-    });
-    
+      .catch(err => {
+        console.error(`Error generating ZIP file: ${err}`)
+      })
     setChatLoader(false)
   }
 
@@ -1176,11 +1178,12 @@ const ChatRc = () => {
       // }
       // )
       // console.log("FN:",filteredNotifications)
-      
+
       // setNotifications(filteredNotifications)
       setNotifications(
-        notifications.filter(n => n.groupId !== currentChat?._id))
-      
+        notifications.filter(n => n.groupId !== currentChat?._id)
+      )
+
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
         const payload = {
@@ -1335,6 +1338,17 @@ const ChatRc = () => {
     })
     setAllCases(sortedCases)
   }
+  const handleCompletedCase = async () => {
+    const payload = {
+      caseId: currentCase?._id,
+    }
+    const res = await completedCase(payload)
+    if (res.success) {
+      await ongetAllCases({ isSet: false })
+      toastr.success(`case completed  successfully`, "Success")
+    } 
+  }
+
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1442,6 +1456,19 @@ const ChatRc = () => {
                   setModalOpen={setNewCaseModelOpen}
                   getAllCases={ongetAllCases}
                 />
+              </DynamicSuspense>
+            </DynamicModel>
+            <DynamicModel
+              open={completeCaseModelOpen}
+              toggle={toggleCompleteCaseModelOpen}
+              size="md"
+              modalTitle="Completed Case"
+              footer={false}
+            >
+              <DynamicSuspense>
+                <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+                  <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
+                </div>
               </DynamicSuspense>
             </DynamicModel>
 
@@ -1666,15 +1693,34 @@ const ChatRc = () => {
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
-                      <div className="d-flex gap-2 my-2">
-                        <button
-                          type="button"
-                          className="btn btn-info btn-rounded mb-2 col-6"
+                      <div
+                        className="d-flex gap-2"
+                        style={{ paddingLeft: "18px" }}
+                      >
+                        <i
+                          className="bx bx-plus-circle w-16 p-4 pl-5 font-size-16 ml-2 text-white border rounded-circle "
+                          style={{
+                            cursor: "pointer",
+                            backgroundColor: "#556ee6",
+                          }}
+                          title="Create case"
                           onClick={() => setNewCaseModelOpen(true)}
-                        >
-                          Create case
-                          <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
-                        </button>
+                        ></i>
+
+                        {allCases.some(group =>
+                          group.admins.includes(currentUser?.userID)
+                        ) && (
+                          <i
+                            className="bx bx-check-circle w-16 p-4 pl-5 font-size-16 ml-2 text-white border rounded-circle"
+                            style={{
+                              cursor: "pointer",
+                              backgroundColor: "#556ee6",
+                            }}
+                            title="Completed Case"
+                            onClick={() => setCompleteCaseModelOpen(true)}
+                          ></i>
+                        )}
+
                         <div className="d-flex justify-content-center align-items-center">
                           <Dropdown
                             isOpen={caseSortingOpen}
@@ -2025,6 +2071,12 @@ const ChatRc = () => {
                                           onClick={() => onDeletingCase()}
                                         >
                                           Delete case
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => handleCompletedCase()}
+                                        >
+                                          Completed case
                                         </DropdownItem>
                                       </DropdownMenu>
                                     ) : (

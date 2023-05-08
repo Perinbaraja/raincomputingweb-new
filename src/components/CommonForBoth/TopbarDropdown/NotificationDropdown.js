@@ -19,6 +19,7 @@ const NotificationDropdown = props => {
   const { notifications } = useNotifications()
   const [loading, setLoading] = useState(false)
   const [menu, setMenu] = useState(false)
+
   return (
     <React.Fragment>
       <Dropdown
