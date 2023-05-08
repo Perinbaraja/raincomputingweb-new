@@ -89,6 +89,7 @@ const getMessagesByUserIdandGroupId = payload =>
 
 const postReplies = payload => post(`${BASE_URL}/message/reply`, payload)
 const pinMessage = payload => post(`${BASE_URL}/message/pinnedmsgById`, payload)
+const unpinMessage = payload => post(`${BASE_URL}/message/unpinnedmsgById`, payload)
 
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
@@ -121,8 +122,10 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
+const allCompletedCases = payload => post(`${BASE_URL}/case/allcompletedGroup`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const removeAdmin = payload => post(`${BASE_URL}/case/removeAdmin`, payload)
+const completedCase = payload => post(`${BASE_URL}/case/completedGroup`, payload)
 const LeaveGroup = payload => post(`${BASE_URL}/case/leaveGroup`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
@@ -169,6 +172,8 @@ export {
   getAttorneysCount,
   UpdateReminder,
   getAllUsers,
+  allCompletedCases,
+  completedCase,
   LeaveGroup,
   attorneyDetailsUpdate,
   messageUpdate,
@@ -240,6 +245,7 @@ export {
   getSenderNameById,
   getGroupNameById,
   pinMessage,
+  unpinMessage,
   userNotes,
   updatePassword,
   attorneyInvite,

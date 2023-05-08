@@ -1,47 +1,48 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Modal } from "reactstrap"
 import PropTypes from "prop-types"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+import { allCompletedCases } from "rainComputing/helpers/backend_helper"
 
 const CompletedCaseModel = ({ setModalOpen }) => {
+  const [allCompletedCase, setAllCompletedCases] = useState([]);
+  const {currentUser} = useUser()
   function tog_scroll() {
     setModalOpen(false)
   }
+
+
+  useEffect(() => {
+    const getAllCompletedCases = async () => {
+      try {
+        const res = await allCompletedCases({userId: currentUser?.userID});
+        if (res.success) {
+          setAllCompletedCases(res.allcompletedCases);
+        } else {
+          console.log("Failed to get completed cases");
+        }
+      } catch (err) {
+        console.error(err);
+        console.log("Internal server error");
+      }
+    };
+    getAllCompletedCases();
+  }, [currentUser?.userID]);
+  
+
+console.log(" currentUser?.userID", currentUser?.userID)
   return (
     <>
-      <div className="">
-        <ul className="list-unstyled chat-list ">
-          <li className="border-bottom">
-            <p>1</p>
-          </li>
-          <li className="border-bottom">
-            <p>2</p>
-          </li>
-          <li className="border-bottom">
-            <p>3</p>
-          </li>
-          <li className="border-bottom">
-            <p>4</p>
-          </li>
-          <li className="border-bottom">
-            <p>5</p>
-          </li>
-          <li className="border-bottom">
-            <p>6</p>
-          </li>
-          <li className="border-bottom">
-            <p>7</p>
-          </li>
-          <li className="border-bottom">
-            <p>8</p>
-          </li>
-          <li className="border-bottom">
-            <p>9</p>
-          </li>
-          <li className="border-bottom">
-            <p>10</p>
-          </li>
-        </ul>
-      </div>
+    <ol>
+    {allCompletedCase.map((c, i) => (
+      <li key={i} className="border-bottom">
+        <div className="pt-2">
+          <h6>CaseName :{c.caseName}</h6>
+          <p>CaseId : {c.caseId}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
       <div className="modal-footer">
         <button
           type="button"
@@ -49,9 +50,6 @@ const CompletedCaseModel = ({ setModalOpen }) => {
           onClick={() => tog_scroll()}
         >
           Close
-        </button>
-        <button type="button" className="btn btn-primary">
-          Save changes
         </button>
       </div>
     </>

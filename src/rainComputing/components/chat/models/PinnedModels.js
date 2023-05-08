@@ -1,5 +1,9 @@
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
-import { getPinnedMsg, pinMessage } from "rainComputing/helpers/backend_helper"
+import {
+  getPinnedMsg,
+  pinMessage,
+  unpinMessage,
+} from "rainComputing/helpers/backend_helper"
 import React, { useEffect, useState } from "react"
 import { Card, Dropdown, DropdownToggle, Modal } from "reactstrap"
 import moment from "moment"
@@ -34,11 +38,26 @@ const PinnedModels = () => {
       PinnedMessage()
     }
   }, [pinModal])
+  const handleUnpinMessage = async msgId => {
+    const payload = { Id: msgId }
+    const res = await unpinMessage(payload)
+    if (res.success) {
+      const updatedMessages = messages.map(msg => {
+        if (msg._id === res.message._id) {
+          return {
+            ...msg,
+            isPinned: false,
+          }
+        }
+        return msg // return the original message object if it doesn't match the unpinned message
+      })
+      setMessages(updatedMessages) // update the messages array with the updatedMessages
+    }
+  }
 
   const text = {
     color: "#0000F9",
   }
-
   return (
     <>
       <Modal
@@ -77,11 +96,24 @@ const PinnedModels = () => {
                           : "#00EE00" + "33",
                       }}
                     >
-                      <div className="conversation-name ">
-                        <p className="text pt-1 " style={text}>
-                          {getSender(msg)?.firstname} {getSender(msg)?.lastname}
-                        </p>{" "}
+                      <div className="conversation-name">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <p className="text pt-1" style={text}>
+                              {getSender(msg)?.firstname}{" "}
+                              {getSender(msg)?.lastname}
+                            </p>
+                          </div>
+                          <div>
+                            <i
+                              className="mdi mdi-pin-off-outline mdi-rotate-315 text-danger"
+                              title="Unpin"
+                              onClick={() => handleUnpinMessage(msg?._id)}
+                            ></i>
+                          </div>
+                        </div>
                       </div>
+
                       <div className="mb-1">
                         {msg.isAttachment ? (
                           <>
