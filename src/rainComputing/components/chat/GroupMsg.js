@@ -5,7 +5,7 @@ import moment from "moment"
 import { getGroupNameById } from "rainComputing/helpers/backend_helper"
 import ChatLoader from "./ChatLoader"
 const GroupMsg = props => {
-  const { caseId, messageData, createdAt ,groupId} = props?.notification
+  const { caseId, messageData, createdAt ,groupId,isVoiceMessage,isAttachment} = props?.notification
 
   const [isLoading, setIsLoading] = useState(true)
   const [caseName, setCaseName] = useState(caseId)
@@ -34,6 +34,12 @@ const GroupMsg = props => {
             <div className="font-size-11 text-muted">
               <p className="mb-1">{` New messages from ${caseName}`}</p>
               <p className="text-primary">{`${messageData}`}</p>
+              {isVoiceMessage && (
+                  <p className="text-primary">New voice message</p>
+                )}
+                {isAttachment && (
+                  <p className="text-primary">New Document</p>
+                )}
               <p className="mb-0">
                 <i className="mdi mdi-clock-outline" />{" "}
                 {moment(createdAt).format("DD-MM-YY hh:mm")}

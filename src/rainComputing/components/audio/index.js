@@ -61,24 +61,23 @@ function VoiceMessage({ msg }) {
       {audioUrls.map((audioUrl, i) => (
         <div key={i}>
           <audio
-  src={audioUrl.audioUrl}
-  controls
-  onLoadedMetadata={() => console.log("Audio loaded")}
-  className="d-block d-sm-none"
-  style={{
-    height: "40px",
-    paddingRight: "164px",
-    marginLeft: "-18px",
-    paddingTop: "6px",
-
-  }}
-/>
-<audio
-  src={audioUrl.audioUrl}
-  controls
-  onLoadedMetadata={() => console.log("Audio loaded")}
-  className="d-none d-sm-block"
-/>
+            src={audioUrl.audioUrl}
+            controls
+            onLoadedMetadata={() => console.log("Audio loaded")}
+            className="d-block d-sm-none"
+            style={{
+              height: "40px",
+              paddingRight: "164px",
+              marginLeft: "-18px",
+              paddingTop: "6px",
+            }}
+          />
+          <audio
+            src={audioUrl.audioUrl}
+            controls
+            onLoadedMetadata={() => console.log("Audio loaded")}
+            className="d-none d-sm-block"
+          />
 
           {/* <div style={{ wordBreak: "break-all" }}>{audioUrl.name}</div> */}
         </div>
