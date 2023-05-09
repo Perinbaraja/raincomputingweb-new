@@ -26,42 +26,43 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
       const reminders = res?.nextReminders[0]
 
       const nextNotify = res?.nextNotificationTime
+      if (nextNotify) {
+        const newReminders = []
 
-      const newReminders = []
+        const now = new Date()
 
-      const now = new Date()
+        // for (const notificationTime of scheduledTime) {
+        const currentNotify = new Date(nextNotify)
+        currentNotify.setHours(currentNotify.getHours() - 5)
+        currentNotify.setMinutes(currentNotify.getMinutes() - 30)
 
-      // for (const notificationTime of scheduledTime) {
-      const currentNotify = new Date(nextNotify)
-      currentNotify.setHours(currentNotify.getHours() - 5)
-      currentNotify.setMinutes(currentNotify.getMinutes() - 30)
+        const timeDiff = currentNotify - now
+        // console.log("now",now)
+        // console.log("notificationTime",notificationTime.getTime())
+        // console.log("timeDiff",timeDiff)
 
-      const timeDiff = currentNotify - now
-      // console.log("now",now)
-      // console.log("notificationTime",notificationTime.getTime())
-      // console.log("timeDiff",timeDiff)
+        if (timeDiff < 30000) {
+          setTimeout(() => {
+            // setGroupReminder(reminders);
 
-      if (timeDiff < 30000) {
-        setTimeout(() => {
-          // setGroupReminder(reminders);
+            toastr.success(`You have new  remainder`)
+            setOpen(true)
+          }, timeDiff)
+        } else {
+          newReminders.push(reminders)
+        }
 
-          toastr.success(`You have new  remainder`)
-          setOpen(true)
-        }, timeDiff)
-      } else {
-        newReminders.push(reminders)
+        // }
+
+        setGroupReminder(reminders)
       }
-
-      // }
-
-      setGroupReminder(reminders)
     } catch (error) {
       console.error(error)
     }
   }
 
   const intervalTime = 30000 // 30 seconds in milliseconds
-  
+
   useEffect(() => {
     // define a function to run the getReminderData function at the specified interval
     const intervalId = setInterval(getReminderData, intervalTime)

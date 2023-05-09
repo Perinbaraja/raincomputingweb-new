@@ -109,6 +109,7 @@ const PinnedModels = () => {
                               className="mdi mdi-pin-off-outline mdi-rotate-315 text-danger"
                               title="Unpin"
                               onClick={() => handleUnpinMessage(msg?._id)}
+                              style={{ cursor: "pointer" }}
                             ></i>
                           </div>
                         </div>

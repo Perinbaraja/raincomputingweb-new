@@ -221,7 +221,7 @@ const EditReminder = ({
     const options = []
     const now = new Date()
     const currentMinutes = Math.ceil(now.getMinutes() / 15) * 15
-    for (let i = now.getHours(); i <= 23; i++) {
+    for (let i = 0; i <= 23; i++) {
       const hour = i < 10 ? `0${i}` : `${i}`
       for (let j = 0; j <= 45; j += 15) {
         const minutes = j < 10 ? `0${j}` : `${j}`
@@ -245,7 +245,7 @@ const EditReminder = ({
         className="bi bi-trash text-danger  d-flex justify-content-end"
         title="Delete"
         onClick={() => handleDelete(reminder)}
-        style={{ fontSize: "20px" }}
+        style={{ fontSize: "20px", cursor: "pointer" }}
       ></i>
 
       <DeleteModal

@@ -30,7 +30,6 @@ const CompletedCaseModel = ({ setModalOpen }) => {
   }, [currentUser?.userID]);
   
 
-console.log(" currentUser?.userID", currentUser?.userID)
   return (
     <>
     <ol>
