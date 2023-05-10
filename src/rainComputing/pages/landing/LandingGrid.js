@@ -26,7 +26,6 @@ const LandingGrid = () => {
   const [searchText, setSearchText] = useState("")
   const [loading, setLoading] = useState(true)
   const [attorneys, setAttorneys] = useState([])
-  const [attorneysCount, setAttorneysCount] = useState(0)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(12)
 
@@ -141,11 +140,11 @@ const LandingGrid = () => {
            
       </div> */}
               <section style={{ paddingTop: "50px", paddingBottom: "60px" }}>
-                <div className="">
-                  <div className="d-flex flex-md-row flex-column" id="">
-                    <div id="" className="col-lg-7 col-sm-6">
+                <div>
+                  <div className="d-flex flex-md-row flex-column">
+                    <div className="col-lg-7 col-sm-6">
                       <div>
-                        <h2 className=" text-primary mb-5 " id="">
+                        <h2 className=" text-primary mb-5 ">
                           About Us{" "}
                           <div
                             style={{
@@ -157,7 +156,7 @@ const LandingGrid = () => {
                           ></div>
                         </h2>
                       </div>
-                      <p id="" style={{ fontSize: 15 }}>
+                      <p style={{ fontSize: 15 }}>
                         We pride ourselves on our down to earth and friendly
                         approach, with many of us being heavily involved in our
                         spare time in making the law a better and more
@@ -171,7 +170,7 @@ const LandingGrid = () => {
                         your family face the criminal justice system with
                         confidence.
                       </p>
-                      <p id="" style={{ fontSize: 15 }}>
+                      <p style={{ fontSize: 15 }}>
                         {" "}
                         At the same time we have the advantage of being present
                         in four different cities and therefore closer to our
@@ -182,10 +181,7 @@ const LandingGrid = () => {
                       </p>
                     </div>
 
-                    <div
-                      id=""
-                      className="flex-fill col-lg-5 col-sm-12 d-flex justify-content-end "
-                    >
+                    <div className="flex-fill col-lg-5 col-sm-12 d-flex justify-content-end ">
                       <img
                         src={illustration}
                         alt="about illustration"
@@ -200,7 +196,7 @@ const LandingGrid = () => {
                 className=" d-flex flex-md-row flex-column  "
                 style={{ paddingTop: "50px", paddingBottom: "120px" }}
               >
-                <div id="" className="col-md-6 col-sm-12 text-center ">
+                <div className="col-md-6 col-sm-12 text-center ">
                   {/* <h2 >Contact Us </h2>
                            <div id="contactline"></div> */}
 
@@ -210,7 +206,7 @@ const LandingGrid = () => {
                   <p>Stay Connected.....</p>
                 </div>
 
-                <div id="" className="col-md-6 col-sm-12">
+                <div className="col-md-6 col-sm-12">
                   <h2>Contact Us </h2>
                   <div id="contactline"></div>
 
