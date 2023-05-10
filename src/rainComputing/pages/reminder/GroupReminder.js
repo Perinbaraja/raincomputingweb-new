@@ -14,7 +14,6 @@ import "./reminder.css"
 
 const GroupReminder = ({ groupReminder, }) => {
 
-  console.log("groupReminder",groupReminder)
 
   // const [removeData, setRemoveData] = useState()
   // const {

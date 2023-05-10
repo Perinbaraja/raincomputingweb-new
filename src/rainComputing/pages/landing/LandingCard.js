@@ -4,7 +4,6 @@ import { Link } from "react-router-dom"
 import {
   Card,
   CardBody,
-  CardFooter,
   Col,
   UncontrolledTooltip,
 } from "reactstrap"
@@ -18,8 +17,9 @@ const LandingCard = props => {
   return (
     <React.Fragment>
       <Col xl="4" md="6" sm="12">
+                  {/* <Link to={`/projects-overview?uid=${user._id}`}> */}
+
         <Card className="text-center " id="attcard">
-          <Link to={`/projects-overview?uid=${user._id}`}>
             <CardBody>
               <div className="d-flex">
                 <div id="attimg">
@@ -30,7 +30,7 @@ const LandingCard = props => {
                         ? user?.regUser?.profilePic
                         : attImages[imgIndex].url
                     }
-                    alt=""
+                    alt="profile image"
                   />
                 </div>
                 <div id="attdetail">
@@ -60,16 +60,15 @@ const LandingCard = props => {
                 <div id="prof"></div>
                 <div className="d-flex mx-3">
                   <Link to={`/chat-rc`} id={"message" + user._id}>
-                    <div id="attmenus">
-                      <i className="bx bx-message-square-dots" id="atticon" />
-                    </div>
-
                     <UncontrolledTooltip
                       placement="bottom"
                       target={"message" + user._id}
                     >
                       Chat
                     </UncontrolledTooltip>
+                    <div id="attmenus">
+                      <i className="bx bx-message-square-dots" id="atticon" />
+                    </div>
                   </Link>
                 </div>
                 <div className="d-flex mx-3">
@@ -90,59 +89,16 @@ const LandingCard = props => {
                 </div>
               </div>
             </CardBody>
-          </Link>
-
-          {/* <CardFooter className="bg-transparent border-top">
-            <div className="contact-links d-flex font-size-20">
-              <div className="flex-fill">
-                <Link
-                  to={`/chat-rc?uid=62ec8de74fde4cb410073cc0`}
-                  id={"message" + user._id}
-                >
-                  <i className="bx bx-message-square-dots" />
-                  <UncontrolledTooltip
-                    placement="bottom"
-                    target={"message" + user._id}
-                  >
-                    Chat
-                  </UncontrolledTooltip>
-                </Link>
-              </div>
-              <div className="flex-fill">
-                <Link to="#" id={"project" + user._id}>
-                  <i className="bx bx-pie-chart-alt" />
-                  <UncontrolledTooltip
-                    placement="bottom"
-                    target={"project" + user._id}
-                  >
-                    Schedule
-                  </UncontrolledTooltip>
-                </Link>
-              </div>
-              <div className="flex-fill">
-                <Link
-                  to={`/projects-overview?uid=${user._id}`}
-                  id={"profile" + user._id}
-                >
-                  <i className="bx bx-user-circle" />
-                </Link>
-                <UncontrolledTooltip
-                  placement="bottom"
-                  target={"profile" + user._id}
-                >
-                  Profile
-                </UncontrolledTooltip>
-              </div>
-            </div>
-          </CardFooter> */}
         </Card>
+          {/* </Link> */}
+
       </Col>
     </React.Fragment>
   )
 }
 
 LandingCard.propTypes = {
-  user: PropTypes.object,
+  user: PropTypes.any,
 }
 
 export default LandingCard
