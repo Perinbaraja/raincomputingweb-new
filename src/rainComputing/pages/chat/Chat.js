@@ -878,9 +878,24 @@ const ChatRc = () => {
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
       const attachments =
         m.isAttachment && m.attachments[0].id
-          ? `${SERVER_URL}/file/${m.attachments[0].id}`
+          ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }
           : "-"
-      const tempRow = [sender, message, time, groupName, caseName, attachments]
+      const tempRow = [
+        sender,
+        message,
+        time,
+        groupName,
+        caseName,
+        attachments?.url
+        // typeof attachments === "object" && attachments?.url
+        //   ? {
+        //       url: attachments.url,
+        //       content: "View Attachment",
+        //     }
+        //   : "-",
+      ]
+
+      console.log("tempRow :", tempRow)
       rows.push(tempRow)
     })
     autoTable(doc, {
@@ -895,7 +910,45 @@ const ChatRc = () => {
         2: { cellWidth: 20, cellHeight: 50 },
         3: { cellWidth: 20, cellHeight: 50 },
         4: { cellWidth: 20, cellHeight: 50 },
-        5: { halign: "center", cellWidth: 90 },
+        5: {
+          // halign: "center",
+          cellWidth: 100,
+          // valign: "middle",
+          fillColor: [250, 250, 250],
+          textColor: [0, 0, 0],
+          fontSize: 8,
+          // fontStyle: "bold",
+          // overflow: "linebreak",
+          // renderCell: function (cellData, cellRect, pdf) {
+          //   if (typeof cellData === "object" && cellData.url) {
+          //     const linkProps = {
+          //       href: cellData.url,
+          //       target: "_blank",
+          //       style: {
+          //         display: "inline-block",
+          //         backgroundColor: "#0f69af",
+          //         color: "#fff",
+          //         padding: "0.25rem 0.5rem",
+          //         borderRadius: "4px",
+          //         textDecoration: "none",
+          //       },
+          //       onClick: function () {
+          //         window.open(cellData.url, "_blank");
+          //       },
+          //     };
+          //     const link = React.createElement("a", linkProps, cellData.content);
+          //     ReactDOM.render(link, pdf.internal.pages[1]);
+          //   } else {
+          //     pdf.text(cellData.toString(), cellRect.x, cellRect.y, {
+          //       align: "left",
+          //       valign: "middle",
+          //     });
+          //   }
+          // },
+
+        
+          
+        },
       },
       headStyles: {
         fillColor: [0, 0, 230],
@@ -910,7 +963,7 @@ const ChatRc = () => {
           data.column.index === 5 &&
           data.cell.raw !== "-"
         ) {
-          data.doc.setFillColor("green")
+          // data.doc.setFillColor("green")
           data.doc.setTextColor("black")
         }
       },
@@ -924,6 +977,7 @@ const ChatRc = () => {
         )
       },
     })
+
     const chatDocName = `${
       currentCase?.caseName ?? "Private Chat"
     } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
