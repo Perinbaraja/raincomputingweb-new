@@ -796,11 +796,6 @@ const ChatRc = () => {
           })
         )
       )
-      // const updatedVoicemsg = recorder.map(allVoicemsg => Object.assign(allVoicemsg, {
-      //   preview: URL.createObjectURL(allVoicemsg),
-      // }));
-      // setAllVoicemsg(updatedVoicemsg);
-      // setRecorder(updatedVoicemsg);
     },
   })
   //Detecting Enter key Press in textbox
@@ -1134,21 +1129,6 @@ const ChatRc = () => {
           .filter(m => m?.id?._id && m.id?._id !== currentUser.userID) // filter out members with null IDs and current user
           .map(r => r.id?._id)
       )
-      // const filteredNotifications1 = notifications?.filter(
-      //   n =>{
-      //   const a = n?.groupId !== currentChat?._id
-      //    return  a
-      // }
-      // )
-      // console.log("FN1:",filteredNotifications1)
-      // const filteredNotifications = filteredNotifications1?.filter(
-      //   n =>{
-      //     const b = n?.currentChat?._id !== currentChat?._id
-      //     console.log("b ",n?.currentChat?._id,currentChat?._id)
-      //    return  b
-      // }
-      // )
-      // console.log("FN:",filteredNotifications)
 
       // setNotifications(filteredNotifications)
       setNotifications(
