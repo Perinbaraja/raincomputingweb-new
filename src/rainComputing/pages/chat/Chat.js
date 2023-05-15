@@ -1,9 +1,17 @@
-import React, { useEffect, useState, lazy, useRef } from "react"
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+  useCallback,
+  useRef,
+} from "react"
 import { MetaTags } from "react-meta-tags"
 import {
   Button,
   Card,
   Col,
+  Container,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -16,12 +24,15 @@ import {
   Row,
   TabContent,
   TabPane,
+  Form,
+  FormGroup,
   InputGroup,
   UncontrolledDropdown,
   Modal,
   ModalHeader,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
+
 import fileDownload from "js-file-download"
 import "react-perfect-scrollbar/dist/css/styles.css"
 import toastr from "toastr"
@@ -30,8 +41,11 @@ import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock"
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import profile from "assets/images/avatar-defult.jpg"
+import UserDropdown from "rainComputing/components/chat/UserDropdown"
 import classNames from "classnames"
+import ChatboxSettingDropdown from "rainComputing/components/chat/ChatboxSettingDropdown"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import TextareaAutosize from "react-textarea-autosize"
 import {
   createOnevsOneChat,
   getAllUsers,
@@ -47,9 +61,10 @@ import {
   pinMessage,
   getCaseFiles,
   completedCase,
+  getPinnedMsg,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
-import { map } from "lodash"
+import { indexOf, isEmpty, map, now, set } from "lodash"
 import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
@@ -75,11 +90,13 @@ import copy from "copy-to-clipboard"
 import PinnedModels from "rainComputing/components/chat/models/PinnedModels"
 import ReplyMsgModal from "rainComputing/components/chat/models/ReplyMsgModal"
 import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
+import Reminders from "../reminder"
 import { getFileFromGFS } from "rainComputing/helpers/backend_helper"
 import Calender from "../Calendar/Calendar"
 import RecordRTC from "recordrtc"
 import VoiceMessage from "rainComputing/components/audio"
 import JSZip from "jszip"
+import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
 
@@ -157,6 +174,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+  const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
   const groupChatId = query.get("g_id")
@@ -196,6 +214,7 @@ const ChatRc = () => {
   const MESSAGE_CHUNK_SIZE = 50
 
   const [isChatScroll, setIsChatScroll] = useState(false)
+  const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
   const [activeTab, setactiveTab] = useState("1")
@@ -231,6 +250,7 @@ const ChatRc = () => {
   const [searchIndex, setSearchIndex] = useState(0)
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState("")
+  const [getpinnedMsg, setGetPinnedMsg] = useState("")
   const [msgDelete, setMsgDelete] = useState()
   const containerRef = useRef(null)
   const [prevHeight, setPrevHeight] = useState(0)
@@ -242,6 +262,7 @@ const ChatRc = () => {
   const [durationIntervalId, setDurationIntervalId] = useState(null)
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
+
   const startRecording = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -796,6 +817,11 @@ const ChatRc = () => {
           })
         )
       )
+      // const updatedVoicemsg = recorder.map(allVoicemsg => Object.assign(allVoicemsg, {
+      //   preview: URL.createObjectURL(allVoicemsg),
+      // }));
+      // setAllVoicemsg(updatedVoicemsg);
+      // setRecorder(updatedVoicemsg);
     },
   })
   //Detecting Enter key Press in textbox
@@ -817,6 +843,23 @@ const ChatRc = () => {
     return id
   }
 
+  //Scrolling to bottom of message
+  // const scrollToBottom = () => {
+  //   if (messageBox) {
+  //     messageBox.scrollTop = messageBox.scrollHeight + messageBox?.offsetHeight
+  //   }
+  // }
+  // useEffect(()=>{
+  //   if(containerRef.current){
+  //     containerRef.current.scrollTop = containerRef.current.scrollHeight;
+  //   }
+  // },[messages])
+  // useEffect(() => {
+  //   if (messageBox) {
+  //     messageBox.scrollTop = messageBox.scrollHeight
+  //   }
+  // }, [messageBox?.scrollHeight])
+
   //Handling File change
   const handleFileChange = e => {
     setAllFiles(e.target.files)
@@ -836,27 +879,30 @@ const ChatRc = () => {
     }
     setChatLoader(false)
   }
-  const caseId = currentCase?._id
+
   const handleFetchFiles = async () => {
-    const filesRes = await getCaseFiles({ caseId })
-    if (filesRes.success && filesRes?.files?.length > 0) {
-      let updatedFiles = []
-      filesRes?.files?.map(file => {
-        const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
-        updatedFiles?.push({ ...file, time: sendAt, isDownloading: true })
-      })
-      setCaseFile(updatedFiles)
-    } else {
+    try {
+      const filesRes = await getCaseFiles(currentCase?._id)
+      if (filesRes.success && filesRes?.files?.length > 0) {
+        const updatedFiles = filesRes.files.map(file => {
+          const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
+          return { ...file, time: sendAt, isDownloading: true }
+        })
+        setCaseFile(updatedFiles)
+      } else {
+        setCaseFile([])
+      }
+    } catch (error) {
+      console.error(`Error fetching case files: ${error}`)
       setCaseFile([])
     }
   }
-
   useEffect(() => {
-    handleFetchFiles(caseId)
+    handleFetchFiles()
     return () => {
       setCaseFile([])
     }
-  }, [caseId])
+  }, [])
   // Archive Chat
   const onArchievingChat = async () => {
     setChatLoader(true)
@@ -876,26 +922,8 @@ const ChatRc = () => {
         : getSenderOneChat(m?.sender)
       const message = m?.messageData
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
-      const attachments =
-        m.isAttachment && m.attachments[0].id
-          ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }
-          : "-"
-      const tempRow = [
-        sender,
-        message,
-        time,
-        groupName,
-        caseName,
-        attachments?.url
-        // typeof attachments === "object" && attachments?.url
-        //   ? {
-        //       url: attachments.url,
-        //       content: "View Attachment",
-        //     }
-        //   : "-",
-      ]
-
-      console.log("tempRow :", tempRow)
+      const attachments = m.isAttachment ? m.attachments?.length : "-"
+      const tempRow = [sender, message, time, groupName, caseName, attachments]
       rows.push(tempRow)
     })
     autoTable(doc, {
@@ -904,52 +932,7 @@ const ChatRc = () => {
       head: header,
       body: rows,
       theme: "grid",
-      columnStyles: {
-        0: { cellWidth: 30, cellHeight: 50 },
-        1: { cellWidth: 30, cellHeight: 50 },
-        2: { cellWidth: 20, cellHeight: 50 },
-        3: { cellWidth: 20, cellHeight: 50 },
-        4: { cellWidth: 20, cellHeight: 50 },
-        5: {
-          // halign: "center",
-          cellWidth: 100,
-          // valign: "middle",
-          fillColor: [250, 250, 250],
-          textColor: [0, 0, 0],
-          fontSize: 8,
-          // fontStyle: "bold",
-          // overflow: "linebreak",
-          // renderCell: function (cellData, cellRect, pdf) {
-          //   if (typeof cellData === "object" && cellData.url) {
-          //     const linkProps = {
-          //       href: cellData.url,
-          //       target: "_blank",
-          //       style: {
-          //         display: "inline-block",
-          //         backgroundColor: "#0f69af",
-          //         color: "#fff",
-          //         padding: "0.25rem 0.5rem",
-          //         borderRadius: "4px",
-          //         textDecoration: "none",
-          //       },
-          //       onClick: function () {
-          //         window.open(cellData.url, "_blank");
-          //       },
-          //     };
-          //     const link = React.createElement("a", linkProps, cellData.content);
-          //     ReactDOM.render(link, pdf.internal.pages[1]);
-          //   } else {
-          //     pdf.text(cellData.toString(), cellRect.x, cellRect.y, {
-          //       align: "left",
-          //       valign: "middle",
-          //     });
-          //   }
-          // },
-
-        
-          
-        },
-      },
+      columnStyles: { 5: { halign: "center" } },
       headStyles: {
         fillColor: [0, 0, 230],
         fontSize: 12,
@@ -963,12 +946,12 @@ const ChatRc = () => {
           data.column.index === 5 &&
           data.cell.raw !== "-"
         ) {
-          // data.doc.setFillColor("green")
+          data.doc.setFillColor("green")
           data.doc.setTextColor("black")
         }
       },
       didDrawPage: data => {
-        doc.setFontSize(12)
+        doc.setFontSize(20)
         doc.setTextColor(40)
         doc.text(
           `${currentCase?.caseName ?? "Private Chat"} - ${groupName}`,
@@ -977,12 +960,10 @@ const ChatRc = () => {
         )
       },
     })
-
     const chatDocName = `${
       currentCase?.caseName ?? "Private Chat"
     } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
-
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
     const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat")
@@ -1004,14 +985,14 @@ const ChatRc = () => {
         try {
           // Create a URL for the ZIP blob
           const zipURL = window.URL.createObjectURL(content)
-
+          // Create an <a> element with the URL and download attributes
           const downloadLink = document.createElement("a")
           downloadLink.href = zipURL
           downloadLink.download = `${chatDocName} + Case Files.zip`
           // Simulate a click on the download link to trigger the download
           document.body.appendChild(downloadLink)
           downloadLink.click()
-
+          // Clean up the <a> element and the URL object
           document.body.removeChild(downloadLink)
           window.URL.revokeObjectURL(zipURL)
         } catch (err) {
@@ -1183,6 +1164,21 @@ const ChatRc = () => {
           .filter(m => m?.id?._id && m.id?._id !== currentUser.userID) // filter out members with null IDs and current user
           .map(r => r.id?._id)
       )
+      // const filteredNotifications1 = notifications?.filter(
+      //   n =>{
+      //   const a = n?.groupId !== currentChat?._id
+      //    return  a
+      // }
+      // )
+      // console.log("FN1:",filteredNotifications1)
+      // const filteredNotifications = filteredNotifications1?.filter(
+      //   n =>{
+      //     const b = n?.currentChat?._id !== currentChat?._id
+      //     console.log("b ",n?.currentChat?._id,currentChat?._id)
+      //    return  b
+      // }
+      // )
+      // console.log("FN:",filteredNotifications)
 
       // setNotifications(filteredNotifications)
       setNotifications(
@@ -1353,7 +1349,18 @@ const ChatRc = () => {
       toastr.success(`case completed  successfully`, "Success")
     }
   }
-
+  const handleLocateMessage = messageId => {
+    const message = messages.find(msg => msg._id === messageId)
+    if (message) {
+      // Scroll to the message if found
+      const messageElem = document.getElementById(message._id)
+      if (messageElem) {
+        messageElem.scrollIntoView({ behavior: "auto" })
+        messageElem.classList.add("highlighted")
+        messageElem.style.backgroundColor = "orange"
+      }
+    }
+  }
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1956,7 +1963,10 @@ const ChatRc = () => {
                                     isOpen={pinModal}
                                     toggle={tog_scroll}
                                   >
-                                    <PinnedModels />
+                                    <PinnedModels
+                                      handleLocateMessage={handleLocateMessage}
+                                      closeModal={() => setPinModal(false)}
+                                    />
                                   </Dropdown>
                                 </li>
                                 <li className="list-inline-item d-none d-sm-inline-block">
@@ -2050,11 +2060,13 @@ const ChatRc = () => {
                                     ) ? (
                                       <DropdownMenu>
                                         <DropdownItem
+                                          href="#"
                                           onClick={() => onArchievingChat()}
                                         >
                                           Archive Chat
                                         </DropdownItem>
                                         <DropdownItem
+                                          href="#"
                                           onClick={() =>
                                             setCaseEditModalOpen(true)
                                           }
@@ -2062,6 +2074,7 @@ const ChatRc = () => {
                                           Manage Case
                                         </DropdownItem>
                                         <DropdownItem
+                                          href="#"
                                           onClick={() =>
                                             toggle_emailModal(true)
                                           }
@@ -2069,11 +2082,13 @@ const ChatRc = () => {
                                           Email
                                         </DropdownItem>
                                         <DropdownItem
+                                          href="#"
                                           onClick={() => onDeletingCase()}
                                         >
                                           Delete case
                                         </DropdownItem>
                                         <DropdownItem
+                                          href="#"
                                           onClick={() => handleCompletedCase()}
                                         >
                                           Completed case
@@ -2085,21 +2100,21 @@ const ChatRc = () => {
                                         currentUser?.userID
                                       ) && (
                                         <DropdownMenu>
-                                          {currentCase && (
-                                            <DropdownItem
-                                              onClick={() => onArchievingChat()}
-                                            >
-                                              Archive Chat
-                                            </DropdownItem>
-                                          )}
                                           <DropdownItem
+                                            href="#"
+                                            onClick={() => onArchievingChat()}
+                                          >
+                                            Archive Chat
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
                                             onClick={() =>
                                               toggle_emailModal(true)
                                             }
                                           >
                                             Email
                                           </DropdownItem>
-                                          <DropdownItem>
+                                          <DropdownItem href="#">
                                             Delete chat
                                           </DropdownItem>
                                         </DropdownMenu>
@@ -2115,7 +2130,6 @@ const ChatRc = () => {
                           <div className="chat-conversation px-3 py-1">
                             <ul className="list-unstyled">
                               <div
-                                className=""
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
@@ -2148,6 +2162,7 @@ const ChatRc = () => {
                                       >
                                         <UncontrolledDropdown>
                                           <DropdownToggle
+                                            href="#"
                                             className="btn nav-btn  "
                                             tag="i"
                                           >
@@ -2155,7 +2170,7 @@ const ChatRc = () => {
                                           </DropdownToggle>
                                           <DropdownMenu>
                                             {/* <DropdownItem
-                                                
+                                                href="#"
                                                 onClick={() =>
                                                   handleForwardMessage(
                                                     msg._id
@@ -2165,6 +2180,7 @@ const ChatRc = () => {
                                                 Forward
                                               </DropdownItem> */}
                                             <DropdownItem
+                                              href="#"
                                               onClick={() => {
                                                 setCurReplyMessageId(msg)
                                                 setReplyMsgModalOpen(true)
@@ -2173,6 +2189,7 @@ const ChatRc = () => {
                                               Reply
                                             </DropdownItem>
                                             <DropdownItem
+                                              href="#"
                                               onClick={() => {
                                                 setCurEditMessageId(msg)
                                                 setMessageEditModalOpen(true)
@@ -2181,6 +2198,7 @@ const ChatRc = () => {
                                               Edit
                                             </DropdownItem>
                                             <DropdownItem
+                                              href="#"
                                               onClick={() => {
                                                 onPinnedMessage(msg)
                                               }}
@@ -2188,6 +2206,7 @@ const ChatRc = () => {
                                               Pin
                                             </DropdownItem>
                                             <DropdownItem
+                                              href="#"
                                               onClick={() => {
                                                 setCurReminderMessageId(msg)
                                                 setRemainderModelOpen(true)
@@ -2196,6 +2215,7 @@ const ChatRc = () => {
                                               Reminder
                                             </DropdownItem>
                                             <DropdownItem
+                                              href="#"
                                               onClick={() => {
                                                 msg.sender ===
                                                 currentUser.userID

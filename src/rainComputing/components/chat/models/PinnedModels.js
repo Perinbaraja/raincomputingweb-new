@@ -9,11 +9,17 @@ import { Card, Dropdown, DropdownToggle, Modal } from "reactstrap"
 import moment from "moment"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import AttachmentViewer from "../AttachmentViewer"
+import PropTypes from "prop-types"
 
-const PinnedModels = () => {
+const PinnedModels = ({ handleLocateMessage }) => {
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState([])
+  const handleClick = messageId => {
+    handleLocateMessage(messageId)
+    setPinModal(false)
+  }
+
   const currentChats = currentChat?.groupMembers.map(i => i?.id)
 
   const getSender = id => currentChats?.find(i => i?._id === id?.sender)
@@ -38,6 +44,7 @@ const PinnedModels = () => {
       PinnedMessage()
     }
   }, [pinModal])
+
   const handleUnpinMessage = async msgId => {
     const payload = { Id: msgId }
     const res = await unpinMessage(payload)
@@ -58,6 +65,7 @@ const PinnedModels = () => {
   const text = {
     color: "#0000F9",
   }
+
   return (
     <>
       <Modal
@@ -89,12 +97,29 @@ const PinnedModels = () => {
                 <div className=" border border-primary my-2 " key={m}>
                   <div className="conversation-list">
                     <div
-                      className="text-wrap   px-2 py-4"
+                      className="d-flex  justify-content-end"
                       style={{
                         backgroundColor: currentChat?.color
                           ? currentChat?.color + "33"
                           : "#00EE00" + "33",
                       }}
+                    >
+                      <i
+                        className="mdi mdi-pin-off-outline mdi-rotate-315 text-danger"
+                        title="Unpin"
+                        onClick={() => handleUnpinMessage(msg?._id)}
+                        style={{ cursor: "pointer" }}
+                      ></i>
+                    </div>
+                    <div
+                      className="text-wrap   px-2 py-4"
+                      style={{
+                        backgroundColor: currentChat?.color
+                          ? currentChat?.color + "33"
+                          : "#00EE00" + "33",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleClick(msg._id)}
                     >
                       <div className="conversation-name">
                         <div className="d-flex justify-content-between align-items-center">
@@ -104,14 +129,7 @@ const PinnedModels = () => {
                               {getSender(msg)?.lastname}
                             </p>
                           </div>
-                          <div>
-                            <i
-                              className="mdi mdi-pin-off-outline mdi-rotate-315 text-danger"
-                              title="Unpin"
-                              onClick={() => handleUnpinMessage(msg?._id)}
-                              style={{ cursor: "pointer" }}
-                            ></i>
-                          </div>
+                          <div></div>
                         </div>
                       </div>
 
@@ -160,5 +178,7 @@ const PinnedModels = () => {
     </>
   )
 }
-
+PinnedModels.propTypes = {
+  handleLocateMessage: PropTypes.func,
+}
 export default PinnedModels
