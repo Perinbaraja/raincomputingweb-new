@@ -183,6 +183,7 @@ const ChatRc = () => {
   const caseReplyChatId = query.get("rc_id")
 
   const { notifications, setNotifications } = useNotifications()
+  console.log("notifications :",notifications)
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
   const {
@@ -1182,8 +1183,7 @@ const ChatRc = () => {
 
       // setNotifications(filteredNotifications)
       setNotifications(
-        notifications.filter(n => n.groupId !== currentChat?._id)
-      )
+        notifications.filter(n => n.groupId !== currentChat?._id))
 
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
@@ -1201,6 +1201,7 @@ const ChatRc = () => {
       }
       onGettingGroupMessages()
     }
+
   }, [currentChat])
 
   //SideEffect while contact page changes
@@ -1357,7 +1358,7 @@ const ChatRc = () => {
       if (messageElem) {
         messageElem.scrollIntoView({ behavior: "auto" })
         messageElem.classList.add("highlighted")
-        messageElem.style.backgroundColor = "orange"
+        messageElem.style.backgroundColor = "#FFD700"
       }
     }
   }
@@ -1705,33 +1706,18 @@ const ChatRc = () => {
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
-                      <div
-                        className="d-flex gap-2"
-                        style={{ paddingLeft: "18px" }}
-                      >
-                        <i
-                          className="bx bx-plus-circle w-16 p-4 pl-5 font-size-16 ml-2 text-white border rounded-circle "
-                          style={{
-                            cursor: "pointer",
-                            backgroundColor: "#556ee6",
-                          }}
-                          title="Create case"
-                          onClick={() => setNewCaseModelOpen(true)}
-                        ></i>
+                     
+                         <div className="d-flex gap-2 my-2">
+                      <button
+                        type="button"
+                        className="btn btn-info btn-rounded mb-2 col-5"
+                        onClick={() => setNewCaseModelOpen(true)}
+                        >
+                          Create case
+                          <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
+                        </button>
 
-                        {allCases.some(group =>
-                          group.admins.includes(currentUser?.userID)
-                        ) && (
-                          <i
-                            className="bx bx-check-circle w-16 p-4 pl-5 font-size-16 ml-2 text-white border rounded-circle"
-                            style={{
-                              cursor: "pointer",
-                              backgroundColor: "#556ee6",
-                            }}
-                            title="Completed Case"
-                            onClick={() => setCompleteCaseModelOpen(true)}
-                          ></i>
-                        )}
+                        
 
                         <div className="d-flex justify-content-center align-items-center">
                           <Dropdown
@@ -1767,7 +1753,21 @@ const ChatRc = () => {
                             </DropdownMenu>
                           </Dropdown>
                         </div>
+                        {allCases.some(group =>
+                          group.admins.includes(currentUser?.userID)
+                        ) && (
+                          <i
+                            className="bx bx-check-circle w-16 m-4 pl-5 font-size-16 ml-2"
+                            style={{
+                              cursor: "pointer",
+                              // backgroundColor: "#556ee6",
+                            }}
+                            title="Completed Case"
+                            onClick={() => setCompleteCaseModelOpen(true)}
+                          ></i>
+                        )}
                       </div>
+                     
                       {caseLoading ? (
                         <ChatLoader />
                       ) : (
