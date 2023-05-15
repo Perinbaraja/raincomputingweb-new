@@ -16,7 +16,6 @@ const AttachmentViewer = ({ attachments, text }) => {
       fileDownload(res, filename)
     })
   }
-  console.log("attachments :", attachments)
   return (
     <div className="att_wrapper">
       {attachments?.map((att, a) => (
