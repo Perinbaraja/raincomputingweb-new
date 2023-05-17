@@ -183,7 +183,6 @@ const ChatRc = () => {
   const caseReplyChatId = query.get("rc_id")
 
   const { notifications, setNotifications } = useNotifications()
-  console.log("notifications :",notifications)
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
   const {
@@ -1706,18 +1705,15 @@ const ChatRc = () => {
                       </ul>
                     </TabPane>
                     <TabPane tabId="2">
-                     
-                         <div className="d-flex gap-2 my-2">
-                      <button
-                        type="button"
-                        className="btn btn-info btn-rounded mb-2 col-5"
-                        onClick={() => setNewCaseModelOpen(true)}
+                      <div className="d-flex gap-2 my-2">
+                        <button
+                          type="button"
+                          className="btn btn-info btn-rounded mb-2 col-5"
+                          onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
                           <i className="bx bx-pencil font-size-16 align-middle me-2 mx-2"></i>
                         </button>
-
-                        
 
                         <div className="d-flex justify-content-center align-items-center">
                           <Dropdown
@@ -1767,7 +1763,7 @@ const ChatRc = () => {
                           ></i>
                         )}
                       </div>
-                     
+
                       {caseLoading ? (
                         <ChatLoader />
                       ) : (
@@ -2321,13 +2317,9 @@ const ChatRc = () => {
                                               // />
                                             )}
                                           </div>
-                                          <div>
-                                            <div>
-                                              <div>
-                                                <VoiceMessage msg={msg} />
-                                              </div>
-                                            </div>
-                                          </div>
+                                          {msg?.isVoiceMessage &&<div>
+                                            <VoiceMessage msg={msg} />
+                                          </div>}
                                           <p className="chat-time mb-0">
                                             <i className="bx bx-comment-check align-middle me-1" />
                                             {/* <i className="bx bx-time-five align-middle me-1" /> */}
