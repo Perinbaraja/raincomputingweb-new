@@ -7,7 +7,7 @@ import ChatLoader from "./ChatLoader"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 
 const PrivateReplyMsg = props => {
-  const { sender, replies, createdAt, groupId } = props?.notification
+  const { sender, replies, createdAt, groupId ,_id} = props?.notification
   const [senderName, setSenderName] = useState(sender)
   const [isLoading, setIsLoading] = useState(true)
   const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
@@ -23,13 +23,14 @@ const PrivateReplyMsg = props => {
     }
     getSenderName()
   }, [sender])
+
   return (
     <>
       {isLoading ? (
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rp_id=${groupId}`}
+          to={`/chat-rc?rp_id=${groupId}&msg_id=${_id}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">

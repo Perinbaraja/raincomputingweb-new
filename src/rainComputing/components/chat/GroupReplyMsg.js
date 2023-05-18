@@ -6,7 +6,7 @@ import { getGroupNameById } from "rainComputing/helpers/backend_helper"
 import ChatLoader from "./ChatLoader"
 
 const GroupReplyMsg = props => {
-  const { groupId, replies,createdAt, caseId } = props?.notification
+  const { groupId, replies,createdAt, caseId ,_id} = props?.notification
   const [isLoading, setIsLoading] = useState(true)
   const [caseName, setCaseName] = useState(caseId)
   const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
@@ -27,7 +27,7 @@ const GroupReplyMsg = props => {
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}`}
+          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}&msg_id=${_id}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">
