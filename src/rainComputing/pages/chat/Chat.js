@@ -181,7 +181,7 @@ const ChatRc = () => {
   const caseChatId = query.get("c_id")
   const groupReplyChatId = query.get("rg_id")
   const caseReplyChatId = query.get("rc_id")
-
+  const replymsgId =query.get("msg_id")
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
@@ -281,7 +281,7 @@ const ChatRc = () => {
     setBlobURL(null)
     setDuration(0)
   }
-
+ 
   // Stop recording
   const stopRecording = () => {
     if (recorder && recorder.state === "recording") {
@@ -373,8 +373,9 @@ const ChatRc = () => {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [messages])
 
+  }, [messages])
+ 
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -1361,6 +1362,22 @@ const ChatRc = () => {
       }
     }
   }
+  const Locate = () => {
+    const message = messages.find((msg) => msg._id === replymsgId);
+    if (message) {
+      const messageElem = document.getElementById(message._id);
+      if (messageElem) {
+        messageElem.scrollIntoView({ behavior: "auto" })
+        messageElem.classList.add("highlighted");
+        messageElem.style.backgroundColor = "#FFD700";
+      }
+    }
+  };
+  useEffect(() => {
+    if(replymsgId){
+    Locate();
+  }
+  });
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2133,8 +2150,8 @@ const ChatRc = () => {
                                   overflowY: "scroll",
                                 }}
                               >
-                                {messages &&
-                                  visibleMessages.map((msg, m) => (
+                                {messages
+                              .map((msg, m) => (
                                     <li
                                       key={"test_k" + m}
                                       className={

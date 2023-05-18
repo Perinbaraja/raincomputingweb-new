@@ -61,9 +61,9 @@ const NotificationDropdown = props => {
               <SimpleBar style={{ height: "230px" }}>
                 <div>
                   {notifications?.map((notify, i) => {
-                    if (notify.isReply && !notify?.currentChat?.caseId) {
+                    if (notify.isReply && !notify?.caseId) {
                       return <PrivateReplyMsg notification={notify} key={i} />
-                    } else if (notify.isReply && notify?.currentChat?.caseId) {
+                    } else if (notify.isReply && notify?.caseId) {
                       return <GroupReplyMsg notification={notify} key={i} />
                     } else if (notify.caseId) {
                       return <GroupMsg notification={notify} key={i} />

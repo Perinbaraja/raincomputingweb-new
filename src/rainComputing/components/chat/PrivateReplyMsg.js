@@ -7,10 +7,11 @@ import ChatLoader from "./ChatLoader"
 import { useQuery } from "rainComputing/helpers/hooks/useQuery"
 
 const PrivateReplyMsg = props => {
-  const { sender, msg, createdAt, currentChat } = props?.notification
+  const { sender, replies, createdAt, groupId ,_id} = props?.notification
   const [senderName, setSenderName] = useState(sender)
   const [isLoading, setIsLoading] = useState(true)
-  const groupId =currentChat?._id
+  const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
+
   useEffect(() => {
     const getSenderName = async () => {
       const senderRes = await getSenderNameById({
@@ -22,13 +23,14 @@ const PrivateReplyMsg = props => {
     }
     getSenderName()
   }, [sender])
+
   return (
     <>
       {isLoading ? (
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rp_id=${groupId}`}
+          to={`/chat-rc?rp_id=${groupId}&msg_id=${_id}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">
@@ -40,7 +42,7 @@ const PrivateReplyMsg = props => {
             <div className="flex-grow-1">
               <div className="font-size-11 text-muted">
                 <p className="mb-1 text-danger">{` New Reply messages from ${senderName}`}</p>
-                <p className="text-primary">{`${msg}`}</p>
+                <p className="text-primary">{`${Replymsg}`}</p>
                 <p className="mb-0">
                   <i className="mdi mdi-clock-outline" />{" "}
                   {moment(createdAt).format("DD-MM-YY hh:mm")}
