@@ -181,7 +181,7 @@ const ChatRc = () => {
   const caseChatId = query.get("c_id")
   const groupReplyChatId = query.get("rg_id")
   const caseReplyChatId = query.get("rc_id")
-  const replymsgId =query.get("msg_id")
+  const replymsgId = query.get("msg_id")
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
@@ -281,7 +281,7 @@ const ChatRc = () => {
     setBlobURL(null)
     setDuration(0)
   }
- 
+
   // Stop recording
   const stopRecording = () => {
     if (recorder && recorder.state === "recording") {
@@ -364,18 +364,18 @@ const ChatRc = () => {
     }
   }, [visibleMessages?.length, messages])
   useEffect(() => {
-    setVisibleMessages(messages.slice(-49))
+    // setVisibleMessages(messages.slice(-49))
+    if (!replymsgId) {
+      scrollToBottom() // Call the scrollToBottom function to start at the bottom
 
-    scrollToBottom() // Call the scrollToBottom function to start at the bottom
+      const timer = setTimeout(() => {
+        scrollToBottom()
+      }, 500)
 
-    const timer = setTimeout(() => {
-      scrollToBottom()
-    }, 500)
-
-    return () => clearTimeout(timer)
-
+      return () => clearTimeout(timer)
+    }
   }, [messages])
- 
+
   //Toaster settings
   toastr.options = {
     progressBar: true,
@@ -1050,10 +1050,24 @@ const ChatRc = () => {
   }
 
   //Message search
+  // useEffect(() => {
+  //   if (searchMessageText) {
+  //     setSearchedMessages(
+  //       visibleMessages?.filter(m =>
+  //         m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
+  //       )
+  //     )
+  //   } else {
+  //     setSearchedMessages([])
+  //   }
+  //   return () => {
+  //     setSearchedMessages([])
+  //   }
+  // }, [searchMessageText])
   useEffect(() => {
     if (searchMessageText) {
       setSearchedMessages(
-        visibleMessages?.filter(m =>
+        messages?.filter(m =>
           m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
         )
       )
@@ -1183,7 +1197,8 @@ const ChatRc = () => {
 
       // setNotifications(filteredNotifications)
       setNotifications(
-        notifications.filter(n => n.groupId !== currentChat?._id))
+        notifications.filter(n => n.groupId !== currentChat?._id)
+      )
 
       const onGettingGroupMessages = async () => {
         setChatLoader(true)
@@ -1201,7 +1216,6 @@ const ChatRc = () => {
       }
       onGettingGroupMessages()
     }
-
   }, [currentChat])
 
   //SideEffect while contact page changes
@@ -1363,21 +1377,21 @@ const ChatRc = () => {
     }
   }
   const Locate = () => {
-    const message = messages.find((msg) => msg._id === replymsgId);
+    const message = messages.find(msg => msg._id === replymsgId)
     if (message) {
-      const messageElem = document.getElementById(message._id);
+      const messageElem = document.getElementById(message._id)
       if (messageElem) {
         messageElem.scrollIntoView({ behavior: "auto" })
-        messageElem.classList.add("highlighted");
-        messageElem.style.backgroundColor = "#FFD700";
+        messageElem.classList.add("highlighted")
+        messageElem.style.backgroundColor = "#FFD700"
       }
     }
-  };
-  useEffect(() => {
-    if(replymsgId){
-    Locate();
   }
-  });
+  useEffect(() => {
+    if (replymsgId) {
+      Locate()
+    }
+  })
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2150,39 +2164,38 @@ const ChatRc = () => {
                                   overflowY: "scroll",
                                 }}
                               >
-                                {messages
-                              .map((msg, m) => (
-                                    <li
-                                      key={"test_k" + m}
-                                      className={
-                                        msg.sender === currentUser.userID
-                                          ? "right"
-                                          : ""
-                                      }
+                                {messages.map((msg, m) => (
+                                  <li
+                                    key={"test_k" + m}
+                                    className={
+                                      msg.sender === currentUser.userID
+                                        ? "right"
+                                        : ""
+                                    }
+                                  >
+                                    <div
+                                      className="conversation-list"
+                                      id={msg?._id}
+                                      style={{
+                                        maxWidth: "80%",
+                                        color:
+                                          searchedMessages?.includes(msg) &&
+                                          "white",
+                                        backgroundColor:
+                                          searchedMessages?.includes(msg) &&
+                                          "black",
+                                      }}
                                     >
-                                      <div
-                                        className="conversation-list"
-                                        id={msg?._id}
-                                        style={{
-                                          maxWidth: "80%",
-                                          color:
-                                            searchedMessages?.includes(msg) &&
-                                            "white",
-                                          backgroundColor:
-                                            searchedMessages?.includes(msg) &&
-                                            "black",
-                                        }}
-                                      >
-                                        <UncontrolledDropdown>
-                                          <DropdownToggle
-                                            href="#"
-                                            className="btn nav-btn  "
-                                            tag="i"
-                                          >
-                                            <i className="bx bx-dots-vertical-rounded" />
-                                          </DropdownToggle>
-                                          <DropdownMenu>
-                                            {/* <DropdownItem
+                                      <UncontrolledDropdown>
+                                        <DropdownToggle
+                                          href="#"
+                                          className="btn nav-btn  "
+                                          tag="i"
+                                        >
+                                          <i className="bx bx-dots-vertical-rounded" />
+                                        </DropdownToggle>
+                                        <DropdownMenu>
+                                          {/* <DropdownItem
                                                 href="#"
                                                 onClick={() =>
                                                   handleForwardMessage(
@@ -2192,68 +2205,66 @@ const ChatRc = () => {
                                               >
                                                 Forward
                                               </DropdownItem> */}
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurReplyMessageId(msg)
-                                                setReplyMsgModalOpen(true)
-                                              }}
-                                            >
-                                              Reply
-                                            </DropdownItem>
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                onPinnedMessage(msg)
-                                              }}
-                                            >
-                                              Pin
-                                            </DropdownItem>
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurReminderMessageId(msg)
-                                                setRemainderModelOpen(true)
-                                              }}
-                                            >
-                                              Reminder
-                                            </DropdownItem>
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                msg.sender ===
-                                                currentUser.userID
-                                                  ? handleDelete(msg)
-                                                  : toastr.info(
-                                                      "Unable to  delete other's message"
-                                                    )
-                                              }}
-                                            >
-                                              Delete
-                                            </DropdownItem>
-                                          </DropdownMenu>
-                                        </UncontrolledDropdown>
-                                        <div
-                                          className="ctext-wrap "
-                                          style={{
-                                            backgroundColor:
-                                              msg.sender ==
-                                                currentUser.userID &&
-                                              currentChat?.color
-                                                ? currentChat?.color + "33"
-                                                : "#00EE00" + "33",
-                                          }}
-                                        >
-                                          {/* {msg.isForward ? (
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              setCurReplyMessageId(msg)
+                                              setReplyMsgModalOpen(true)
+                                            }}
+                                          >
+                                            Reply
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              setCurEditMessageId(msg)
+                                              setMessageEditModalOpen(true)
+                                            }}
+                                          >
+                                            Edit
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              onPinnedMessage(msg)
+                                            }}
+                                          >
+                                            Pin
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              setCurReminderMessageId(msg)
+                                              setRemainderModelOpen(true)
+                                            }}
+                                          >
+                                            Reminder
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              msg.sender === currentUser.userID
+                                                ? handleDelete(msg)
+                                                : toastr.info(
+                                                    "Unable to  delete other's message"
+                                                  )
+                                            }}
+                                          >
+                                            Delete
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      </UncontrolledDropdown>
+                                      <div
+                                        className="ctext-wrap "
+                                        style={{
+                                          backgroundColor:
+                                            msg.sender == currentUser.userID &&
+                                            currentChat?.color
+                                              ? currentChat?.color + "33"
+                                              : "#00EE00" + "33",
+                                        }}
+                                      >
+                                        {/* {msg.isForward ? (
                                               <div className=" mdi mdi-forward">
                                                 Forwarded:
                                               </div>
@@ -2262,109 +2273,109 @@ const ChatRc = () => {
                                                 {" "}
                                               </div>
                                             )} */}
-                                          <div>
-                                            {msg?.isPinned ? (
-                                              <div>
-                                                <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
-                                              </div>
-                                            ) : (
-                                              <div className="conversation-name">
-                                                {" "}
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div>
-                                            {msg?.isEdit ? (
-                                              <div>
-                                                <p className="text-primary">
-                                                  Edited
-                                                </p>
-                                              </div>
-                                            ) : (
-                                              <div className="conversation-name">
-                                                {" "}
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div className="conversation-name">
-                                            {currentChat.isGroup
-                                              ? getMemberName(msg.sender)
-                                              : getSenderOneChat(msg.sender)}
-                                          </div>
-                                          <div className="mb-1">
-                                            {msg.isAttachment ? (
-                                              <>
-                                                <AttachmentViewer
-                                                  attachments={msg.attachments}
-                                                  text={msg.messageData}
-                                                />
+                                        <div>
+                                          {msg?.isPinned ? (
+                                            <div>
+                                              <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                            </div>
+                                          ) : (
+                                            <div className="conversation-name">
+                                              {" "}
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div>
+                                          {msg?.isEdit ? (
+                                            <div>
+                                              <p className="text-primary">
+                                                Edited
+                                              </p>
+                                            </div>
+                                          ) : (
+                                            <div className="conversation-name">
+                                              {" "}
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="conversation-name">
+                                          {currentChat.isGroup
+                                            ? getMemberName(msg.sender)
+                                            : getSenderOneChat(msg.sender)}
+                                        </div>
+                                        <div className="mb-1">
+                                          {msg.isAttachment ? (
+                                            <>
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
 
-                                                <div className="mt-3">
-                                                  {" "}
-                                                  {stringFormatter(
-                                                    prettifyMsg(msg.messageData)
-                                                  )}
-                                                </div>
-                                                <div
-                                                  className="mt-1"
-                                                  style={{
-                                                    whiteSpace: "break-spaces",
-                                                  }}
-                                                >
-                                                  {/* {stringFormatter(
-                                                      msg.messageData
-                                                    )} */}
-                                                </div>
-                                              </>
-                                            ) : (
-                                              <div
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                              >
+                                              <div className="mt-3">
+                                                {" "}
                                                 {stringFormatter(
                                                   prettifyMsg(msg.messageData)
                                                 )}
                                               </div>
-                                              // <div
-                                              //   style={{ whiteSpace: "pre" }}
-                                              //   dangerouslySetInnerHTML={{
-                                              //     __html: msg?.messageData,
-                                              //   }}
-                                              // />
-                                            )}
-                                          </div>
-                                          {msg?.isVoiceMessage &&<div>
-                                            <VoiceMessage msg={msg} />
-                                          </div>}
-                                          <p className="chat-time mb-0">
-                                            <i className="bx bx-comment-check align-middle me-1" />
-                                            {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                            {moment(msg.createdAt).format(
-                                              "DD-MM-YY HH:mm"
-                                            )}
-                                            {msg?.replies?.map((r, i) => (
                                               <div
-                                                key={i}
-                                                className=" mdi mdi-reply m-2"
+                                                className="mt-1"
+                                                style={{
+                                                  whiteSpace: "break-spaces",
+                                                }}
                                               >
-                                                Replies:
-                                                <div className="conversation-name">
-                                                  {currentChat.isGroup
-                                                    ? getMemberName(r?.sender)
-                                                    : getSenderOneChat(
-                                                        r?.sender
-                                                      )}
-                                                </div>
-                                                <p>{r?.replyMsg}</p>
+                                                {/* {stringFormatter(
+                                                      msg.messageData
+                                                    )} */}
                                               </div>
-                                            ))}
-                                          </p>
-                                          {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
+                                            </>
+                                          ) : (
+                                            <div
+                                              style={{
+                                                whiteSpace: "break-spaces",
+                                              }}
+                                            >
+                                              {stringFormatter(
+                                                prettifyMsg(msg.messageData)
+                                              )}
+                                            </div>
+                                            // <div
+                                            //   style={{ whiteSpace: "pre" }}
+                                            //   dangerouslySetInnerHTML={{
+                                            //     __html: msg?.messageData,
+                                            //   }}
+                                            // />
+                                          )}
                                         </div>
+                                        {msg?.isVoiceMessage && (
+                                          <div>
+                                            <VoiceMessage msg={msg} />
+                                          </div>
+                                        )}
+                                        <p className="chat-time mb-0">
+                                          <i className="bx bx-comment-check align-middle me-1" />
+                                          {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                                          {moment(msg.createdAt).format(
+                                            "DD-MM-YY HH:mm"
+                                          )}
+                                          {msg?.replies?.map((r, i) => (
+                                            <div
+                                              key={i}
+                                              className=" mdi mdi-reply m-2"
+                                            >
+                                              Replies:
+                                              <div className="conversation-name">
+                                                {currentChat.isGroup
+                                                  ? getMemberName(r?.sender)
+                                                  : getSenderOneChat(r?.sender)}
+                                              </div>
+                                              <p>{r?.replyMsg}</p>
+                                            </div>
+                                          ))}
+                                        </p>
+                                        {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
                                       </div>
-                                    </li>
-                                  ))}
+                                    </div>
+                                  </li>
+                                ))}
                                 {messageStack?.length > 0 &&
                                   messageStack.map((msg, m) => (
                                     <li key={"test_k" + m} className="right">
