@@ -6,11 +6,10 @@ import { getGroupNameById } from "rainComputing/helpers/backend_helper"
 import ChatLoader from "./ChatLoader"
 
 const GroupReplyMsg = props => {
-  const { currentChat, msg, createdAt, caseId } = props?.notification
-
+  const { groupId, replies,createdAt, caseId } = props?.notification
   const [isLoading, setIsLoading] = useState(true)
   const [caseName, setCaseName] = useState(caseId)
-
+  const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
   useEffect(() => {
     const getGroupName = async () => {
       const groupRes = await getGroupNameById({ caseId })
@@ -28,7 +27,7 @@ const GroupReplyMsg = props => {
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rg_id=${currentChat?._id}&rc_id=${caseId}`}
+          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">
@@ -40,7 +39,7 @@ const GroupReplyMsg = props => {
             <div className="flex-grow-1">
               <div className="font-size-11 text-muted">
                 <p className="mb-1 text-danger">{` New Reply messages from ${caseName}`}</p>
-                <p className="text-primary">{`${msg}`}</p>
+                <p className="text-primary">{`${Replymsg}`}</p>
                 <p className="mb-0">
                   <i className="mdi mdi-clock-outline" />{" "}
                   {moment(createdAt).format("DD-MM-YY hh:mm")}

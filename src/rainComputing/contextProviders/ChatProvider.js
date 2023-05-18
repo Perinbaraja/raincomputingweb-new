@@ -121,6 +121,10 @@ export function ChatProvider({ socket, children }) {
           )
         }
       })
+      socket.off("r_s").once("r_s", async msgData => {
+        setMessageStack([])
+        setMessages([...messages, msgData])
+      })
     } else {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
