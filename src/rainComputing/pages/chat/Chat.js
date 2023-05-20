@@ -1384,11 +1384,6 @@ const ChatRc = () => {
       }
     }
   }
-  useEffect(() => {
-    setTimeout(() => {
-      handleLocateMessage()
-    }, 0)
-  }, [])
   const Locate = () => {
     const message = [...messages, ...visibleMessages].find(
       msg => msg._id === replymsgId
