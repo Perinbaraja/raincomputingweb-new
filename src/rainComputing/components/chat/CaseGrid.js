@@ -17,6 +17,7 @@ import toastr from "toastr"
 import DocketResultModel from "./models/DocketResultModel"
 import EventMaster from "./models/EventMaster"
 import DynamicSuspense from "../loader/DynamicSuspense"
+import EventCalender from "./models/EventCalender"
 const CaseGrid = ({
   caseData,
   index,
@@ -54,6 +55,11 @@ const CaseGrid = ({
     toggleOpen: EventMasterModelOpen,
     setToggleOpen: setEventMasterModelOpen,
     toggleIt: toggleEventMasterModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: EventCalenderModelOpen,
+    setToggleOpen: setEventCalenderModelOpen,
+    toggleIt: toggleEventCalenderModelOpen,
   } = useToggle(false)
   const handleLeave = () => {
     setLeaveGroupModalOpen(true)
@@ -126,6 +132,20 @@ const CaseGrid = ({
           closeModal={toggleEventMasterModelOpen} 
           /></DynamicSuspense>
         </DynamicModel>
+        <DynamicModel
+          open={EventCalenderModelOpen}
+          toggle={toggleEventCalenderModelOpen}
+          size="lg"
+          modalTitle="Event Calender"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+          <EventCalender 
+          caseId={caseData}
+          closeModal={toggleEventCalenderModelOpen} 
+          /></DynamicSuspense>
+        </DynamicModel>
 
         {/*Case members Model*/}
         <DynamicModel
@@ -181,6 +201,13 @@ const CaseGrid = ({
             style={{fontSize:"10px"}}
           
           >Event Master</button>
+          <button
+            type="button"
+            className="btn btn-gray"
+            onClick={()=>setEventCalenderModelOpen(true)}
+            style={{fontSize:"10px"}}
+          
+          >Event Calender</button>
           </div>
           <div className="mb-4 pointer">
             <span className="fw-medium font-size-11 ">Case Members</span>

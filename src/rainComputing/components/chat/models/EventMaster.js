@@ -82,9 +82,9 @@ const EventMaster = ({ caseId, closeModal }) => {
             receivedDate: receivedDate[i],
           })),
         }
-        console.log("eventText", eventText)
         const res = await createEvent(eventPayload)
         if (res.success) {
+          closeModal(true)
         }
       } catch (error) {
         console.error("Error creating event:", error)
