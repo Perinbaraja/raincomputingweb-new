@@ -14,6 +14,9 @@ import DeleteModal from "../modals/DeleteModal"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { LeaveGroup } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
+import DocketResultModel from "./models/DocketResultModel"
+import EventMaster from "./models/EventMaster"
+import DynamicSuspense from "../loader/DynamicSuspense"
 const CaseGrid = ({
   caseData,
   index,
@@ -41,6 +44,16 @@ const CaseGrid = ({
     toggleOpen: filesModelOpen,
     setToggleOpen: setFilesModelOpen,
     toggleIt: toggleFilesModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: DocketModelOpen,
+    setToggleOpen: setDocketModelOpen,
+    toggleIt: toggleDocketModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: EventMasterModelOpen,
+    setToggleOpen: setEventMasterModelOpen,
+    toggleIt: toggleEventMasterModelOpen,
   } = useToggle(false)
   const handleLeave = () => {
     setLeaveGroupModalOpen(true)
@@ -89,6 +102,30 @@ const CaseGrid = ({
         >
           <CaseFilesGrid caseId={caseData?._id} />
         </DynamicModel>
+        <DynamicModel
+          open={DocketModelOpen}
+          toggle={toggleDocketModelOpen}
+          size="xl"
+          modalTitle="Dockets Results"
+          isClose={true}
+        >
+          <DocketResultModel 
+          caseId={caseData} />
+        </DynamicModel>
+        <DynamicModel
+          open={EventMasterModelOpen}
+          toggle={toggleEventMasterModelOpen}
+          size="xl"
+          modalTitle="Event Master"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+          <EventMaster 
+          caseId={caseData}
+          closeModal={toggleEventMasterModelOpen} 
+          /></DynamicSuspense>
+        </DynamicModel>
 
         {/*Case members Model*/}
         <DynamicModel
@@ -136,6 +173,15 @@ const CaseGrid = ({
         </Row>
 
         <Collapse isOpen={index === active} className="accordion-collapse">
+          <div className="pointer">
+          <button
+            type="button"
+            className="btn btn-gray"
+            onClick={()=>setEventMasterModelOpen(true)}
+            style={{fontSize:"10px"}}
+          
+          >Event Master</button>
+          </div>
           <div className="mb-4 pointer">
             <span className="fw-medium font-size-11 ">Case Members</span>
             <AccordionContainer
@@ -182,11 +228,19 @@ const CaseGrid = ({
               <span>Shared Files</span>
             </AccordionContainer>
           </div>
-          <div className="d-flex justify-content-end">
+         
+          <div className="d-flex justify-content-between">
+          <button
+            type="button"
+            className="btn btn-primary "
+          style={{fontSize:"10px"}}
+          onClick={()=>setDocketModelOpen(true)}
+          >Docket</button>
           <button
             type="button"
             className="btn btn-danger"
             onClick={handleLeave}
+            style={{fontSize:"10px"}}
           
           >Exit Case</button>
           </div>

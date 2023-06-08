@@ -122,11 +122,11 @@ const ChatRc = () => {
     setToggleOpen: setNewCaseModelOpen,
     toggleIt: toggleNewCaseModelOpen,
   } = useToggle(false)
-  const {
-    toggleOpen: completeCaseModelOpen,
-    setToggleOpen: setCompleteCaseModelOpen,
-    toggleIt: toggleCompleteCaseModelOpen,
-  } = useToggle(false)
+  // const {
+  //   toggleOpen: completeCaseModelOpen,
+  //   setToggleOpen: setCompleteCaseModelOpen,
+  //   toggleIt: toggleCompleteCaseModelOpen,
+  // } = useToggle(false)
   const {
     toggleOpen: remainderModelOpen,
     setToggleOpen: setRemainderModelOpen,
@@ -1514,7 +1514,7 @@ const ChatRc = () => {
                 />
               </DynamicSuspense>
             </DynamicModel>
-            <DynamicModel
+            {/* <DynamicModel
               open={completeCaseModelOpen}
               toggle={toggleCompleteCaseModelOpen}
               size="md"
@@ -1526,7 +1526,7 @@ const ChatRc = () => {
                   <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
                 </div>
               </DynamicSuspense>
-            </DynamicModel>
+            </DynamicModel> */}
 
             {/* Model for creating subgroup */}
             {allgroups && (
@@ -1752,7 +1752,7 @@ const ChatRc = () => {
                       <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-info btn-rounded mb-2 col-5"
+                          className="btn btn-info btn-rounded mb-2 col-6"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
@@ -1793,7 +1793,7 @@ const ChatRc = () => {
                             </DropdownMenu>
                           </Dropdown>
                         </div>
-                        {allCases.some(group =>
+                        {/* {allCases.some(group =>
                           group.admins.includes(currentUser?.userID)
                         ) && (
                           <i
@@ -1805,7 +1805,7 @@ const ChatRc = () => {
                             title="Completed Case"
                             onClick={() => setCompleteCaseModelOpen(true)}
                           ></i>
-                        )}
+                        )} */}
                       </div>
 
                       {caseLoading ? (

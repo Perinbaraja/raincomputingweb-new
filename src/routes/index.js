@@ -41,6 +41,8 @@ import Guide from "rainComputing/pages/guide"
 import Reminder from "rainComputing/pages/reminder"
 import UserReminders from "rainComputing/pages/reminder/UserReminders"
 import Calender from "rainComputing/pages/Calendar/Calendar"
+import CompletedCase from "rainComputing/components/chat/CompletedCase"
+import Dashboard from "rainComputing/pages/reminder/Dashboard"
 
 const authProtectedRoutes = [
   //Projects
@@ -66,6 +68,8 @@ const authProtectedRoutes = [
   { path: "/appointment-status", component: AppointmentCard },
   { path: "/reminder-data", component: Reminder },
   { path: "/reminders", component: UserReminders },
+  { path: "/completedCase", component: CompletedCase },
+  { path: "/reminderDashboard", component: Dashboard },
   { path: "/calendar", component: Calender },
 ]
 

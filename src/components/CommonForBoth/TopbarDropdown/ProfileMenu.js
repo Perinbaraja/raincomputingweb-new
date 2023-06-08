@@ -21,16 +21,25 @@ import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import { useLocation } from "react-router-dom"
 import "../TopbarDropdown/login.scss"
 import Reminder from "rainComputing/pages/reminder"
+import DynamicModel from "rainComputing/components/modals/DynamicModal"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
+import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
   const histroy = useHistory()
+  const { currentAttorney } = useUser()
   const { currentUser, setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
 
   const location = useLocation()
-
+  const {
+    toggleOpen: completeCaseModelOpen,
+    setToggleOpen: setCompleteCaseModelOpen,
+    toggleIt: toggleCompleteCaseModelOpen,
+  } = useToggle(false)
   const isLoginButton =
     location.pathname.includes("/login") ||
     location.pathname.includes("/register")
@@ -49,6 +58,19 @@ const ProfileMenu = props => {
 
   return (
     <React.Fragment>
+      <DynamicModel
+        open={completeCaseModelOpen}
+        toggle={toggleCompleteCaseModelOpen}
+        size="md"
+        modalTitle="Completed Case"
+        footer={false}
+      >
+        <DynamicSuspense>
+          <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+            <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
+          </div>
+        </DynamicSuspense>
+      </DynamicModel>
       {currentUser ? (
         <Dropdown
           isOpen={menu}
@@ -101,40 +123,15 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
-            {/* 
-            {currentUser?.attorneyStatus === "approved" && (
-              <Link to="/firmlanding" className="dropdown-item">
-                <span className="badge bg-success float-end"></span>
-                <i className="bx  bx-buildings font-size-16 align-middle me-1" />
-                {props.t("Firm")}
-              </Link>
-            )} */}
-
-            {/* {!currentUser?.appointmentStatus && (
-              <DropdownItem tag="a" href="/appointmentstatus">
-                <i className="bx bx-group font-size-16 align-middle me-1" />
-                {props.t("Appointment status")}
-                {currentUser?.appointmentStatus === "requested" && (
-                  <i className="bx bx-loader  bx-spin font-size-16 align-middle ms-2  text-primary float-end" />
-                )}
-                {currentUser?.appointmentStatus === "approved" && (
-                  <i className="bx bx-comment-error  font-size-16 align-middle ms-2 text-success  float-end" />
-                )}
-                {currentUser?.appointmentStatus === "rejected" && (
-                  <i className="bx bx-x  font-size-16 align-middle ms-2 text-danger float-end" />
-                )}
-              </DropdownItem>
-            )} */}
-
-            {/* <DropdownItem tag="a" href="#">
-              <span className="badge bg-success float-end"></span>
-              <i className="bx bx-wrench font-size-16 align-middle me-1" />
-              {props.t("Settings")}
-            </DropdownItem> */}
-            {/* <DropdownItem tag="a" href="auth-lock-screen">
-            <i className="bx bx-lock-open font-size-16 align-middle me-1"/>
-            {props.t("Lock screen")}
-          </DropdownItem> */}
+           {currentAttorney&& <DropdownItem tag="a" href="/completedCase">
+              <i className="bx bx-check-circle font-size-16 align-middle me-1" />
+              {props.t("Completed Case")}
+            </DropdownItem>}
+           {currentAttorney&& <DropdownItem tag="a" href="/reminderDashboard">
+              <i className="bx bx-check-circle font-size-16 align-middle me-1" />
+              {props.t("Case Reminder")}
+            </DropdownItem>}
+           
             <div className="dropdown-divider" />
             <Link
               to="#"

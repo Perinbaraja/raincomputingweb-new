@@ -73,6 +73,7 @@ const getSubgroups = payload =>
   post(`${BASE_URL}/subgroup/getByParentRoom`, payload)
 
 const createNewCase = payload => post(`${BASE_URL}/case/create`, payload)
+const getTrademarkSearchDetails = payload => post(`${BASE_URL}/case/searchCasebySno`, payload)
 const getCasesByUserId = payload =>
   post(`${BASE_URL}/case/getByUserId`, payload)
 
@@ -122,6 +123,9 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
+const createEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
+const getAllEvent = payload => post(`${BASE_URL}/case/getAllEvent`, payload)
+const getAllStatus = payload => get(`${BASE_URL}/event/getAllStatus`, payload)
 const allCompletedCases = payload => post(`${BASE_URL}/case/allcompletedGroup`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const removeAdmin = payload => post(`${BASE_URL}/case/removeAdmin`, payload)
@@ -231,6 +235,9 @@ export {
   createSubgroup,
   updateSubgroup,
   updateCase,
+  createEvent,
+  getAllEvent,
+  getAllStatus,
   getCounts,
   getCaseFiles,
   appointmentRequest,
@@ -254,4 +261,5 @@ export {
   getReminderSelf,
   getAllReminders,
   createCommenReminders,
+  getTrademarkSearchDetails,
 }

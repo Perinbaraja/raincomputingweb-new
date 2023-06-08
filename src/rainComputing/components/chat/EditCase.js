@@ -17,6 +17,7 @@ const EditCase = ({
   const [contacts, setContacts] = useState([])
   const [caseName, setCaseName] = useState("")
   const [caseId, setCaseId] = useState("")
+  const [serialNumber, setSerialNumber] = useState("")
   const [caseMembers, setCaseMembers] = useState([])
   const [searchText, setSearchText] = useState("")
   const [loading, setloading] = useState(false)
@@ -53,6 +54,7 @@ const EditCase = ({
       id: currentCase?._id,
       caseId,
       caseName,
+      serialNumber,
       members: structuredMembers,
       admin: currentUser?.userID,
     }
@@ -75,20 +77,20 @@ const EditCase = ({
       if (searchText === "") {
         setContacts([])
       } else {
-      const contactRes = await getAllUsers({
-        userID: currentUser.userID,
-        searchText,
-      })
-      if (contactRes.success) {
-        setContacts(contactRes.users)
-      } else {
-        toastr.error(
-          `Failed to fetch contacts ${contactRes?.msg}`,
-          "Failed on fetching contacts"
-        )
-        setContacts([])
+        const contactRes = await getAllUsers({
+          userID: currentUser.userID,
+          searchText,
+        })
+        if (contactRes.success) {
+          setContacts(contactRes.users)
+        } else {
+          toastr.error(
+            `Failed to fetch contacts ${contactRes?.msg}`,
+            "Failed on fetching contacts"
+          )
+          setContacts([])
+        }
       }
-    }
     }
     handleFetchingContacts()
   }, [searchText])
@@ -97,6 +99,7 @@ const EditCase = ({
     if (currentCase) {
       setCaseId(currentCase?.caseId)
       setCaseName(currentCase?.caseName)
+      setSerialNumber(currentCase?.serialNumber)
       setCaseMembers(
         currentCase?.caseMembers.map(m => {
           const { id } = m
@@ -112,6 +115,7 @@ const EditCase = ({
     return () => {
       setCaseName("")
       setCaseId("")
+      setSerialNumber("")
       setCaseMembers([])
     }
   }, [currentCase])
@@ -157,7 +161,7 @@ const EditCase = ({
               htmlFor="caseid"
               className="col-md-5 col-lg-2 col-form-label"
             >
-              Case name
+              Case Id
             </label>
             <div className="col-md-8">
               <input
@@ -170,7 +174,24 @@ const EditCase = ({
               />
             </div>
           </Row>
-
+          <Row className="my-md-3">
+            <label
+              htmlFor="caseid"
+              className="col-md-5 col-lg-2 col-form-label"
+            >
+              Serial Number
+            </label>
+            <div className="col-md-8">
+              <input
+                className="form-control"
+                type="text"
+                placeholder="xxxx-xxxx"
+                value={serialNumber}
+                onChange={e => setSerialNumber(e.target.value)}
+              />
+            </div>
+          </Row>
+          
           <Row className="my-3">
             <label
               htmlFor="user-search-text"
@@ -205,10 +226,17 @@ const EditCase = ({
                         onClick={() => handleAddingGroupMembers(contact)}
                       >
                         <div className="d-flex justify-content-between ">
-                     <div> {contact.firstname} {contact.lastname}   </div>                
-                     {contact?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
-
-                    </div>
+                          <div>
+                            {" "}
+                            {contact.firstname} {contact.lastname}{" "}
+                          </div>
+                          {contact?.attorneyStatus === "approved" && (
+                            <div>
+                              {" "}
+                              <i className="fas fa-star text-warning"></i>
+                            </div>
+                          )}
+                        </div>
 
                         <div className="font-size-0 text-body ">
                           {contact.email}
@@ -239,11 +267,18 @@ const EditCase = ({
                         className="btn mx-1 mb-2"
                         onClick={() => handleAddingGroupMembers(member)}
                       >
-                         <div className="d-flex justify-content-between">
-                   <div> {member?.firstname + " " + member?.lastname}</div>
-                    {member?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
-
-                  </div>
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            {" "}
+                            {member?.firstname + " " + member?.lastname}
+                          </div>
+                          {member?.attorneyStatus === "approved" && (
+                            <div>
+                              {" "}
+                              <i className="fas fa-star text-warning"></i>
+                            </div>
+                          )}
+                        </div>
 
                         <div className="font-size-0 text-body ">
                           {member?.email}
