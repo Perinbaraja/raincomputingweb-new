@@ -76,8 +76,6 @@ const CreateCase = ({
       caseId: formValues?.caseId,
       caseName: formValues?.caseName,
       serialNumber:caseSerialNo,
-      docEvent:caseEvent,
-      docDate:caseEventDate,
       members: [currentUser?.userID, ...filteredMembers],
     }
     const caseRes = await createNewCase(payLoad)
@@ -178,7 +176,7 @@ const CreateCase = ({
           />
         </div>
       </Row>
-      <Row className="my-md-3">
+      {/* <Row className="my-md-3">
         <label
           htmlFor="example-text-input"
           className="col-md-3 col-lg-2 col-form-label"
@@ -194,8 +192,8 @@ const CreateCase = ({
             onChange={e => setCaseEventDate(e.target.value)}
           />
         </div>
-      </Row>
-      <Row className="my-md-3">
+      </Row> */}
+      {/* <Row className="my-md-3">
         <label
           htmlFor="example-text-input"
           className="col-md-3 col-lg-2 col-form-label"
@@ -212,7 +210,7 @@ const CreateCase = ({
             onChange={e => setCaseEvent(e.target.value)}
           />
         </div>
-      </Row>
+      </Row> */}
       <Row className="my-3">
         <label
           htmlFor="user-search-text"
