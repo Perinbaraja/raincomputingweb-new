@@ -18,7 +18,6 @@ const EventCalender = ({ caseId }) => {
   }
 
   const handleFilterEvents = () => {
-
     if (allEventsData.length > 0) {
       // Filter events based on selectedEvent and receivedDate
       const filteredEvents = allEventsData.filter(event => {
@@ -27,7 +26,7 @@ const EventCalender = ({ caseId }) => {
           .split("T")[0]
         const selectedDate = new Date(receivedDate).toISOString().split("T")[0]
         return (
-          event.docEvent === selectedEvent && eventReceivedDate === selectedDate
+          event.docEvent === selectedEvent && eventReceivedDate === selectedDate || event.docEvent === selectedEvent
         )
       })
 

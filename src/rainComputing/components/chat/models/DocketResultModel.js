@@ -52,7 +52,7 @@ const desription = docketSearch?.map(search => search?.status?.markElement)
   
   const timestamp = allEvents?.flatMap((m) => m?.eventText.map((m1) => m1?.docDate));
   const dateOnlyArray = timestamp.map((timestamp) => new Date(timestamp).toISOString().split("T")[0]);
-  const sortedDates = dateOnlyArray.sort((a, b) => new Date(a) - new Date(b));
+  // const sortedDates = dateOnlyArray.sort((a, b) => new Date(a) - new Date(b));
 
   return (
     <div style={{ height: "500px", overflowY: "scroll", display: "block" }}>
@@ -79,7 +79,7 @@ const desription = docketSearch?.map(search => search?.status?.markElement)
               <th scope="row">
                 <input type="checkbox" />
               </th>
-              <td>{sortedDates[i]}</td>
+              <td>{dateOnlyArray[i]}</td>
               <td>{attNumber}</td>
               <td>{data?.docEvent}</td>
               <td>{caseId?.serialNumber }</td>

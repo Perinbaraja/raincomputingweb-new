@@ -18,6 +18,7 @@ import DocketResultModel from "./models/DocketResultModel"
 import EventMaster from "./models/EventMaster"
 import DynamicSuspense from "../loader/DynamicSuspense"
 import EventCalender from "./models/EventCalender"
+import CreateEvent from "./models/CreateEvent"
 const CaseGrid = ({
   caseData,
   index,
@@ -47,17 +48,22 @@ const CaseGrid = ({
     toggleIt: toggleFilesModelOpen,
   } = useToggle(false)
   const {
-    toggleOpen: DocketModelOpen,
+    toggleOpen: docketModelOpen,
     setToggleOpen: setDocketModelOpen,
     toggleIt: toggleDocketModelOpen,
   } = useToggle(false)
+  // const {
+  //   toggleOpen: createEventMasterModelOpen,
+  //   setToggleOpen: setCreateEventMasterModelOpen,
+  //   toggleIt: toggleCreateEventMasterModelOpen,
+  // } = useToggle(false)
   const {
-    toggleOpen: EventMasterModelOpen,
+    toggleOpen: eventMasterModelOpen,
     setToggleOpen: setEventMasterModelOpen,
     toggleIt: toggleEventMasterModelOpen,
   } = useToggle(false)
   const {
-    toggleOpen: EventCalenderModelOpen,
+    toggleOpen: eventCalenderModelOpen,
     setToggleOpen: setEventCalenderModelOpen,
     toggleIt: toggleEventCalenderModelOpen,
   } = useToggle(false)
@@ -109,7 +115,7 @@ const CaseGrid = ({
           <CaseFilesGrid caseId={caseData?._id} />
         </DynamicModel>
         <DynamicModel
-          open={DocketModelOpen}
+          open={docketModelOpen}
           toggle={toggleDocketModelOpen}
           size="xl"
           modalTitle="Dockets Results"
@@ -119,7 +125,7 @@ const CaseGrid = ({
           caseId={caseData} />
         </DynamicModel>
         <DynamicModel
-          open={EventMasterModelOpen}
+          open={eventMasterModelOpen}
           toggle={toggleEventMasterModelOpen}
           size="xl"
           modalTitle="Event Master"
@@ -132,8 +138,22 @@ const CaseGrid = ({
           closeModal={toggleEventMasterModelOpen} 
           /></DynamicSuspense>
         </DynamicModel>
+        {/* <DynamicModel
+          open={createEventMasterModelOpen}
+          toggle={toggleCreateEventMasterModelOpen}
+          size="xl"
+          modalTitle="Event Master"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+          <CreateEvent 
+          caseId={caseData}
+          closeModal={toggleCreateEventMasterModelOpen} 
+          /></DynamicSuspense>
+        </DynamicModel> */}
         <DynamicModel
-          open={EventCalenderModelOpen}
+          open={eventCalenderModelOpen}
           toggle={toggleEventCalenderModelOpen}
           size="lg"
           modalTitle="Event Calender"
@@ -194,6 +214,13 @@ const CaseGrid = ({
 
         <Collapse isOpen={index === active} className="accordion-collapse">
           <div className="pointer">
+          {/* <button
+            type="button"
+            className="btn btn-gray"
+            onClick={()=>setCreateEventMasterModelOpen(true)}
+            style={{fontSize:"10px"}}
+          
+          >Create Event</button> */}
           <button
             type="button"
             className="btn btn-gray"

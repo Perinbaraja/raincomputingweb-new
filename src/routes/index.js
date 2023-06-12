@@ -43,6 +43,8 @@ import UserReminders from "rainComputing/pages/reminder/UserReminders"
 import Calender from "rainComputing/pages/Calendar/Calendar"
 import CompletedCase from "rainComputing/components/chat/CompletedCase"
 import Dashboard from "rainComputing/pages/reminder/Dashboard"
+import DocketMenu from "rainComputing/pages/docket/DocketMenu"
+import CreateEvents from "rainComputing/pages/docket/CreateEvents"
 
 const authProtectedRoutes = [
   //Projects
@@ -71,6 +73,8 @@ const authProtectedRoutes = [
   { path: "/completedCase", component: CompletedCase },
   { path: "/reminderDashboard", component: Dashboard },
   { path: "/calendar", component: Calender },
+  { path: "/docket", component: DocketMenu },
+  { path: "/create_events", component: CreateEvents },
 ]
 
 const publicRoutes = [

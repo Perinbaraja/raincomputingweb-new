@@ -96,6 +96,7 @@ const Navbar = props => {
                     </Link>
                   </li>
                 )}
+                
                  {currentUser && !currentAttorney && (
                  <li className="nav-item dropdown">
                     <Link

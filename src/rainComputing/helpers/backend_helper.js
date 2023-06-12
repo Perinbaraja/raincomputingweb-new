@@ -123,8 +123,10 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
-const createEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
-const getAllEvent = payload => post(`${BASE_URL}/case/getAllEvent`, payload)
+const createEvent = payload => post(`${BASE_URL}/event/create`, payload)
+const createCaseEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
+const createCaseInterval = payload => post(`${BASE_URL}/interval/eventCreate`, payload)
+const getAllEvent = payload => post(`${BASE_URL}/event/getAllCaseEvent`, payload)
 const getAllStatus = payload => get(`${BASE_URL}/event/getAllStatus`, payload)
 const allCompletedCases = payload => post(`${BASE_URL}/case/allcompletedGroup`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
@@ -236,6 +238,8 @@ export {
   updateSubgroup,
   updateCase,
   createEvent,
+  createCaseEvent,
+  createCaseInterval,
   getAllEvent,
   getAllStatus,
   getCounts,

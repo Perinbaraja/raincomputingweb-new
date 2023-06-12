@@ -24,6 +24,7 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import useMediaQuery from "rainComputing/helpers/hooks/useMediaQuery"
 import MobileNav from "./MobileNav"
 import Reminder from "rainComputing/pages/reminder"
+import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 
 const Header = props => {
   const { currentAttorney } = useUser()
@@ -75,9 +76,9 @@ const Header = props => {
                     <Link to="/req-user">Requests</Link>
                   </li>
                 )}
-                {currentUser && !currentAttorney && (
-                  <li id="navmen">
-                    <Link to="/appointment-status">Connection</Link>
+                {currentUser && currentAttorney?.status === "approved" && (
+                  <li id="navmen" className="">
+                   <DocketMenu />
                   </li>
                 )}
               </ul>
