@@ -46,6 +46,7 @@ import Dashboard from "rainComputing/pages/reminder/Dashboard"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 import CreateEvents from "rainComputing/pages/docket/CreateEvents"
 import ManageEvents from "rainComputing/pages/docket/ManageEvents"
+import EventByCase from "rainComputing/pages/docket/EventByCase"
 
 const authProtectedRoutes = [
   //Projects
@@ -77,6 +78,7 @@ const authProtectedRoutes = [
   { path: "/docket", component: DocketMenu },
   { path: "/create_events", component: CreateEvents },
   { path: "/manage_events", component: ManageEvents },
+  { path: "/case_events", component: EventByCase },
 ]
 
 const publicRoutes = [

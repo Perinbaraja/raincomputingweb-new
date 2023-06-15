@@ -19,6 +19,9 @@ import EventMaster from "./models/EventMaster"
 import DynamicSuspense from "../loader/DynamicSuspense"
 import EventCalender from "./models/EventCalender"
 import CreateEvent from "./models/CreateEvent"
+import { Link } from "react-router-dom"
+import { useHistory } from "react-router-dom"
+
 const CaseGrid = ({
   caseData,
   index,
@@ -29,9 +32,11 @@ const CaseGrid = ({
   notifyCountforCase,
   ongetAllCases,
 }) => {
+  const history = useHistory()
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const { currentUser } = useUser()
   const [casedetails, setCaseDetails] = useState(caseData)
+
   const {
     toggleOpen: membersModelOpen,
     setToggleOpen: setMembersModelOpen,
@@ -82,6 +87,13 @@ const CaseGrid = ({
       </Col>
     </Row>
   )
+  const handleAccordionClick = caseData => {
+    history.push({
+      pathname: "/case_events",
+      state: { caseData },
+    })
+  }
+
   const handleLeaveGroup = async () => {
     const payload = {
       caseId: casedetails?._id,
@@ -94,7 +106,6 @@ const CaseGrid = ({
       setLeaveGroupModalOpen(false)
     }
   }
-  console.log("caseData ", caseData)
   return (
     <>
       <>
@@ -252,13 +263,15 @@ const CaseGrid = ({
                 <span className="fw-medium font-size-11">Manage Events</span>{" "}
               </div>
             </AccordionContainer>
-            <AccordionContainer
-              handleAccordionClick={() => setEventCalenderModelOpen(true)}
-            >
-              <div>
-                <span className="fw-medium font-size-11">Event Calender</span>{" "}
-              </div>
-            </AccordionContainer>
+            <div>
+              <span
+                className="fw-medium font-size-11 pointer"
+                onClick={() => handleAccordionClick(caseData)}
+              >
+                Event Calendar
+              </span>
+            </div>
+
             {/* <AccordionContainer>
               <span>
                 Bookmarks <span>({caseData?.bookmarks?.length})</span>

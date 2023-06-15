@@ -17,8 +17,8 @@ const EventMaster = ({ caseId, closeModal }) => {
   const [allEventsData, setAllEventsData] = useState([])
   const [eventId, setEventId] = useState()
   const currentCase = caseId?._id
-  const [responsetexts, setResponseTexts] = useState([])
   const [eventsData, setEventsData] = useState([])
+  const [isSaveDisabled, setIsSaveDisabled] = useState(true)
   const event = eventsData[0]
   const resText = event?.responseText
 
@@ -54,7 +54,7 @@ const EventMaster = ({ caseId, closeModal }) => {
 
   const handleCreateEvent = async () => {
     // Check if selectedEvent, docDate, and eventText are arrays and have non-empty values
-    if (resText) {
+    if (resText && receivedDate.length > 0 && docDate.length > 0) {
       try {
         const eventPayload = {
           caseId: currentCase,
@@ -84,6 +84,12 @@ const EventMaster = ({ caseId, closeModal }) => {
     }
   }
 
+  useEffect(() => {
+    setIsSaveDisabled(
+      receivedDate.some(date => date === "") ||
+        docDate.some(date => date === "")
+    )
+  }, [receivedDate, docDate])
   const handleAllEvents = async () => {
     const payload = {
       id: currentAttorney?._id,
@@ -224,9 +230,8 @@ const EventMaster = ({ caseId, closeModal }) => {
       <div className="d-flex justify-content-end pt-2">
         <button
           className="btn btn-primary"
-          onClick={() => {
-            handleCreateEvent()
-          }}
+          onClick={handleCreateEvent}
+          disabled={isSaveDisabled}
         >
           save
         </button>
