@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import {
-  createCaseEvent,
   createCaseInterval,
-  createEvent,
   getAllEvent,
-  getAllStatus,
+  getEventById,
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
+import { Dropdown } from "reactstrap"
 
 const EventMaster = ({ caseId, closeModal }) => {
   const { currentAttorney } = useUser()
@@ -18,29 +17,10 @@ const EventMaster = ({ caseId, closeModal }) => {
   const [allEventsData, setAllEventsData] = useState([])
   const [eventId, setEventId] = useState()
   const currentCase = caseId?._id
-  const handleIconClick = () => {
-    setDocDate(prevInputs => [...prevInputs, ""])
-  }
-
-  const handleEventIconClick = () => {
-    setSelectedEvent(prevInputs => [...prevInputs, ""])
-  }
-  const handleEventTextIconClick = () => {
-    setEventText(prevInputs => [...prevInputs, ""])
-  }
-  const handleReceivedDateIconClick = () => {
-    setReceivedDate(prevInputs => [...prevInputs, ""])
-  }
-  const handleEventTextChange = (index, value) => {
-    // Create a copy of the event text array
-    const updatedEventText = [...eventText]
-
-    // Update the event text at the specified index
-    updatedEventText[index] = value
-
-    // Set the updated event text
-    setEventText(updatedEventText)
-  }
+  const [responsetexts, setResponseTexts] = useState([])
+  const [eventsData, setEventsData] = useState([])
+  const event = eventsData[0]
+  const resText = event?.responseText
 
   const handleRecievedDateChange = (index, value) => {
     setReceivedDate(prevInputs => {
@@ -49,20 +29,7 @@ const EventMaster = ({ caseId, closeModal }) => {
       return newRecievedDate
     })
   }
-  // const handleEventChange = (index, value,id) => {
-  //   const updatedSelectedEvent = [...selectedEvent]
-  //   updatedSelectedEvent[index] = value
-  //   console.log("value",value,id)
-  //   setSelectedEvent(updatedSelectedEvent)
-
-  //   // Set the event text based on the selected event
-  //   const selectedEventText =
-  //     allEventsData.find(event => event.interval === value)?.eventName || ""
-  //   setEventText(selectedEventText)
-
-  // }
   const handleEventChange = (index, value, id) => {
-    // Update the selectedEvent array with the new value and ID
     const updatedSelectedEvent = [...selectedEvent]
     updatedSelectedEvent[index] = value
 
@@ -79,24 +46,15 @@ const EventMaster = ({ caseId, closeModal }) => {
   }
 
   const handleDateChange = (index, value) => {
-    setDocDate(prevInputs => {
-      const newInputs = [...prevInputs]
-      newInputs[index] = value
-      return newInputs
-    })
+    const updatedDocDate = [...docDate]
+    updatedDocDate[index] = value
+    setDocDate(updatedDocDate)
+    return updatedDocDate
   }
+
   const handleCreateEvent = async () => {
-    if (
-      Array.isArray(selectedEvent) &&
-      Array.isArray(docDate) &&
-      Array.isArray(eventText) &&
-      selectedEvent.length > 0 &&
-      docDate.length > 0 &&
-      eventText.length > 0 &&
-      selectedEvent.every(s => Boolean(s)) &&
-      docDate.every(date => Boolean(date)) &&
-      eventText.every(text => Boolean(text))
-    ) {
+    // Check if selectedEvent, docDate, and eventText are arrays and have non-empty values
+    if (resText) {
       try {
         const eventPayload = {
           caseId: currentCase,
@@ -105,8 +63,9 @@ const EventMaster = ({ caseId, closeModal }) => {
             const [interval, eventName] = event.split(", ")
 
             return {
+              eventId: eventId,
               eventName: eventName,
-              intervals: eventText.map((text, j) => ({
+              intervals: resText.map((text, j) => ({
                 responseText: text,
                 responseDate: docDate[j],
               })),
@@ -125,40 +84,6 @@ const EventMaster = ({ caseId, closeModal }) => {
     }
   }
 
-  const handleSaveButtonClick = () => {
-    if (
-      selectedEvent.length === 0 ||
-      docDate.length === 0 ||
-      eventText.length === 0 ||
-      !selectedEvent.every(s => Boolean(s)) ||
-      !docDate.every(date => Boolean(date)) ||
-      !eventText.every(text => Boolean(text))
-    ) {
-      window.alert("Please,Create a Event")
-    }
-  }
-  const handleIconsaveClick = () => {
-    if (
-      selectedEvent.length === 0 ||
-      docDate.length === 0 ||
-      eventText.length === 0 ||
-      !selectedEvent.every(s => Boolean(s)) ||
-      !docDate.every(date => Boolean(date)) ||
-      !eventText.every(text => Boolean(text))
-    ) {
-      window.alert("Please,Create a Event")
-    } else {
-      closeModal(false)
-      handleIconClick()
-      handleEventIconClick()
-      handleEventTextIconClick()
-      handleReceivedDateIconClick()
-    }
-  }
-  useEffect(() => {
-    handleCreateEvent()
-  }, [])
-
   const handleAllEvents = async () => {
     const payload = {
       id: currentAttorney?._id,
@@ -166,39 +91,36 @@ const EventMaster = ({ caseId, closeModal }) => {
     const allEventsData = await getAllEvent(payload)
     setAllEventsData(allEventsData?.data)
   }
+
+  const getEvents = async () => {
+    const payload = {
+      Id: eventId,
+    }
+    const res = await getEventById(payload)
+    if (res.success) {
+      setEventsData(res?.event)
+    }
+  }
+  useEffect(() => {
+    getEvents()
+  }, [eventId])
+  useEffect(() => {
+    handleCreateEvent()
+  }, [])
+
   useEffect(() => {
     handleAllEvents()
   }, [currentAttorney])
-  const handleChange = event => {
-    setEventId(event)
-  }
+
   return (
-    <div>
-      <div className="d-flex justify-content-end">
-        {/* <i
-          className="bx bx-plus-circle pt-4 pointer  text-primary"
-          style={{ fontSize: "18px" }}
-          // isClose={false}
-          onClick={e => {
-            e.preventDefault()
-            // handleCreateEvent()
-            handleIconClick()
-            handleEventIconClick()
-            handleEventTextIconClick()
-            handleReceivedDateIconClick()
-            // handleIconsaveClick()
-          }}
-        ></i> */}
-      </div>
-      <div className="d-flex">
-        <div className="col-md-3">
-          <label
-            htmlFor="example-text-input"
-            className="col-md-3 col-lg-2 col-form-label"
-          >
-            Event
-          </label>
-          <div className="col-md-8 d ">
+    <div className="">
+      <div className="row">
+        <div className="col-md-6">
+          {/* Event select */}
+          <div className="form-group">
+            <label htmlFor="example-text-input" className="col-form-label">
+              Event
+            </label>
             {selectedEvent.map((event, index) => (
               <select
                 key={index}
@@ -224,22 +146,15 @@ const EventMaster = ({ caseId, closeModal }) => {
                 ))}
               </select>
             ))}
-            {/* <i
-      className="bx bx-plus-circle pt-2 pointer"
-      onClick={handleEventIconClick}
-    ></i> */}
           </div>
         </div>
 
-        <div className="col-md-3">
-          <label
-            htmlFor="example-text-input"
-            className="col-md-3 col-lg-2 col-form-label"
-            style={{ minWidth: "100px" }}
-          >
-            Received Date
-          </label>
-          <div className="col-md-8">
+        <div className="col-md-6">
+          {/* Received Date */}
+          <div className="form-group">
+            <label htmlFor="example-text-input" className="col-form-label">
+              Received Date
+            </label>
             {receivedDate.map((rdate, index) => (
               <input
                 key={index}
@@ -251,97 +166,71 @@ const EventMaster = ({ caseId, closeModal }) => {
             ))}
           </div>
         </div>
-        <div className="col-md-3">
-          <label
-            htmlFor="example-text-input"
-            className="col-md-3 col-lg-2 col-form-label"
-            style={{ minWidth: "100px" }}
-          >
-            Response Date
-          </label>
-          <div className="col-md-8">
-            {selectedEvent.map((event, index) => {
-              const [interval, eventName] = event.split(", ")
-              const intervalNumber = interval ? Number(interval) : 1
-              const inputs = []
+      </div>
 
-              for (let j = 0; j < intervalNumber; j++) {
-                inputs.push(
-                  <input
-                    key={j}
-                    className="form-control"
-                    type="date"
-                    value={docDate[j]}
-                    onChange={e => {
-                      handleDateChange(j, e.target.value) // Update the event text value
-                    }}
-                  />
-                )
-              }
+      <div className="row " style={{ paddingTop: "10px" }}>
+        <div className="col-md-6">
+          {selectedEvent.map((event, index) => {
+            const [interval, eventName] = event.split(", ")
+            const intervalNumber = interval ? Number(interval) : 1
+            const inputs = []
 
-              return inputs
-            })}
-            <i
-              className="bx bx-plus-circle pt-2 pointer pr-5 d-flex justify-content-end"
-              onClick={() => 
-                handleIconClick()
-              }
-            ></i>
-          </div>
+            if (eventName) {
+              inputs.push(
+                <div key={index}>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-form-label"
+                  >
+                    Response Date
+                  </label>
+                  {Array.from({ length: intervalNumber }).map((_, j) => (
+                    <div key={j} style={{ marginBottom: "10px" }}>
+                      <input
+                        className="form-control"
+                        type="date"
+                        value={docDate[j] || ""}
+                        onChange={e => {
+                          handleDateChange(j, e.target.value)
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+
+            return inputs
+          })}
         </div>
-        <div className="col-md-3">
-          <label
-            htmlFor="example-text-input"
-            className="col-md-3 col-lg-2 col-form-label"
-            style={{ minWidth: "100px" }}
-          >
-            Response Text
-          </label>
-          <div className="col-md-8">
-            {selectedEvent.map((option, i) => {
-              const [interval, eventName] = option.split(", ")
-              const intervalNumber = option ? Number(interval) : 1
-              const inputs = []
+        <div className="col-md-6">
+          <div>
+            {eventId && (
+              <label htmlFor="example-text-input" className="col-form-label">
+                Response Text
+              </label>
+            )}
 
-              for (let j = 0; j < intervalNumber; j++) {
-                inputs.push(
-                  <input
-                    key={j}
-                    className="form-control"
-                    type="text"
-                    value={eventText[j]||""}
-                    onChange={e => {
-                      handleEventTextChange(j, e.target.value) // Update the event text value
-                    }}
-                  />
-                )
-              }
-
-              return inputs
-            })}
-
-            <i
-              className="bx bx-plus-circle pt-2 pointer pr-5 d-flex justify-content-end"
-              onClick={()=>handleEventTextIconClick()} // Update the onClick event handler
-            ></i>
+            {event?.responseText.map((text, k) => (
+              <div key={k} style={{ marginBottom: "10px" }}>
+                <div>
+                  <input className="form-control" type="text" value={text} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-end pt-2">
         <button
           className="btn btn-primary"
           onClick={() => {
             handleCreateEvent()
-            handleSaveButtonClick()
           }}
         >
           save
         </button>
       </div>
-      {/* <div>
-        status
-      </div> */}
     </div>
   )
 }

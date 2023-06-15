@@ -94,6 +94,7 @@ const CaseGrid = ({
       setLeaveGroupModalOpen(false)
     }
   }
+  console.log("caseData ", caseData)
   return (
     <>
       <>
@@ -121,22 +122,22 @@ const CaseGrid = ({
           modalTitle="Dockets Results"
           isClose={true}
         >
-          <DocketResultModel 
-          caseId={caseData} />
+          <DocketResultModel caseId={caseData} />
         </DynamicModel>
         <DynamicModel
           open={eventMasterModelOpen}
           toggle={toggleEventMasterModelOpen}
-          size="xl"
+          size="lg"
           modalTitle="Event Master"
           isClose={true}
           footer={false}
         >
           <DynamicSuspense>
-          <EventMaster 
-          caseId={caseData}
-          closeModal={toggleEventMasterModelOpen} 
-          /></DynamicSuspense>
+            <EventMaster
+              caseId={caseData}
+              closeModal={toggleEventMasterModelOpen}
+            />
+          </DynamicSuspense>
         </DynamicModel>
         {/* <DynamicModel
           open={createEventMasterModelOpen}
@@ -161,10 +162,11 @@ const CaseGrid = ({
           footer={false}
         >
           <DynamicSuspense>
-          <EventCalender 
-          caseId={caseData}
-          closeModal={toggleEventCalenderModelOpen} 
-          /></DynamicSuspense>
+            <EventCalender
+              caseId={caseData}
+              closeModal={toggleEventCalenderModelOpen}
+            />
+          </DynamicSuspense>
         </DynamicModel>
 
         {/*Case members Model*/}
@@ -213,29 +215,6 @@ const CaseGrid = ({
         </Row>
 
         <Collapse isOpen={index === active} className="accordion-collapse">
-          <div className="pointer">
-          {/* <button
-            type="button"
-            className="btn btn-gray"
-            onClick={()=>setCreateEventMasterModelOpen(true)}
-            style={{fontSize:"10px"}}
-          
-          >Create Event</button> */}
-          <button
-            type="button"
-            className="btn btn-gray"
-            onClick={()=>setEventMasterModelOpen(true)}
-            style={{fontSize:"10px"}}
-          
-          >Event Master</button>
-          <button
-            type="button"
-            className="btn btn-gray"
-            onClick={()=>setEventCalenderModelOpen(true)}
-            style={{fontSize:"10px"}}
-          
-          >Event Calender</button>
-          </div>
           <div className="mb-4 pointer">
             <span className="fw-medium font-size-11 ">Case Members</span>
             <AccordionContainer
@@ -266,6 +245,20 @@ const CaseGrid = ({
             <span className="fw-medium font-size-11">
               Saved Messages & Files
             </span>
+            <AccordionContainer
+              handleAccordionClick={() => setEventMasterModelOpen(true)}
+            >
+              <div>
+                <span className="fw-medium font-size-11">Manage Events</span>{" "}
+              </div>
+            </AccordionContainer>
+            <AccordionContainer
+              handleAccordionClick={() => setEventCalenderModelOpen(true)}
+            >
+              <div>
+                <span className="fw-medium font-size-11">Event Calender</span>{" "}
+              </div>
+            </AccordionContainer>
             {/* <AccordionContainer>
               <span>
                 Bookmarks <span>({caseData?.bookmarks?.length})</span>
@@ -282,21 +275,24 @@ const CaseGrid = ({
               <span>Shared Files</span>
             </AccordionContainer>
           </div>
-         
-          <div className="d-flex justify-content-between">
-          <button
-            type="button"
-            className="btn btn-primary "
-          style={{fontSize:"10px"}}
-          onClick={()=>setDocketModelOpen(true)}
-          >Docket</button>
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={handleLeave}
-            style={{fontSize:"10px"}}
-          
-          >Exit Case</button>
+
+          <div className="d-flex justify-content-end">
+            {/* <button
+              type="button"
+              className="btn btn-primary "
+              style={{ fontSize: "10px" }}
+              onClick={() => setDocketModelOpen(true)}
+            >
+              Docket
+            </button> */}
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleLeave}
+              style={{ fontSize: "10px" }}
+            >
+              Exit Case
+            </button>
           </div>
           {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>

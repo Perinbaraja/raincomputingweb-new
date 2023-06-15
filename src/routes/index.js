@@ -45,6 +45,7 @@ import CompletedCase from "rainComputing/components/chat/CompletedCase"
 import Dashboard from "rainComputing/pages/reminder/Dashboard"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 import CreateEvents from "rainComputing/pages/docket/CreateEvents"
+import ManageEvents from "rainComputing/pages/docket/ManageEvents"
 
 const authProtectedRoutes = [
   //Projects
@@ -75,6 +76,7 @@ const authProtectedRoutes = [
   { path: "/calendar", component: Calender },
   { path: "/docket", component: DocketMenu },
   { path: "/create_events", component: CreateEvents },
+  { path: "/manage_events", component: ManageEvents },
 ]
 
 const publicRoutes = [

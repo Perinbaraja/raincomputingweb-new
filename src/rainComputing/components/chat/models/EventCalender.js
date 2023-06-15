@@ -1,14 +1,16 @@
-import { getAllEvent, getAllStatus } from "rainComputing/helpers/backend_helper"
+import {
+  getAllEvent,
+  getEventsByCaseId,
+} from "rainComputing/helpers/backend_helper"
 import PropTypes from "prop-types"
 import React, { useEffect, useState } from "react"
 
 const EventCalender = ({ caseId }) => {
-  const [getEvents, setGetEvents] = useState([])
   const [selectedEvent, setSelectedEvent] = useState("")
   const [receivedDate, setReceivedDate] = useState("")
   const [allEventsData, setAllEventsData] = useState([])
   const [filteredEvents, setFilteredEvents] = useState()
-
+  const [getAllEvents, setGetAllEvents] = useState([])
   const handleSelectEvent = event => {
     setSelectedEvent(event.target.value)
   }
@@ -26,7 +28,9 @@ const EventCalender = ({ caseId }) => {
           .split("T")[0]
         const selectedDate = new Date(receivedDate).toISOString().split("T")[0]
         return (
-          event.docEvent === selectedEvent && eventReceivedDate === selectedDate || event.docEvent === selectedEvent
+          (event.docEvent === selectedEvent &&
+            eventReceivedDate === selectedDate) ||
+          event.docEvent === selectedEvent
         )
       })
 
@@ -53,17 +57,20 @@ const EventCalender = ({ caseId }) => {
   }, [caseId])
 
   useEffect(() => {
-    const handleEventStatus = async () => {
-      const allStatus = await getAllStatus()
-      if (allStatus.success) {
-        setGetEvents(allStatus.data)
-      } else {
-        setGetEvents([])
+    if (caseId) {
+      const getCaseEvents = async () => {
+        const payload = {
+          caseId: caseId?._id,
+        }
+        const res = await getEventsByCaseId(payload)
+        if (res.success) {
+          setGetAllEvents(res?.caseEvents)
+        }
       }
+      getCaseEvents()
     }
-    handleEventStatus()
   }, [])
-  
+
   return (
     <div>
       <div className="d-flex">
@@ -81,11 +88,11 @@ const EventCalender = ({ caseId }) => {
               onChange={handleSelectEvent}
             >
               <option value="">Select Events</option>{" "}
-              {getEvents.map((option, i) => (
+              {/* {getEvents.map((option, i) => (
                 <option value={option?.value} key={i}>
                   {option?.name}
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
         </div>

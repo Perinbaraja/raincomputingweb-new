@@ -26,15 +26,15 @@ const DocketMenu = () => {
           id="page-header-user-dropdown"
           tag="a"
         >
-         Docket
+          Docket
         </DropdownToggle>
-        <DropdownMenu className="dropdown-menu-end">
-          <DropdownItem>
-            <Link to="/create_events">Create Event</Link>
-          </DropdownItem>
-          <DropdownItem>
-            <p>Manage Event</p>
-          </DropdownItem>
+        <DropdownMenu className="">
+          <Link to="/create_events">
+            <DropdownItem>Manage Events</DropdownItem>
+          </Link>
+          {/* <DropdownItem>
+          <Link to="/manage_events">Manage Events</Link>
+          </DropdownItem> */}
         </DropdownMenu>
       </Dropdown>
     </div>

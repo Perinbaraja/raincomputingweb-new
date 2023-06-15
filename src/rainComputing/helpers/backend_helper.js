@@ -27,8 +27,7 @@ const registerAttorney = payload =>
   post(`${BASE_URL}/attorney/register`, payload)
 const attorneyDetailsUpdate = payload =>
   put(`${BASE_URL}/attorney/attorneyUpdate`, payload)
-const messageUpdate = payload =>
-  post(`${BASE_URL}/message/updateMsg`, payload)
+const messageUpdate = payload => post(`${BASE_URL}/message/updateMsg`, payload)
 const getAttorneyByUserID = payload =>
   post(`${BASE_URL}/attorney/getByUserId`, payload)
 const getFirmsByAttorneyID = payload =>
@@ -38,8 +37,7 @@ const getAllRegAttorneys = payload =>
   post(`${BASE_URL}/attorney/getAllAttorney`, payload)
 const regAttorneyDetails = payload =>
   post(`${BASE_URL}/attorney/regAttorneyDetails`, payload)
-const regScheduleDates = payload =>
-  post(`${BASE_URL}/attorney/create`, payload)
+const regScheduleDates = payload => post(`${BASE_URL}/attorney/create`, payload)
 const regAttorneyUpdate = payload =>
   put(`${BASE_URL}/attorney/updateSchedule`, payload)
 const attorneyInvite = payload =>
@@ -73,7 +71,8 @@ const getSubgroups = payload =>
   post(`${BASE_URL}/subgroup/getByParentRoom`, payload)
 
 const createNewCase = payload => post(`${BASE_URL}/case/create`, payload)
-const getTrademarkSearchDetails = payload => post(`${BASE_URL}/case/searchCasebySno`, payload)
+const getTrademarkSearchDetails = payload =>
+  post(`${BASE_URL}/case/searchCasebySno`, payload)
 const getCasesByUserId = payload =>
   post(`${BASE_URL}/case/getByUserId`, payload)
 
@@ -90,7 +89,8 @@ const getMessagesByUserIdandGroupId = payload =>
 
 const postReplies = payload => post(`${BASE_URL}/message/reply`, payload)
 const pinMessage = payload => post(`${BASE_URL}/message/pinnedmsgById`, payload)
-const unpinMessage = payload => post(`${BASE_URL}/message/unpinnedmsgById`, payload)
+const unpinMessage = payload =>
+  post(`${BASE_URL}/message/unpinnedmsgById`, payload)
 
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
@@ -124,14 +124,25 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
 const createEvent = payload => post(`${BASE_URL}/event/create`, payload)
+const eventUpdate = payload => post(`${BASE_URL}/event/eventUpdate`, payload)
+const getEventById = payload => post(`${BASE_URL}/event/getEventdata`, payload)
+const getIntervalById = payload =>
+  post(`${BASE_URL}/interval/getIntervalData`, payload)
+const getEventsByCaseId = payload =>
+  post(`${BASE_URL}/interval/getCaseIdByEvents`, payload)
 const createCaseEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
-const createCaseInterval = payload => post(`${BASE_URL}/interval/eventCreate`, payload)
-const getAllEvent = payload => post(`${BASE_URL}/event/getAllCaseEvent`, payload)
-const getAllStatus = payload => get(`${BASE_URL}/event/getAllStatus`, payload)
-const allCompletedCases = payload => post(`${BASE_URL}/case/allcompletedGroup`, payload)
+const createCaseInterval = payload =>
+  post(`${BASE_URL}/interval/eventCreate`, payload)
+const getAllResponseTexts = payload =>
+  get(`${BASE_URL}/interval/getAllResponseTexts`, payload)
+const getAllEvent = payload =>
+  post(`${BASE_URL}/event/getAllCaseEvent`, payload)
+const allCompletedCases = payload =>
+  post(`${BASE_URL}/case/allcompletedGroup`, payload)
 const addAdmin = payload => post(`${BASE_URL}/case/addAdmin`, payload)
 const removeAdmin = payload => post(`${BASE_URL}/case/removeAdmin`, payload)
-const completedCase = payload => post(`${BASE_URL}/case/completedGroup`, payload)
+const completedCase = payload =>
+  post(`${BASE_URL}/case/completedGroup`, payload)
 const LeaveGroup = payload => post(`${BASE_URL}/case/leaveGroup`, payload)
 const getCounts = payload => post(`${BASE_URL}/bff/getCounts`, payload)
 const getCaseFiles = payload => post(`${BASE_URL}/message/getFiles`, payload)
@@ -238,10 +249,14 @@ export {
   updateSubgroup,
   updateCase,
   createEvent,
+  eventUpdate,
+  getEventById,
+  getIntervalById,
+  getEventsByCaseId,
   createCaseEvent,
+  getAllResponseTexts,
   createCaseInterval,
   getAllEvent,
-  getAllStatus,
   getCounts,
   getCaseFiles,
   appointmentRequest,
