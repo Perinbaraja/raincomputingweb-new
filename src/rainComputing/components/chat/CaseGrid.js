@@ -14,6 +14,14 @@ import DeleteModal from "../modals/DeleteModal"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { LeaveGroup } from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
+import DocketResultModel from "./models/DocketResultModel"
+import EventMaster from "./models/EventMaster"
+import DynamicSuspense from "../loader/DynamicSuspense"
+import EventCalender from "./models/EventCalender"
+import CreateEvent from "./models/CreateEvent"
+import { Link } from "react-router-dom"
+import { useHistory } from "react-router-dom"
+
 const CaseGrid = ({
   caseData,
   index,
@@ -24,9 +32,11 @@ const CaseGrid = ({
   notifyCountforCase,
   ongetAllCases,
 }) => {
+  const history = useHistory()
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const { currentUser } = useUser()
   const [casedetails, setCaseDetails] = useState(caseData)
+
   const {
     toggleOpen: membersModelOpen,
     setToggleOpen: setMembersModelOpen,
@@ -41,6 +51,26 @@ const CaseGrid = ({
     toggleOpen: filesModelOpen,
     setToggleOpen: setFilesModelOpen,
     toggleIt: toggleFilesModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: docketModelOpen,
+    setToggleOpen: setDocketModelOpen,
+    toggleIt: toggleDocketModelOpen,
+  } = useToggle(false)
+  // const {
+  //   toggleOpen: createEventMasterModelOpen,
+  //   setToggleOpen: setCreateEventMasterModelOpen,
+  //   toggleIt: toggleCreateEventMasterModelOpen,
+  // } = useToggle(false)
+  const {
+    toggleOpen: eventMasterModelOpen,
+    setToggleOpen: setEventMasterModelOpen,
+    toggleIt: toggleEventMasterModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: eventCalenderModelOpen,
+    setToggleOpen: setEventCalenderModelOpen,
+    toggleIt: toggleEventCalenderModelOpen,
   } = useToggle(false)
   const handleLeave = () => {
     setLeaveGroupModalOpen(true)
@@ -57,6 +87,13 @@ const CaseGrid = ({
       </Col>
     </Row>
   )
+  const handleAccordionClick = caseData => {
+    history.push({
+      pathname: "/case_events",
+      state: { caseData },
+    })
+  }
+
   const handleLeaveGroup = async () => {
     const payload = {
       caseId: casedetails?._id,
@@ -88,6 +125,59 @@ const CaseGrid = ({
           isClose={true}
         >
           <CaseFilesGrid caseId={caseData?._id} />
+        </DynamicModel>
+        <DynamicModel
+          open={docketModelOpen}
+          toggle={toggleDocketModelOpen}
+          size="xl"
+          modalTitle="Dockets Results"
+          isClose={true}
+        >
+          <DocketResultModel caseId={caseData} />
+        </DynamicModel>
+        <DynamicModel
+          open={eventMasterModelOpen}
+          toggle={toggleEventMasterModelOpen}
+          size="lg"
+          modalTitle="Event Master"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+            <EventMaster
+              caseId={caseData}
+              closeModal={toggleEventMasterModelOpen}
+            />
+          </DynamicSuspense>
+        </DynamicModel>
+        {/* <DynamicModel
+          open={createEventMasterModelOpen}
+          toggle={toggleCreateEventMasterModelOpen}
+          size="xl"
+          modalTitle="Event Master"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+          <CreateEvent 
+          caseId={caseData}
+          closeModal={toggleCreateEventMasterModelOpen} 
+          /></DynamicSuspense>
+        </DynamicModel> */}
+        <DynamicModel
+          open={eventCalenderModelOpen}
+          toggle={toggleEventCalenderModelOpen}
+          size="lg"
+          modalTitle="Event Calender"
+          isClose={true}
+          footer={false}
+        >
+          <DynamicSuspense>
+            <EventCalender
+              caseId={caseData}
+              closeModal={toggleEventCalenderModelOpen}
+            />
+          </DynamicSuspense>
         </DynamicModel>
 
         {/*Case members Model*/}
@@ -166,6 +256,22 @@ const CaseGrid = ({
             <span className="fw-medium font-size-11">
               Saved Messages & Files
             </span>
+            <AccordionContainer
+              handleAccordionClick={() => setEventMasterModelOpen(true)}
+            >
+              <div>
+                <span className="fw-medium font-size-11">Manage Events</span>{" "}
+              </div>
+            </AccordionContainer>
+            <div>
+              <span
+                className="fw-medium font-size-11 pointer"
+                onClick={() => handleAccordionClick(caseData)}
+              >
+                Event Calendar
+              </span>
+            </div>
+
             {/* <AccordionContainer>
               <span>
                 Bookmarks <span>({caseData?.bookmarks?.length})</span>
@@ -182,13 +288,24 @@ const CaseGrid = ({
               <span>Shared Files</span>
             </AccordionContainer>
           </div>
+
           <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={handleLeave}
-          
-          >Exit Case</button>
+            {/* <button
+              type="button"
+              className="btn btn-primary "
+              style={{ fontSize: "10px" }}
+              onClick={() => setDocketModelOpen(true)}
+            >
+              Docket
+            </button> */}
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleLeave}
+              style={{ fontSize: "10px" }}
+            >
+              Exit Case
+            </button>
           </div>
           {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>

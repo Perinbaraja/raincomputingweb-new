@@ -32,6 +32,7 @@ export function UserProvider({ children }) {
         currentUser,
         setCurrentUser,
         currentAttorney,
+        setCurrentAttorney
       }}
     >
       {children}

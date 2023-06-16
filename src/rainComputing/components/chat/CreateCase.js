@@ -22,6 +22,9 @@ const CreateCase = ({
   const [loading, setloading] = useState(false)
   const [contacts, setContacts] = useState([])
   const [searchText, setSearchText] = useState("")
+  const [caseSerialNo, setCaseSerialNo] = useState("")
+  const [caseEvent, setCaseEvent] = useState("")
+  const [caseEventDate, setCaseEventDate] = useState("")
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -72,6 +75,7 @@ const CreateCase = ({
       admin: currentUser?.userID,
       caseId: formValues?.caseId,
       caseName: formValues?.caseName,
+      serialNumber:caseSerialNo,
       members: [currentUser?.userID, ...filteredMembers],
     }
     const caseRes = await createNewCase(payLoad)
@@ -154,6 +158,59 @@ const CreateCase = ({
           />
         </div>
       </Row>
+      <Row className="my-md-3">
+        <label
+          htmlFor="example-text-input"
+          className="col-md-3 col-lg-2 col-form-label"
+        >
+          Serial Number
+        </label>
+        <div className="col-md-8">
+          <input
+            className="form-control"
+            type="text"
+            placeholder="xxxx-xxxx"
+            value={caseSerialNo}
+            name="caseId"
+            onChange={e => setCaseSerialNo(e.target.value)}
+          />
+        </div>
+      </Row>
+      {/* <Row className="my-md-3">
+        <label
+          htmlFor="example-text-input"
+          className="col-md-3 col-lg-2 col-form-label"
+        >
+          Event Date
+        </label>
+        <div className="col-md-8">
+          <input
+            className="form-control"
+            type="date"
+            value={caseEventDate}
+            name="caseId"
+            onChange={e => setCaseEventDate(e.target.value)}
+          />
+        </div>
+      </Row> */}
+      {/* <Row className="my-md-3">
+        <label
+          htmlFor="example-text-input"
+          className="col-md-3 col-lg-2 col-form-label"
+        >
+          Event
+        </label>
+        <div className="col-md-8">
+          <input
+            className="form-control"
+            type="text"
+            placeholder="Enter the event"
+            value={caseEvent}
+            name="caseId"
+            onChange={e => setCaseEvent(e.target.value)}
+          />
+        </div>
+      </Row> */}
       <Row className="my-3">
         <label
           htmlFor="user-search-text"

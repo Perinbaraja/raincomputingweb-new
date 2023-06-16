@@ -24,11 +24,12 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import useMediaQuery from "rainComputing/helpers/hooks/useMediaQuery"
 import MobileNav from "./MobileNav"
 import Reminder from "rainComputing/pages/reminder"
-
+import DocketMenu from "rainComputing/pages/docket/DocketMenu"
+import logoImage from "../../assets/images/ChatPro.png"
 const Header = props => {
   const { currentAttorney } = useUser()
   const { currentUser } = useUser()
-  const [isMobile]=useMediaQuery("764")
+  const [isMobile] = useMediaQuery("764")
   const [modal_scroll, setmodal_scroll] = useState(false)
 
   const tog_scroll = () => {
@@ -38,13 +39,13 @@ const Header = props => {
     <React.Fragment>
       <header id="page-topbar">
         <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  ">
-           <div className="d-flex ">
+          <div className="d-flex ">
             <div className="navbar-brand-box">
               <Link to="/" className="logo logo-dark">
                 <span className="logo-lg">
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
-              </Link> 
+              </Link>
 
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
@@ -56,41 +57,65 @@ const Header = props => {
               </Link>
             </div>
           </div>
-              <div className="d-flex justify-content-md-between " id="">
+          <div className="d-flex justify-content-md-between " id="">
             {/* <div id="navbox"></div> */}
-            { isMobile ? <> <div>
-              <ul id="menunav" className="d-flex">
-                <li id="navmen" className="">
-                  <Link to="/">Home</Link>
-                </li>
-                <li id="navmen" className="">
-                  <Link to="/chat-rc">Chat</Link>
-                </li>
-                {!currentUser&&
-                <li id="navmen" className="">
-                  <Link to="/help">Help</Link>
-                </li>}
-                {currentUser && currentAttorney?.status === "approved" && (
-                  <li id="navmen" className="">
-                    <Link to="/req-user">Requests</Link>
-                  </li>
-                )}
-                {currentUser && !currentAttorney && (
-                  <li id="navmen">
-                    <Link to="/appointment-status">Connection</Link>
-                  </li>
-                )}
-              </ul>
-            </div>
-             <div className="d-flex align-items-center gap-2">
-             {currentUser && <NotificationDropdown />}
-             {currentUser&&
-             <Reminder toggle={tog_scroll} open ={modal_scroll} setOpen={setmodal_scroll} />
-              }
-             <ProfileMenu  />
-           </div></>
-            
-            : <div className="flex-fill"><MobileNav /></div>}
+            {isMobile ? (
+              <>
+                {" "}
+                <div>
+                  <ul id="menunav" className="d-flex">
+                    <li id="navmen" className="">
+                      <Link to="/">Home</Link>
+                    </li>
+                    <li id="navmen" className="">
+                      <Link to="/chat-rc">
+                        <Link
+                          className=""
+                          to="/chat-rc"
+                        >
+                          <img
+                          style={{height:"30px"}}
+                            src={logoImage}
+                            alt="Logo"
+                            className="" // Add the "img-fluid" class for responsive behavior
+                          />
+                        </Link>
+                      </Link>
+                    </li>
+                    {!currentUser && (
+                      <li id="navmen" className="">
+                        <Link to="/help">Help</Link>
+                      </li>
+                    )}
+                    {currentUser && currentAttorney?.status === "approved" && (
+                      <li id="navmen" className="">
+                        <Link to="/req-user">Requests</Link>
+                      </li>
+                    )}
+                    {currentUser && currentAttorney?.status === "approved" && (
+                      <li id="navmen" className="">
+                        <DocketMenu />
+                      </li>
+                    )}
+                  </ul>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  {currentUser && <NotificationDropdown />}
+                  {currentUser && (
+                    <Reminder
+                      toggle={tog_scroll}
+                      open={modal_scroll}
+                      setOpen={setmodal_scroll}
+                    />
+                  )}
+                  <ProfileMenu />
+                </div>
+              </>
+            ) : (
+              <div className="flex-fill">
+                <MobileNav />
+              </div>
+            )}
 
             {/* <div id="topinput">
             <form >
@@ -98,8 +123,6 @@ const Header = props => {
               <input type="text" placeholder="Search for Attorney..." className="border-0"/>={}
             </form>
           </div> */}
-
-
           </div>
         </div>
       </header>

@@ -6,6 +6,7 @@ import "../HorizontalLayout/mobileNav.css"
 import rainlglogo from "assets/images/raincom_Logo1.png"
 import NotificationDropdown from "components/CommonForBoth/TopbarDropdown/NotificationDropdown"
 import Reminders from "rainComputing/pages/reminder"
+import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 
 const MobileNav = () => {
   const [isMobile, setIsMobile] = useState(false)
@@ -44,6 +45,11 @@ const MobileNav = () => {
               <Link to="/appointment-status">Connection</Link>
             </li>
           )}
+           {currentUser && currentAttorney?.status === "approved" && (
+                  <li className="">
+                   <DocketMenu />
+                  </li>
+                )}
         </ul>
       )}
       <div

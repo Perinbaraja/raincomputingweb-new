@@ -14,7 +14,6 @@ const ChatRemainder = ({
   selectdate,
   getAllReminderById,
 }) => {
-  console.log("selectdate123", selectdate)
   const { currentRoom: currentChat, setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [title, setTitle] = useState("")
