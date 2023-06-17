@@ -1,22 +1,24 @@
 .ul{
     position: absolute;
      display:inline-block;
-     list-style: none;
-   
+     list-style: none;  
+    
      left: 0;
      top: 52px;
      transition: all 0.5s ease-out;
      width: 100%;
-    /* color: black; */
+    color: white;
      z-index: 60;
      text-align: center;
-     background-color: rgb(194, 194, 200)
+     background-color: #556ee6
      ;
      line-height: 35px;
  
      }
   
- 
+ .ul1{
+    color:  white;
+ }
  .burger-bar,
  .burger-bar::before,
  .burger-bar::after{

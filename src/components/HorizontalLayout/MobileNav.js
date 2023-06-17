@@ -7,6 +7,7 @@ import rainlglogo from "assets/images/raincom_Logo1.png"
 import NotificationDropdown from "components/CommonForBoth/TopbarDropdown/NotificationDropdown"
 import Reminders from "rainComputing/pages/reminder"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
+import logoImage2 from "../../assets/images/ChatPro 2.png"
 
 const MobileNav = () => {
   const [isMobile, setIsMobile] = useState(false)
@@ -25,36 +26,51 @@ const MobileNav = () => {
       {isMobile && (
         <ul id="" className=" ul  " style={{ zIndex: 300 }}>
           <li id="" className="">
-            <Link to="/">Home</Link>
+            <Link to="/" className="ul1">
+              Home
+            </Link>
           </li>
           <li id="" className="">
-            <Link to="/chat-rc">Chat</Link>
+            <Link to="/chat-rc">
+              {" "}
+              <img
+                style={{ height: "15px" }}
+                src={logoImage2}
+                className="img-fluid"
+                alt="Image"
+              />
+            </Link>
           </li>
           {!currentUser && (
             <li id="" className="">
-              <Link to="/help">Help</Link>
+              <Link to="/help" className="ul1">
+                Help
+              </Link>
             </li>
           )}
           {currentUser && currentAttorney?.status === "approved" && (
             <li id="" className="">
-              <Link to="/req-user">Requests</Link>
+              <Link to="/req-user" className="ul1">
+                Requests
+              </Link>
             </li>
           )}
           {currentUser && !currentAttorney && (
             <li id="">
-              <Link to="/appointment-status">Connection</Link>
+              <Link to="/appointment-status " className=" ul1">
+                {" "}
+                Connection
+              </Link>
             </li>
           )}
-           {currentUser && currentAttorney?.status === "approved" && (
-                  <li className="">
-                   <DocketMenu />
-                  </li>
-                )}
+          {currentUser && currentAttorney?.status === "approved" && (
+            <li className="ul1">
+              <DocketMenu />
+            </li>
+          )}
         </ul>
       )}
-      <div
-        className=" flex-container "
-      >
+      <div className=" flex-container ">
         <div className="  ">
           <button
             onClick={() => setIsMobile(!isMobile)}
