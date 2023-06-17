@@ -144,9 +144,9 @@ const AppointmentCard = () => {
                                     {""}
                                     <UncontrolledTooltip
                                       placement="bottom"
-                                      target="chat"
+                                      target="chatPro"
                                     >
-                                      Chat
+                                      ChatPro
                                     </UncontrolledTooltip>
                                   </li>
                                 </Link>
