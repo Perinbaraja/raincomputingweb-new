@@ -11,22 +11,17 @@ import { Dropdown } from "reactstrap"
 const EventMaster = ({ caseId, closeModal }) => {
   const { currentAttorney } = useUser()
   const [docDate, setDocDate] = useState(Array(1).fill(""))
-  console.log("docDate", docDate)
   const [selectedEvent, setSelectedEvent] = useState(Array(1).fill(""))
-  console.log("selectedEvent", selectedEvent)
   const [eventText, setEventText] = useState(Array(1).fill(""))
-  console.log("eventText", eventText)
   const [receivedDate, setReceivedDate] = useState(Array(1).fill(""))
   const [allEventsData, setAllEventsData] = useState([])
   const [responseDates, setResponseDates] = useState([])
   const [responseTextChange, setResponseTextChange] = useState([])
-  console.log("responseTextChange", responseTextChange)
   const [eventId, setEventId] = useState()
   const currentCase = caseId?._id
   const [eventsData, setEventsData] = useState([])
   // const [isSaveDisabled, setIsSaveDisabled] = useState(true)
   const event = eventsData[0]?.events
-  console.log("event:", event)
   const resText = event?.responseText
   const handleRecievedDateChange = (index, value) => {
     setReceivedDate(prevInputs => {
@@ -52,7 +47,6 @@ const EventMaster = ({ caseId, closeModal }) => {
   }
 
   const handleDateChange = (k, value) => {
-    console.log("value", value)
     const updatedDocDate = [...docDate]
     updatedDocDate[k] = value
     setDocDate(updatedDocDate)
@@ -87,13 +81,7 @@ const EventMaster = ({ caseId, closeModal }) => {
     const responseTexts = event?.map(event => event.responseText)
     setResponseTextChange(responseTexts)
   }, [event])
-  const handleResponseTextChange = (value, index) => {
-    const responseTexts = event?.map(event => event.responseText)
-    const updatedEvents = [...responseTexts] // Create a copy of the event array
-    updatedEvents[index].responseText = value // Update the responseText at the specified index
-    setResponseTextChange(updatedEvents) // Update the state with the updated event array
-  }
-  console.log("responseTextChange", responseTextChange)
+
   const handleReceivedDateChange = e => {
     setReceivedDate(e.target.value)
   }
@@ -136,41 +124,44 @@ const EventMaster = ({ caseId, closeModal }) => {
       calculateResponseDates()
     }
   }, [receivedDate])
-  // const handleCreateEvent = async () => {
-  //   console.log("start");
+  const handleCreateEvent = async () => {
 
-  //   try {
-  //     const intervals = [];
-  //     for (let i = 0; i < responseTextChange.length; i++) {
-  //       intervals.push({
-  //         responseDate: responseDates[i],
-  //         responseText: responseTextChange,
-  //       });
-  //     }
+    try {
+      const intervals = responseTextChange.map((responseText, index) => ({
+        responseDate: responseDates[index],
+        responseText: responseText,
+      }));
 
-  //     const eventPayload = {
-  //       caseId: currentCase,
-  //       receivedDate: receivedDate,
-  //       events: [
-  //         {
-  //           eventId: eventId,
-  //           intervals: intervals,
-  //         },
-  //       ],
-  //     };
+      const eventPayload = {
+        caseId: currentCase,
+        receivedDate: receivedDate,
+        events: [
+          {
+            eventId: eventId,
+            intervals: intervals,
+          },
+        ],
+      };
 
-  //     const res = await createCaseInterval(eventPayload);
-  //     if (res.success) {
-  //       closeModal(true);
-  //       setEventId("");
-  //       setEventText([]);
-  //       setReceivedDate("");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error creating event:", error);
+      const res = await createCaseInterval(eventPayload);
+      if (res.success) {
+        closeModal(true);
+        setEventId("");
+        setEventText([]);
+        setReceivedDate("");
+      }
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  };
+  // useEffect(() => {
+  //   if(eventId && receivedDate !== "") {
+  //     console.log("Received", receivedDate)
+  //   setIsSaveDisabled(
+  //      true
+  //   )
   //   }
-  // };
-
+  // }, [eventId])
   return (
     <div className="">
       <div className="row">
@@ -223,12 +214,29 @@ const EventMaster = ({ caseId, closeModal }) => {
         </div>
       </div>
       <div className="row">
-        <div className="col-md-6" style={{ paddingTop: "10px" }}>
-
+      <div className="col-md-6">
+          {eventId && receivedDate !== "" && (
+            <label htmlFor="example-text-input" className="col-form-label">
+              Response Date
+            </label>
+          )}
+          {eventId && receivedDate == "" && (
+            <p
+              htmlFor="example-text-input"
+              className="col-form-label"
+              style={{ textAlign: "center",color:"gray" }}
+            >
+              The response date displayed is determined based on the received
+              date that you select.
+            </p>
+          )}
           {responseDates.length > 0 &&
             responseDates.map((responseDate, index) => (
-              <div key={index} className="form-group">
-                <label htmlFor={`response-date-${index}`}>Response Date:</label>
+              <div
+                key={index}
+                style={{ marginBottom: "10px" }}
+                className="form-group"
+              >
                 <input
                   id={`response-date-${index}`}
                   className="form-control"
@@ -243,16 +251,24 @@ const EventMaster = ({ caseId, closeModal }) => {
           {eventId && (
             <label htmlFor="example-text-input" className="col-form-label">
               Response Text
-              <sup>TM</sup>
+         
             </label>
           )}
-          {event?.map((text, k) => (
-            <div key={k} style={{ marginBottom: "10px" }}>
+          {responseTextChange?.map((text, index) => (
+            <div key={index} style={{ marginBottom: "10px" }}>
               <div>
                 <input
                   className="form-control"
                   type="text"
-                  value={text?.responseText}
+                  value={text}
+                  onChange={(e) => {
+                    const newText = e.target.value;
+                    setResponseTextChange((prevState) =>
+                      prevState.map((prevText, i) =>
+                        i === index ? newText : prevText
+                      )
+                    );
+                  }}
                 />
               </div>
             </div>
