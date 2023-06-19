@@ -1,37 +1,103 @@
-import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { createEvent, getAllEvent } from "rainComputing/helpers/backend_helper"
 import React, { useEffect, useState } from "react"
+import PropTypes, { any } from "prop-types"
+import {
+  createEvent,
+  getAllEvent,
+  getAllStatus,
+} from "rainComputing/helpers/backend_helper"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Link } from "react-router-dom"
-
-const CreateEvents = () => {
+const CreateEvents = ({ caseId }) => {
   const { currentAttorney } = useUser()
-  const { currentUser } = useUser()
-  const [showFields, setShowFields] = useState(false)
-  const [eventName, setEventName] = useState("")
-  const [interval, setInterval] = useState("")
-  const [description, setDescription] = useState("")
+  const [docIntervals, setDocIntervals] = useState(Array(1).fill(""))
+  const [eventText, setEventText] = useState(Array(1).fill(""))
+  const [eventName, setEventName] = useState(Array(1).fill(""))
+  const [eventIntervals, setEventIntervals] = useState(Array(1).fill(""))
+  const [isSaveDisabled, setIsSaveDisabled] = useState(true)
   const [allEventsData, setAllEventsData] = useState([])
-  const [responseText, setResponseText] = useState([])
+  console.log("allEventsData :", allEventsData)
+  const [showFields, setShowFields] = useState(false)
+  const selecteEvent = [
+    { value: "", text: "Select Intervals " },
+    { value: "days", text: "Days " },
+    { value: "weeks", text: "Weeks " },
+    { value: "months", text: " Months" },
+  ]
+  console.log("eventText :", eventText)
+  console.log(" eventText eventIntervals :", eventIntervals)
+  console.log("eventText docIntervals :", docIntervals)
+  console.log("eventText eventName :", eventName)
+  const currentCase = caseId?._id
+  const handleIconClick = () => {
+    setDocIntervals(prevInputs => [...prevInputs, ""])
+  }
+  const handleEventTextIconClick = () => {
+    setEventText(prevInputs => [...prevInputs, ""])
+  }
+  const handleReceivedDateIconClick = () => {
+    setEventIntervals(prevInputs => [...prevInputs, ""])
+  }
+  const handleEventTextChange = (index, value) => {
+    setEventText(prevInputs => {
+      const newEventsTexts = [...prevInputs]
+      newEventsTexts[index] = value
+      return newEventsTexts
+    })
+  }
+  const handleEventIntervalChange = (index, value) => {
+    setEventIntervals(prevInputs => {
+      const newRecievedDate = [...prevInputs]
+      newRecievedDate[index] = value
+      return newRecievedDate
+    })
+  }
+  const handleDateTypeChange = (index, value) => {
+    setDocIntervals(prevInputs => {
+      const newInputs = [...prevInputs]
+      newInputs[index] = value
+      return newInputs
+    })
+  }
   const handleCreateEvent = async () => {
-    const payload = {
+    const eventData = {
       eventName: eventName,
-      interval: interval,
-      responseText: responseText,
-      description: description,
       firmId: currentAttorney?._id,
+      events: [],
     }
-    const res = await createEvent(payload)
-    if (res.success) {
-      await handleAllEvents()
-      setEventName("")
-      setInterval("")
-      setDescription("")
-      setResponseText([])
-    } else {
-      console.log("Event Added Error")
+    for (let i = 0; i < docIntervals.length; i++) {
+      eventData.events.push({
+        scheduledType: docIntervals[i],
+        responseText: eventText[i],
+        interval: eventIntervals[i],
+      })
+    }
+    console.log("eventData :", eventData)
+    try {
+      const response = await createEvent(eventData)
+      if (response.success) {
+        await handleAllEvents()
+        setIsSaved(true)
+        setEventName([])
+        setDocIntervals([])
+        setEventIntervals([])
+        setEventText([])
+        handleIconClick()
+        handleEventTextIconClick()
+        handleReceivedDateIconClick()
+      } else {
+        console.log("Failed to create event")
+      }
+    } catch (error) {
+      console.log("Error creating event:", error)
     }
   }
-
+  useEffect(() => {
+    setIsSaveDisabled(
+      docIntervals.some(date => date === "") ||
+        eventText.some(date => date === "") ||
+        eventIntervals.some(date => date === "")
+    )
+  }, [docIntervals, eventText, eventName, eventIntervals])
   const toggleFields = () => {
     setShowFields(!showFields)
   }
@@ -45,114 +111,114 @@ const CreateEvents = () => {
   useEffect(() => {
     handleAllEvents()
   }, [currentAttorney])
-  useEffect(() => {
-    if (interval) {
-      const responseTextArray = []
-      for (let i = 0; i < interval; i++) {
-        responseTextArray.push("") // Add an empty string for each interval
-      }
-      setResponseText(responseTextArray)
-    }
-  }, [interval])
   return (
-    <div className=" py-5 my-5">
-    <div className="px-3 px-md-5">
-      <h4>Create a New Event</h4>
-      <div className="row">
-        <div className="col-md-6">
-          <h3 className="text-primary">
-            {currentAttorney?.regUser?.firstname}{" "}
-            {currentAttorney?.regUser?.lastname}
-          </h3>
+    <div className="py-5 my-5">
+      <div>
+        <h4>Create a New Event</h4>
+        <div className="row">
+          <div className="col-md-6">
+            <h3 className="text-primary">
+              {currentAttorney?.regUser?.firstname}{" "}
+              {currentAttorney?.regUser?.lastname}
+            </h3>
+          </div>
         </div>
       </div>
       {showFields && (
-        <div className="row">
-          <div className="col-md-6">
-            <div className="form-group">
-              <label htmlFor="event-name" className="form-label">
-                Event Name
-              </label>
-              <input
-                id="event-name"
-                className="form-control"
-                type="text"
-                placeholder="Enter Event Name"
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="intervals" className="form-label">
-                Intervals
-              </label>
-              <input
-                id="intervals"
-                className="form-control"
-                type="number"
-                min="3"
-                placeholder="Enter Intervals"
-                value={interval}
-                onChange={(e) => setInterval(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <textarea
-                id="description"
-                className="form-control"
-                type="text"
-                placeholder="Enter description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
-            </div>
-          </div>
-          {interval.length > 0 && (
-  <div className="col-md-6">
-    <div className="scrollable-container" style={{ maxHeight: "200px", overflowY: "auto" }}>
-      <div className="form-group">
-        <label htmlFor="response-text" className="form-label">
-          Response Text
-        </label>
-        {responseText.map((text, index) => (
-          <div key={index} className="form-group">
-            <input
-              id={`responseText${index}`}
-              style={{ marginBottom: "10px" }}
-              className="form-control"
-              type="text"
-              placeholder={`Enter Response Text ${index + 1}`}
-              value={text}
-              onChange={(e) => {
-                const newText = e.target.value;
-                setResponseText((prevState) =>
-                  prevState.map((prevText, i) =>
-                    i === index ? newText : prevText
-                  )
-                );
+        <>
+          <div className="d-flex justify-content-end">
+            <i
+              className="bx bx-plus-circle pt-4 pointer text-primary"
+              style={{ fontSize: "18px" }}
+              onClick={e => {
+                e.preventDefault()
+                handleIconClick()
+                handleEventTextIconClick()
+                handleReceivedDateIconClick()
               }}
-            />
+            ></i>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+          <div className="row">
+            <div className="col-md-3 mb-3">
+              <label htmlFor="example-text-input" className="form-label">
+                Event
+              </label>
+              <input
+                className="form-control"
+                type="text"
+                onChange={e => setEventName(e.target.value)}
+              />
+            </div>
+            <div className="col-md-3 mb-3">
+              <label htmlFor="example-text-input" className="form-label">
+                No of Days/Weeks/Months
+              </label>
+              {eventIntervals.map((rdate, index) => (
+                <input
+                  key={index}
+                  style={{ marginBottom: "10px" }}
+                  className="form-control"
+                  type="number"
+                  value={rdate}
+                  onChange={e =>
+                    handleEventIntervalChange(index, e.target.value)
+                  }
+                />
+              ))}
+            </div>
+            <div className="col-md-3 mb-3">
+              <label htmlFor="example-text-input" className="form-label">
+                Event Schedule
+              </label>
+              {docIntervals.map((date, index) => (
+                <div key={index}>
+                  <select
+                    style={{ marginBottom: "10px" }}
+                    className="form-control"
+                    type="text"
+                    value={date}
+                    onChange={e => handleDateTypeChange(index, e.target.value)}
+                  >
+                    {selecteEvent.map(event => (
+                      <option key={event.value} value={event.value}>
+                        {event.text}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
 
-          <div className="col-12 mt-3 mb-3">
+            <div className="col-md-3 mb-3">
+              <label htmlFor="example-text-input" className="form-label">
+                Event Text
+              </label>
+              {eventText.map((text, index) => (
+                <input
+                  key={index}
+                  style={{ marginBottom: "10px" }}
+                  className="form-control"
+                  type="text"
+                  value={text}
+                  onChange={e => handleEventTextChange(index, e.target.value)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="d-flex justify-content-end">
             <button
               className="btn btn-primary"
-              onClick={handleCreateEvent}
+              onClick={() => {
+                handleCreateEvent()
+              }}
+              disabled={isSaveDisabled}
             >
-              Submit
+              Save
             </button>
           </div>
-        </div>
+        </>
       )}
-  
+
       <i
         className={`bx ${
           showFields ? "bx-caret-up" : "bx-caret-down"
@@ -161,22 +227,21 @@ const CreateEvents = () => {
       >
         {!showFields ? (
           <p style={{ fontFamily: "Poppins, sans-serif" }}>
-            Click to Create an Event
+            Click to Update an Event
           </p>
         ) : (
           <p style={{ fontFamily: "Poppins, sans-serif" }}>
-            Click to Close the Field
+            Click to Close the manage Field
           </p>
         )}
       </i>
-  
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead className="bg-primary text-white">
             <tr>
               <th scope="col">Event Name</th>
               <th scope="col">No of Intervals</th>
-              <th scope="col">Description</th>
+              <th scope="col">Event Text</th>
               <th scope="col">View/Edit</th>
             </tr>
           </thead>
@@ -184,8 +249,26 @@ const CreateEvents = () => {
             {allEventsData?.map((data, key) => (
               <tr key={key}>
                 <td>{data?.eventName}</td>
-                <td>{data?.interval}</td>
-                <td>{data?.description}</td>
+
+                <td>
+                  <ul>
+                    {data?.events?.map((event, index) => (
+                      <li key={index}>
+                        {event?.interval}
+                        {"-"}
+                        {event?.scheduledType}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+
+                <td>
+                  <ul>
+                    {data?.events?.map((eve, i) => (
+                      <li key={i}>{eve?.responseText}</li>
+                    ))}
+                  </ul>
+                </td>
                 <td>
                   <Link to={`/manage_events?eid=${data._id}`}>
                     <i className="bx bx-show-alt" /> View
@@ -197,9 +280,12 @@ const CreateEvents = () => {
         </table>
       </div>
     </div>
-  </div>
-  
   )
+}
+
+CreateEvents.propTypes = {
+  caseId: PropTypes.object,
+  closeModal: PropTypes.any,
 }
 
 export default CreateEvents
