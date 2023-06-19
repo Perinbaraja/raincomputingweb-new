@@ -106,7 +106,7 @@ const CreateCase = lazy(() =>
 const SubGroups = lazy(() => import("rainComputing/components/chat/SubGroups"))
 
 //Chat left sidebar nav items
-const sidebarNavItems = ["ChatPro", "Case", "Contact"]
+const sidebarNavItems = ["Chat", "Case", "Contact"]
 
 const initialPageCount = {
   chats: 3,
@@ -1681,7 +1681,7 @@ const ChatRc = () => {
                           }}
                         >
                           {navItem}
-                          {navItem === "ChatPro" && <sup>TM</sup>}
+                          {navItem === "Chat"}
                         </NavLink>
                       </NavItem>
                     ))}

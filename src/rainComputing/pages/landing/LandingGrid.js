@@ -157,14 +157,14 @@ const LandingGrid = () => {
                         </h2>
                       </div>
                       <p style={{ fontSize: 15 }}>
-                        Rain Computing’s ChatProTM provides a Case-Based Instant
+                        Rain Computing’s ChatPro<sup>TM</sup> provides a Case-Based Instant
                         Messaging (CBIM) platform for professionals, such as,
                         lawyers, accountants, etc., to better manage their cases
                         and client correspondences. Unlike traditional emails,
-                        all messages in ChatProTM are securely transmitted and
+                        all messages in ChatPro<sup>TM</sup> are securely transmitted and
                         kept in one place, and properly organized even before
                         they are sent. In addition to instant messaging,
-                        ChatProTM system can be coupled with various case
+                        ChatPro<sup>TM</sup> system can be coupled with various case
                         management tools to simplify tasks, such as, client
                         intake, due date management, etc. Please feel free to
                         try it out and contact our sales team for corporate
