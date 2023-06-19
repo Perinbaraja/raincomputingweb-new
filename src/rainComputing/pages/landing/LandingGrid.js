@@ -157,27 +157,18 @@ const LandingGrid = () => {
                         </h2>
                       </div>
                       <p style={{ fontSize: 15 }}>
-                        We pride ourselves on our down to earth and friendly
-                        approach, with many of us being heavily involved in our
-                        spare time in making the law a better and more
-                        accessible place for all. Members are currently involved
-                        in Bar Council Committees, Inn Scholarship Committees,
-                        wellbeing, advocacy training, ethics training and
-                        outreach programmes to Inner London schools. We are a
-                        group of passionate mental health advocates, experienced
-                        criminal defense attorneys and rock star paralegals.
-                        Above all, we are human beings that want to help you and
-                        your family face the criminal justice system with
-                        confidence.
-                      </p>
-                      <p style={{ fontSize: 15 }}>
-                        {" "}
-                        At the same time we have the advantage of being present
-                        in four different cities and therefore closer to our
-                        clients. We provide a new level of legal services that
-                        bridges the gap between the law and modern business
-                        reality. An ongoing measure of success is the large
-                        number of referrals we receive from satisfied clients.
+                        Rain Computing’s ChatProTM provides a Case-Based Instant
+                        Messaging (CBIM) platform for professionals, such as,
+                        lawyers, accountants, etc., to better manage their cases
+                        and client correspondences. Unlike traditional emails,
+                        all messages in ChatProTM are securely transmitted and
+                        kept in one place, and properly organized even before
+                        they are sent. In addition to instant messaging,
+                        ChatProTM system can be coupled with various case
+                        management tools to simplify tasks, such as, client
+                        intake, due date management, etc. Please feel free to
+                        try it out and contact our sales team for corporate
+                        accounts.
                       </p>
                     </div>
 
