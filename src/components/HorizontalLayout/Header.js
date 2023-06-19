@@ -73,12 +73,7 @@ const Header = props => {
                           className=""
                           to="/chat-rc"
                         >
-                          <img
-                          style={{height:"30px"}}
-                            src={logoImage}
-                            alt="Logo"
-                            className="" // Add the "img-fluid" class for responsive behavior
-                          />
+                         ChatPro<sup>TM</sup>
                         </Link>
                       </Link>
                     </li>

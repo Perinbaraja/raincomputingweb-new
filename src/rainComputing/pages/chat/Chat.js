@@ -99,15 +99,14 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
-import logoImage2 from "../../../assets/images/ChatPro 2.png"
-import logoImage from "../../../assets/images/ChatPro.png"
+
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
 const SubGroups = lazy(() => import("rainComputing/components/chat/SubGroups"))
 
 //Chat left sidebar nav items
-const sidebarNavItems = ["Chat", "Case", "Contact"]
+const sidebarNavItems = ["ChatPro", "Case", "Contact"]
 
 const initialPageCount = {
   chats: 3,
@@ -1681,20 +1680,8 @@ const ChatRc = () => {
                             toggleTab(JSON.stringify(n + 1))
                           }}
                         >
-                          {navItem === "Chat" ? (
-                            <img
-                              src={
-                                activeTab === JSON.stringify(n + 1)
-                                  ? logoImage2
-                                  : logoImage
-                              }
-                              style={{ height: "20px" }}
-                              className="img-fluid"
-                              alt="Logo"
-                            />
-                          ) : (
-                            navItem
-                          )}
+                          {navItem}
+                          {navItem === "ChatPro" && <sup>TM</sup>}
                         </NavLink>
                       </NavItem>
                     ))}
