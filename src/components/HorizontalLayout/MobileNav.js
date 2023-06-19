@@ -7,7 +7,6 @@ import rainlglogo from "assets/images/raincom_Logo1.png"
 import NotificationDropdown from "components/CommonForBoth/TopbarDropdown/NotificationDropdown"
 import Reminders from "rainComputing/pages/reminder"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
-import logoImage2 from "../../assets/images/ChatPro 2.png"
 
 const MobileNav = () => {
   const [isMobile, setIsMobile] = useState(false)
@@ -31,14 +30,9 @@ const MobileNav = () => {
             </Link>
           </li>
           <li id="" className="">
-            <Link to="/chat-rc">
+            <Link to="/chat-rc" className="ul1">
               {" "}
-              <img
-                style={{ height: "15px" }}
-                src={logoImage2}
-                className="img-fluid"
-                alt="Image"
-              />
+              ChatPro<sup>TM</sup>
             </Link>
           </li>
           {!currentUser && (
