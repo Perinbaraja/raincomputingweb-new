@@ -99,7 +99,8 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
-
+import { Editor } from "react-draft-wysiwyg"
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -262,7 +263,10 @@ const ChatRc = () => {
   const [durationIntervalId, setDurationIntervalId] = useState(null)
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
-
+  const [editorState, setEditorState] = useState();
+  const onEditorStateChange = (newEditorState) => {
+    setEditorState(newEditorState);
+  };
   const startRecording = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -669,6 +673,9 @@ const ChatRc = () => {
     }
     setCaseDeleteModalOpen(false)
   }
+  const handleCaseDelete = () => {
+    setCaseDeleteModalOpen(true)
+  }
   //Deleting Last Message
   const onDeletingMsg = async () => {
     const payload = {
@@ -967,9 +974,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1534,9 +1540,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1605,6 +1610,14 @@ const ChatRc = () => {
               cancelText="Cancel"
               onCloseClick={toggleMsgDeleteModal}
             />
+
+            {/* <DeleteModal
+              show={completedCaseDelete}
+              onDeleteClick={ handleCompletedCase}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleCompleteCaseDeleteModelOpen}
+            /> */}
 
             <MetaTags>
               <title>Chat RC</title>
@@ -1734,7 +1747,7 @@ const ChatRc = () => {
                                     <div>
                                       {moment(chat.updatedAt).format(
                                         "DD-MM-YY HH:mm"
-                                      )}
+                                      )} 
                                     </div>
                                     {getNotificationCount(chat._id) > 0 && (
                                       <div className="badge bg-danger  font-size-14 my-1">
@@ -1814,7 +1827,7 @@ const ChatRc = () => {
                       ) : (
                         <PerfectScrollbar
                           style={{ height: "500px" }}
-                          // onScroll={e => handleCaseScroll(e?.target)}
+                        // onScroll={e => handleCaseScroll(e?.target)}
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
@@ -1993,7 +2006,7 @@ const ChatRc = () => {
                                       tag="i"
                                     >
                                       <i
-                                        className="bx bx-alarm"
+                                        className="bi bi-calendar"
                                         title="Reminder"
                                       />
                                     </DropdownToggle>
@@ -2023,7 +2036,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2124,13 +2137,13 @@ const ChatRc = () => {
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
-                                          onClick={() => onDeletingCase()}
+                                          onClick={() => handleCaseDelete()}
                                         >
                                           Delete case
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
-                                          onClick={() => handleCompletedCase()}
+                                          onClick={() => handleCaseCompleted()}
                                         >
                                           Completed case
                                         </DropdownItem>
@@ -2259,11 +2272,11 @@ const ChatRc = () => {
                                               href="#"
                                               onClick={() => {
                                                 msg.sender ===
-                                                currentUser.userID
+                                                  currentUser.userID
                                                   ? handleDelete(msg)
                                                   : toastr.info(
-                                                      "Unable to  delete other's message"
-                                                    )
+                                                    "Unable to  delete other's message"
+                                                  )
                                               }}
                                             >
                                               Delete
@@ -2276,7 +2289,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2383,8 +2396,8 @@ const ChatRc = () => {
                                                   {currentChat.isGroup
                                                     ? getMemberName(r?.sender)
                                                     : getSenderOneChat(
-                                                        r?.sender
-                                                      )}
+                                                      r?.sender
+                                                    )}
                                                 </div>
                                                 <p>{r?.replyMsg}</p>
                                               </div>
@@ -2405,7 +2418,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2442,10 +2455,17 @@ const ChatRc = () => {
                           )}
                           <div className="p-2 chat-input-section">
                             <Row {...getRootProps()}>
+                              <Editor
+                                editorState={editorState}
+                                toolbarClassName="toolbarClassName"
+                                wrapperClassName="wrapperClassName"
+                                editorClassName="editorClassName"
+                                onEditorStateChange={onEditorStateChange}
+                              />;
                               <Col>
                                 <div className="position-relative">
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <>
                                       {" "}
                                       <div className="d-flex justify-content-center">
@@ -2503,7 +2523,7 @@ const ChatRc = () => {
 
                                   {(recorder &&
                                     recorder.state === "recording") ||
-                                  recorder?.state === "stopped" ? (
+                                    recorder?.state === "stopped" ? (
                                     <></>
                                   ) : (
                                     <div className="chat-input-links">
@@ -2564,7 +2584,7 @@ const ChatRc = () => {
                               <Col className="col-auto d-flex">
                                 <div>
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-24 text-danger me-2"
                                       title="Stop Recording"

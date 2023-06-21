@@ -56,15 +56,32 @@ const ProfileMenu = props => {
     }
   }
 
+  const handleCaseCompletedModal = () => {
+    setCompleteCaseModelOpen(true);
+  }
+
   return (
     <React.Fragment>
       <DynamicModel
         open={completeCaseModelOpen}
         toggle={toggleCompleteCaseModelOpen}
-        size="md"
-        modalTitle="Completed Case"
+        size="lg"
+        // modalTitle="Completed Case"
         footer={false}
       >
+        <div>
+          <h2 className=" text-primary mb-2 px-2">
+            Completed Case
+            <div
+              style={{
+                width: "70px",
+                height: "3px",
+                backgroundColor: "#556EE6",
+                borderRadius: "10px",
+              }}
+            ></div>
+          </h2>
+        </div>
         <DynamicSuspense>
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
             <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
@@ -123,15 +140,15 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
-           {currentAttorney&& <DropdownItem tag="a" href="/completedCase">
+            {currentAttorney && <DropdownItem tag="a" href="#" onClick={() => handleCaseCompletedModal()}>
               <i className="bx bx-check-circle font-size-16 align-middle me-1" />
               {props.t("Completed Case")}
             </DropdownItem>}
-           {currentAttorney&& <DropdownItem tag="a" href="/reminderDashboard">
+            {currentAttorney && <DropdownItem tag="a" href="/reminderDashboard">
               <i className="bx bx-check-circle font-size-16 align-middle me-1" />
               {props.t("Case Reminder")}
             </DropdownItem>}
-           
+
             <div className="dropdown-divider" />
             <Link
               to="#"
