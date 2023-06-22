@@ -1,0 +1,20 @@
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card .form-control {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+  }
+  .card .ql-toolbar {
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .card .ql-container {
+    box-sizing: border-box;
+    border-top: none;
+  }
+  
+  .card .ql-editor {
+    min-height: 50px; /* Set the minimum height for the editor content area */
+  }
+  
