@@ -147,9 +147,12 @@ const PinnedModels = ({ handleLocateMessage }) => {
                             ></div>
                           </>
                         ) : (
-                          <div className="mb-1">
-                            <p>{msg?.messageData}</p>
-                          </div>
+                          <div
+                          style={{ whiteSpace: "pre" }}
+                          dangerouslySetInnerHTML={{
+                            __html: msg?.messageData,
+                          }}
+                        />
                         )}
                       </div>
 

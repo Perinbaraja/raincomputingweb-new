@@ -9,8 +9,19 @@ import {
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
 
-const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId,receivers,currentChat,caseId }) => {
+
+const ReplyMsgModal = ({
+  open,
+  setOpen,
+  toggleOpen,
+  curMessageId,
+  receivers,
+  currentChat,
+  caseId,
+}) => {
   const { currentUser } = useUser()
   const { socket } = useSocket()
   const { setMessages, messages } = useChat()
@@ -24,11 +35,11 @@ const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId,receivers,curre
       id,
       sender: currentUser?.userID,
       currentChat,
-      groupId:currentChat?._id,
-      caseId : caseId,
+      groupId: currentChat?._id,
+      caseId: caseId,
       receivers,
       msg: replyMessage,
-      isReply : true,
+      isReply: true,
     }
 
     const res = await postReplies(payload)
@@ -70,7 +81,16 @@ const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId,receivers,curre
           <Row>
             <Col>
               <div className="position-relative">
-                <MentionsInput
+                <ReactQuill
+                  theme="snow"
+                  style={{
+                    resize: "none",
+                  }}
+                  value={replyMessage}
+                  onChange={setReplyMessage}
+                  placeholder="Enter Message..."
+                />
+                {/* <MentionsInput
                   type="text"
                   value={replyMessage}
                   style={{
@@ -81,7 +101,7 @@ const ReplyMsgModal = ({ open, setOpen, toggleOpen, curMessageId,receivers,curre
                   placeholder="Enter Message..."
                 >
                   <Mention trigger="@" />
-                </MentionsInput>
+                </MentionsInput> */}
               </div>
             </Col>
           </Row>

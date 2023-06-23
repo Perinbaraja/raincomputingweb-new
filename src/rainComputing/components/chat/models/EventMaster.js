@@ -107,6 +107,7 @@ const EventMaster = ({ caseId, closeModal }) => {
           case "months":
             responseDate = new Date(receivedDateObj)
             responseDate.setMonth(receivedDateObj.getMonth() + interval)
+            console.log("responseDate",responseDate)
             break
           default:
             break

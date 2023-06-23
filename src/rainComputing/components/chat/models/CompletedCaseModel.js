@@ -34,7 +34,7 @@ const CompletedCaseModel = ({ setModalOpen }) => {
     <>
     <ol>
     {allCompletedCase.map((c, i) => (
-      <li key={i} className="border-bottom">
+      <li key={i} className="border-bottom border-primary">
         <div className="pt-2">
           <h6>CaseName :{c.caseName}</h6>
           <p>CaseId : {c.caseId}</p>

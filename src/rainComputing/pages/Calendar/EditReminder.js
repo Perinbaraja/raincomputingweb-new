@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import {
   createReminder,
   getAllReminders,
+  getGroupIdReminders,
   removeReminder,
   UpdateReminder,
 } from "rainComputing/helpers/backend_helper"
@@ -21,6 +22,7 @@ const EditReminder = ({
   reminder,
   setGetReminders,
   getReminders,
+  groupId,
 }) => {
   console.log("reminder", reminder)
   const remindere = new Date(reminder.scheduledTime[0])
@@ -88,19 +90,23 @@ const EditReminder = ({
     setEditModalOpen(false)
   }
   const getAllReminderById = async () => {
-    const res = await getAllReminders({
-      currentUserID: currentUser?.userID,
-    })
+    const payload = {
+      groupId: groupId,
+    }
+    const res = await getGroupIdReminders(payload)
     if (res.success) {
-      setGetReminders(res?.reminders)
+      setGetReminders(res?.groupReminders)
     }
   }
-
   useEffect(() => {
-    if (currentUser) {
-      getAllReminderById()
-    }
-  }, [currentUser])
+    getAllReminderById()
+  }, [])
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     getAllReminderById()
+  //   }
+  // }, [currentUser])
   const handleChanges = event => {
     const selectedValue = event.target.value
     // Do something based on the selected value
@@ -421,6 +427,7 @@ EditReminder.propTypes = {
   setGetReminders: PropTypes.func,
   getReminders: PropTypes.func,
   reminder: PropTypes.func,
+  groupId: PropTypes.func,
 }
 
 export default EditReminder

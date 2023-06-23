@@ -49,14 +49,14 @@ const EventByCase = ({ location }) => {
                     <tr key={i}>
                       <td className="col-md-3">{eve?.eventName}</td>
                       <td className="col-md-3">
-                        {eve?.receivedDate.substring(0, 10) || ""}
+                        {eve?.receivedDate || ""}
                       </td>
 
                       <td className="col-md-3">
                         <ul>
                           {eve?.intervals?.map((int, inx) => (
                             <li key={inx}>
-                              {int?.responseDate.substring(0, 10) || ""}
+                              {int?.responseDate || ""}
                             </li>
                           ))}
                         </ul>

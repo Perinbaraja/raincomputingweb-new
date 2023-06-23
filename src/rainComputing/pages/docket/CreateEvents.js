@@ -7,6 +7,8 @@ import {
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Link } from "react-router-dom"
+import toastr from "toastr"
+
 const CreateEvents = ({ caseId }) => {
   const { currentAttorney } = useUser()
   const [docIntervals, setDocIntervals] = useState(Array(1).fill(""))
@@ -15,18 +17,13 @@ const CreateEvents = ({ caseId }) => {
   const [eventIntervals, setEventIntervals] = useState(Array(1).fill(""))
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
   const [allEventsData, setAllEventsData] = useState([])
-  console.log("allEventsData :", allEventsData)
   const [showFields, setShowFields] = useState(false)
   const selecteEvent = [
-    { value: "", text: "Select Intervals " },
+    { value: "", text: "Select" },
     { value: "days", text: "Days " },
     { value: "weeks", text: "Weeks " },
     { value: "months", text: " Months" },
   ]
-  console.log("eventText :", eventText)
-  console.log(" eventText eventIntervals :", eventIntervals)
-  console.log("eventText docIntervals :", docIntervals)
-  console.log("eventText eventName :", eventName)
   const currentCase = caseId?._id
   const handleIconClick = () => {
     setDocIntervals(prevInputs => [...prevInputs, ""])
@@ -71,11 +68,11 @@ const CreateEvents = ({ caseId }) => {
         interval: eventIntervals[i],
       })
     }
-    console.log("eventData :", eventData)
     try {
       const response = await createEvent(eventData)
       if (response.success) {
         await handleAllEvents()
+        toastr.success(`Event has been updated successfully`, "Success")
         setIsSaved(true)
         setEventName([])
         setDocIntervals([])
@@ -91,6 +88,7 @@ const CreateEvents = ({ caseId }) => {
       console.log("Error creating event:", error)
     }
   }
+
   useEffect(() => {
     setIsSaveDisabled(
       docIntervals.some(date => date === "") ||
@@ -111,6 +109,31 @@ const CreateEvents = ({ caseId }) => {
   useEffect(() => {
     handleAllEvents()
   }, [currentAttorney])
+
+  const handleRemoveField = index => {
+    if (docIntervals.length === 1) {
+      return // Do not remove the input when there is only one input
+    }
+
+    setDocIntervals(prevInputs => {
+      const newInputs = [...prevInputs]
+      newInputs.splice(index, 1)
+      return newInputs
+    })
+
+    setEventText(prevInputs => {
+      const newInputs = [...prevInputs]
+      newInputs.splice(index, 1)
+      return newInputs
+    })
+
+    setEventIntervals(prevInputs => {
+      const newInputs = [...prevInputs]
+      newInputs.splice(index, 1)
+      return newInputs
+    })
+  }
+
   return (
     <div className="py-5 my-5">
       <div>
@@ -139,7 +162,7 @@ const CreateEvents = ({ caseId }) => {
             ></i>
           </div>
           <div className="row">
-            <div className="col-md-3 mb-3">
+            <div className="col-md-5 col-sm-12 mb-3">
               <label htmlFor="example-text-input" className="form-label">
                 Event
               </label>
@@ -149,59 +172,67 @@ const CreateEvents = ({ caseId }) => {
                 onChange={e => setEventName(e.target.value)}
               />
             </div>
-            <div className="col-md-3 mb-3">
+            <div className="col-md-2 col-sm-12 mb-3">
               <label htmlFor="example-text-input" className="form-label">
                 No of Days/Weeks/Months
               </label>
               {eventIntervals.map((rdate, index) => (
-                <input
-                  key={index}
-                  style={{ marginBottom: "10px" }}
-                  className="form-control"
-                  type="number"
-                  value={rdate}
-                  onChange={e =>
-                    handleEventIntervalChange(index, e.target.value)
-                  }
-                />
-              ))}
-            </div>
-            <div className="col-md-3 mb-3">
-              <label htmlFor="example-text-input" className="form-label">
-                Event Schedule
-              </label>
-              {docIntervals.map((date, index) => (
-                <div key={index}>
-                  <select
-                    style={{ marginBottom: "10px" }}
-                    className="form-control"
-                    type="text"
-                    value={date}
-                    onChange={e => handleDateTypeChange(index, e.target.value)}
-                  >
-                    {selecteEvent.map(event => (
-                      <option key={event.value} value={event.value}>
-                        {event.text}
-                      </option>
-                    ))}
-                  </select>
+                <div key={index} style={{ marginBottom: "16px" }}>
+                  <span className="d-flex">
+                    <input
+                      className="form-control"
+                      type="number"
+                      value={rdate}
+                      onChange={e =>
+                        handleEventIntervalChange(index, e.target.value)
+                      }
+                    />
+                    <select
+                      className="form-control"
+                      value={docIntervals[index]}
+                      onChange={e =>
+                        handleDateTypeChange(index, e.target.value)
+                      }
+                    >
+                      {selecteEvent.map(event => (
+                        <option key={event.value} value={event.value}>
+                          {event.text}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
                 </div>
               ))}
             </div>
 
-            <div className="col-md-3 mb-3">
+            <div className="col-md-5 col-sm-12 mb-3">
               <label htmlFor="example-text-input" className="form-label">
                 Event Text
               </label>
               {eventText.map((text, index) => (
-                <input
-                  key={index}
-                  style={{ marginBottom: "10px" }}
-                  className="form-control"
-                  type="text"
-                  value={text}
-                  onChange={e => handleEventTextChange(index, e.target.value)}
-                />
+                <div key={index} className="input-group mb-3">
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={text}
+                    onChange={e => handleEventTextChange(index, e.target.value)}
+                  />
+                  <span className="input-group-text">
+                    {docIntervals.length === 1 ? (
+                      <i
+                        className="bx bx-minus-circle text-danger pointer"
+                        title="Minimum one Event is required"
+                        style={{ cursor: "not-allowed" }}
+                      />
+                    ) : (
+                      <i
+                        className="bx bx-minus-circle text-danger pointer"
+                        title="Remove this Event"
+                        onClick={() => handleRemoveField(index)}
+                      />
+                    )}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
@@ -236,48 +267,47 @@ const CreateEvents = ({ caseId }) => {
         )}
       </i>
       <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead className="bg-primary text-white">
-            <tr>
-              <th scope="col">Event Name</th>
-              <th scope="col">No of Intervals</th>
-              <th scope="col">Event Text</th>
-              <th scope="col">View/Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allEventsData?.map((data, key) => (
-              <tr key={key}>
-                <td>{data?.eventName}</td>
+      <div style={{ maxHeight: "500px", overflowY: "scroll" }}>
+  <table className="table table-bordered">
+    <thead className="bg-primary text-white" style={{ position: "sticky", top: 0 }}> 
+      <tr>
+        <th scope="col">Event Name</th>
+        <th scope="col">No of Intervals</th>
+        <th scope="col">Event Text</th>
+        <th scope="col">View/Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {allEventsData?.map((data, key) => (
+        <tr key={key}>
+          <td>{data?.eventName}</td>
+          <td>
+            <ul>
+              {data?.events?.map((event, index) => (
+                <li key={index}>
+                  {event?.interval}-{event?.scheduledType}
+                </li>
+              ))}
+            </ul>
+          </td>
+          <td>
+            <ul>
+              {data?.events?.map((eve, i) => (
+                <li key={i}>{eve?.responseText}</li>
+              ))}
+            </ul>
+          </td>
+          <td>
+            <Link to={`/manage_events?eid=${data._id}`}>
+              <i className="bx bx-show-alt" /> View
+            </Link>{" "}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
-                <td>
-                  <ul>
-                    {data?.events?.map((event, index) => (
-                      <li key={index}>
-                        {event?.interval}
-                        {"-"}
-                        {event?.scheduledType}
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-
-                <td>
-                  <ul>
-                    {data?.events?.map((eve, i) => (
-                      <li key={i}>{eve?.responseText}</li>
-                    ))}
-                  </ul>
-                </td>
-                <td>
-                  <Link to={`/manage_events?eid=${data._id}`}>
-                    <i className="bx bx-show-alt" /> View
-                  </Link>{" "}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   )

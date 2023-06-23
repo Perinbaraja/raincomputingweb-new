@@ -5,6 +5,8 @@ import { Col, Modal, Row } from "reactstrap"
 import PropTypes from "prop-types"
 import { messageUpdate } from "rainComputing/helpers/backend_helper"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
 
 const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
   const { setMessages, messages } = useChat()
@@ -59,7 +61,21 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
           <Row>
             <Col>
               <div className="position-relative">
-                <MentionsInput
+                <ReactQuill
+                  theme="snow"
+                  value={updateMessages}
+                  onChange={setUpdateMessages}
+                  className="form-control chat-input"
+                  defaultValue={messages?.find(
+                    m => m._id === curMessageId?.messageData
+                  )}
+                  style={{
+                    resize: "none",
+                    height: "auto",
+                    overflow: "hidden",
+                  }}
+                />
+                {/* <MentionsInput
                   type="text"
                   value={updateMessages}
                   style={{
@@ -74,7 +90,7 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
                   )}
                 >
                      <Mention trigger="@" />
-                </MentionsInput>
+                </MentionsInput> */}
               </div>
             </Col>
           </Row>
@@ -94,7 +110,6 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
               type="button"
               className="btn btn-primary"
               onClick={() => handleUpdateMessage(curMessageId?._id)}
-             
             >
               Update
             </button>
