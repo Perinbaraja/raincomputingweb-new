@@ -103,7 +103,6 @@ import ReactQuill from "react-quill"
 // import "react-quill/dist/quill.snow.css"
 import Quill from "quill"
 import card from "../chat/card.css"
-import { useMediaQuery } from "react-responsive"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -272,7 +271,6 @@ const ChatRc = () => {
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
-  const isMobile = useMediaQuery({ maxWidth: 767 })
   const [isQuil, setIsQuil] = useState(false)
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
