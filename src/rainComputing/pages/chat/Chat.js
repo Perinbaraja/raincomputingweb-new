@@ -204,7 +204,7 @@ const ChatRc = () => {
     toggleOpen: completedCaseDelete,
     setToggleOpen: setCompletedCaseDelete,
     toggleIt: toggleCompleteCaseDeleteModelOpen,
-  } = useToggle(false)	
+  } = useToggle(false)
   const {
     toggleOpen: caseEditModalOpen,
     setToggleOpen: setCaseEditModalOpen,
@@ -273,6 +273,11 @@ const ChatRc = () => {
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
   const isMobile = useMediaQuery({ maxWidth: 767 })
+  const [isQuil, setIsQuil] = useState(false)
+  const toggle_Quill = () => {
+    setIsQuil(!isQuil)
+  }
+
   const toolbarOptions = {
     toolbar: {
       container: [
@@ -1395,7 +1400,7 @@ const ChatRc = () => {
     }
     setCompletedCaseDelete(false)
   }
-  const handleCaseCompleted=() => {
+  const handleCaseCompleted = () => {
     setCompletedCaseDelete(true)
   }
   const handleLocateMessage = messageId => {
@@ -1521,7 +1526,7 @@ const ChatRc = () => {
               footer={false}
             >
               <DynamicSuspense>
-              <Calender setcalendarModalOpen={setCalendarModelOpen} groupId={currentChat?._id} />
+                <Calender setcalendarModalOpen={setCalendarModelOpen} groupId={currentChat?._id} />
               </DynamicSuspense>
             </DynamicModel>
             {/* Model for creating case*/}
@@ -1635,7 +1640,7 @@ const ChatRc = () => {
 
             <DeleteModal
               show={completedCaseDelete}
-              onDeleteClick={ handleCompletedCase}
+              onDeleteClick={handleCompletedCase}
               confirmText="Yes,Remove"
               cancelText="Cancel"
               onCloseClick={toggleCompleteCaseDeleteModelOpen}
@@ -2515,19 +2520,18 @@ const ChatRc = () => {
                                         </div>
                                       ) : (
                                         <div className="border border-secondary-subtle rounded-4 py-1 px-1">
-                                         
-                                          <div> 
-                                            <ReactQuill
-                                              theme="snow"
-                                              value={curMessage}
-                                              onKeyPress={onKeyPress}
-                                              onChange={setcurMessage}
-                                              modules={toolbarOptions}                                 
-                                              placeholder="Enter Message..."
-                                            />
-                                          </div>
 
-                                          {/* <MentionsInput
+                                          {isQuil ? <ReactQuill
+                                            theme="snow"
+                                            value={curMessage}
+                                            onKeyPress={onKeyPress}
+                                            onChange={setcurMessage}
+                                            modules={toolbarOptions}
+                                            placeholder="Enter Message..."
+                                          />
+                                            :
+
+                                            <MentionsInput
                                               type="text"
                                               value={curMessage}
                                               onKeyPress={onKeyPress}
@@ -2544,11 +2548,16 @@ const ChatRc = () => {
                                                 trigger="@"
                                                 data={mentionsArray}
                                               />
-                                            </MentionsInput> */}
+                                            </MentionsInput>
+                                          }
                                           <div >
-                                           <div style={{ position: "sticky" }}>
+                                            <div style={{ position: "sticky" }}>
                                               {" "}
                                               <div className="col-auto d-flex justify-content-end gap-2 ">
+                                                <i 
+                                                style={{ marginRight: "30px", marginTop: "8px", fontSize: "14px" }} 
+                                                onClick={toggle_Quill} 
+                                                className="bi bi-blockquote-right text-primary"></i>
                                                 <div>
                                                   {(recorder &&
                                                     recorder.state ===
