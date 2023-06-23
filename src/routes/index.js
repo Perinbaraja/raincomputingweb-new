@@ -19,6 +19,7 @@ import FirmInfo from "rainComputing/pages/attorney/firmLanding/firmInfo"
 import ForgetPwd from "rainComputing/pages/auth/forgetPassword"
 import VerifyEmailPage from "rainComputing/pages/auth/verifyEmail"
 import emailForgetPassword from "rainComputing/pages/auth/emailForgetPassword"
+import ForgetPasswordPage from "rainComputing/pages/auth/forgetPassword"
 import ChatRc from "rainComputing/pages/chat/Chat"
 
 import AdminLogin from "rainComputing/pages/admin/adminLogin/login"
@@ -83,7 +84,7 @@ const authProtectedRoutes = [
 
 const publicRoutes = [
   { path: "/logout", component: Logout },
-  { path: "/forgot-password", component: ForgetPwd },
+  { path: "/forgot-password", component: ForgetPasswordPage },
   { path: "/verifyemail", component: VerifyEmailPage },
   { path: "/emailforgotPwd", component: emailForgetPassword },
   { path: "/help", component: Guide },

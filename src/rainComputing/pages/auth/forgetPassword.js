@@ -1,24 +1,34 @@
-import PropTypes from "prop-types";
-import MetaTags from "react-meta-tags";
-import React, { useState } from "react";
-import { Row, Col, Alert, Card, CardBody, Container, FormFeedback, Input, Label, Form } from "reactstrap";
+import PropTypes from "prop-types"
+import MetaTags from "react-meta-tags"
+import React, { useState } from "react"
+import {
+  Row,
+  Col,
+  Alert,
+  Card,
+  CardBody,
+  Container,
+  FormFeedback,
+  Input,
+  Label,
+  Form,
+} from "reactstrap"
+import toastr from "toastr"
 
 //redux
 // import { useSelector, useDispatch } from "react-redux";
 
-import { withRouter, Link, useLocation } from "react-router-dom";
+import { withRouter, Link, useLocation } from "react-router-dom"
 
 // Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
-
-
+import * as Yup from "yup"
+import { useFormik } from "formik"
 
 // import images
 import profileImg from "assets/images/profile-img.png"
 import logo from "assets/images/rain-drop.png"
-import { setForgettingPassword } from "rainComputing/helpers/backend_helper";
-
+import { setForgettingPassword } from "rainComputing/helpers/backend_helper"
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min"
 
 function useQuery() {
   const { search } = useLocation()
@@ -27,51 +37,48 @@ function useQuery() {
 
 const ForgetPasswordPage = props => {
   const query = useQuery()
-const [forgetError,setForgetError]=useState("")
-const [forgetSuccessMsg,setForgetSuccessMsg]=useState("")
+  const history = useHistory()
+  const [forgetError, setForgetError] = useState("")
+  const [forgetSuccessMsg, setForgetSuccessMsg] = useState("")
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      NewPassword:'',
-      ConfirmPassword:''
-
+      NewPassword: "",
+      // ConfirmPassword:''
     },
     validationSchema: Yup.object({
       NewPassword: Yup.string()
-      .required("Please Enter Your Password")
-      .matches(/^(?=.{5,})/, "Must Contain 5 Characters"),
-      ConfirmPassword: Yup.string().oneOf([Yup.ref('NewPassword'),null],"ConfirmPassword doesn't match"),
+        .required("Please Enter Your Password")
+        .matches(/^(?=.{5,})/, "Must Contain 5 Characters"),
+      // ConfirmPassword: Yup.string().oneOf([Yup.ref('NewPassword'),null],"ConfirmPassword doesn't match"),
     }),
-    onSubmit: async (values,onSubmitProps) => {
-        await handleSetPasswordLink(values?.NewPassword)
-        onSubmitProps.resetForm()
-
+    onSubmit: async (values, onSubmitProps) => {
+      await handleSetPasswordLink(values?.NewPassword)
+      onSubmitProps.resetForm()
+    },
+  })
+  const handleSetPasswordLink = async pw => {
+    const payload = {
+      verifyToken: query.get("token"),
+      newPassword: pw,
     }
-  });
-const handleSetPasswordLink = async(pw) =>{
-  const payload= {
-  verifyToken:query.get("token"),
-  newPassword:pw
+    const res = await setForgettingPassword(payload)
+    if (res.success) {
+      setForgetSuccessMsg("Your passsword has been reseted successfully")
+      toastr.success(`Your passsword has been reseted successfully`, "Success")
+      history.push("/login")
+    } else {
+      setForgetError(res?.msg || "Something went wrong")
+    }
   }
-  const res =await  setForgettingPassword(payload)
-  if(res.success){
-    setForgetSuccessMsg("Your passsword has been reseted successfully")
-  }
-  else{
-    setForgetError(res?.msg || "Something went wrong")
-  }
-}
-
 
   return (
     <React.Fragment>
       <MetaTags>
-        <title>
-          Forget Password | RainComputing 
-        </title>
+        <title>Forget Password | RainComputing</title>
       </MetaTags>
       <div className="home-btn d-none d-sm-block">
         <Link to="/" className="text-dark">
@@ -112,26 +119,25 @@ const handleSetPasswordLink = async(pw) =>{
                     </Link>
                   </div>
                   <div className="p-2">
-                    {forgetError &&
+                    {forgetError && (
                       <Alert color="danger" style={{ marginTop: "13px" }}>
                         {forgetError}
                       </Alert>
-                    }
-                    {forgetSuccessMsg && 
+                    )}
+                    {forgetSuccessMsg && (
                       <Alert color="success" style={{ marginTop: "13px" }}>
                         {forgetSuccessMsg}
                       </Alert>
-                    }
+                    )}
 
                     <Form
                       className="form-horizontal"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
+                      onSubmit={e => {
+                        e.preventDefault()
+                        validation.handleSubmit()
+                        return false
                       }}
                     >
-                     
                       <div className="mb-3">
                         <Label className="form-label">New Password :</Label>
                         <Input
@@ -143,14 +149,20 @@ const handleSetPasswordLink = async(pw) =>{
                           onBlur={validation.handleBlur}
                           value={validation.values.NewPassword || ""}
                           invalid={
-                            validation.touched.NewPassword && validation.errors.NewPassword ? true : false
+                            validation.touched.NewPassword &&
+                            validation.errors.NewPassword
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.NewPassword && validation.errors.NewPassword ? (
-                          <FormFeedback type="invalid">{validation.errors.NewPassword}</FormFeedback>
+                        {validation.touched.NewPassword &&
+                        validation.errors.NewPassword ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.NewPassword}
+                          </FormFeedback>
                         ) : null}
                       </div>
-                      <div className="mb-3">
+                      {/* <div className="mb-3">
                         <Label className="form-label">Confirm Password :</Label>
                         <Input
                           name="ConfirmPassword"
@@ -167,7 +179,7 @@ const handleSetPasswordLink = async(pw) =>{
                         {validation.touched.ConfirmPassword && validation.errors.ConfirmPassword ? (
                           <FormFeedback type="invalid">{validation.errors.ConfirmPassword}</FormFeedback>
                         ) : null}
-                      </div>
+                      </div> */}
                       <Row className="mb-3">
                         <Col className="text-end">
                           <button
@@ -199,11 +211,11 @@ const handleSetPasswordLink = async(pw) =>{
         </Container>
       </div>
     </React.Fragment>
-  );
-};
+  )
+}
 
 ForgetPasswordPage.propTypes = {
   history: PropTypes.object,
-};
+}
 
-export default withRouter(ForgetPasswordPage);
+export default withRouter(ForgetPasswordPage)
