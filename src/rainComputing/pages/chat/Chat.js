@@ -201,6 +201,11 @@ const ChatRc = () => {
     toggleIt: toggleMsgDeleteModal,
   } = useToggle(false)
   const {
+    toggleOpen: completedCaseDelete,
+    setToggleOpen: setCompletedCaseDelete,
+    toggleIt: toggleCompleteCaseDeleteModelOpen,
+  } = useToggle(false)	
+  const {
     toggleOpen: caseEditModalOpen,
     setToggleOpen: setCaseEditModalOpen,
     toggleIt: toggleCaseEditModal,
@@ -266,7 +271,7 @@ const ChatRc = () => {
   const [durationIntervalId, setDurationIntervalId] = useState(null)
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
-  const [curMessage, setcurMessage] = useState()
+  const [curMessage, setcurMessage] = useState("")
   const isMobile = useMediaQuery({ maxWidth: 767 })
   const toolbarOptions = {
     toolbar: {
@@ -987,9 +992,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1389,6 +1393,10 @@ const ChatRc = () => {
       await ongetAllCases({ isSet: false })
       toastr.success(`case completed  successfully`, "Success")
     }
+    setCompletedCaseDelete(false)
+  }
+  const handleCaseCompleted=() => {
+    setCompletedCaseDelete(true)
   }
   const handleLocateMessage = messageId => {
     const message = [...messages, ...visibleMessages].find(
@@ -1554,9 +1562,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1626,13 +1633,13 @@ const ChatRc = () => {
               onCloseClick={toggleMsgDeleteModal}
             />
 
-            {/* <DeleteModal
+            <DeleteModal
               show={completedCaseDelete}
               onDeleteClick={ handleCompletedCase}
               confirmText="Yes,Remove"
               cancelText="Cancel"
               onCloseClick={toggleCompleteCaseDeleteModelOpen}
-            /> */}
+            />
 
             <MetaTags>
               <title>Chat RC</title>
@@ -1842,7 +1849,7 @@ const ChatRc = () => {
                       ) : (
                         <PerfectScrollbar
                           style={{ height: "500px" }}
-                          // onScroll={e => handleCaseScroll(e?.target)}
+                        // onScroll={e => handleCaseScroll(e?.target)}
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
@@ -2051,7 +2058,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2287,11 +2294,11 @@ const ChatRc = () => {
                                               href="#"
                                               onClick={() => {
                                                 msg.sender ===
-                                                currentUser.userID
+                                                  currentUser.userID
                                                   ? handleDelete(msg)
                                                   : toastr.info(
-                                                      "Unable to  delete other's message"
-                                                    )
+                                                    "Unable to  delete other's message"
+                                                  )
                                               }}
                                             >
                                               Delete
@@ -2304,7 +2311,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2412,8 +2419,8 @@ const ChatRc = () => {
                                                   {currentChat.isGroup
                                                     ? getMemberName(r?.sender)
                                                     : getSenderOneChat(
-                                                        r?.sender
-                                                      )}
+                                                      r?.sender
+                                                    )}
                                                 </div>
                                                 <div
                                                   style={{ whiteSpace: "pre" }}
@@ -2439,7 +2446,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2479,7 +2486,7 @@ const ChatRc = () => {
                               <div class="col">
                                 <div class="position-relative">
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
@@ -2507,16 +2514,16 @@ const ChatRc = () => {
                                           ></audio>
                                         </div>
                                       ) : (
-                                        <>
-                                          <div className="">
-                                            {" "}
+                                        <div className="border border-secondary-subtle rounded-4 py-1 px-1">
+                                         
+                                          <div> 
                                             <ReactQuill
-                                              className="form-control card"
                                               theme="snow"
                                               value={curMessage}
                                               onKeyPress={onKeyPress}
                                               onChange={setcurMessage}
-                                              modules={toolbarOptions}
+                                              modules={toolbarOptions}                                 
+                                              placeholder="Enter Message..."
                                             />
                                           </div>
 
@@ -2538,125 +2545,126 @@ const ChatRc = () => {
                                                 data={mentionsArray}
                                               />
                                             </MentionsInput> */}
-
-                                          <div style={{ position: "sticky" }}>
-                                            {" "}
-                                            <div className="col-auto d-flex justify-content-end gap-2 ">
-                                              <div>
-                                                {(recorder &&
-                                                  recorder.state ===
+                                          <div >
+                                           <div style={{ position: "sticky" }}>
+                                              {" "}
+                                              <div className="col-auto d-flex justify-content-end gap-2 ">
+                                                <div>
+                                                  {(recorder &&
+                                                    recorder.state ===
                                                     "recording") ||
-                                                recorder?.state ===
-                                                  "stopped" ? (
-                                                  <></>
-                                                ) : (
-                                                  <div class="chat-input-links">
-                                                    <ul class="list-inline mb-0">
-                                                      <li class="list-inline-item">
-                                                        <div>
+                                                    recorder?.state ===
+                                                    "stopped" ? (
+                                                    <></>
+                                                  ) : (
+                                                    <div class="chat-input-links">
+                                                      <ul class="list-inline mb-0">
+                                                        <li class="list-inline-item">
                                                           <div>
-                                                            <input
-                                                              type="file"
-                                                              name="file"
-                                                              multiple="true"
-                                                              id="hidden-file"
-                                                              className="d-none"
-                                                              accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
-                                                              onChange={e =>
-                                                                handleFileChange(
-                                                                  e
-                                                                )
-                                                              }
-                                                            ></input>
-                                                            <label
-                                                              for="hidden-file"
-                                                              style={{
-                                                                margin: "10px",
-                                                              }}
-                                                            >
-                                                              <i
-                                                                class="mdi mdi-attachment mdi-rotate-315"
-                                                                disabled={
-                                                                  recorder?.state ===
-                                                                  "recording"
+                                                            <div>
+                                                              <input
+                                                                type="file"
+                                                                name="file"
+                                                                multiple="true"
+                                                                id="hidden-file"
+                                                                className="d-none"
+                                                                accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
+                                                                onChange={e =>
+                                                                  handleFileChange(
+                                                                    e
+                                                                  )
                                                                 }
+                                                              ></input>
+                                                              <label
+                                                                for="hidden-file"
                                                                 style={{
-                                                                  color:
-                                                                    "#556EE6",
-                                                                  fontSize:
-                                                                    "16px",
-                                                                  marginRight:
-                                                                    "70px",
+                                                                  margin: "10px",
                                                                 }}
-                                                              ></i>
-                                                            </label>
+                                                              >
+                                                                <i
+                                                                  class="mdi mdi-attachment mdi-rotate-315"
+                                                                  disabled={
+                                                                    recorder?.state ===
+                                                                    "recording"
+                                                                  }
+                                                                  style={{
+                                                                    color:
+                                                                      "#556EE6",
+                                                                    fontSize:
+                                                                      "16px",
+                                                                    marginRight:
+                                                                      "70px",
+                                                                  }}
+                                                                ></i>
+                                                              </label>
+                                                            </div>
                                                           </div>
-                                                        </div>
-                                                      </li>
-                                                    </ul>
-                                                  </div>
-                                                )}
-                                              </div>
-                                              <div>
-                                                {recorder &&
-                                                recorder.state ===
-                                                  "recording" ? (
-                                                  <i
-                                                    class="mdi mdi-microphone font-size-24 text-danger me-2"
-                                                    title="Stop Recording"
-                                                    onClick={stopRecording}
-                                                    disabled={
-                                                      recorder?.state ===
-                                                      "stopped"
-                                                    }
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                  ></i>
-                                                ) : (
-                                                  <i
-                                                    class="mdi mdi-microphone font-size-24 text-primary me-2"
-                                                    title="Start Recording"
-                                                    onClick={startRecording}
-                                                    disabled={
-                                                      recorder?.state ===
-                                                      "recording"
-                                                    }
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                  ></i>
-                                                )}
-                                              </div>
-                                              <div>
-                                                {loading ? (
-                                                  <button
-                                                    type="button"
-                                                    class="btn btn-primary btn-rounded chat-send"
-                                                    color="primary"
-                                                    style={{
-                                                      cursor: "not-allowed",
-                                                    }}
-                                                  >
-                                                    <i class="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
-                                                  </button>
-                                                ) : (
-                                                  <button
-                                                    type="button"
-                                                    class="btn btn-primary btn-rounded chat-send"
-                                                    color="primary"
-                                                    onClick={() =>
-                                                      handleSendMessage()
-                                                    }
-                                                    disabled={isEmptyOrSpaces()}
-                                                  >
-                                                    <i class="mdi mdi-send"></i>
-                                                  </button>
-                                                )}
+                                                        </li>
+                                                      </ul>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                                <div>
+                                                  {recorder &&
+                                                    recorder.state ===
+                                                    "recording" ? (
+                                                    <i
+                                                      class="mdi mdi-microphone font-size-24 text-danger me-2"
+                                                      title="Stop Recording"
+                                                      onClick={stopRecording}
+                                                      disabled={
+                                                        recorder?.state ===
+                                                        "stopped"
+                                                      }
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                    ></i>
+                                                  ) : (
+                                                    <i
+                                                      class="mdi mdi-microphone font-size-24 text-primary me-2"
+                                                      title="Start Recording"
+                                                      onClick={startRecording}
+                                                      disabled={
+                                                        recorder?.state ===
+                                                        "recording"
+                                                      }
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                    ></i>
+                                                  )}
+                                                </div>
+                                                <div>
+                                                  {loading ? (
+                                                    <button
+                                                      type="button"
+                                                      class="btn btn-primary btn-rounded chat-send"
+                                                      color="primary"
+                                                      style={{
+                                                        cursor: "not-allowed",
+                                                      }}
+                                                    >
+                                                      <i class="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
+                                                    </button>
+                                                  ) : (
+                                                    <button
+                                                      type="button"
+                                                      class="btn btn-primary btn-rounded chat-send"
+                                                      color="primary"
+                                                      onClick={() =>
+                                                        handleSendMessage()
+                                                      }
+                                                      disabled={isEmptyOrSpaces(true)}
+                                                    >
+                                                      <i class="mdi mdi-send"></i>
+                                                    </button>
+                                                  )}
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </>
+                                        </div>
                                       )}
                                     </>
                                   )}
