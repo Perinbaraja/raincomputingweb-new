@@ -170,6 +170,7 @@ const getPaymentId = payload =>
   post(`${BASE_URL}/payment/getPaymentId`, payload)
 
 const createReminder = payload => post(`${BASE_URL}/remainder/create`, payload)
+const getGroupIdReminders = payload => post(`${BASE_URL}/remainder/getGroupIdByReminder`, payload)
 
 const getReminder = payload =>
   post(`${BASE_URL}/remainder/getreminder`, payload)
@@ -281,4 +282,5 @@ export {
   getAllReminders,
   createCommenReminders,
   getTrademarkSearchDetails,
+  getGroupIdReminders
 }

@@ -10,11 +10,15 @@ import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import ChatRemainder from "rainComputing/components/chat/ChatRemainder"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import PropTypes from "prop-types"
-import { getAllReminders } from "rainComputing/helpers/backend_helper"
+import {
+  getAllReminders,
+  getGroupIdReminders,
+} from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import EditReminder from "./EditReminder"
+import { selectionEvents } from "make-event-props"
 
-const Calender = ({ setcalendarModalOpen }) => {
+const Calender = ({ setcalendarModalOpen, groupId }) => {
   const [selectedday, setSelectedDay] = useState(0)
   const [getReminders, setGetReminders] = useState([])
   const [selectedEvent, setSelectedEvent] = useState([])
@@ -37,7 +41,7 @@ const Calender = ({ setcalendarModalOpen }) => {
     const year = date.getFullYear()
 
     const currectDate = new Date()
-    console.log("currectDate",currectDate)
+
     const currentHour = currectDate.getHours()
     const currentMin = currectDate.getMinutes()
     const currentSec = currectDate.getSeconds()
@@ -57,22 +61,19 @@ const Calender = ({ setcalendarModalOpen }) => {
   const handleCalendarCancel = () => {
     setcalendarModalOpen(false)
   }
-
   const getAllReminderById = async () => {
-    const res = await getAllReminders({
-      currentUserID: currentUser?.userID,
-    })
+    const payload = {
+      groupId: groupId,
+    }
+    const res = await getGroupIdReminders(payload)
     if (res.success) {
-      setGetReminders(res?.reminders)
+      setGetReminders(res?.groupReminders)
     }
   }
-
   useEffect(() => {
-    if (currentUser) {
-      getAllReminderById()
-    }
-  }, [currentUser])
-console.log("getReminder",getReminders)
+    getAllReminderById()
+  }, [])
+
   // const calendarEvents = getReminders.map(reminder => {
   //   const startTime = new Date(reminder.scheduledTime)
   //   startTime.setHours(startTime.getHours() - 5)
@@ -99,10 +100,9 @@ console.log("getReminder",getReminders)
       })
     })
   })
-  
+
   const handleEventClick = e => {
     const event = e.event
-    console.log("event: " , event)
     const reminder = getReminders.find(r => r?._id === event?.id)
     setSelectedEvent(reminder)
     setEditRemainderModelOpen(true)
@@ -148,6 +148,7 @@ console.log("getReminder",getReminders)
             reminder={selectedEvent}
             setGetReminders={setGetReminders}
             getReminders={getReminders}
+            groupId={groupId}
           />
         </DynamicSuspense>
       </DynamicModel>
@@ -188,5 +189,6 @@ console.log("getReminder",getReminders)
 }
 Calender.propTypes = {
   setcalendarModalOpen: PropTypes.func,
+  groupId: PropTypes.func,
 }
 export default Calender

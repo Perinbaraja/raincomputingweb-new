@@ -1521,7 +1521,7 @@ const ChatRc = () => {
               footer={false}
             >
               <DynamicSuspense>
-                <Calender setcalendarModalOpen={setCalendarModelOpen} />
+              <Calender setcalendarModalOpen={setCalendarModelOpen} groupId={currentChat?._id} />
               </DynamicSuspense>
             </DynamicModel>
             {/* Model for creating case*/}
