@@ -388,12 +388,12 @@ const ChatRc = () => {
     filterChats()
   }, [searchText])
 
-  useEffect(() => {
-    if (messages && visibleMessages?.length < messages?.length) {
-      const tempHeight = containerRef?.current?.scrollHeight - prevHeight
-      containerRef?.current?.scrollTo({ top: tempHeight, behavior: "auto" }) // Use "auto" instead of "smooth"
-    }
-  }, [visibleMessages?.length, messages])
+  // useEffect(() => {
+  //   if (messages && visibleMessages?.length < messages?.length) {
+  //     const tempHeight = containerRef?.current?.scrollHeight - prevHeight
+  //     containerRef?.current?.scrollTo({ top: tempHeight, behavior: "auto" }) // Use "auto" instead of "smooth"
+  //   }
+  // }, [visibleMessages?.length, messages])
   useEffect(() => {
     setVisibleMessages(messages.slice(-49))
     if (replymsgId) {

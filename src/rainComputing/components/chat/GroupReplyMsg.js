@@ -39,7 +39,16 @@ const GroupReplyMsg = props => {
             <div className="flex-grow-1">
               <div className="font-size-11 text-muted">
                 <p className="mb-1 text-danger">{` New Reply messages from ${caseName}`}</p>
-                <p className="text-primary">{`${Replymsg}`}</p>
+                <p className="text-primary"><div
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-line",
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html: Replymsg,
+                          }}
+                        /></p>
                 <p className="mb-0">
                   <i className="mdi mdi-clock-outline" />{" "}
                   {moment(createdAt).format("DD-MM-YY hh:mm")}

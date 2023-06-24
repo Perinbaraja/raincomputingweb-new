@@ -33,7 +33,16 @@ const GroupMsg = props => {
           <div className="flex-grow-1">
             <div className="font-size-11 text-muted">
               <p className="mb-1">{` New messages from ${caseName}`}</p>
-              <p className="text-primary">{`${messageData}`}</p>
+              <p className="text-primary"><div
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-line",
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html:messageData,
+                          }}
+                        /></p>
               {isVoiceMessage && (
                   <p className="text-primary">New voice message</p>
                 )}
