@@ -137,22 +137,32 @@ const PinnedModels = ({ handleLocateMessage }) => {
                         {msg.isAttachment ? (
                           <>
                             <AttachmentViewer attachments={msg.attachments} />
-                            <p>{msg?.messageData}</p>
-                            <div className="mt-3"> </div>
+                            <p>
                             <div
-                              className="mt-1"
-                              style={{
-                                whiteSpace: "break-spaces",
-                              }}
-                            ></div>
-                          </>
-                        ) : (
-                          <div
-                          style={{ whiteSpace: "pre" }}
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-line",
+                          }}
                           dangerouslySetInnerHTML={{
                             __html: msg?.messageData,
                           }}
                         />
+                            </p>
+                            <div className="mt-1"></div>
+                          </>
+                        ) : (
+                          <div
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-line",
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html: msg?.messageData,
+                          }}
+                        />
+                        
                         )}
                       </div>
 
