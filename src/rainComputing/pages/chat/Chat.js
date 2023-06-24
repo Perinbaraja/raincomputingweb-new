@@ -2371,7 +2371,7 @@ const ChatRc = () => {
                                                 />
 
                                                 <div
-                                                  style={{ whiteSpace: "pre" }}
+                                                  style={{ whiteSpace: "break-spaces" }}
                                                   dangerouslySetInnerHTML={{
                                                     __html: msg?.messageData,
                                                   }}
@@ -2431,7 +2431,7 @@ const ChatRc = () => {
                                                       )}
                                                 </div>
                                                 <div
-                                                  style={{ whiteSpace: "pre" }}
+                                                  style={{whiteSpace: "break-spaces", }}
                                                   dangerouslySetInnerHTML={{
                                                     __html: r?.replyMsg,
                                                   }}
