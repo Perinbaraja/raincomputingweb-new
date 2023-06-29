@@ -62,6 +62,7 @@ import {
   getCaseFiles,
   completedCase,
   getPinnedMsg,
+  updateGroup
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -178,6 +179,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+  console.log("CURRENT CHAT:", currentChat)
   const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
@@ -193,6 +195,11 @@ const ChatRc = () => {
     toggleOpen: caseDeleteModalOpen,
     setToggleOpen: setCaseDeleteModalOpen,
     toggleIt: toggleCaseDeleteModal,
+  } = useToggle(false)
+  const {
+    toggleOpen: chatDeleteModalOpen,
+    setToggleOpen: setChatDeleteModalOpen,
+    toggleIt: toggleChatDeleteModal,
   } = useToggle(false)
   const {
     toggleOpen: MsgDeleteModalOpen,
@@ -271,6 +278,7 @@ const ChatRc = () => {
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
+  const [currentChatDelete, setCurrentChatDelete] = useState()
   const [isQuil, setIsQuil] = useState(false)
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
@@ -696,6 +704,32 @@ const ChatRc = () => {
   const handleCaseDelete = () => {
     setCaseDeleteModalOpen(true)
   }
+
+  // Deleting Chat 
+  const onDeletingChat = async () => {
+    const payload = {
+      groupId: currentChatDelete,
+      deleteIt: true,
+    }
+    const res = await updateGroup(payload)
+    if (res.success) {
+      await ongetAllChatRooms()
+      toastr.success(
+        `Chat has been Deleted successfully`,
+        "Success"
+      )
+      setCurrentChatDelete(null)
+    } else {
+      toastr.error("Failed to delete chat", "Failed!!!")
+    }
+    setChatDeleteModalOpen(false)
+  }
+  const handleChatDelete = (id) => {
+    console.log("Id:", id)
+    setChatDeleteModalOpen(true),
+      setCurrentChatDelete(id)
+  }
+
   //Deleting Last Message
   const onDeletingMsg = async () => {
     const payload = {
@@ -994,9 +1028,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1568,9 +1601,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1630,6 +1662,14 @@ const ChatRc = () => {
               confirmText="Yes,Remove"
               cancelText="Cancel"
               onCloseClick={toggleCaseDeleteModal}
+            />
+
+            <DeleteModal
+              show={chatDeleteModalOpen}
+              onDeleteClick={() => onDeletingChat()}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleChatDeleteModal}
             />
 
             <DeleteModal
@@ -1856,7 +1896,7 @@ const ChatRc = () => {
                       ) : (
                         <PerfectScrollbar
                           style={{ height: "500px" }}
-                          // onScroll={e => handleCaseScroll(e?.target)}
+                        // onScroll={e => handleCaseScroll(e?.target)}
                         >
                           <ul className="list-unstyled chat-list ">
                             {allCases.length > 0 &&
@@ -2065,7 +2105,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2197,7 +2237,10 @@ const ChatRc = () => {
                                           >
                                             Email
                                           </DropdownItem>
-                                          <DropdownItem href="#">
+                                          <DropdownItem href="#"
+                                            onClick={() =>
+                                              handleChatDelete(currentChat?._id)}
+                                          >
                                             Delete chat
                                           </DropdownItem>
                                         </DropdownMenu>
@@ -2270,15 +2313,17 @@ const ChatRc = () => {
                                           >
                                             Reply
                                           </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              setCurEditMessageId(msg)
-                                              setMessageEditModalOpen(true)
-                                            }}
-                                          >
-                                            Edit
-                                          </DropdownItem>
+                                          {msg?.sender === currentUser.userID && (
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() => {
+                                                setCurEditMessageId(msg)
+                                                setMessageEditModalOpen(true)
+                                              }}
+                                            >
+                                              Edit
+                                            </DropdownItem>
+                                          )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2302,8 +2347,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                    "Unable to  delete other's message"
-                                                  )
+                                                  "Unable to  delete other's message"
+                                                )
                                             }}
                                           >
                                             Delete
@@ -2315,7 +2360,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2454,7 +2499,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2494,7 +2539,7 @@ const ChatRc = () => {
                               <div class="col">
                                 <div class="position-relative">
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
@@ -2585,6 +2630,7 @@ const ChatRc = () => {
                                   style={{
                                     marginRight: "5px",
                                     fontSize: "14px",
+                                    cursor: "pointer"
                                   }}
                                   onClick={toggle_Quill}
                                   className="bi bi-menu-button-wide-fill text-primary"

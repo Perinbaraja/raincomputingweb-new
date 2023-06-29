@@ -184,6 +184,7 @@ const removeReminder = payload =>
   put(`${BASE_URL}/remainder/removeReminder`, payload)
 const UpdateReminder = payload =>
   put(`${BASE_URL}/remainder/updateReminder`, payload)
+  const updateGroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 
 export {
   getAllAttorneys,
@@ -282,5 +283,6 @@ export {
   getAllReminders,
   createCommenReminders,
   getTrademarkSearchDetails,
-  getGroupIdReminders
+  getGroupIdReminders,
+  updateGroup
 }
