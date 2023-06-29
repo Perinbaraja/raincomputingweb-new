@@ -185,6 +185,8 @@ const ManageEvents = () => {
                       <input
                         className="form-control"
                         type="number"
+                        // min={index === 0 ? 0 : 1}
+                        min={0}
                         value={intervalValue}
                         onChange={e =>
                           handleEventIntervalChange(index, e.target.value)

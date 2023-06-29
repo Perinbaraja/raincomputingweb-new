@@ -129,10 +129,18 @@ const getEventById = payload => post(`${BASE_URL}/event/getEventdata`, payload)
 const getIntervalById = payload =>
   post(`${BASE_URL}/interval/getIntervalData`, payload)
 const getEventsByCaseId = payload =>
-  post(`${BASE_URL}/interval/getCaseIdByEvents`, payload)
+  post(`${BASE_URL}/interval/getCaseIdIntervals`, payload)
 const createCaseEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
 const createCaseInterval = payload =>
-  post(`${BASE_URL}/interval/eventCreate`, payload)
+  post(`${BASE_URL}/interval/eventCaseCreate`, payload)
+const intervalIdUpdate = payload =>
+  post(`${BASE_URL}/interval/intervalIdUpdate`, payload)
+const getIntervalByIdActive = payload =>
+  post(`${BASE_URL}/interval/intervalIdActive`, payload)
+const getintervalIdDetails = payload =>
+  post(`${BASE_URL}/interval/getintervalIdData`, payload)
+const getCaseIdByIntervals = payload =>
+  post(`${BASE_URL}/interval/getCaseIdIntervals`, payload) 
 const getAllResponseTexts = payload =>
   get(`${BASE_URL}/interval/getAllResponseTexts`, payload)
 const getAllEvent = payload =>
@@ -284,5 +292,9 @@ export {
   createCommenReminders,
   getTrademarkSearchDetails,
   getGroupIdReminders,
-  updateGroup
+  updateGroup,
+  getCaseIdByIntervals,
+  getintervalIdDetails,
+  getIntervalByIdActive,
+  intervalIdUpdate
 }
