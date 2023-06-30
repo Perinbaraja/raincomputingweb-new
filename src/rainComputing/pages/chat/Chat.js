@@ -976,7 +976,19 @@ const ChatRc = () => {
 
   //Handling File change
   const handleFileChange = e => {
-    setAllFiles(e.target.files)
+    const selectedFiles = e.target.files
+    console.log("e.target.files", e.target.files)
+    if (selectedFiles.length + allFiles.length > 10) {
+      // Display warning message here
+      toastr.error("You can select a maximum of 10 files.", "Warning")
+      return
+    }
+    const updatedFiles = [...allFiles, ...selectedFiles]
+    setAllFiles(updatedFiles)
+  }
+  const handleFileRemove = fileName => {
+    const updatedFiles = allFiles.filter(file => file.name !== fileName)
+    setAllFiles(updatedFiles)
   }
 
   //Fetching SubGroups
@@ -1516,6 +1528,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
+  console.log("messages", messages)
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2459,31 +2472,31 @@ const ChatRc = () => {
                                         </div>
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
-                                            <>
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
+                                              <>
+                                                <AttachmentViewer
+                                                  attachments={msg.attachments}
+                                                  text={msg.messageData}
+                                                />
 
-                                              <div
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                                dangerouslySetInnerHTML={{
-                                                  __html: msg?.messageData,
-                                                }}
-                                              />
-                                              <div
-                                                className="mt-1"
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                              >
-                                                {/* {stringFormatter(
-                                                      msg.messageData
-                                                    )} */}
-                                              </div>
-                                            </>
+                                                <div
+                                                  style={{
+                                                    whiteSpace: "break-spaces",
+                                                  }}
+                                                  dangerouslySetInnerHTML={{
+                                                    __html: msg?.messageData,
+                                                  }}
+                                                />
+                                                <div
+                                                  className="mt-1"
+                                                  style={{
+                                                    whiteSpace: "break-spaces",
+                                                  }}
+                                                >
+                                                  {/* {stringFormatter(
+                                                        msg.messageData
+                                                      )} */}
+                                                </div>
+                                              </>
                                           ) : (
                                             // <div
                                             //   style={{
@@ -2665,6 +2678,13 @@ const ChatRc = () => {
                                         key={a}
                                       >
                                         {att.name}
+                                        <i
+                                          class="bx bx-x-circle mx-1"
+                                          onClick={() =>
+                                            handleFileRemove(att?.name)
+                                          }
+                                          style={{cursor :"pointer"}}
+                                        />
                                       </span>
                                     ))}
                                   </div>
