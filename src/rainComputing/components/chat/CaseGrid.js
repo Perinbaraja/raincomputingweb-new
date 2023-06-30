@@ -197,7 +197,7 @@ const CaseGrid = ({
       </>
       <li className={classNames("px-3 py-2", selected && "active-case-bg")}>
         <Row
-          className="align-middle py-1 text-break"
+          className="align-middle py-1 text-break "
           style={{ maxWidth: "100%" }}
         >
           <Col
@@ -224,10 +224,10 @@ const CaseGrid = ({
             />
           </Col>
         </Row>
-
-        <Collapse isOpen={index === active} className="accordion-collapse">
+         <div className="p-2 border-top">
+        <Collapse isOpen={index === active} className="accordion-collapse ">
           <div className="mb-4 pointer">
-            <span className="fw-medium font-size-11 ">Case Members</span>
+            <span className="fw-medium font-size-13 text-primary-emphasis">Case Members</span>
             <AccordionContainer
               handleAccordionClick={() => setMembersModelOpen(true)}
             >
@@ -253,21 +253,23 @@ const CaseGrid = ({
             </AccordionContainer>
           </div>
           <div className="mb-4 ">
-            <span className="fw-medium font-size-11">
+            <span className="fw-medium font-size-13 text-primary-emphasis">
               Saved Messages & Files
             </span>
             <AccordionContainer
               handleAccordionClick={() => setEventMasterModelOpen(true)}
             >
               <div>
-                <span className="fw-medium font-size-11">Manage Events</span>{" "}
+                <span className="fw-medium font-size-11 text-secondary">Manage Events</span>{" "}
               </div>
             </AccordionContainer>
             <div>
               <span
-                className="fw-medium font-size-11 pointer"
+                className="fw-medium font-size-11 pointer text-secondary"
                 onClick={() => handleAccordionClick(caseData)}
               >
+                <i className="bi bi-calendar4-event" 
+                 style={{ fontSize: "10px" }}>{" "}</i>                
                 Event Calendar
               </span>
             </div>
@@ -285,7 +287,10 @@ const CaseGrid = ({
             <AccordionContainer
               handleAccordionClick={() => setFilesModelOpen(true)}
             >
-              <span>Shared Files</span>
+              <i className="bi bi-share"
+              style={{ fontSize: "10px" }}
+              >{" "}</i>             
+              <span className="fw-medium font-size-11 text-secondary">Shared Files</span>
             </AccordionContainer>
           </div>
 
@@ -318,6 +323,7 @@ const CaseGrid = ({
             </div>
           </div> */}
         </Collapse>
+        </div>
       </li>
     </>
   )

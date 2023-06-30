@@ -343,9 +343,11 @@ const AttorneyRegister = () => {
                             </Col>
                           </Row>
                         </Form>
+                        <div className="d-flex justify-content-end ">
                         <Button color="primary" type="submit">
                           SUBMIT
                         </Button>
+                        </div>
                       </div>
                     </div>
                   </Form>
