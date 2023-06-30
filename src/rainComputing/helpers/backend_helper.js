@@ -129,7 +129,7 @@ const getEventById = payload => post(`${BASE_URL}/event/getEventdata`, payload)
 const getIntervalById = payload =>
   post(`${BASE_URL}/interval/getIntervalData`, payload)
 const getEventsByCaseId = payload =>
-  post(`${BASE_URL}/interval/getCaseIdIntervals`, payload)
+  post(`${BASE_URL}/interval/getCaseIdByEvents`, payload)
 const createCaseEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
 const createCaseInterval = payload =>
   post(`${BASE_URL}/interval/eventCaseCreate`, payload)

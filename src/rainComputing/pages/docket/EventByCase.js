@@ -151,28 +151,32 @@ const EventByCase = ({ location }) => {
                             <td className="col-md-1 justify-content-between">
                               <div>
                                 {int?.isActive ? (
-                                  <input
-                                    type="checkbox"
-                                    checked={int?.isActive}
-                                    onClick={() => handleChange(int?._id)}
-                                  />
+                              
+                               <input
+                                 type="checkbox"
+
+                                 onClick={() => handleChange(int?._id)}
+                               />
+                              
+                             
                                 ) : (
                                   <React.Fragment>
-                                    <input
-                                      type="checkbox"
-                                      checked={int?.isActive}
-                                      onClick={() =>
-                                        handleActiveInterval(int?._id)
-                                      }
-                                    />
-                                    <p
-                                      className=""
-                                      onClick={() => handleClick(int?._id)}
-                                    >
-                                      <i className="bx bx-show-alt" /> view
-                                    </p>
-                                  </React.Fragment>
-                                )}
+                                  <input
+                                  type="checkbox"
+                                  checked={!int?.isActive}
+                                  onClick={() =>
+                                    handleActiveInterval(int?._id)
+                                  }
+                                  
+                                />
+                                 <p
+                                 className=""
+                                 onClick={() => handleClick(int?._id)}
+                               >
+                                 <i className="bx bx-show-alt" /> view
+                               </p>
+                               
+                                </React.Fragment> )}
                               </div>
                             </td>
                           </tr>
