@@ -224,7 +224,7 @@ const CaseGrid = ({
             />
           </Col>
         </Row>
-         <div className="p-2 border-top">
+         <div className="px-2 border-top">
         <Collapse isOpen={index === active} className="accordion-collapse ">
           <div className="mb-4 pointer">
             <span className="fw-medium font-size-13 text-primary-emphasis">Case Members</span>
