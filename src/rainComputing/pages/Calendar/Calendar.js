@@ -12,16 +12,19 @@ import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import PropTypes from "prop-types"
 import {
   getAllReminders,
+  getCaseIdByIntervals,
   getGroupIdReminders,
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import EditReminder from "./EditReminder"
 import { selectionEvents } from "make-event-props"
+import IntervalModel from "rainComputing/components/chat/models/IntervalModel"
 
-const Calender = ({ setcalendarModalOpen, groupId }) => {
+const Calender = ({ setcalendarModalOpen, groupId ,caseId}) => {
   const [selectedday, setSelectedDay] = useState(0)
   const [getReminders, setGetReminders] = useState([])
   const [selectedEvent, setSelectedEvent] = useState([])
+  const [caseIdIntervals, setCaseIdIntervals] = useState([])
   const { currentUser } = useUser()
 
   const {
@@ -33,6 +36,11 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
     toggleOpen: editremainderModelOpen,
     setToggleOpen: setEditRemainderModelOpen,
     toggleIt: toggleeditremainderModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen:  intervalModelOpen,
+    setToggleOpen: setIntervalModelOpen,
+    toggleIt: toggleIntervalModelOpen,
   } = useToggle(false)
   const handleDateClick = arg => {
     const date = arg["date"]
@@ -73,7 +81,18 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
   useEffect(() => {
     getAllReminderById()
   }, [])
-
+  const getCaseIdIntervals = async () => {
+    const payload = {
+      caseId: caseId,
+    }
+    const res = await getCaseIdByIntervals(payload)
+    if(res.success) {
+     setCaseIdIntervals(res?.intervals)
+    }
+  }
+  useEffect(() => {
+    getCaseIdIntervals()
+  },[])
   // const calendarEvents = getReminders.map(reminder => {
   //   const startTime = new Date(reminder.scheduledTime)
   //   startTime.setHours(startTime.getHours() - 5)
@@ -89,7 +108,6 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
   getReminders.forEach(reminder => {
     reminder.scheduledTime.forEach(date => {
       const startTime = new Date(date)
-      console.log("startTime: ", startTime)
       startTime.setHours(startTime.getHours() - 5)
       startTime.setMinutes(startTime.getMinutes() - 30)
       calendarEvents.push({
@@ -100,12 +118,38 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
       })
     })
   })
-
+  const caseIdAllIntervals = [];
+  caseIdIntervals.forEach((caseInterval) => {
+    const { caseId, events } = caseInterval;
+  
+    events.forEach((event) => {
+      const { intervals, eventId } = event;
+  
+      intervals.forEach((interval) => {
+        const { responseText, responseDate, _id, isActive } = interval;
+  
+        if (isActive) {
+          const startDate = new Date(responseDate);
+          startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+  
+          caseIdAllIntervals.push({
+            id: _id,
+            title: responseText,
+            eventName: eventId?.eventName,
+            start: startDate,
+            allDay: true, // Set allDay to true to indicate it's a full-day event
+          });
+        }
+      });
+    });
+  });
+  
+      // calendarEvents.push(...caseIdAllIntervals)
   const handleEventClick = e => {
     const event = e.event
-    const reminder = getReminders.find(r => r?._id === event?.id)
+    const reminder = caseIdAllIntervals.find(r => r?.id === event?.id)
     setSelectedEvent(reminder)
-    setEditRemainderModelOpen(true)
+    setIntervalModelOpen(true)
   }
 
   return (
@@ -152,6 +196,23 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
           />
         </DynamicSuspense>
       </DynamicModel>
+      <DynamicModel
+        open={intervalModelOpen}
+        toggle={toggleIntervalModelOpen}
+        size="md"
+        modalTitle="Interval"
+        footer={false}
+      >
+        <DynamicSuspense>
+          <IntervalModel
+            setIntervalodalOpen={setIntervalModelOpen}
+            reminder={selectedEvent}
+            setGetReminders={setGetReminders}
+            getReminders={getReminders}
+            groupId={groupId}
+          />
+        </DynamicSuspense>
+      </DynamicModel>
       <Container fluid={true}>
         {/* Render Breadcrumb */}
 
@@ -174,9 +235,10 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
                     editable={true}
                     droppable={true}
                     selectable={true}
-                    dateClick={handleDateClick}
+                    // dateClick={handleDateClick}
                     eventClick={handleEventClick}
-                    events={calendarEvents}
+                    // events={calendarEvents}
+                    events={caseIdAllIntervals}
                   />
                 </Row>
               </CardBody>
@@ -190,5 +252,6 @@ const Calender = ({ setcalendarModalOpen, groupId }) => {
 Calender.propTypes = {
   setcalendarModalOpen: PropTypes.func,
   groupId: PropTypes.func,
+  caseId: PropTypes.func,
 }
 export default Calender

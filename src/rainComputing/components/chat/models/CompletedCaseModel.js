@@ -11,6 +11,9 @@ const CompletedCaseModel = ({ setModalOpen }) => {
     setModalOpen(false)
   }
 
+  const handleUpdateMsgCancel = () => {
+    setOpen(false)
+  }
 
   useEffect(() => {
     const getAllCompletedCases = async () => {
@@ -31,7 +34,18 @@ const CompletedCaseModel = ({ setModalOpen }) => {
   
 
   return (
-    <>
+    <div>
+     <div className="modal-header">
+          <button
+            onClick={handleUpdateMsgCancel}
+            type="button"
+            className="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
     <ol>
     {allCompletedCase.map((c, i) => (
       <li key={i} className="border-bottom border-primary">
@@ -51,7 +65,7 @@ const CompletedCaseModel = ({ setModalOpen }) => {
           Close
         </button>
       </div>
-    </>
+    </div>
   )
 }
 CompletedCaseModel.propTypes = {

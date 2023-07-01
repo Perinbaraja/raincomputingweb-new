@@ -11,7 +11,7 @@ import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
-
+                    
 
 const ReplyMsgModal = ({
   open,
@@ -29,7 +29,10 @@ const ReplyMsgModal = ({
   const handlereplyMsgCancel = () => {
     setOpen(false)
   }
-
+  const [isQuill, setIsQuill] = useState(false)
+  const toggle_Quill = () => {
+    setIsQuill(!isQuill)
+  }
   const handleReplyMessage = async id => {
     const payload = {
       id,
@@ -81,32 +84,40 @@ const ReplyMsgModal = ({
           <Row>
             <Col>
               <div className="position-relative">
-                <ReactQuill
+
+                {isQuill ? <ReactQuill
                   theme="snow"
                   style={{
                     resize: "none",
+                    height: "auto",
                   }}
                   value={replyMessage}
                   onChange={setReplyMessage}
                   placeholder="Enter Message..."
                 />
-                {/* <MentionsInput
-                  type="text"
-                  value={replyMessage}
-                  style={{
-                    resize: "none",
-                  }}
-                  onChange={e => setReplyMessage(e.target.value)}
-                  className="form-control chat-input"
-                  placeholder="Enter Message..."
-                >
-                  <Mention trigger="@" />
-                </MentionsInput> */}
+                  :
+                  <MentionsInput
+                    type="text"
+                    value={replyMessage}
+                    style={{
+                      resize: "none",
+                      height: "auto",
+                    }}
+                    onChange={e => setReplyMessage(e.target.value)}
+                    className="form-control chat-input"
+                    placeholder="Enter Message..."
+                  >
+                    <Mention trigger="@" />
+                  </MentionsInput>
+                }
               </div>
             </Col>
           </Row>
         </div>
         <div className="modal-footer">
+          <i style={{ marginRight: "30px", marginTop: "8px", fontSize: "14px",cursor: "pointer" }}
+            onClick={toggle_Quill}
+            className="bi bi-menu-button-wide-fill text-primary"></i>
           <button
             type="button"
             onClick={() => {

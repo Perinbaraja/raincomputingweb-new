@@ -128,6 +128,8 @@ const CaseMembers = ({ members, admins, caseId }) => {
                 <i
                   className="bx bx-plus bg-danger font-size-16 rounded-circle text-white fw-medium "
                   id="Admin"
+                  title="Make an admin"
+                  style={{cursor:"pointer"}}
                 />
               </span>
             ) : (
@@ -143,7 +145,7 @@ const CaseMembers = ({ members, admins, caseId }) => {
                         setModelOpen1(true)
                       }}
                     >
-                      <i className="bx bx-minus bg-danger font-size-16 rounded-circle text-white fw-medium " />
+                      <i className="bx bx-minus bg-danger font-size-16 rounded-circle text-white fw-medium" title="Remove an Admin" style={{cursor:"pointer"}} />
                     </span>
                   )}
               </>

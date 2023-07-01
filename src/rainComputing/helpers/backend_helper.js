@@ -132,7 +132,15 @@ const getEventsByCaseId = payload =>
   post(`${BASE_URL}/interval/getCaseIdByEvents`, payload)
 const createCaseEvent = payload => post(`${BASE_URL}/case/createEvent`, payload)
 const createCaseInterval = payload =>
-  post(`${BASE_URL}/interval/eventCreate`, payload)
+  post(`${BASE_URL}/interval/eventCaseCreate`, payload)
+const intervalIdUpdate = payload =>
+  post(`${BASE_URL}/interval/intervalIdUpdate`, payload)
+const getIntervalByIdActive = payload =>
+  post(`${BASE_URL}/interval/intervalIdActive`, payload)
+const getintervalIdDetails = payload =>
+  post(`${BASE_URL}/interval/getintervalIdData`, payload)
+const getCaseIdByIntervals = payload =>
+  post(`${BASE_URL}/interval/getCaseIdIntervals`, payload) 
 const getAllResponseTexts = payload =>
   get(`${BASE_URL}/interval/getAllResponseTexts`, payload)
 const getAllEvent = payload =>
@@ -184,6 +192,7 @@ const removeReminder = payload =>
   put(`${BASE_URL}/remainder/removeReminder`, payload)
 const UpdateReminder = payload =>
   put(`${BASE_URL}/remainder/updateReminder`, payload)
+  const updateGroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 
 export {
   getAllAttorneys,
@@ -282,5 +291,10 @@ export {
   getAllReminders,
   createCommenReminders,
   getTrademarkSearchDetails,
-  getGroupIdReminders
+  getGroupIdReminders,
+  updateGroup,
+  getCaseIdByIntervals,
+  getintervalIdDetails,
+  getIntervalByIdActive,
+  intervalIdUpdate
 }

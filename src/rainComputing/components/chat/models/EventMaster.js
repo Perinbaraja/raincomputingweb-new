@@ -7,7 +7,8 @@ import {
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Dropdown } from "reactstrap"
-
+import holidays from "date-holidays"
+import moment from "moment"
 const EventMaster = ({ caseId, closeModal }) => {
   const { currentAttorney } = useUser()
   const [docDate, setDocDate] = useState(Array(1).fill(""))
@@ -20,6 +21,8 @@ const EventMaster = ({ caseId, closeModal }) => {
   const [eventId, setEventId] = useState()
   const currentCase = caseId?._id
   const [eventsData, setEventsData] = useState([])
+  const hd = new holidays("US")
+  const holiday = hd.getHolidays()
   // const [isSaveDisabled, setIsSaveDisabled] = useState(true)
   const event = eventsData[0]?.events
   const resText = event?.responseText
@@ -85,40 +88,118 @@ const EventMaster = ({ caseId, closeModal }) => {
   const handleReceivedDateChange = e => {
     setReceivedDate(e.target.value)
   }
-  const calculateResponseDates = () => {
-    const newResponseDates = event?.map(events => {
-      const { interval, scheduledType } = events
-      let responseDate = ""
-
-      if (receivedDate) {
-        const receivedDateObj = new Date(receivedDate)
-
-        switch (scheduledType) {
-          case "days":
-            responseDate = new Date(
-              receivedDateObj.getTime() + interval * 24 * 60 * 60 * 1000
-            )
-            break
-          case "weeks":
-            responseDate = new Date(
-              receivedDateObj.getTime() + interval * 7 * 24 * 60 * 60 * 1000
-            )
-            break
-          case "months":
-            responseDate = new Date(receivedDateObj)
-            responseDate.setMonth(receivedDateObj.getMonth() + interval)
-            console.log("responseDate",responseDate)
-            break
-          default:
-            break
+  
+  const isWeekend = date => {
+    const day = date.getDay()
+    return day === 0 || day === 6 // Sunday (0) or Saturday (6)
+  }
+  const isHoliday = date => {
+    const formattedDate = date.toISOString().split("T")[0]
+    return next50YearsallHolidays.includes(formattedDate)
+  } 
+   function generateHolidays() {
+    const holidays = []
+    // Get the current year
+    const currentYear = moment().year()
+    // Create a new instance of the holiday calculation library
+    // Iterate over the next 10 years
+    for (let year = currentYear; year < currentYear + 50; year++) {
+      // Get the list of holidays for the current year
+      const yearHolidays = hd.getHolidays(year, "US")
+      // Iterate over each holiday and extract the date and name
+      yearHolidays.forEach(holiday => {
+        const date = moment(holiday.date).format("YYYY-MM-DD")
+        const name = holiday.name
+        // Push the holiday object to the holidays array
+        holidays.push({ date, name })
+      })
+    }
+    return holidays
+  }
+  // Generate holidays for the next 10 years
+  const next50YearsHolidays = generateHolidays()
+  // console.log("next50YearsHolidays", next50YearsHolidays)
+  const next50YearsallHolidays = next50YearsHolidays.map(date => date?.date)
+  // Print the list of holidays
+  // next50YearsHolidays.forEach(holiday => {
+  //   console.log(`${holiday.date}: ${holiday.name}`);
+  // });
+  function generateWeekendDates() {
+    const weekendDates = []
+    // Get the current year
+    const currentYear = moment().year()
+    // Create a new instance of the holiday calculation library
+    // Iterate over the next 50 years
+    for (let year = currentYear; year < currentYear + 50; year++) {
+      // Get the list of holidays for the current year
+      const yearHolidays = hd.getHolidays(year)
+      // Iterate over each day of the year
+      for (let day = 0; day < 365; day++) {
+        const date = moment().year(year).dayOfYear(day)
+        // Check if the day falls on a Saturday or Sunday (0 = Sunday, 6 = Saturday)
+        if (date.weekday() === 0 || date.weekday() === 6) {
+          // Push the date to the weekendDates array
+          weekendDates.push(date.format("YYYY-MM-DD"))
         }
       }
-
-      return responseDate ? responseDate.toISOString().split("T")[0] : ""
-    })
-
-    setResponseDates(newResponseDates)
+    }
+    return weekendDates
   }
+  // Generate weekdays for the next 50 years
+  const next50YearsWeekdays = generateWeekendDates()
+  // console.log("next50YearsWeekdays", next50YearsWeekdays)
+  const calculateResponseDates = () => {
+    const newResponseDates = event?.map(events => {
+      const { interval, scheduledType } = events;
+      let responseDate = "";
+  
+      if (receivedDate) {
+        const receivedDateObj = moment.tz(receivedDate, 'America/New_York');
+        // console.log("receivedDateObj", receivedDateObj);
+  
+        switch (scheduledType) {
+          case "days":
+            if (interval === 0) {
+              responseDate = receivedDateObj;
+            } else {
+              responseDate = moment(receivedDateObj).add(interval, 'days');
+            }
+            break;
+          case "weeks":
+            if (interval === 0) {
+              responseDate = receivedDateObj;
+            } else {
+              responseDate = moment(receivedDateObj).add(interval, 'weeks');
+            }
+            break;
+          case "months":
+            if (interval === 0) {
+              responseDate = receivedDateObj;
+            } else {
+              responseDate = moment(receivedDateObj).add(interval, 'months');
+            }
+            break;
+          default:
+            break;
+        }
+  
+        // Check if the response date falls on a weekend or holiday
+        while (
+          next50YearsWeekdays.includes(responseDate.format("YYYY-MM-DD")) ||
+          next50YearsallHolidays.includes(responseDate.format("YYYY-MM-DD"))
+        ) {
+          responseDate.add(1, 'days'); // Move to the next day
+        }
+      }
+  
+      return responseDate ? responseDate.format("YYYY-MM-DD") : "";
+    });
+  
+    setResponseDates(newResponseDates);
+  };
+  
+
+  
 
   useEffect(() => {
     if (event) {
@@ -135,10 +216,11 @@ const EventMaster = ({ caseId, closeModal }) => {
 
       const eventPayload = {
         caseId: currentCase,
-        receivedDate: receivedDate,
+        
         events: [
           {
             eventId: eventId,
+            receivedDate: receivedDate,
             intervals: intervals,
           },
         ],

@@ -62,6 +62,7 @@ import {
   getCaseFiles,
   completedCase,
   getPinnedMsg,
+  updateGroup,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -195,6 +196,11 @@ const ChatRc = () => {
     toggleIt: toggleCaseDeleteModal,
   } = useToggle(false)
   const {
+    toggleOpen: chatDeleteModalOpen,
+    setToggleOpen: setChatDeleteModalOpen,
+    toggleIt: toggleChatDeleteModal,
+  } = useToggle(false)
+  const {
     toggleOpen: MsgDeleteModalOpen,
     setToggleOpen: setMsgDeleteModalOpen,
     toggleIt: toggleMsgDeleteModal,
@@ -271,7 +277,9 @@ const ChatRc = () => {
   const [caseFile, setCaseFile] = useState([])
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
+  const [currentChatDelete, setCurrentChatDelete] = useState()
   const [isQuil, setIsQuil] = useState(false)
+  const [sortedChats, setSortedChats] = useState([])
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
   }
@@ -480,12 +488,63 @@ const ChatRc = () => {
     setChatLoader(false)
   }
   //Getting all 1vs1 chats
+  useEffect(() => {
+    const updatedSortedChats = chats
+      .map(chat => {
+        const notificationCount = getNotificationCount(chat._id)
+        const recentChat =
+          chat.notification &&
+          chat.notification.updatedAt &&
+          new Date(chat.notification.updatedAt)
+        return {
+          chat,
+          notificationCount,
+          recentChat,
+        }
+      })
+      .sort((a, b) => {
+        if (a.recentChat && b.recentChat) {
+          return b.recentChat - a.recentChat // Sort by time in descending order based on recentChat's updatedAt field
+        } else if (a.recentChat) {
+          return -1 // a has a recent chat, but b doesn't, so a should be placed above b
+        } else if (b.recentChat) {
+          return 1 // b has a recent chat, but a doesn't, so b should be placed above a
+        } else {
+          return b.notificationCount - a.notificationCount // Sort by notification count
+        }
+      })
+    setSortedChats(updatedSortedChats)
+  }, [chats, notifications])
+
   const ongetAllChatRooms = async () => {
     const chatRoomsRes = await getOnevsOneChat({ userId: currentUser.userID })
     if (chatRoomsRes.success) {
-      setChats(chatRoomsRes.groups)
-      setCurrentChat(chatRoomsRes.groups[0])
-      if (chatRoomsRes.groups.length < 1) {
+      const updatedChats = chatRoomsRes.groups.map(chat => {
+        const notification = notifications.find(n => n.groupId === chat._id)
+        return {
+          ...chat,
+          notification,
+        }
+      })
+
+      updatedChats.sort((a, b) => {
+        if (a.notification && b.notification) {
+          return (
+            new Date(b.notification.updatedAt) -
+            new Date(a.notification.updatedAt)
+          )
+        } else if (a.notification) {
+          return -1 // Move chat with notification to the top
+        } else if (b.notification) {
+          return 1 // Move chat with notification to the top
+        } else {
+          return 0 // No notifications for both chats, maintain order
+        }
+      })
+
+      setChats(updatedChats)
+      setCurrentChat(updatedChats[0])
+      if (updatedChats.length < 1) {
         setactiveTab("3")
       }
     } else {
@@ -696,6 +755,27 @@ const ChatRc = () => {
   const handleCaseDelete = () => {
     setCaseDeleteModalOpen(true)
   }
+
+  // Deleting Chat
+  const onDeletingChat = async () => {
+    const payload = {
+      groupId: currentChatDelete,
+      deleteIt: true,
+    }
+    const res = await updateGroup(payload)
+    if (res.success) {
+      await ongetAllChatRooms()
+      toastr.success(`Chat has been Deleted successfully`, "Success")
+      setCurrentChatDelete(null)
+    } else {
+      toastr.error("Failed to delete chat", "Failed!!!")
+    }
+    setChatDeleteModalOpen(false)
+  }
+  const handleChatDelete = id => {
+    setChatDeleteModalOpen(true), setCurrentChatDelete(id)
+  }
+
   //Deleting Last Message
   const onDeletingMsg = async () => {
     const payload = {
@@ -896,7 +976,19 @@ const ChatRc = () => {
 
   //Handling File change
   const handleFileChange = e => {
-    setAllFiles(e.target.files)
+    const selectedFiles = e.target.files
+    console.log("e.target.files", e.target.files)
+    if (selectedFiles.length + allFiles.length > 10) {
+      // Display warning message here
+      toastr.error("You can select a maximum of 10 files.", "Warning")
+      return
+    }
+    const updatedFiles = [...allFiles, ...selectedFiles]
+    setAllFiles(updatedFiles)
+  }
+  const handleFileRemove = fileName => {
+    const updatedFiles = allFiles.filter(file => file.name !== fileName)
+    setAllFiles(updatedFiles)
   }
 
   //Fetching SubGroups
@@ -1436,6 +1528,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
+  console.log("messages", messages)
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1527,6 +1620,7 @@ const ChatRc = () => {
                 <Calender
                   setcalendarModalOpen={setCalendarModelOpen}
                   groupId={currentChat?._id}
+                  caseId={currentChat?.caseId}
                 />
               </DynamicSuspense>
             </DynamicModel>
@@ -1633,6 +1727,14 @@ const ChatRc = () => {
             />
 
             <DeleteModal
+              show={chatDeleteModalOpen}
+              onDeleteClick={() => onDeletingChat()}
+              confirmText="Yes,Remove"
+              cancelText="Cancel"
+              onCloseClick={toggleChatDeleteModal}
+            />
+
+            <DeleteModal
               show={MsgDeleteModalOpen}
               onDeleteClick={onDeletingMsg}
               confirmText="Yes,Remove"
@@ -1732,11 +1834,11 @@ const ChatRc = () => {
                     <TabPane tabId="1">
                       <ul className="list-unstyled chat-list" id="recent-list">
                         <PerfectScrollbar style={{ height: "500px" }}>
-                          {map(chats, chat => (
+                          {sortedChats.map(chat => (
                             <li
-                              key={chat._id}
+                              key={chat.chat._id}
                               className={
-                                currentChat && currentChat._id === chat._id
+                                currentChat && currentChat._id === chat.chat._id
                                   ? "active"
                                   : ""
                               }
@@ -1745,28 +1847,30 @@ const ChatRc = () => {
                                 to="#"
                                 onClick={() => {
                                   setCurrentCase(null)
-                                  setCurrentChat(chat)
+                                  setCurrentChat(chat.chat)
                                 }}
                               >
                                 <div className="d-flex">
                                   <div className="align-self-center me-3">
                                     <img
                                       src={
-                                        chat.isGroup
+                                        chat.chat.isGroup
                                           ? profile
-                                          : getChatProfilePic(chat.groupMembers)
+                                          : getChatProfilePic(
+                                              chat.chat.groupMembers
+                                            )
                                       }
-                                      className="rounded-circle  avatar-sm  "
+                                      className="rounded-circle avatar-sm"
                                       alt=""
                                       style={{ objectFit: "cover" }}
                                     />
                                   </div>
 
-                                  <div className="flex-grow-1 overflow-hidden align-self-center ">
+                                  <div className="flex-grow-1 overflow-hidden align-self-center">
                                     <h5 className="text-truncate font-size-14 mb-1">
-                                      {chat.isGroup
-                                        ? chat.groupName
-                                        : getChatName(chat.groupMembers)}
+                                      {chat.chat.isGroup
+                                        ? chat.chat.groupName
+                                        : getChatName(chat.chat.groupMembers)}
                                     </h5>
                                     <p className="text-truncate mb-0">
                                       {/* {chat.description} */}
@@ -1774,13 +1878,13 @@ const ChatRc = () => {
                                   </div>
                                   <div className="font-size-11">
                                     <div>
-                                      {moment(chat.updatedAt).format(
+                                      {moment(chat.chat.updatedAt).format(
                                         "DD-MM-YY HH:mm"
                                       )}
                                     </div>
-                                    {getNotificationCount(chat._id) > 0 && (
-                                      <div className="badge bg-danger  font-size-14 my-1">
-                                        {getNotificationCount(chat._id)}
+                                    {chat.notificationCount > 0 && (
+                                      <div className="badge bg-danger font-size-14 my-1">
+                                        {chat.notificationCount}
                                       </div>
                                     )}
                                   </div>
@@ -2197,7 +2301,12 @@ const ChatRc = () => {
                                           >
                                             Email
                                           </DropdownItem>
-                                          <DropdownItem href="#">
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              handleChatDelete(currentChat?._id)
+                                            }
+                                          >
                                             Delete chat
                                           </DropdownItem>
                                         </DropdownMenu>
@@ -2270,15 +2379,18 @@ const ChatRc = () => {
                                           >
                                             Reply
                                           </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              setCurEditMessageId(msg)
-                                              setMessageEditModalOpen(true)
-                                            }}
-                                          >
-                                            Edit
-                                          </DropdownItem>
+                                          {msg?.sender ===
+                                            currentUser.userID && (
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() => {
+                                                setCurEditMessageId(msg)
+                                                setMessageEditModalOpen(true)
+                                              }}
+                                            >
+                                              Edit
+                                            </DropdownItem>
+                                          )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2360,31 +2472,31 @@ const ChatRc = () => {
                                         </div>
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
-                                            <>
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
+                                              <>
+                                                <AttachmentViewer
+                                                  attachments={msg.attachments}
+                                                  text={msg.messageData}
+                                                />
 
-                                              <div
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                                dangerouslySetInnerHTML={{
-                                                  __html: msg?.messageData,
-                                                }}
-                                              />
-                                              <div
-                                                className="mt-1"
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                              >
-                                                {/* {stringFormatter(
-                                                      msg.messageData
-                                                    )} */}
-                                              </div>
-                                            </>
+                                                <div
+                                                  style={{
+                                                    whiteSpace: "break-spaces",
+                                                  }}
+                                                  dangerouslySetInnerHTML={{
+                                                    __html: msg?.messageData,
+                                                  }}
+                                                />
+                                                <div
+                                                  className="mt-1"
+                                                  style={{
+                                                    whiteSpace: "break-spaces",
+                                                  }}
+                                                >
+                                                  {/* {stringFormatter(
+                                                        msg.messageData
+                                                      )} */}
+                                                </div>
+                                              </>
                                           ) : (
                                             // <div
                                             //   style={{
@@ -2566,6 +2678,13 @@ const ChatRc = () => {
                                         key={a}
                                       >
                                         {att.name}
+                                        <i
+                                          class="bx bx-x-circle mx-1"
+                                          onClick={() =>
+                                            handleFileRemove(att?.name)
+                                          }
+                                          style={{cursor :"pointer"}}
+                                        />
                                       </span>
                                     ))}
                                   </div>
@@ -2585,6 +2704,7 @@ const ChatRc = () => {
                                   style={{
                                     marginRight: "5px",
                                     fontSize: "14px",
+                                    cursor: "pointer",
                                   }}
                                   onClick={toggle_Quill}
                                   className="bi bi-menu-button-wide-fill text-primary"
