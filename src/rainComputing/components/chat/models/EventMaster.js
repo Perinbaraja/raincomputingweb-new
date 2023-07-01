@@ -9,6 +9,8 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Dropdown } from "reactstrap"
 import holidays from "date-holidays"
 import moment from "moment"
+import toastr from "toastr"
+
 const EventMaster = ({ caseId, closeModal }) => {
   const { currentAttorney } = useUser()
   const [docDate, setDocDate] = useState(Array(1).fill(""))
@@ -88,7 +90,7 @@ const EventMaster = ({ caseId, closeModal }) => {
   const handleReceivedDateChange = e => {
     setReceivedDate(e.target.value)
   }
-  
+
   const isWeekend = date => {
     const day = date.getDay()
     return day === 0 || day === 6 // Sunday (0) or Saturday (6)
@@ -96,8 +98,8 @@ const EventMaster = ({ caseId, closeModal }) => {
   const isHoliday = date => {
     const formattedDate = date.toISOString().split("T")[0]
     return next50YearsallHolidays.includes(formattedDate)
-  } 
-   function generateHolidays() {
+  }
+  function generateHolidays() {
     const holidays = []
     // Get the current year
     const currentYear = moment().year()
@@ -150,56 +152,53 @@ const EventMaster = ({ caseId, closeModal }) => {
   // console.log("next50YearsWeekdays", next50YearsWeekdays)
   const calculateResponseDates = () => {
     const newResponseDates = event?.map(events => {
-      const { interval, scheduledType } = events;
-      let responseDate = "";
-  
+      const { interval, scheduledType } = events
+      let responseDate = ""
+
       if (receivedDate) {
-        const receivedDateObj = moment.tz(receivedDate, 'America/New_York');
+        const receivedDateObj = moment.tz(receivedDate, "America/New_York")
         // console.log("receivedDateObj", receivedDateObj);
-  
+
         switch (scheduledType) {
           case "days":
             if (interval === 0) {
-              responseDate = receivedDateObj;
+              responseDate = receivedDateObj
             } else {
-              responseDate = moment(receivedDateObj).add(interval, 'days');
+              responseDate = moment(receivedDateObj).add(interval, "days")
             }
-            break;
+            break
           case "weeks":
             if (interval === 0) {
-              responseDate = receivedDateObj;
+              responseDate = receivedDateObj
             } else {
-              responseDate = moment(receivedDateObj).add(interval, 'weeks');
+              responseDate = moment(receivedDateObj).add(interval, "weeks")
             }
-            break;
+            break
           case "months":
             if (interval === 0) {
-              responseDate = receivedDateObj;
+              responseDate = receivedDateObj
             } else {
-              responseDate = moment(receivedDateObj).add(interval, 'months');
+              responseDate = moment(receivedDateObj).add(interval, "months")
             }
-            break;
+            break
           default:
-            break;
+            break
         }
-  
+
         // Check if the response date falls on a weekend or holiday
         while (
           next50YearsWeekdays.includes(responseDate.format("YYYY-MM-DD")) ||
           next50YearsallHolidays.includes(responseDate.format("YYYY-MM-DD"))
         ) {
-          responseDate.add(1, 'days'); // Move to the next day
+          responseDate.add(1, "days") // Move to the next day
         }
       }
-  
-      return responseDate ? responseDate.format("YYYY-MM-DD") : "";
-    });
-  
-    setResponseDates(newResponseDates);
-  };
-  
 
-  
+      return responseDate ? responseDate.format("YYYY-MM-DD") : ""
+    })
+
+    setResponseDates(newResponseDates)
+  }
 
   useEffect(() => {
     if (event) {
@@ -207,16 +206,15 @@ const EventMaster = ({ caseId, closeModal }) => {
     }
   }, [receivedDate])
   const handleCreateEvent = async () => {
-
     try {
       const intervals = responseTextChange.map((responseText, index) => ({
         responseDate: responseDates[index],
         responseText: responseText,
-      }));
+      }))
 
       const eventPayload = {
         caseId: currentCase,
-        
+
         events: [
           {
             eventId: eventId,
@@ -224,19 +222,20 @@ const EventMaster = ({ caseId, closeModal }) => {
             intervals: intervals,
           },
         ],
-      };
+      }
 
-      const res = await createCaseInterval(eventPayload);
+      const res = await createCaseInterval(eventPayload)
       if (res.success) {
-        closeModal(true);
-        setEventId("");
-        setEventText([]);
-        setReceivedDate("");
+        toastr.success(`Event Created successfully`, "Success")
+        closeModal(true)
+        setEventId("")
+        setEventText([])
+        setReceivedDate("")
       }
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error creating event:", error)
     }
-  };
+  }
   // useEffect(() => {
   //   if(eventId && receivedDate !== "") {
   //     console.log("Received", receivedDate)
@@ -297,7 +296,7 @@ const EventMaster = ({ caseId, closeModal }) => {
         </div>
       </div>
       <div className="row">
-      <div className="col-md-6">
+        <div className="col-md-6">
           {eventId && receivedDate !== "" && (
             <label htmlFor="example-text-input" className="col-form-label">
               Response Date
@@ -307,7 +306,7 @@ const EventMaster = ({ caseId, closeModal }) => {
             <p
               htmlFor="example-text-input"
               className="col-form-label"
-              style={{ textAlign: "center",color:"gray" }}
+              style={{ textAlign: "center", color: "gray" }}
             >
               The response date displayed is determined based on the received
               date that you select.
@@ -334,7 +333,6 @@ const EventMaster = ({ caseId, closeModal }) => {
           {eventId && (
             <label htmlFor="example-text-input" className="col-form-label">
               Response Text
-         
             </label>
           )}
           {responseTextChange?.map((text, index) => (
@@ -344,13 +342,13 @@ const EventMaster = ({ caseId, closeModal }) => {
                   className="form-control"
                   type="text"
                   value={text}
-                  onChange={(e) => {
-                    const newText = e.target.value;
-                    setResponseTextChange((prevState) =>
+                  onChange={e => {
+                    const newText = e.target.value
+                    setResponseTextChange(prevState =>
                       prevState.map((prevText, i) =>
                         i === index ? newText : prevText
                       )
-                    );
+                    )
                   }}
                 />
               </div>
