@@ -1958,27 +1958,48 @@ const ChatRc = () => {
                       {caseLoading ? (
                         <ChatLoader />
                       ) : (
-                        <PerfectScrollbar
-                          style={{ height: "500px" }}
-                          // onScroll={e => handleCaseScroll(e?.target)}
-                        >
-                          <ul className="list-unstyled chat-list ">
-                            {allCases.length > 0 &&
-                              allCases.map((ca, j) => (
-                                <CaseGrid
-                                  caseData={ca}
-                                  index={j}
-                                  key={j}
-                                  active={activeAccordian}
-                                  onAccordionButtonClick={
-                                    handleSettingActiveAccordion
-                                  }
-                                  handleSelectingCase={onSelectingCase}
-                                  selected={currentCase?._id === ca?._id}
-                                  notifyCountforCase={notifyCountforCase}
-                                  ongetAllCases={ongetAllCases}
-                                />
-                              ))}
+                        <PerfectScrollbar style={{ height: "500px" }}>
+                          <ul className="list-unstyled chat-list">
+                            {allCases
+                              .map(caseData => ({
+                                caseData,
+                                notifyCount: notifyCountforCase(caseData._id),
+                              }))
+                              .sort((a, b) => {
+                                const notifyCountDiff =
+                                  b.notifyCount - a.notifyCount
+                                if (notifyCountDiff !== 0) {
+                                  return notifyCountDiff // Sort by notifyCount first
+                                } else {
+                                  const updatedAtA = a.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
+                                  const updatedAtB = b.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
+                                  return (
+                                    new Date(updatedAtB) - new Date(updatedAtA)
+                                  ) // Sort by time in descending order based on updatedAt field
+                                }
+                              })
+                              .map(
+                                (
+                                  { caseData, notifyCount },
+                                  index // Define the 'index' variable here
+                                ) => (
+                                  <CaseGrid
+                                    caseData={caseData}
+                                    index={index}
+                                    key={index}
+                                    active={activeAccordian}
+                                    onAccordionButtonClick={
+                                      handleSettingActiveAccordion
+                                    }
+                                    handleSelectingCase={onSelectingCase}
+                                    selected={
+                                      currentCase?._id === caseData?._id
+                                    }
+                                    notifyCountforCase={notifyCountforCase}
+                                    ongetAllCases={ongetAllCases}
+                                  />
+                                )
+                              )}
                           </ul>
                         </PerfectScrollbar>
                       )}
