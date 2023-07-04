@@ -87,7 +87,7 @@ const Header = props => {
                         <Link to="/req-user">Requests</Link>
                       </li>
                     )}
-                    {currentUser &&(
+                    {currentUser &&!currentAttorney&&(
                       <li id="navmen" className="">
                         <Link to="/appointment-status">Connection</Link>   
                       </li>
