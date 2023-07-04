@@ -19,7 +19,6 @@ const PinnedModels = ({ handleLocateMessage }) => {
   const [pinModal, setPinModal] = useState(false)
   const [pinnedMsg, setPinnedMsg] = useState([])
 
-
   const handleClick = messageId => {
     handleLocateMessage(messageId)
     setPinModal(false)
@@ -78,7 +77,7 @@ const PinnedModels = ({ handleLocateMessage }) => {
         toggle={() => {
           tog_scroll()
         }}
-      // scrollable={true}
+        // scrollable={true}
       >
         <div className="modal-header ">
           <h5 className="modal-title mt-0">
@@ -98,20 +97,35 @@ const PinnedModels = ({ handleLocateMessage }) => {
         {pinnedMsg?.length > 0 ? (
           <div>
             <div className="card">
-              <div className="d-flex justify-content-center py-3" style={{ backgroundColor: "#ededed" }}>
+              <div
+                className="d-flex justify-content-center py-3"
+                style={{ backgroundColor: "#ededed" }}
+              >
                 <div className="w-75" style={{ backgroundColor: "#f0f1f2" }}>
                   {pinnedMsg &&
                     pinnedMsg?.map((msg, m) => (
                       <div className="" key={m}>
-                        <div className="card border-secondary border border-1 rounded-2" style={{ borderRadius: "5px" }}>
-
-                          <div className="d-flex justify-content-between px-2" style={{ backgroundcolor: "#a4a7ab" }}>
+                        <div
+                          className="card border-secondary border border-1 rounded-2"
+                          style={{ borderRadius: "5px" }}
+                        >
+                          <div
+                            className="d-flex justify-content-between px-2"
+                            style={{ backgroundcolor: "#a4a7ab" }}
+                          >
                             <div className="">
                               {/* <i class="bi bi-person-circle fs-1" style={{ color: "#3987ed" }}></i> */}
                               <p className="rouded-circle text-primary text pt-1 ">
-                                <img className="avatar-sm me-2 rounded-circle " src={getSender(msg)?.profilePic ? getSender(msg)?.profilePic
-                                  : avatar}></img>
-                                {getSender(msg)?.firstname} {getSender(msg)?.lastname}
+                                <img
+                                  className="avatar-sm me-2 rounded-circle "
+                                  src={
+                                    getSender(msg)?.profilePic
+                                      ? getSender(msg)?.profilePic
+                                      : avatar
+                                  }
+                                ></img>
+                                {getSender(msg)?.firstname}{" "}
+                                {getSender(msg)?.lastname}
                               </p>
                             </div>
                             <div className="">
@@ -123,24 +137,33 @@ const PinnedModels = ({ handleLocateMessage }) => {
                               ></i>
                             </div>
                           </div>
-                          <div className="text-wrap px-2 py-2 " onClick={() => handleClick(msg._id)}>
+                          <div
+                            className="text-wrap px-2 py-2 "
+                            onClick={() => handleClick(msg._id)}
+                          >
                             <div className="conversation-name">
                               <div className="d-flex justify-content-between align-items-center">
-                                <div>{/* <p className="text pt-1" style={text}>{getSender(msg)?.firstname} {getSender(msg)?.lastname}</p> */}</div>
+                                <div>
+                                  {/* <p className="text pt-1" style={text}>{getSender(msg)?.firstname} {getSender(msg)?.lastname}</p> */}
+                                </div>
                               </div>
                             </div>
-                            <div className=" border border-success p-2 mb-2 border-opacity-25  rounded-2" style={{ borderColor: "#dbdbdb" }}>
+                            <div
+                              className=" border border-success p-2 mb-2 border-opacity-25  rounded-2"
+                              style={{ borderColor: "#dbdbdb" }}
+                            >
                               {msg.isAttachment ? (
                                 <>
-                                  <AttachmentViewer attachments={msg.attachments} />
+                                  <AttachmentViewer
+                                    attachments={msg.attachments}
+                                  />
                                   <p>
                                     <div
                                       style={{
                                         wordBreak: "break-word fs-1S mx-2",
                                         overflowWrap: "break-word",
                                         whiteSpace: "pre-line",
-                                        height: "50px"
-
+                                        height: "50px",
                                       }}
                                       dangerouslySetInnerHTML={{
                                         __html: msg?.messageData,
@@ -154,7 +177,7 @@ const PinnedModels = ({ handleLocateMessage }) => {
                                     wordBreak: "break-word",
                                     overflowWrap: "break-word",
                                     whiteSpace: "pre-line",
-                                    height: "50px"
+                                    height: "50px",
                                   }}
                                   dangerouslySetInnerHTML={{
                                     __html: msg?.messageData,
@@ -169,17 +192,18 @@ const PinnedModels = ({ handleLocateMessage }) => {
                               {moment(msg.createdAt).format("DD-MM-YY HH:mm")}
                             </p>
                           </div>
-
                         </div>
                       </div>
                     ))}
-
                 </div>
               </div>
             </div>
           </div>
-        ) : (<p className="d-flex justify-content-center py-3 " >You dont have a Pinned Messages !</p>)
-        }
+        ) : (
+          <p className="d-flex justify-content-center py-3 ">
+            You dont have a Pinned Messages !
+          </p>
+        )}
       </Modal>
       <Dropdown isOpen={pinModal} toggle={tog_scroll}>
         <DropdownToggle className="btn nav-btn" tag="i">
