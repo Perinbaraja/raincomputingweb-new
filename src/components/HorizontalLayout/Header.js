@@ -87,9 +87,12 @@ const Header = props => {
                         <Link to="/req-user">Requests</Link>
                       </li>
                     )}
+                    {currentUser &&(
                       <li id="navmen" className="">
-                        <DocketMenu />
+                        <Link to="/appointment-status">Connection</Link>   
                       </li>
+                    )}
+                      <DocketMenu />
                   </ul>
                 </div>
                 <div className="d-flex align-items-center gap-2">
