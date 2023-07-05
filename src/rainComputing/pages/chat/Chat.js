@@ -1899,7 +1899,7 @@ const ChatRc = () => {
                       <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-info btn-rounded mb-2 col-6"
+                          className="btn btn-primary btn-rounded mb-2 col-6"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
