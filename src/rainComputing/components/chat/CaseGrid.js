@@ -252,15 +252,14 @@ const CaseGrid = ({
               </div>
             </AccordionContainer>
           </div>
+          
           <div className="mb-4 ">
-            <span className="fw-medium font-size-13 text-primary-emphasis">
-              Saved Messages & Files
-            </span>
+            
             <AccordionContainer
               handleAccordionClick={() => setEventMasterModelOpen(true)}
             >
               <div>
-                <span className="fw-medium font-size-11 text-secondary">Manage Events</span>{" "}
+                <span className="fw-medium font-size-12 text-secondary" style={{cursor: "pointer"}}>Manage Events</span>{" "}
               </div>
             </AccordionContainer>
             <div>
@@ -269,7 +268,7 @@ const CaseGrid = ({
                 onClick={() => handleAccordionClick(caseData)}
               >
                 <i className="bi bi-calendar4-event" 
-                 style={{ fontSize: "10px" }}>{" "}</i>                
+                 style={{ fontSize: "12px",cursor:"pointer" }}>{" "}</i>                
                 Event Calendar
               </span>
             </div>
@@ -284,13 +283,18 @@ const CaseGrid = ({
                 Pending Messages <span>(1)</span>
               </span>
             </AccordionContainer> */}
+            <br/>
+            <span className="fw-medium font-size-13 text-primary-emphasis">
+              Saved Messages & Files
+            </span>
+            
             <AccordionContainer
               handleAccordionClick={() => setFilesModelOpen(true)}
             >
               <i className="bi bi-share"
-              style={{ fontSize: "10px" }}
+              style={{ fontSize: "10px",fontWeight:"bold",cursor:"pointer" }}
               >{" "}</i>             
-              <span className="fw-medium font-size-11 text-secondary">Shared Files</span>
+              <span className="fw-medium font-size-12 text-secondary">Shared Files</span>
             </AccordionContainer>
           </div>
 

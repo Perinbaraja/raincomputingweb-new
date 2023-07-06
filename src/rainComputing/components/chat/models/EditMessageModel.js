@@ -65,7 +65,7 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
                   theme="snow"
                   value={updateMessages}
                   onChange={setUpdateMessages}
-                  className="form-control chat-input"
+                  placeholder="Enter Message..."
                   defaultValue={messages?.find(
                     m => m._id === curMessageId?.messageData
                   )}

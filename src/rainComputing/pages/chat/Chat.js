@@ -255,6 +255,7 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
+  console.log("mentionsArray:", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curEditMessageId, setCurEditMessageId] = useState("")
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
@@ -280,6 +281,8 @@ const ChatRc = () => {
   const [currentChatDelete, setCurrentChatDelete] = useState()
   const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
+  const [deleteMessage, setDeleteMessage] = useState()
+  console.log("SetDeleteMessage:", deleteMessage)
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
   }
@@ -773,7 +776,8 @@ const ChatRc = () => {
     setChatDeleteModalOpen(false)
   }
   const handleChatDelete = id => {
-    setChatDeleteModalOpen(true), setCurrentChatDelete(id)
+    setChatDeleteModalOpen(true),
+      setCurrentChatDelete(id)
   }
 
   //Deleting Last Message
@@ -785,12 +789,19 @@ const ChatRc = () => {
     }
     const res = await deleteLastMsg(payload)
     if (res.success) {
+      const payload = {
+        groupId: currentChat._id,
+        userId: currentUser.userID
+      }
+      setDeleteMessage(res)
       setIsDeleteMsg(true)
       toastr.success(`Message  has been Deleted successfully`, "Success")
       setcurMessage("Message Deleted")
       //setDelMsg()
-      await ongetAllChatRooms()
-      await getMessagesByUserIdandGroupId()
+     const res1 = await getMessagesByUserIdandGroupId(payload)
+      if (res1.success) {
+        setMessages(res1.groupMessages)
+      }
     } else {
       toastr.error("Unable to delete Message after 1 min", "Failed!!!")
     }
@@ -1086,9 +1097,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1528,7 +1538,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
-  console.log("messages", messages)
+
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1662,9 +1672,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1857,8 +1866,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                              chat.chat.groupMembers
-                                            )
+                                            chat.chat.groupMembers
+                                          )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -1899,7 +1908,7 @@ const ChatRc = () => {
                       <div className="d-flex gap-2 my-2">
                         <button
                           type="button"
-                          className="btn btn-primary btn-rounded mb-2 col-6"
+                          className="btn btn-info btn-rounded mb-2 col-6"
                           onClick={() => setNewCaseModelOpen(true)}
                         >
                           Create case
@@ -1970,6 +1979,12 @@ const ChatRc = () => {
                                   b.notifyCount - a.notifyCount
                                 if (notifyCountDiff !== 0) {
                                   return notifyCountDiff // Sort by notifyCount first
+                                } else {
+                                  const updatedAtA = a.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
+                                  const updatedAtB = b.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
+                                  return (
+                                    new Date(updatedAtB) - new Date(updatedAtA)
+                                  ) // Sort by time in descending order based on updatedAt field
                                 }
                               })
                               .map(
@@ -2184,7 +2199,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2396,16 +2411,16 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           {msg?.sender ===
                                             currentUser.userID && (
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                          )}
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  setCurEditMessageId(msg)
+                                                  setMessageEditModalOpen(true)
+                                                }}
+                                              >
+                                                Edit
+                                              </DropdownItem>
+                                            )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2429,8 +2444,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                    "Unable to  delete other's message"
-                                                  )
+                                                  "Unable to  delete other's message"
+                                                )
                                             }}
                                           >
                                             Delete
@@ -2442,7 +2457,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2495,7 +2510,7 @@ const ChatRc = () => {
 
                                               <div
                                                 style={{
-                                                  whiteSpace: "break-spaces",
+                                                  whiteSpace: "break-spaces",                                                 
                                                 }}
                                                 dangerouslySetInnerHTML={{
                                                   __html: msg?.messageData,
@@ -2525,7 +2540,7 @@ const ChatRc = () => {
                                             // </div>
                                             <div
                                               style={{
-                                                whiteSpace: "break-spaces",
+                                                whiteSpace: "break-spaces",                                                                                          
                                               }}
                                               dangerouslySetInnerHTML={{
                                                 __html: msg?.messageData,
@@ -2581,7 +2596,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2591,7 +2606,7 @@ const ChatRc = () => {
                                               currentUser?.lastname}
                                           </div>
                                           <div className="mb-1">
-                                            {msg.messageData}
+                                            {msg.messageData}                                        
                                           </div>
                                           <p className="chat-time mb-0">
                                             <i className="bx bx-loader bx-spin  align-middle me-1" />
@@ -2621,7 +2636,7 @@ const ChatRc = () => {
                               <div class="col">
                                 <div class="position-relative">
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
@@ -2698,7 +2713,7 @@ const ChatRc = () => {
                                           onClick={() =>
                                             handleFileRemove(att?.name)
                                           }
-                                          style={{ cursor: "pointer" }}
+                                          style={{cursor :"pointer"}}
                                         />
                                       </span>
                                     ))}
