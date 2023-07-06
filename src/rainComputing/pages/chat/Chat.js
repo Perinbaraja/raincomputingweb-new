@@ -1970,12 +1970,6 @@ const ChatRc = () => {
                                   b.notifyCount - a.notifyCount
                                 if (notifyCountDiff !== 0) {
                                   return notifyCountDiff // Sort by notifyCount first
-                                } else {
-                                  const updatedAtA = a.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  const updatedAtB = b.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  return (
-                                    new Date(updatedAtB) - new Date(updatedAtA)
-                                  ) // Sort by time in descending order based on updatedAt field
                                 }
                               })
                               .map(
@@ -2493,31 +2487,31 @@ const ChatRc = () => {
                                         </div>
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
-                                              <>
-                                                <AttachmentViewer
-                                                  attachments={msg.attachments}
-                                                  text={msg.messageData}
-                                                />
+                                            <>
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
 
-                                                <div
-                                                  style={{
-                                                    whiteSpace: "break-spaces",
-                                                  }}
-                                                  dangerouslySetInnerHTML={{
-                                                    __html: msg?.messageData,
-                                                  }}
-                                                />
-                                                <div
-                                                  className="mt-1"
-                                                  style={{
-                                                    whiteSpace: "break-spaces",
-                                                  }}
-                                                >
-                                                  {/* {stringFormatter(
+                                              <div
+                                                style={{
+                                                  whiteSpace: "break-spaces",
+                                                }}
+                                                dangerouslySetInnerHTML={{
+                                                  __html: msg?.messageData,
+                                                }}
+                                              />
+                                              <div
+                                                className="mt-1"
+                                                style={{
+                                                  whiteSpace: "break-spaces",
+                                                }}
+                                              >
+                                                {/* {stringFormatter(
                                                         msg.messageData
                                                       )} */}
-                                                </div>
-                                              </>
+                                              </div>
+                                            </>
                                           ) : (
                                             // <div
                                             //   style={{
@@ -2704,7 +2698,7 @@ const ChatRc = () => {
                                           onClick={() =>
                                             handleFileRemove(att?.name)
                                           }
-                                          style={{cursor :"pointer"}}
+                                          style={{ cursor: "pointer" }}
                                         />
                                       </span>
                                     ))}
