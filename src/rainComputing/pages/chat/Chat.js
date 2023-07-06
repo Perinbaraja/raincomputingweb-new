@@ -1059,8 +1059,23 @@ const ChatRc = () => {
         : getSenderOneChat(m?.sender)
       const message = m?.messageData
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
-      const attachments = m.isAttachment ? m.attachments?.length : "-"
-      const tempRow = [sender, message, time, groupName, caseName, attachments]
+      const attachments =
+      m.isAttachment && m.attachments[0].id
+        ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }: "-"
+      const tempRow = [
+        sender,
+        message,
+        time,
+        groupName,
+        caseName,
+        attachments?.url,
+        typeof attachments === "object" && attachments?.url
+          ? {
+              url: attachments.url,
+              content: "View Attachment",
+            }
+          : "-",
+      ]
       rows.push(tempRow)
     })
     autoTable(doc, {
@@ -1069,7 +1084,21 @@ const ChatRc = () => {
       head: header,
       body: rows,
       theme: "grid",
-      columnStyles: { 5: { halign: "center" } },
+      columnStyles: {
+        0: { cellWidth: 30, cellHeight: 50 },
+        1: { cellWidth: 30, cellHeight: 50 },
+        2: { cellWidth: 20, cellHeight: 50 },
+        3: { cellWidth: 20, cellHeight: 50 },
+        4: { cellWidth: 20, cellHeight: 50 },
+        5: { halign: "center", cellWidth: 90 },
+        5: {
+          // halign: "center",
+          cellWidth: 100,
+          // valign: "middle",
+          fillColor: [250, 250, 250],
+          textColor: [0, 0, 0],
+          fontSize: 8,
+        }},
       headStyles: {
         fillColor: [0, 0, 230],
         fontSize: 12,
@@ -1097,8 +1126,9 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
-      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${
+      currentCase?.caseName ?? "Private Chat"
+    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1140,7 +1170,6 @@ const ChatRc = () => {
       })
     setChatLoader(false)
   }
-
   //Handle sending email
   const onSendEmail = async () => {
     const payLoad = {
@@ -1979,12 +2008,6 @@ const ChatRc = () => {
                                   b.notifyCount - a.notifyCount
                                 if (notifyCountDiff !== 0) {
                                   return notifyCountDiff // Sort by notifyCount first
-                                } else {
-                                  const updatedAtA = a.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  const updatedAtB = b.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  return (
-                                    new Date(updatedAtB) - new Date(updatedAtA)
-                                  ) // Sort by time in descending order based on updatedAt field
                                 }
                               })
                               .map(
