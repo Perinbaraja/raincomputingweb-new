@@ -114,10 +114,13 @@ const ProjectDetail = ({ project }) => {
                   {project?.country},{project?.postalCode}
                 </span>
               </div>
+              {formattedDates.length > 0 && (
               <h5 className="font-size-18 text-primary mt-3">
                 Available Dates:
               </h5>
+              )}
               <div className="row row-cols-md-5 row-cols-3 g-3">
+              
                 {formattedDates.map((formattedDate, i) => (
                   <div className="col" key={i}>
                     <Button className="bg-success w-100">

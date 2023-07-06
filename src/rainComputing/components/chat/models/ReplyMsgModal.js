@@ -29,10 +29,10 @@ const ReplyMsgModal = ({
   const handlereplyMsgCancel = () => {
     setOpen(false)
   }
-  const [isQuill, setIsQuill] = useState(false)
-  const toggle_Quill = () => {
-    setIsQuill(!isQuill)
-  }
+  // const [isQuill, setIsQuill] = useState(false)
+  // const toggle_Quill = () => {
+  //   setIsQuill(!isQuill)
+  // }
   const handleReplyMessage = async id => {
     const payload = {
       id,
@@ -85,7 +85,7 @@ const ReplyMsgModal = ({
             <Col>
               <div className="position-relative">
 
-                {isQuill ? <ReactQuill
+                <ReactQuill
                   theme="snow"
                   style={{
                     resize: "none",
@@ -95,8 +95,8 @@ const ReplyMsgModal = ({
                   onChange={setReplyMessage}
                   placeholder="Enter Message..."
                 />
-                  :
-                  <MentionsInput
+                  
+                  {/* <MentionsInput
                     type="text"
                     value={replyMessage}
                     style={{
@@ -108,16 +108,16 @@ const ReplyMsgModal = ({
                     placeholder="Enter Message..."
                   >
                     <Mention trigger="@" />
-                  </MentionsInput>
-                }
+                  </MentionsInput> */}
+                
               </div>
             </Col>
           </Row>
         </div>
         <div className="modal-footer">
-          <i style={{ marginRight: "30px", marginTop: "8px", fontSize: "14px",cursor: "pointer" }}
+          {/* <i style={{ marginRight: "30px", marginTop: "8px", fontSize: "14px",cursor: "pointer" }}
             onClick={toggle_Quill}
-            className="bi bi-menu-button-wide-fill text-primary"></i>
+            className="bi bi-menu-button-wide-fill text-primary"></i> */}
           <button
             type="button"
             onClick={() => {

@@ -90,12 +90,15 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
         style={{
           cursor: "pointer",
         }}
+        title="Reminder"
+
       ></i>
 
       <Modal isOpen={open} toggle={toggle} scrollable={true}>
         <div className="d-flex justify-content-center p-4">
           <i className="bi bi-alarm fs-3 w-2 me-1" />
           <h3 className="modal-title  text-primary ">Reminder</h3>
+
         </div>
         <button
           type="button"

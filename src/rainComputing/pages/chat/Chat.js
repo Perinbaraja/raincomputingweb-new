@@ -255,6 +255,7 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
+  console.log("mentionsArray:", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curEditMessageId, setCurEditMessageId] = useState("")
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
@@ -280,6 +281,8 @@ const ChatRc = () => {
   const [currentChatDelete, setCurrentChatDelete] = useState()
   const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
+  const [deleteMessage, setDeleteMessage] = useState()
+  console.log("SetDeleteMessage:", deleteMessage)
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
   }
@@ -773,7 +776,8 @@ const ChatRc = () => {
     setChatDeleteModalOpen(false)
   }
   const handleChatDelete = id => {
-    setChatDeleteModalOpen(true), setCurrentChatDelete(id)
+    setChatDeleteModalOpen(true),
+      setCurrentChatDelete(id)
   }
 
   //Deleting Last Message
@@ -785,12 +789,19 @@ const ChatRc = () => {
     }
     const res = await deleteLastMsg(payload)
     if (res.success) {
+      const payload = {
+        groupId: currentChat._id,
+        userId: currentUser.userID
+      }
+      setDeleteMessage(res)
       setIsDeleteMsg(true)
       toastr.success(`Message  has been Deleted successfully`, "Success")
       setcurMessage("Message Deleted")
       //setDelMsg()
-      await ongetAllChatRooms()
-      await getMessagesByUserIdandGroupId()
+     const res1 = await getMessagesByUserIdandGroupId(payload)
+      if (res1.success) {
+        setMessages(res1.groupMessages)
+      }
     } else {
       toastr.error("Unable to delete Message after 1 min", "Failed!!!")
     }
@@ -1048,8 +1059,23 @@ const ChatRc = () => {
         : getSenderOneChat(m?.sender)
       const message = m?.messageData
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
-      const attachments = m.isAttachment ? m.attachments?.length : "-"
-      const tempRow = [sender, message, time, groupName, caseName, attachments]
+      const attachments =
+      m.isAttachment && m.attachments[0].id
+        ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }: "-"
+      const tempRow = [
+        sender,
+        message,
+        time,
+        groupName,
+        caseName,
+        attachments?.url,
+        typeof attachments === "object" && attachments?.url
+          ? {
+              url: attachments.url,
+              content: "View Attachment",
+            }
+          : "-",
+      ]
       rows.push(tempRow)
     })
     autoTable(doc, {
@@ -1058,7 +1084,21 @@ const ChatRc = () => {
       head: header,
       body: rows,
       theme: "grid",
-      columnStyles: { 5: { halign: "center" } },
+      columnStyles: {
+        0: { cellWidth: 30, cellHeight: 50 },
+        1: { cellWidth: 30, cellHeight: 50 },
+        2: { cellWidth: 20, cellHeight: 50 },
+        3: { cellWidth: 20, cellHeight: 50 },
+        4: { cellWidth: 20, cellHeight: 50 },
+        5: { halign: "center", cellWidth: 90 },
+        5: {
+          // halign: "center",
+          cellWidth: 100,
+          // valign: "middle",
+          fillColor: [250, 250, 250],
+          textColor: [0, 0, 0],
+          fontSize: 8,
+        }},
       headStyles: {
         fillColor: [0, 0, 230],
         fontSize: 12,
@@ -1130,7 +1170,6 @@ const ChatRc = () => {
       })
     setChatLoader(false)
   }
-
   //Handle sending email
   const onSendEmail = async () => {
     const payLoad = {
@@ -1528,7 +1567,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
-  console.log("messages", messages)
+
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1662,9 +1701,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1857,8 +1895,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                              chat.chat.groupMembers
-                                            )
+                                            chat.chat.groupMembers
+                                          )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -1970,12 +2008,6 @@ const ChatRc = () => {
                                   b.notifyCount - a.notifyCount
                                 if (notifyCountDiff !== 0) {
                                   return notifyCountDiff // Sort by notifyCount first
-                                } else {
-                                  const updatedAtA = a.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  const updatedAtB = b.caseData.updatedAt || "" // Use an empty string if updatedAt is undefined
-                                  return (
-                                    new Date(updatedAtB) - new Date(updatedAtA)
-                                  ) // Sort by time in descending order based on updatedAt field
                                 }
                               })
                               .map(
@@ -2190,7 +2222,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2402,16 +2434,16 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           {msg?.sender ===
                                             currentUser.userID && (
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                          )}
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  setCurEditMessageId(msg)
+                                                  setMessageEditModalOpen(true)
+                                                }}
+                                              >
+                                                Edit
+                                              </DropdownItem>
+                                            )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2435,8 +2467,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                    "Unable to  delete other's message"
-                                                  )
+                                                  "Unable to  delete other's message"
+                                                )
                                             }}
                                           >
                                             Delete
@@ -2448,7 +2480,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2493,31 +2525,31 @@ const ChatRc = () => {
                                         </div>
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
-                                              <>
-                                                <AttachmentViewer
-                                                  attachments={msg.attachments}
-                                                  text={msg.messageData}
-                                                />
+                                            <>
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
 
-                                                <div
-                                                  style={{
-                                                    whiteSpace: "break-spaces",
-                                                  }}
-                                                  dangerouslySetInnerHTML={{
-                                                    __html: msg?.messageData,
-                                                  }}
-                                                />
-                                                <div
-                                                  className="mt-1"
-                                                  style={{
-                                                    whiteSpace: "break-spaces",
-                                                  }}
-                                                >
-                                                  {/* {stringFormatter(
+                                              <div
+                                                style={{
+                                                  whiteSpace: "break-spaces",                                                 
+                                                }}
+                                                dangerouslySetInnerHTML={{
+                                                  __html: msg?.messageData,
+                                                }}
+                                              />
+                                              <div
+                                                className="mt-1"
+                                                style={{
+                                                  whiteSpace: "break-spaces",
+                                                }}
+                                              >
+                                                {/* {stringFormatter(
                                                         msg.messageData
                                                       )} */}
-                                                </div>
-                                              </>
+                                              </div>
+                                            </>
                                           ) : (
                                             // <div
                                             //   style={{
@@ -2531,7 +2563,7 @@ const ChatRc = () => {
                                             // </div>
                                             <div
                                               style={{
-                                                whiteSpace: "break-spaces",
+                                                whiteSpace: "break-spaces",                                                                                          
                                               }}
                                               dangerouslySetInnerHTML={{
                                                 __html: msg?.messageData,
@@ -2587,7 +2619,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2597,7 +2629,7 @@ const ChatRc = () => {
                                               currentUser?.lastname}
                                           </div>
                                           <div className="mb-1">
-                                            {msg.messageData}
+                                            {msg.messageData}                                        
                                           </div>
                                           <p className="chat-time mb-0">
                                             <i className="bx bx-loader bx-spin  align-middle me-1" />
@@ -2627,7 +2659,7 @@ const ChatRc = () => {
                               <div class="col">
                                 <div class="position-relative">
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
