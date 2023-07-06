@@ -101,10 +101,10 @@ import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
 import ReactQuill from "react-quill"
-// import "react-quill/dist/quill.snow.css"
+import "react-quill/dist/quill.snow.css"
 import Quill from "quill"
 import card from "../chat/card.css"
-
+import "quill-mention"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -121,6 +121,7 @@ const initialPageCount = {
 
 const ChatRc = () => {
   let query = useQuery()
+  const reactQuillRef = React.useRef(null)
   const { currentUser } = useUser()
   const {
     toggleOpen: newCaseModelOpen,
@@ -287,15 +288,36 @@ const ChatRc = () => {
     setIsQuil(!isQuil)
   }
 
-  const toolbarOptions = {
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link", "image"],
-        [{ color: [] }],
-      ],
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link"],
+      ["clean"],
+    ],
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      mentionDenotationChars: ["@"],
+      spaceAfterInsert: true,
+      source: useCallback(
+        (searchTerm, renderList, mentionChar) => {
+          let values
+          if (mentionChar === "@") {
+            values = mentionsArray?.map(m => ({ id: m?.id, value: m?.display }))
+          }
+          if (searchTerm.length === 0) {
+            renderList(values, searchTerm)
+          } else {
+            const matches = values.filter(item =>
+              item.value.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            renderList(matches, searchTerm)
+          }
+        },
+        [mentionsArray]
+      ),
     },
   }
 
@@ -776,8 +798,7 @@ const ChatRc = () => {
     setChatDeleteModalOpen(false)
   }
   const handleChatDelete = id => {
-    setChatDeleteModalOpen(true),
-      setCurrentChatDelete(id)
+    setChatDeleteModalOpen(true), setCurrentChatDelete(id)
   }
 
   //Deleting Last Message
@@ -791,14 +812,14 @@ const ChatRc = () => {
     if (res.success) {
       const payload = {
         groupId: currentChat._id,
-        userId: currentUser.userID
+        userId: currentUser.userID,
       }
       setDeleteMessage(res)
       setIsDeleteMsg(true)
       toastr.success(`Message  has been Deleted successfully`, "Success")
       setcurMessage("Message Deleted")
       //setDelMsg()
-     const res1 = await getMessagesByUserIdandGroupId(payload)
+      const res1 = await getMessagesByUserIdandGroupId(payload)
       if (res1.success) {
         setMessages(res1.groupMessages)
       }
@@ -1060,8 +1081,9 @@ const ChatRc = () => {
       const message = m?.messageData
       const time = moment(m?.createdAt).format("DD-MM-YY HH:mm")
       const attachments =
-      m.isAttachment && m.attachments[0].id
-        ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }: "-"
+        m.isAttachment && m.attachments[0].id
+          ? { url: `${SERVER_URL}/file/${m.attachments[0].id}` }
+          : "-"
       const tempRow = [
         sender,
         message,
@@ -1098,7 +1120,8 @@ const ChatRc = () => {
           fillColor: [250, 250, 250],
           textColor: [0, 0, 0],
           fontSize: 8,
-        }},
+        },
+      },
       headStyles: {
         fillColor: [0, 0, 230],
         fontSize: 12,
@@ -1701,8 +1724,9 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
-                  } subgroups`}
+                modalSubtitle={`You have ${
+                  allgroups.filter(a => !a.isParent)?.length || 0
+                } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1895,8 +1919,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                            chat.chat.groupMembers
-                                          )
+                                              chat.chat.groupMembers
+                                            )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -2222,7 +2246,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                        searchedMessages?.length > 1 ? (
+                                      searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2434,16 +2458,16 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           {msg?.sender ===
                                             currentUser.userID && (
-                                              <DropdownItem
-                                                href="#"
-                                                onClick={() => {
-                                                  setCurEditMessageId(msg)
-                                                  setMessageEditModalOpen(true)
-                                                }}
-                                              >
-                                                Edit
-                                              </DropdownItem>
-                                            )}
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() => {
+                                                setCurEditMessageId(msg)
+                                                setMessageEditModalOpen(true)
+                                              }}
+                                            >
+                                              Edit
+                                            </DropdownItem>
+                                          )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2467,8 +2491,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                  "Unable to  delete other's message"
-                                                )
+                                                    "Unable to  delete other's message"
+                                                  )
                                             }}
                                           >
                                             Delete
@@ -2480,7 +2504,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                              currentChat?.color
+                                            currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2533,7 +2557,7 @@ const ChatRc = () => {
 
                                               <div
                                                 style={{
-                                                  whiteSpace: "break-spaces",                                                 
+                                                  whiteSpace: "break-spaces",
                                                 }}
                                                 dangerouslySetInnerHTML={{
                                                   __html: msg?.messageData,
@@ -2563,7 +2587,7 @@ const ChatRc = () => {
                                             // </div>
                                             <div
                                               style={{
-                                                whiteSpace: "break-spaces",                                                                                          
+                                                whiteSpace: "break-spaces",
                                               }}
                                               dangerouslySetInnerHTML={{
                                                 __html: msg?.messageData,
@@ -2619,7 +2643,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                                currentChat?.color
+                                              currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2629,7 +2653,7 @@ const ChatRc = () => {
                                               currentUser?.lastname}
                                           </div>
                                           <div className="mb-1">
-                                            {msg.messageData}                                        
+                                            {msg.messageData}
                                           </div>
                                           <p className="chat-time mb-0">
                                             <i className="bx bx-loader bx-spin  align-middle me-1" />
@@ -2659,7 +2683,7 @@ const ChatRc = () => {
                               <div class="col">
                                 <div class="position-relative">
                                   {recorder &&
-                                    recorder.state === "recording" ? (
+                                  recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
@@ -2687,37 +2711,28 @@ const ChatRc = () => {
                                           ></audio>
                                         </div>
                                       ) : (
-                                        <div className="border border-secondary-subtle rounded-4 py-1 px-1">
-                                          {isQuil ? (
-                                            <ReactQuill
-                                              theme="snow"
-                                              value={curMessage}
-                                              onKeyPress={onKeyPress}
-                                              onChange={setcurMessage}
-                                              modules={toolbarOptions}
-                                              placeholder="Enter Message..."
-                                            />
-                                          ) : (
-                                            <MentionsInput
-                                              type="text"
-                                              value={curMessage}
-                                              onKeyPress={onKeyPress}
-                                              style={{
-                                                resize: "none",
-                                              }}
-                                              onChange={e =>
-                                                setcurMessage(e.target.value)
-                                              }
-                                              className="form-control chat-input"
-                                              placeholder="Enter Message..."
-                                            >
-                                              <Mention
-                                                trigger="@"
-                                                data={mentionsArray}
-                                              />
-                                            </MentionsInput>
-                                          )}
-                                        </div>
+                                        <>
+                                          <ReactQuill
+                                            theme="snow"
+                                            value={curMessage}
+                                            onKeyPress={onKeyPress}
+                                            modules={modules}
+                                            placeholder="Enter Message..."
+                                            onChange={(
+                                              content,
+                                              delta,
+                                              source,
+                                              editor
+                                            ) => {
+                                              setcurMessage(
+                                                content,
+                                                delta,
+                                                source,
+                                                editor
+                                              )
+                                            }}
+                                          />
+                                        </>
                                       )}
                                     </>
                                   )}
@@ -2736,7 +2751,7 @@ const ChatRc = () => {
                                           onClick={() =>
                                             handleFileRemove(att?.name)
                                           }
-                                          style={{cursor :"pointer"}}
+                                          style={{ cursor: "pointer" }}
                                         />
                                       </span>
                                     ))}

@@ -11,7 +11,6 @@ import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
-                    
 
 const ReplyMsgModal = ({
   open,
@@ -84,7 +83,6 @@ const ReplyMsgModal = ({
           <Row>
             <Col>
               <div className="position-relative">
-
                 <ReactQuill
                   theme="snow"
                   style={{
@@ -95,21 +93,6 @@ const ReplyMsgModal = ({
                   onChange={setReplyMessage}
                   placeholder="Enter Message..."
                 />
-                  
-                  {/* <MentionsInput
-                    type="text"
-                    value={replyMessage}
-                    style={{
-                      resize: "none",
-                      height: "auto",
-                    }}
-                    onChange={e => setReplyMessage(e.target.value)}
-                    className="form-control chat-input"
-                    placeholder="Enter Message..."
-                  >
-                    <Mention trigger="@" />
-                  </MentionsInput> */}
-                
               </div>
             </Col>
           </Row>

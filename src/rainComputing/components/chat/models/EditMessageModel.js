@@ -75,22 +75,6 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
                     overflow: "hidden",
                   }}
                 />
-                {/* <MentionsInput
-                  type="text"
-                  value={updateMessages}
-                  style={{
-                    resize: "none",
-                    height: "auto",
-                    overflow: "hidden",
-                  }}
-                  onChange={e => setUpdateMessages(e.target.value)}
-                  className="form-control chat-input"
-                  defaultValue={messages?.find(
-                    m => m._id === curMessageId?.messageData
-                  )}
-                >
-                     <Mention trigger="@" />
-                </MentionsInput> */}
               </div>
             </Col>
           </Row>
