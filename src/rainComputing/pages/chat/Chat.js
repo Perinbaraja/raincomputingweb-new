@@ -2766,22 +2766,6 @@ const ChatRc = () => {
                             {recorder && recorder.state === "recording" ? (
                               <></>
                             ) : (
-                              <div className="" style={{ marginTop: "15px" }}>
-                                <i
-                                  title="Rich Text"
-                                  style={{
-                                    marginRight: "5px",
-                                    fontSize: "14px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={toggle_Quill}
-                                  className="bi bi-menu-button-wide-fill text-primary"
-                                ></i>
-                              </div>
-                            )}
-                            {recorder && recorder.state === "recording" ? (
-                              <></>
-                            ) : (
                               <div>
                                 <input
                                   type="file"
