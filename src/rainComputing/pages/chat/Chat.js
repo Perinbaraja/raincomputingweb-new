@@ -290,8 +290,7 @@ const ChatRc = () => {
 
   const modules = {
     toolbar: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
+      [{ header: "1" }, { header: "2" }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link"],
@@ -817,7 +816,6 @@ const ChatRc = () => {
       setDeleteMessage(res)
       setIsDeleteMsg(true)
       toastr.success(`Message  has been Deleted successfully`, "Success")
-      setcurMessage("Message Deleted")
       //setDelMsg()
       const res1 = await getMessagesByUserIdandGroupId(payload)
       if (res1.success) {

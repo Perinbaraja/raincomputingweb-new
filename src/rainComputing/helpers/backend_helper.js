@@ -8,7 +8,7 @@ const getAttorneysCount = payload =>
   post(`${BASE_URL}/user/attorneyCount`, payload)
 
 const getAllUsers = payload => post(`${BASE_URL}/user/allUser`, payload)
-
+const notifySound = payload => post(`${BASE_URL}/user/notifySound`, payload)
 const getAllChatRooms = payload =>
   post(`${BASE_URL}/pchat/getAllChatRoomByUserId`, payload)
 
@@ -299,5 +299,6 @@ export {
   getintervalIdDetails,
   getIntervalByIdActive,
   intervalIdUpdate,
-  profilePicRemove
+  profilePicRemove,
+  notifySound
 }
