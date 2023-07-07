@@ -101,6 +101,8 @@ const getFileFromGFS = ({ id }, config) =>
   get(`${SERVER_URL}/file/${id}`, config)
 const profilePicUpdate = payload =>
   put(`${BASE_URL}/user/profilePicUpdate`, payload)
+const profilePicRemove = payload =>
+  post(`${BASE_URL}/user/profilePicRemove`, payload)
 
 //Admin
 const adminLogin = payload => post(`${BASE_URL}/admin/adminLogin`, payload)
@@ -296,5 +298,6 @@ export {
   getCaseIdByIntervals,
   getintervalIdDetails,
   getIntervalByIdActive,
-  intervalIdUpdate
+  intervalIdUpdate,
+  profilePicRemove
 }

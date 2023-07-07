@@ -31,7 +31,7 @@ import {
   userUpdate,
   profilePicUpdate,
   updatePassword,
-
+  profilePicRemove,
 } from "rainComputing/helpers/backend_helper"
 import profile from "store/auth/profile/reducer"
 import { values } from "lodash"
@@ -57,12 +57,10 @@ const UserProfile = props => {
     initialValues: {
       firstname: currentUser?.firstname,
       lastname: currentUser?.lastname,
-
     },
     validationSchema: Yup.object({
       firstname: Yup.string().required("Please Enter Your First Name"),
       lastname: Yup.string().required("Please Enter Your Last Name"),
-
     }),
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
@@ -83,26 +81,23 @@ const UserProfile = props => {
   })
   const handleUpdatePassword = async () => {
     if (validation.values.password === validation.values.confirmPassword) {
-
       const res = await updatePassword({
         userID: currentUser.userID,
-        password: validation.values.password
+        password: validation.values.password,
       })
 
       if (res.success) {
-        setPasswordUpateError("");
-        localStorage.setItem("authUser", JSON.stringify(res));
-        setCurrentUser(res);
-        validation.values.password = '';
-        validation.values.confirmPassword = '';
-        setPasswordUpateSuccess(res.msg);
+        setPasswordUpateError("")
+        localStorage.setItem("authUser", JSON.stringify(res))
+        setCurrentUser(res)
+        validation.values.password = ""
+        validation.values.confirmPassword = ""
+        setPasswordUpateSuccess(res.msg)
       } else {
-        setPasswordUpateSuccess("");
+        setPasswordUpateSuccess("")
         setPasswordUpateError("Failed to update password !!")
       }
-    }
-    else
-      setProLoading(false)
+    } else setProLoading(false)
   }
 
   const profilePicUpload = async e => {
@@ -112,16 +107,19 @@ const UserProfile = props => {
     const res = await convertBase64(file)
     const updateRes = await profilePicUpdate({
       profilePic: res,
-      email: currentUser?.email
+      email: currentUser?.email,
     })
 
     if (updateRes.success) {
       setProfileUpateError("")
       localStorage.setItem("authUser", JSON.stringify(updateRes))
       setCurrentUser(updateRes)
-      toastr.success("Profile Picture has been updated successfully", "Success!!!")
+      toastr.success(
+        "Profile Picture has been updated successfully",
+        "Success!!!"
+      )
     } else {
-      setProfileUpateSuccess("");
+      setProfileUpateSuccess("")
       toastr.error("Failed to update the Profile Picture", "Failed!!!")
     }
 
@@ -137,18 +135,18 @@ const UserProfile = props => {
   } = useToggle(false)
 
   const onDeleteProfile = async () => {
-
     const payload = {
       email: currentUser?.email,
-      isProfilePic: true
     }
-
-    const res = await profilePicUpdate(payload)
+    const res = await profilePicRemove(payload)
 
     if (res.success) {
-      toastr.success("Profile Picture has been Deleted successfully", "Success!!!")
-      localStorage.setItem("authUser", JSON.stringify(res.res))
-      setCurrentUser(res?.res)
+      toastr.success(
+        "Profile Picture has been Deleted successfully",
+        "Success!!!"
+      )
+      localStorage.setItem("authUser", JSON.stringify(res))
+      setCurrentUser(res)
     } else {
       toastr.error("Failed to delete the Profile Picture", "Failed!!!")
     }
@@ -210,7 +208,7 @@ const UserProfile = props => {
                           <div>
                             <img
                               src={
-                                currentUser?.isProfilePic
+                                currentUser?.profilePic
                                   ? currentUser.profilePic
                                   : avatar
                               }
@@ -247,17 +245,18 @@ const UserProfile = props => {
                       onDeleteClick={() => onDeleteProfile()}
                       confirmText="Yes,Remove"
                       cancelText="Cancel"
-                      onCloseClick={toggleProfileDeleteModalOpen
-                      }
+                      onCloseClick={toggleProfileDeleteModalOpen}
                     />
-                    {currentUser.isProfilePic &&
+                    {currentUser.profilePic && (
                       <div>
-                        <i className="bi bi-pencil-square text-danger" title="Remove Profile pic"
+                        <i
+                          className="bi bi-pencil-square text-danger"
+                          title="Remove Profile pic"
                           style={{ fontSize: "12px", cursor: "pointer" }}
-                          onClick={() => handleProfilePicDelete()}>
-                        </i>
+                          onClick={() => handleProfilePicDelete()}
+                        ></i>
                       </div>
-                    }
+                    )}
 
                     <div className="flex-grow-1 align-self-center ms-3">
                       <div className="text-muted">
@@ -300,13 +299,13 @@ const UserProfile = props => {
                         value={validation.values.firstname || ""}
                         invalid={
                           validation.touched.firstname &&
-                            validation.errors.firstname
+                          validation.errors.firstname
                             ? true
                             : false
                         }
                       />
                       {validation.touched.firstname &&
-                        validation.errors.firstname ? (
+                      validation.errors.firstname ? (
                         <FormFeedback type="invalid">
                           {validation.errors.firstname}
                         </FormFeedback>
@@ -329,13 +328,13 @@ const UserProfile = props => {
                         value={validation.values.lastname || ""}
                         invalid={
                           validation.touched.lastname &&
-                            validation.errors.lastname
+                          validation.errors.lastname
                             ? true
                             : false
                         }
                       />
                       {validation.touched.lastname &&
-                        validation.errors.lastname ? (
+                      validation.errors.lastname ? (
                         <FormFeedback type="invalid">
                           {validation.errors.lastname}
                         </FormFeedback>
@@ -343,8 +342,6 @@ const UserProfile = props => {
                     </FormGroup>
                   </Col>
                 </Row>
-
-
 
                 {loading ? (
                   <button
@@ -368,10 +365,8 @@ const UserProfile = props => {
 
           <Card>
             <CardBody>
-              <Row >
+              <Row>
                 <Col md="6">
-
-
                   <FormGroup className="mb-3">
                     <Label htmlFor="validationCustom02">New Password</Label>
                     <Input
@@ -383,12 +378,12 @@ const UserProfile = props => {
                       onChange={validation.handleChange}
                       // onBlur={validation.handleBlur}
                       value={validation.values.password || ""}
-                    // invalid={
-                    //   validation.touched.lastname &&
-                    //   validation.errors.lastname
-                    //     ? true
-                    //     : false
-                    // }
+                      // invalid={
+                      //   validation.touched.lastname &&
+                      //   validation.errors.lastname
+                      //     ? true
+                      //     : false
+                      // }
                     />
                     {/* {validation.touched.lastname &&
                       validation.errors.lastname ? (
@@ -409,17 +404,15 @@ const UserProfile = props => {
                       type="password"
                       className="form-control"
                       id="validationCustom02"
-                      onChange={
-                        validation.handleChange
-                      }
+                      onChange={validation.handleChange}
                       // onBlur={validation.handleBlur}
                       value={validation.values.confirmPassword || ""}
-                    // invalid={
-                    //   validation.touched.lastname &&
-                    //   validation.errors.lastname
-                    //     ? true
-                    //     : false
-                    // }
+                      // invalid={
+                      //   validation.touched.lastname &&
+                      //   validation.errors.lastname
+                      //     ? true
+                      //     : false
+                      // }
                     />
                     {/* {validation.touched.lastname &&
                       validation.errors.lastname ? (
@@ -440,15 +433,18 @@ const UserProfile = props => {
                   Registering...
                 </button>
               ) : (
-                <Button color="primary" type="submit" onClick={() => {
-                  handleUpdatePassword()
-                }}>
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={() => {
+                    handleUpdatePassword()
+                  }}
+                >
                   Update
                 </Button>
               )}
             </CardBody>
           </Card>
-
         </Container>
       </div>
     </React.Fragment>
