@@ -13,7 +13,6 @@ import "./landingcard.scss"
 const LandingCard = props => {
   const imgIndex = Math.floor(Math.random() * 8)
   const { user } = props
-
   return (
     <React.Fragment>
       <Col xl="4" md="6" sm="12">
@@ -26,7 +25,9 @@ const LandingCard = props => {
                   <img
                     className="avatar-xl1"
                     src={
-                      user?.regUser?.profilePic
+                      user?.regUser?.isProfilePic
+
+                      
                         ? user?.regUser?.profilePic
                         : attImages[imgIndex].url
                     }
