@@ -25,6 +25,7 @@ import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
+import NotificationSettings from "./NotificationSettings"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -33,34 +34,20 @@ const ProfileMenu = props => {
   const { currentUser, setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
-  const [isNotifySound, setIsNotifySound] = useState(false)
   const location = useLocation()
   const {
     toggleOpen: completeCaseModelOpen,
     setToggleOpen: setCompleteCaseModelOpen,
     toggleIt: toggleCompleteCaseModelOpen,
   } = useToggle(false)
+  const {
+    toggleOpen: notificationSettingsModelOpen,
+    setToggleOpen: setNotificationSettingsModelOpen,
+    toggleIt: toggleNotificationSettingsModelOpen,
+  } = useToggle(false)
   const isLoginButton =
     location.pathname.includes("/login") ||
     location.pathname.includes("/register")
-
-  const handleCheckboxChange = async event => {
-    const isChecked = event.target.checked
-    console.log("isChecked :", isChecked)
-    setIsNotifySound(isChecked)
-    try {
-      const response = await notifySound({
-        _id: currentUser?.userID,
-        isNotifySound: isChecked,
-      })
-      console.log("API response:", response)
-      //  setCurrentUser( response?.data?.isNotifySound || false)
-      localStorage.setItem("authUser", JSON.stringify(response))
-      setCurrentUser(response)
-    } catch (error) {
-      console.error("API error:", error)
-    }
-  }
 
   const handleLogout = async () => {
     const res = await logoutUser()
@@ -75,9 +62,11 @@ const ProfileMenu = props => {
   }
 
   const handleCaseCompletedModal = () => {
-    setCompleteCaseModelOpen(true);
+    setCompleteCaseModelOpen(true)
   }
-
+  const handleNotificationModal = () => {
+    setNotificationSettingsModelOpen(true)
+  }
   return (
     <React.Fragment>
       <DynamicModel
@@ -103,6 +92,21 @@ const ProfileMenu = props => {
         <DynamicSuspense>
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
             <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
+          </div>
+        </DynamicSuspense>
+      </DynamicModel>
+      <DynamicModel
+        open={notificationSettingsModelOpen}
+        toggle={toggleNotificationSettingsModelOpen}
+        size="md"
+        modalTitle="Notifiction Settings"
+        footer={false}
+      >
+        <DynamicSuspense>
+          <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+            <NotificationSettings
+              setModalOpen={setNotificationSettingsModelOpen}
+            />
           </div>
         </DynamicSuspense>
       </DynamicModel>
@@ -158,6 +162,10 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
+            <DropdownItem tag="a" onClick={() => handleNotificationModal()}>
+              <i className="bx bx-alarm font-size-16 align-middle me-1" />
+              {props.t("Notification Setting")}
+            </DropdownItem>
             {currentAttorney && (
               <DropdownItem
                 tag="a"
@@ -176,15 +184,7 @@ const ProfileMenu = props => {
             )}
 
             <div className="dropdown-divider" />
-            <div className="form-switch" style={{ paddingLeft: "55px" }}>
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={currentUser?.isNotifySound}
-                onClick={handleCheckboxChange}
-              />
-              <label className="">Notification Sound</label>
-            </div>
+
             <Link
               to="#"
               className="dropdown-item"

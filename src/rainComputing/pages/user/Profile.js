@@ -38,7 +38,7 @@ import { values } from "lodash"
 
 import DeleteModal from "rainComputing/components/modals/DeleteModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
-import NotificationSounds from "components/CommonForBoth/TopbarDropdown/NotificationSounds"
+import NotificationSounds from "components/CommonForBoth/TopbarDropdown/NotificationSettings"
 const UserProfile = props => {
   const user = localStorage.getItem("authUser")
   const [updateSuccess, setUpdateSuccess] = useState("")
@@ -267,7 +267,6 @@ const UserProfile = props => {
                         <p className="mb-1">{currentUser.email}</p>
                       </div>
                     </div>
-                    <div><NotificationSounds /></div>
                   </div>
                 </CardBody>
               </Card>

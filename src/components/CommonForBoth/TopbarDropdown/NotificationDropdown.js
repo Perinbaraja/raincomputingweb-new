@@ -11,35 +11,36 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import ChatLoader from "rainComputing/components/chat/ChatLoader"
 import PrivateReplyMsg from "rainComputing/components/chat/PrivateReplyMsg"
 import GroupReplyMsg from "rainComputing/components/chat/GroupReplyMsg"
-import notification from "../../../assets/sound/1.mp3"
 
-const NotificationDropdown = (props) => {
-  const { currentUser } = useUser()
-  const { notifications,setNotifications } = useNotifications()
+const NotificationDropdown = props => {
+  const { currentUser, setCurrentUser } = useUser()
+  const { notifications, setNotifications } = useNotifications()
+ 
   const [loading, setLoading] = useState(false)
   const [menu, setMenu] = useState(false)
-  console.log("currentUser :",currentUser)
 
-// useEffect(() => {
-//   // Check if there are new notifications
-//   if(currentUser?.isNotifySound )
-//   {const newNotifications = notifications.filter((notify) => !notify.playedSound);
+  useEffect(() => {
+    // Check if there are new notifications
+    if (currentUser?.isNotifySound) {
+      const newNotifications = notifications.filter(
+        notify => !notify.playedSound
+      )
 
-//   if (newNotifications.length > 0) {
-//     // Play the audio notification for each new notification
-//     newNotifications.forEach((notify) => {
-//       const audioElement = new Audio(notification);
-//       audioElement.play();
+      if (newNotifications.length > 0) {
+        // Play the audio notification for each new notification
+        newNotifications.forEach(notify => {
+          const audioElement = new Audio(currentUser?.notificationSound)
+          audioElement.play()
 
-//       // Update the notification to mark it as played
-//       notify.playedSound = true;
-//     });
+          // Update the notification to mark it as played
+          notify.playedSound = true
+        })
 
-//     // To trigger re-render and update the notifications array in state
-//     setNotifications([...notifications]);
-//   }}
-// }, [notifications]);
-
+        // To trigger re-render and update the notifications array in state
+        setNotifications([...notifications])
+      }
+    }
+  }, [currentUser?.isNotifySound, notifications, ])
 
   return (
     <React.Fragment>
