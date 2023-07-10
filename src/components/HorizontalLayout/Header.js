@@ -92,7 +92,9 @@ const Header = props => {
                         <Link to="/appointment-status">Connection</Link>   
                       </li>
                     )}
-                      <DocketMenu />
+                    <li id="navmen" className="">
+                    <DocketMenu />
+                    </li>                      
                   </ul>
                 </div>
                 <div className="d-flex align-items-center gap-2">

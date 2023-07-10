@@ -14,7 +14,8 @@ import {
   FormFeedback,
   Form,
 } from "reactstrap"
-
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 // Formik Validation
 import * as Yup from "yup"
 import { useFormik } from "formik"
@@ -29,11 +30,15 @@ import { useUser } from "rainComputing/contextProviders/UserProvider"
 import {
   userUpdate,
   profilePicUpdate,
-  updatePassword
+  updatePassword,
+  profilePicRemove,
 } from "rainComputing/helpers/backend_helper"
 import profile from "store/auth/profile/reducer"
 import { values } from "lodash"
 
+import DeleteModal from "rainComputing/components/modals/DeleteModal"
+import { useToggle } from "rainComputing/helpers/hooks/useToggle"
+import NotificationSounds from "components/CommonForBoth/TopbarDropdown/NotificationSettings"
 const UserProfile = props => {
   const user = localStorage.getItem("authUser")
   const [updateSuccess, setUpdateSuccess] = useState("")
@@ -46,7 +51,6 @@ const UserProfile = props => {
   const [profileUpdateError, setProfileUpateError] = useState("")
   const [passwordUpdateSuccess, setPasswordUpateSuccess] = useState("")
   const [passwordUpdateError, setPasswordUpateError] = useState("")
-
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
@@ -54,12 +58,10 @@ const UserProfile = props => {
     initialValues: {
       firstname: currentUser?.firstname,
       lastname: currentUser?.lastname,
-     
     },
     validationSchema: Yup.object({
       firstname: Yup.string().required("Please Enter Your First Name"),
       lastname: Yup.string().required("Please Enter Your Last Name"),
-     
     }),
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
@@ -78,28 +80,25 @@ const UserProfile = props => {
       setLoading(false)
     },
   })
- const handleUpdatePassword = async () => {  
-  if(validation.values.password ===validation.values.confirmPassword){
+  const handleUpdatePassword = async () => {
+    if (validation.values.password === validation.values.confirmPassword) {
+      const res = await updatePassword({
+        userID: currentUser.userID,
+        password: validation.values.password,
+      })
 
-  const res = await updatePassword({
-    userID: currentUser.userID,
-    password:validation.values.password
-  })
- 
-  if(res.success){
-    setPasswordUpateError("");
-    localStorage.setItem("authUser", JSON.stringify(res));
-    setCurrentUser(res);
-    validation.values.password='';
-    validation.values.confirmPassword='';
-    setPasswordUpateSuccess(res.msg);
-  } else {
-    setPasswordUpateSuccess("");
-    setPasswordUpateError("Failed to update password !!")
-  }
-  }
-  else
-    setProLoading(false)
+      if (res.success) {
+        setPasswordUpateError("")
+        localStorage.setItem("authUser", JSON.stringify(res))
+        setCurrentUser(res)
+        validation.values.password = ""
+        validation.values.confirmPassword = ""
+        setPasswordUpateSuccess(res.msg)
+      } else {
+        setPasswordUpateSuccess("")
+        setPasswordUpateError("Failed to update password !!")
+      }
+    } else setProLoading(false)
   }
 
   const profilePicUpload = async e => {
@@ -116,13 +115,46 @@ const UserProfile = props => {
       setProfileUpateError("")
       localStorage.setItem("authUser", JSON.stringify(updateRes))
       setCurrentUser(updateRes)
-      setProfileUpateSuccess("User Profile updated Successfully")
+      toastr.success(
+        "Profile Picture has been updated successfully",
+        "Success!!!"
+      )
     } else {
-      setProfileUpateSuccess("");
-      setProfileUpateError("Failed to update userProfile !!")
+      setProfileUpateSuccess("")
+      toastr.error("Failed to update the Profile Picture", "Failed!!!")
     }
 
     setProLoading(false)
+  }
+
+  // Profile Pic Delete
+
+  const {
+    toggleOpen: profileDeleteModalOpen,
+    setToggleOpen: setProfileDeleteModalOpen,
+    toggleIt: toggleProfileDeleteModalOpen,
+  } = useToggle(false)
+
+  const onDeleteProfile = async () => {
+    const payload = {
+      email: currentUser?.email,
+    }
+    const res = await profilePicRemove(payload)
+
+    if (res.success) {
+      toastr.success(
+        "Profile Picture has been Deleted successfully",
+        "Success!!!"
+      )
+      localStorage.setItem("authUser", JSON.stringify(res))
+      setCurrentUser(res)
+    } else {
+      toastr.error("Failed to delete the Profile Picture", "Failed!!!")
+    }
+    setProfileDeleteModalOpen(false)
+  }
+  const handleProfilePicDelete = () => {
+    setProfileDeleteModalOpen(true)
   }
 
   const convertBase64 = file => {
@@ -158,12 +190,12 @@ const UserProfile = props => {
               {profileUpdateSuccess && (
                 <Alert color="success">{profileUpdateSuccess}</Alert>
               )}
-                {passwordUpdateError && (
-                      <Alert color="danger">{passwordUpdateError}</Alert>
-                    )}
-                    {passwordUpdateSuccess && (
-                      <Alert color="success">{passwordUpdateSuccess}</Alert>
-                    )}
+              {passwordUpdateError && (
+                <Alert color="danger">{passwordUpdateError}</Alert>
+              )}
+              {passwordUpdateSuccess && (
+                <Alert color="success">{passwordUpdateSuccess}</Alert>
+              )}
               <Card>
                 <CardBody>
                   <div className="d-flex">
@@ -174,16 +206,18 @@ const UserProfile = props => {
                             <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
                           </div>
                         ) : (
-                          <img
-                            src={
-                              currentUser.profilePic
-                                ? currentUser.profilePic
-                                : avatar
-                            }
-                            alt="profile"
-                            className="avatar-lg rounded-circle img-thumbnail"
-                            style={{ objectFit: "cover" }}
-                          />
+                          <div>
+                            <img
+                              src={
+                                currentUser?.profilePic
+                                  ? currentUser.profilePic
+                                  : avatar
+                              }
+                              alt="profile"
+                              className="avatar-lg rounded-circle img-thumbnail"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
                         )}
                         {/* <img
                           src={
@@ -207,6 +241,24 @@ const UserProfile = props => {
                         }}
                       />
                     </div>
+                    <DeleteModal
+                      show={profileDeleteModalOpen}
+                      onDeleteClick={() => onDeleteProfile()}
+                      confirmText="Yes,Remove"
+                      cancelText="Cancel"
+                      onCloseClick={toggleProfileDeleteModalOpen}
+                    />
+                    {currentUser.profilePic && (
+                      <div>
+                        <i
+                          className="bi bi-pencil-square text-danger"
+                          title="Remove Profile pic"
+                          style={{ fontSize: "12px", cursor: "pointer" }}
+                          onClick={() => handleProfilePicDelete()}
+                        ></i>
+                      </div>
+                    )}
+
                     <div className="flex-grow-1 align-self-center ms-3">
                       <div className="text-muted">
                         <h5>
@@ -291,8 +343,6 @@ const UserProfile = props => {
                     </FormGroup>
                   </Col>
                 </Row>
-               
-
 
                 {loading ? (
                   <button
@@ -316,87 +366,86 @@ const UserProfile = props => {
 
           <Card>
             <CardBody>
-            <Row >
-                  <Col md="6">
-                  
-                  
-                    <FormGroup className="mb-3">
-                      <Label htmlFor="validationCustom02">New Password</Label>
-                      <Input
-                        name="password"
-                        placeholder="New Password"
-                        type="password"
-                        className="form-control"
-                        id="  "
-                        onChange={validation.handleChange}
-                        // onBlur={validation.handleBlur}
-                         value={validation.values.password || ""}
-                        // invalid={
-                        //   validation.touched.lastname &&
-                        //   validation.errors.lastname
-                        //     ? true
-                        //     : false
-                        // }
-                      />
-                      {/* {validation.touched.lastname &&
+              <Row>
+                <Col md="6">
+                  <FormGroup className="mb-3">
+                    <Label htmlFor="validationCustom02">New Password</Label>
+                    <Input
+                      name="password"
+                      placeholder="New Password"
+                      type="password"
+                      className="form-control"
+                      id="  "
+                      onChange={validation.handleChange}
+                      // onBlur={validation.handleBlur}
+                      value={validation.values.password || ""}
+                      // invalid={
+                      //   validation.touched.lastname &&
+                      //   validation.errors.lastname
+                      //     ? true
+                      //     : false
+                      // }
+                    />
+                    {/* {validation.touched.lastname &&
                       validation.errors.lastname ? (
                         <FormFeedback type="invalid">
                           {validation.errors.lastname}
                         </FormFeedback>
                       ) : null} */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md="6">
-                    <FormGroup className="mb-3">
-                      <Label htmlFor="validationCustom02">Confirm Password</Label>
-                      <Input
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        type="password"
-                        className="form-control"
-                        id="validationCustom02"
-                        onChange={
-                          validation.handleChange
-                          }
-                        // onBlur={validation.handleBlur}
-                         value={validation.values.confirmPassword || ""}
-                        // invalid={
-                        //   validation.touched.lastname &&
-                        //   validation.errors.lastname
-                        //     ? true
-                        //     : false
-                        // }
-                      />
-                      {/* {validation.touched.lastname &&
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="6">
+                  <FormGroup className="mb-3">
+                    <Label htmlFor="validationCustom02">Confirm Password</Label>
+                    <Input
+                      name="confirmPassword"
+                      placeholder="Confirm Password"
+                      type="password"
+                      className="form-control"
+                      id="validationCustom02"
+                      onChange={validation.handleChange}
+                      // onBlur={validation.handleBlur}
+                      value={validation.values.confirmPassword || ""}
+                      // invalid={
+                      //   validation.touched.lastname &&
+                      //   validation.errors.lastname
+                      //     ? true
+                      //     : false
+                      // }
+                    />
+                    {/* {validation.touched.lastname &&
                       validation.errors.lastname ? (
                         <FormFeedback type="invalid">
                           {validation.errors.lastname}
                         </FormFeedback>
                       ) : null} */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                {loading ? (
-                  <button
-                    type="button"
-                    className="btn btn-dark"
-                    style={{ cursor: "not-allowed" }}
-                  >
-                    <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
-                    Registering...
-                  </button>
-                ) : (
-                  <Button color="primary" type="submit"  onClick={() => {
+                  </FormGroup>
+                </Col>
+              </Row>
+              {loading ? (
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  style={{ cursor: "not-allowed" }}
+                >
+                  <i className="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>
+                  Registering...
+                </button>
+              ) : (
+                <Button
+                  color="primary"
+                  type="submit"
+                  onClick={() => {
                     handleUpdatePassword()
-                  }}>
-                    Update
-                  </Button>
-                )}
+                  }}
+                >
+                  Update
+                </Button>
+              )}
             </CardBody>
           </Card>
-        
         </Container>
       </div>
     </React.Fragment>

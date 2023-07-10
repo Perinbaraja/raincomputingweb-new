@@ -8,7 +8,8 @@ const getAttorneysCount = payload =>
   post(`${BASE_URL}/user/attorneyCount`, payload)
 
 const getAllUsers = payload => post(`${BASE_URL}/user/allUser`, payload)
-
+const notifySound = payload => post(`${BASE_URL}/user/notifySound`, payload)
+const notificationSound = payload => post(`${BASE_URL}/user/notification-sound`, payload)
 const getAllChatRooms = payload =>
   post(`${BASE_URL}/pchat/getAllChatRoomByUserId`, payload)
 
@@ -101,6 +102,8 @@ const getFileFromGFS = ({ id }, config) =>
   get(`${SERVER_URL}/file/${id}`, config)
 const profilePicUpdate = payload =>
   put(`${BASE_URL}/user/profilePicUpdate`, payload)
+const profilePicRemove = payload =>
+  post(`${BASE_URL}/user/profilePicRemove`, payload)
 
 //Admin
 const adminLogin = payload => post(`${BASE_URL}/admin/adminLogin`, payload)
@@ -296,5 +299,8 @@ export {
   getCaseIdByIntervals,
   getintervalIdDetails,
   getIntervalByIdActive,
-  intervalIdUpdate
+  intervalIdUpdate,
+  profilePicRemove,
+  notifySound,
+  notificationSound
 }

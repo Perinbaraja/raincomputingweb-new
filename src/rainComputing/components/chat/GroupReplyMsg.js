@@ -10,6 +10,7 @@ const GroupReplyMsg = props => {
   const [isLoading, setIsLoading] = useState(true)
   const [caseName, setCaseName] = useState(caseId)
   const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
+  const groupReplymsgId = replies.filter(reply => reply.replyMsg)[replies.length - 1]?._id;
   useEffect(() => {
     const getGroupName = async () => {
       const groupRes = await getGroupNameById({ caseId })
@@ -27,7 +28,7 @@ const GroupReplyMsg = props => {
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}&msg_id=${_id}`}
+          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}&msg_id=${_id}&reply_id=${groupReplymsgId}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">
