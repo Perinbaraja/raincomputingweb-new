@@ -27,25 +27,24 @@ const NotificationSounds = () => {
   ];
 
   // Define a default notification sound
-  const defaultNotificationSound = notification0;
+  const defaultNotificationSound = notification1;
   console.log("defaultNotificationSound:", defaultNotificationSound);
 
   // Inside your component...
   const [selectedNotificationSound, setSelectedNotificationSound] = useState(defaultNotificationSound);
   console.log("selectedNotificationSound:", selectedNotificationSound);
 
+  
   useEffect(() => {
     // Check if there are new notifications
     if (currentUser?.isNotifySound) {
-      const newNotifications = notifications.filter(
-        (notify) => !notify.playedSound
-      );
+      const newNotifications = notifications.filter((notify) => !notify.playedSound);
 
       if (newNotifications.length > 0) {
         // Play the audio notification for each new notification
         newNotifications.forEach((notify) => {
           const audioElement = new Audio(
-            notify.sound || selectedNotificationSound
+            defaultNotificationSound !== "Select" ? defaultNotificationSound : selectedNotificationSound
           );
           audioElement.play();
 
@@ -57,7 +56,7 @@ const NotificationSounds = () => {
         setNotifications([...notifications]);
       }
     }
-  }, [currentUser?.isNotifySound, notifications, selectedNotificationSound]);
+  }, [currentUser?.isNotifySound, notifications, selectedNotificationSound, defaultNotificationSound]);
 
   return (
     <select
