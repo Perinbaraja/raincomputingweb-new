@@ -187,7 +187,8 @@ const ChatRc = () => {
   const caseChatId = query.get("c_id")
   const groupReplyChatId = query.get("rg_id")
   const caseReplyChatId = query.get("rc_id")
-  const replymsgId = query.get("msg_id")
+  const replymsgId = query.get("reply_id")
+  const msgId = query.get("msg_id")
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
@@ -1569,18 +1570,15 @@ const ChatRc = () => {
   }
   const Locate = () => {
     const message = [...messages, ...visibleMessages].find(
-      msg => msg._id === replymsgId
+      msg => msg._id === msgId
     )
     if (message) {
       const messageElem = document.getElementById(message._id)
       if (messageElem) {
         messageElem.scrollIntoView({ behavior: "auto" })
-        messageElem.classList.add("highlighted")
-        messageElem.style.backgroundColor = "#FFD700"
       }
     }
   }
-
   useEffect(() => {
     if (replymsgId) {
       setTimeout(() => {
@@ -2622,6 +2620,12 @@ const ChatRc = () => {
                                                 dangerouslySetInnerHTML={{
                                                   __html: r?.replyMsg,
                                                 }}
+                                                // Check if _id is equal to replyMsgId and apply style if true
+                                                {...(r?._id === replymsgId && {
+                                                  style: {
+                                                    backgroundColor: "#e6e9f0",
+                                                  },
+                                                })}
                                               />
                                             </div>
                                           ))}
