@@ -2737,10 +2737,10 @@ const ChatRc = () => {
                                             theme="snow"
                                             className="quil"
                                             value={curMessage}
-                                            onKeyPress={onKeyPress}
+                                            onKeyDown={onKeyPress}
                                             modules={modules}
                                             placeholder="Enter Message..."
-                                            disabled={()=>isEmptyOrSpaces()}
+                                            disabled={isEmptyOrSpaces}
                                             onChange={(
                                               content,
                                               delta,
