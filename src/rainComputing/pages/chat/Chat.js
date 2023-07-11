@@ -1093,9 +1093,9 @@ const ChatRc = () => {
         attachments?.url,
         typeof attachments === "object" && attachments?.url
           ? {
-              url: attachments.url,
-              content: "View Attachment",
-            }
+            url: attachments.url,
+            content: "View Attachment",
+          }
           : "-",
       ]
       rows.push(tempRow)
@@ -1149,9 +1149,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1724,9 +1723,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1919,8 +1917,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                              chat.chat.groupMembers
-                                            )
+                                            chat.chat.groupMembers
+                                          )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -2126,7 +2124,7 @@ const ChatRc = () => {
                         </Col>
                       </Row>
                     ) : (
-                      <Card className="chat-card">
+                      <Card className="chat-card ">
                         <div className="py-2 px-3 border-bottom">
                           <Row>
                             <Col md="4" xs="6">
@@ -2246,7 +2244,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2402,7 +2400,7 @@ const ChatRc = () => {
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "500px",
+                                  height: "300px",
                                   overflowY: "scroll",
                                 }}
                               >
@@ -2458,16 +2456,16 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           {msg?.sender ===
                                             currentUser.userID && (
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                          )}
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  setCurEditMessageId(msg)
+                                                  setMessageEditModalOpen(true)
+                                                }}
+                                              >
+                                                Edit
+                                              </DropdownItem>
+                                            )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2491,8 +2489,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                    "Unable to  delete other's message"
-                                                  )
+                                                  "Unable to  delete other's message"
+                                                )
                                             }}
                                           >
                                             Delete
@@ -2504,7 +2502,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2547,6 +2545,7 @@ const ChatRc = () => {
                                             ? getMemberName(msg.sender)
                                             : getSenderOneChat(msg.sender)}
                                         </div>
+
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
                                             <>
@@ -2554,7 +2553,6 @@ const ChatRc = () => {
                                                 attachments={msg.attachments}
                                                 text={msg.messageData}
                                               />
-
                                               <div
                                                 style={{
                                                   whiteSpace: "break-spaces",
@@ -2563,6 +2561,7 @@ const ChatRc = () => {
                                                   __html: msg?.messageData,
                                                 }}
                                               />
+
                                               <div
                                                 className="mt-1"
                                                 style={{
@@ -2643,7 +2642,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2668,6 +2667,7 @@ const ChatRc = () => {
                               </div>
                             </ul>
                           </div>
+
                           {currentChat?.isGroup && (
                             <SubgroupBar
                               groups={allgroups}
@@ -2681,9 +2681,9 @@ const ChatRc = () => {
                           <div class="p-2 chat-input-section">
                             <div class="row">
                               <div class="col">
-                                <div class="position-relative">
+                                <div class="position-relative" style={{ border: "2px solid #9BAADD", borderRadius: "15px" }}>
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <div class="d-flex justify-content-center">
                                       <i
                                         class="mdi mdi-microphone font-size-18 text-primary"
@@ -2712,6 +2712,25 @@ const ChatRc = () => {
                                         </div>
                                       ) : (
                                         <>
+                                          <div className="p-2 pt-0" > {Array.from(allFiles)?.length > 0 && (
+                                            <div class="d-flex gap-2 flex-wrap mt-2">
+                                              {Array.from(allFiles)?.map((att, a) => (
+                                                <span
+                                                  class="badge badge-soft-primary font-size-13"
+                                                  key={a}
+                                                >
+                                                  {att.name}
+                                                  <i
+                                                    class="bx bx-x-circle mx-1"
+                                                    onClick={() =>
+                                                      handleFileRemove(att?.name)
+                                                    }
+                                                    style={{ cursor: "pointer" }}
+                                                  />
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}</div>
                                           <ReactQuill
                                             theme="snow"
                                             value={curMessage}
@@ -2731,38 +2750,20 @@ const ChatRc = () => {
                                                 editor
                                               )
                                             }}
+                                            style={{ flex: 1 }}
                                           />
                                         </>
                                       )}
                                     </>
                                   )}
                                 </div>
-
-                                {Array.from(allFiles)?.length > 0 && (
-                                  <div class="d-flex gap-2 flex-wrap mt-2">
-                                    {Array.from(allFiles)?.map((att, a) => (
-                                      <span
-                                        class="badge badge-soft-primary font-size-13"
-                                        key={a}
-                                      >
-                                        {att.name}
-                                        <i
-                                          class="bx bx-x-circle mx-1"
-                                          onClick={() =>
-                                            handleFileRemove(att?.name)
-                                          }
-                                          style={{ cursor: "pointer" }}
-                                        />
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div style={{ position: "sticky" }}>
-                          <div className="col-auto d-flex justify-content-end gap-2">
+                        <div  >
+                          <div className="col-auto d-flex justify-content-end  gap-2 " style={{ position: "absolute", right: "19px", bottom: "202px" }}>
+
                             {recorder && recorder.state === "recording" ? (
                               <></>
                             ) : (
@@ -2845,6 +2846,16 @@ const ChatRc = () => {
                             )}
                           </div>
                         </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
                       </Card>
                     )
                   ) : (
