@@ -378,7 +378,7 @@ const ChatRc = () => {
 
         if (visibleMessages.length < messages.length) {
           event.currentTarget.scrollTop = clientHeight
-        } else if (scrollTop + clientHeight === scrollHeight) {
+        } else if (scrollTop + clientHeight === Height) {
           // User has scrolled to the bottom, scroll to bottom automatically
           event.currentTarget.scrollTop = scrollHeight
         }
@@ -970,9 +970,8 @@ const ChatRc = () => {
     },
   })
   //Detecting Enter key Press in textbox
-  const onKeyPress = e => {
-    const { key } = e
-    if (key === "Enter" && !e.shiftKey) {
+  const onKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
     }
@@ -2061,7 +2060,7 @@ const ChatRc = () => {
                         ) : (
                           <PerfectScrollbar
                             style={{ height: "500px" }}
-                            onScroll={e => handleContactScroll(e?.target)}
+                            onScroll={(e) => handleContactScroll(e?.target)}
                           >
                             {contacts &&
                               contacts.map((contact, i) => (
@@ -2545,11 +2544,7 @@ const ChatRc = () => {
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
                                             <>
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
-                                              <div
+                                             <div
                                                 style={{
                                                   whiteSpace: "break-spaces",
                                                 }}
@@ -2557,6 +2552,11 @@ const ChatRc = () => {
                                                   __html: msg?.messageData,
                                                 }}
                                               />
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
+                                             
 
                                               <div
                                                 className="mt-1"
@@ -2735,10 +2735,12 @@ const ChatRc = () => {
                                           )}</div>
                                           <ReactQuill
                                             theme="snow"
+                                            className="quil"
                                             value={curMessage}
                                             onKeyPress={onKeyPress}
                                             modules={modules}
                                             placeholder="Enter Message..."
+                                            disabled={()=>isEmptyOrSpaces()}
                                             onChange={(
                                               content,
                                               delta,
