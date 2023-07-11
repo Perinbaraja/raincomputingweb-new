@@ -11,6 +11,9 @@ const PrivateReplyMsg = props => {
   const [senderName, setSenderName] = useState(sender)
   const [isLoading, setIsLoading] = useState(true)
   const Replymsg = replies.filter(reply => reply.replyMsg)[replies.length - 1]?.replyMsg;
+  const replymsgId = replies.filter((reply) => reply?._id)[replies.length - 1]?._id
+
+
 
   useEffect(() => {
     const getSenderName = async () => {
@@ -30,7 +33,7 @@ const PrivateReplyMsg = props => {
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rp_id=${groupId}&msg_id=${_id}`}
+          to={`/chat-rc?rp_id=${groupId}&msg_id=${_id}&reply_id=${replymsgId}`}
           className="text-reset notification-item"
         >
           <div className="d-flex">

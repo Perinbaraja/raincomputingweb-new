@@ -187,7 +187,8 @@ const ChatRc = () => {
   const caseChatId = query.get("c_id")
   const groupReplyChatId = query.get("rg_id")
   const caseReplyChatId = query.get("rc_id")
-  const replymsgId = query.get("msg_id")
+  const replymsgId = query.get("reply_id")
+  const msgId = query.get("msg_id")
   const { notifications, setNotifications } = useNotifications()
   const [forwardMessages, setForwardMessages] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
@@ -290,8 +291,7 @@ const ChatRc = () => {
 
   const modules = {
     toolbar: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
+      [{ header: "1" }, { header: "2" }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link"],
@@ -817,7 +817,6 @@ const ChatRc = () => {
       setDeleteMessage(res)
       setIsDeleteMsg(true)
       toastr.success(`Message  has been Deleted successfully`, "Success")
-      setcurMessage("Message Deleted")
       //setDelMsg()
       const res1 = await getMessagesByUserIdandGroupId(payload)
       if (res1.success) {
@@ -1570,18 +1569,15 @@ const ChatRc = () => {
   }
   const Locate = () => {
     const message = [...messages, ...visibleMessages].find(
-      msg => msg._id === replymsgId
+      msg => msg._id === msgId
     )
     if (message) {
       const messageElem = document.getElementById(message._id)
       if (messageElem) {
         messageElem.scrollIntoView({ behavior: "auto" })
-        messageElem.classList.add("highlighted")
-        messageElem.style.backgroundColor = "#FFD700"
       }
     }
   }
-
   useEffect(() => {
     if (replymsgId) {
       setTimeout(() => {
@@ -2623,6 +2619,12 @@ const ChatRc = () => {
                                                 dangerouslySetInnerHTML={{
                                                   __html: r?.replyMsg,
                                                 }}
+                                                // Check if _id is equal to replyMsgId and apply style if true
+                                                {...(r?._id === replymsgId && {
+                                                  style: {
+                                                    backgroundColor: "#e6e9f0",
+                                                  },
+                                                })}
                                               />
                                             </div>
                                           ))}

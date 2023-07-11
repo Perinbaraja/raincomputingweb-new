@@ -16,7 +16,7 @@ import { withRouter, Link, useHistory, NavLink } from "react-router-dom"
 // users
 import user1 from "../../../assets/images/avatar-defult.jpg"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { logoutUser } from "rainComputing/helpers/backend_helper"
+import { logoutUser, notifySound } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import { useLocation } from "react-router-dom"
 import "../TopbarDropdown/login.scss"
@@ -25,6 +25,7 @@ import DynamicModel from "rainComputing/components/modals/DynamicModal"
 import { useToggle } from "rainComputing/helpers/hooks/useToggle"
 import DynamicSuspense from "rainComputing/components/loader/DynamicSuspense"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
+import NotificationSettings from "./NotificationSettings"
 
 const ProfileMenu = props => {
   // Declare a new state variable, which we'll call "menu"
@@ -33,12 +34,16 @@ const ProfileMenu = props => {
   const { currentUser, setCurrentUser } = useUser()
   const { socket } = useSocket()
   const [menu, setMenu] = useState(false)
-
   const location = useLocation()
   const {
     toggleOpen: completeCaseModelOpen,
     setToggleOpen: setCompleteCaseModelOpen,
     toggleIt: toggleCompleteCaseModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: notificationSettingsModelOpen,
+    setToggleOpen: setNotificationSettingsModelOpen,
+    toggleIt: toggleNotificationSettingsModelOpen,
   } = useToggle(false)
   const isLoginButton =
     location.pathname.includes("/login") ||
@@ -57,9 +62,11 @@ const ProfileMenu = props => {
   }
 
   const handleCaseCompletedModal = () => {
-    setCompleteCaseModelOpen(true);
+    setCompleteCaseModelOpen(true)
   }
-
+  const handleNotificationModal = () => {
+    setNotificationSettingsModelOpen(true)
+  }
   return (
     <React.Fragment>
       <DynamicModel
@@ -85,6 +92,21 @@ const ProfileMenu = props => {
         <DynamicSuspense>
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
             <CompletedCaseModel setModalOpen={setCompleteCaseModelOpen} />
+          </div>
+        </DynamicSuspense>
+      </DynamicModel>
+      <DynamicModel
+        open={notificationSettingsModelOpen}
+        toggle={toggleNotificationSettingsModelOpen}
+        size="md"
+        modalTitle="Notifiction Settings"
+        footer={false}
+      >
+        <DynamicSuspense>
+          <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+            <NotificationSettings
+              setModalOpen={setNotificationSettingsModelOpen}
+            />
           </div>
         </DynamicSuspense>
       </DynamicModel>
@@ -140,16 +162,29 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
-            {currentAttorney && <DropdownItem tag="a" href="#" onClick={() => handleCaseCompletedModal()}>
-              <i className="bx bx-check-circle font-size-16 align-middle me-1" />
-              {props.t("Completed Case")}
-            </DropdownItem>}
-            {currentAttorney && <DropdownItem tag="a" href="/reminderDashboard">
-              <i className="bx bx-check-circle font-size-16 align-middle me-1" />
-              {props.t("Case Reminder")}
-            </DropdownItem>}
+            <DropdownItem tag="a" onClick={() => handleNotificationModal()}>
+              <i className="bx bx-alarm font-size-16 align-middle me-1" />
+              {props.t("Notification Setting")}
+            </DropdownItem>
+            {currentAttorney && (
+              <DropdownItem
+                tag="a"
+                href="#"
+                onClick={() => handleCaseCompletedModal()}
+              >
+                <i className="bx bx-check-circle font-size-16 align-middle me-1" />
+                {props.t("Completed Case")}
+              </DropdownItem>
+            )}
+            {currentAttorney && (
+              <DropdownItem tag="a" href="/reminderDashboard">
+                <i className="bx bx-check-circle font-size-16 align-middle me-1" />
+                {props.t("Case Reminder")}
+              </DropdownItem>
+            )}
 
             <div className="dropdown-divider" />
+
             <Link
               to="#"
               className="dropdown-item"
