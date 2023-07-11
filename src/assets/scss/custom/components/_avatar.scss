@@ -36,8 +36,8 @@
   height: 6.8rem;
   width: 6.8rem;
   // border-radius:50%;
-  border-radius:8px;
-  border:2px dotted #556ee6;
+  // border-radius:8px;
+  border:2px solid #556ee6;
   padding: 4px;
 }
 .avatar-title {
@@ -66,4 +66,10 @@
       transform: translateY(-2px);
     }
   }
+}
+.ql-editor{
+  width: 694px;
+}
+.ql-toolbar.ql-snow{
+  border:none
 }
