@@ -7,8 +7,9 @@ import { messageUpdate } from "rainComputing/helpers/backend_helper"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
+import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 
-const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
+const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId}) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [updateMessages, setUpdateMessages] = useState(null)
@@ -61,19 +62,11 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
           <Row>
             <Col>
               <div className="position-relative">
-                <ReactQuill
-                  theme="snow"
+                <ReactQuillInput
                   value={updateMessages}
                   onChange={setUpdateMessages}
-                  placeholder="Enter Message..."
-                  defaultValue={messages?.find(
-                    m => m._id === curMessageId?.messageData
-                  )}
-                  style={{
-                    resize: "none",
-                    height: "auto",
-                    overflow: "hidden",
-                  }}
+                  messages={messages}
+                  curMessageId={curMessageId}
                 />
               </div>
             </Col>

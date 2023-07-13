@@ -100,11 +100,11 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
-import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import Quill from "quill"
 import card from "../chat/card.css"
 import "quill-mention"
+import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -121,7 +121,6 @@ const initialPageCount = {
 
 const ChatRc = () => {
   let query = useQuery()
-  const reactQuillRef = React.useRef(null)
   const { currentUser } = useUser()
   const {
     toggleOpen: newCaseModelOpen,
@@ -257,7 +256,6 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
-  console.log("mentionsArray:", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curEditMessageId, setCurEditMessageId] = useState("")
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
@@ -284,7 +282,6 @@ const ChatRc = () => {
   const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
-  console.log("SetDeleteMessage:", deleteMessage)
   const toggle_Quill = () => {
     setIsQuil(!isQuil)
   }
@@ -2681,20 +2678,20 @@ const ChatRc = () => {
                             />
                           )}
                           <div class="p-2 chat-input-section">
-                            <div class="row">
-                              <div class="col">
-                                <div class="position-relative" style={{ border: "2px solid #9BAADD", borderRadius: "15px" }}>
+                            <div className="row">
+                              <div className="col">
+                                <div className="position-relative">
                                   {recorder &&
                                     recorder.state === "recording" ? (
-                                    <div class="d-flex justify-content-center">
+                                    <div className="d-flex justify-content-center">
                                       <i
-                                        class="mdi mdi-microphone font-size-18 text-primary"
+                                        className="mdi mdi-microphone font-size-18 text-primary"
                                         style={{
                                           height: "30px",
                                           paddingLeft: "10px",
                                         }}
                                       ></i>
-                                      <p class="text-primary mt-1 font-size-12">
+                                      <p className="text-primary mt-1 font-size-12">
                                         {duration}Secs
                                       </p>
                                     </div>
@@ -2703,7 +2700,7 @@ const ChatRc = () => {
                                       {blobURL ? (
                                         <div>
                                           <audio
-                                            class="w-100 w-sm-100"
+                                            className="w-100 w-sm-100"
                                             style={{
                                               height: "33px",
                                               paddingLeft: "10px",
@@ -2733,29 +2730,13 @@ const ChatRc = () => {
                                               ))}
                                             </div>
                                           )}</div>
-                                          <ReactQuill
-                                            theme="snow"
-                                            className="quil"
-                                            value={curMessage}
-                                            onKeyDown={onKeyPress}
-                                            modules={modules}
-                                            placeholder="Enter Message..."
-                                            disabled={isEmptyOrSpaces}
-                                            onChange={(
-                                              content,
-                                              delta,
-                                              source,
-                                              editor
-                                            ) => {
-                                              setcurMessage(
-                                                content,
-                                                delta,
-                                                source,
-                                                editor
-                                              )
-                                            }}
-                                            style={{ flex: 1 }}
+                                          <div>
+                                          <ReactQuillInput
+                                          value={curMessage}
+                                          onChange={setcurMessage}
+                                          mentionsArray={mentionsArray}
                                           />
+                                          </div>
                                         </>
                                       )}
                                     </>

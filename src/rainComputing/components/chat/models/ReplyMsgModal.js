@@ -11,6 +11,7 @@ import { useChat } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
+import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 
 const ReplyMsgModal = ({
   open,
@@ -83,15 +84,9 @@ const ReplyMsgModal = ({
           <Row>
             <Col>
               <div className="position-relative">
-                <ReactQuill
-                  theme="snow"
-                  style={{
-                    resize: "none",
-                    height: "auto",
-                  }}
+                <ReactQuillInput
                   value={replyMessage}
                   onChange={setReplyMessage}
-                  placeholder="Enter Message..."
                 />
               </div>
             </Col>
