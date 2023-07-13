@@ -1,24 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useUser } from "rainComputing/contextProviders/UserProvider";
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import ReactQuill from "react-quill";
-const ReactQuillInput = ({ value, onChange, mentionsArray, messages, curMessageId }) => {
+const ReactQuillInput = ({ value, onChange, mentionsArray, messages, curMessageId,isQuill }) => {
 
-//     const [quill, setQuill] = useState(false)
-//  const handleHiddenClick = () => {
-//     setQuill(true)
-//  }
 
-    const modules = {
-    
-        toolbar: [
+    let modules = {
+
+        toolbar:false,
+        mention: {
+            allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+            mentionDenotationChars: ["@"],
+            spaceAfterInsert: true,
+            source: useCallback(
+                (searchTerm, renderList, mentionChar) => {
+                    let values
+                    if (mentionChar === "@") {
+                        values = mentionsArray?.map(m => ({ id: m?.id, value: m?.display }))
+                    }
+                    if (searchTerm.length === 0) {
+                        renderList(values, searchTerm)
+                    } else {
+                        const matches = values.filter(item =>
+                            item.value.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                        renderList(matches, searchTerm)
+                    }
+                },
+                [mentionsArray]
+            ),
+        },
+    }
+    let modules1 = {
+
+        toolbar:([
             [{ header: "1" }, { header: "2" }],
             ["bold", "italic", "underline", "strike", "blockquote"],
             [{ list: "ordered" }, { list: "bullet" }],
             ["link"],
             ["clean"],
-        ],
+        ]),
         mention: {
             allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
             mentionDenotationChars: ["@"],
@@ -43,10 +64,12 @@ const ReactQuillInput = ({ value, onChange, mentionsArray, messages, curMessageI
         },
     }
 
-
     return (
-        <div>
+        <div style={{ position:"relative"}}>
+            
+            {isQuill && (
             <ReactQuill
+             
                 theme="snow"
                 className="quil"
                 value={value}
@@ -66,17 +89,42 @@ const ReactQuillInput = ({ value, onChange, mentionsArray, messages, curMessageI
                     onChange(
                         content,
                         delta,
+                        source, 
+                        editor
+                    )
+                }}
+                style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
+            />
+            )}
+             {!isQuill && (
+            <ReactQuill 
+             
+                theme="snow"
+                className="quil"
+                value={value}
+                // onKeyPress={onKeyPress}
+                modules={modules1}
+                placeholder="Enter Message..."
+                defaultValue={messages?.find(
+                    m => m._id === curMessageId?.messageData
+                )}
+                // disabled={() => isEmptyOrSpaces()}
+                onChange={(
+                    content,
+                    delta,
+                    source,
+                    editor
+                ) => {
+                    onChange(
+                        content,
+                        delta,
                         source,
                         editor
                     )
                 }}
-                style={{ flex: 1, border:"2px solid #9BAADD",borderRadius:"15px" }}
+                style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
             />
-            {/* <div>
-                <button onClick={handleHiddenClick()}>
-                    click
-                </button>
-            </div> */}
+             )}
         </div>
     );
 }
@@ -87,6 +135,7 @@ ReactQuillInput.propTypes = {
     onChange: PropTypes.any,
     messages: PropTypes.func,
     curMessageId: PropTypes.any,
+    isQuill: PropTypes.any,
 }
 
 export default ReactQuillInput
