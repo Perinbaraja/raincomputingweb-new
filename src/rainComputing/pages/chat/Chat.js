@@ -63,6 +63,7 @@ import {
   completedCase,
   getPinnedMsg,
   updateGroup,
+  getAllSubCases
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -238,6 +239,7 @@ const ChatRc = () => {
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
+  const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
   const [allgroups, setAllgroups] = useState([])
@@ -645,8 +647,11 @@ const ChatRc = () => {
     })
 
     if (allCasesRes.success) {
-      // Sort the cases array by createdAt in descending order
-      const sortedCases = allCasesRes.cases.sort(
+      // Filter out cases that are not subcases
+      const filteredCases = allCasesRes.cases.filter(ca => !ca.isSubcase)
+
+      // Sort the filtered cases array by createdAt in descending order
+      const sortedCases = filteredCases.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
 
@@ -663,7 +668,18 @@ const ChatRc = () => {
 
     setCaseLoading(false)
   }
-
+  const onGetAllSubCases = async () => {
+    const payload = {
+      isSubcase: true,
+    }
+    const res = await getAllSubCases(payload)
+    if (res.success) {
+      setAllSubCases(res?.allsubCases)
+    }
+  }
+  useEffect(() => {
+    onGetAllSubCases()
+  }, [])
   //Fetching user,case,group count
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
@@ -1489,6 +1505,15 @@ const ChatRc = () => {
     if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
       const tempCase = allCases?.find(c => c?._id === caseChatId)
+      setactiveTab("2")
+      setCurrentCase(tempCase)
+      setCurrentChat(groupChat)
+    }
+  }, [groupChatId, pageLoader, caseChatId, caseLoading])
+  useEffect(() => {
+    if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
+      const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
+      const tempCase = allSubCases?.find(c => c?._id === caseChatId)
       setactiveTab("2")
       setCurrentCase(tempCase)
       setCurrentChat(groupChat)

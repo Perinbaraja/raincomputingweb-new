@@ -19,9 +19,6 @@ const NotificationSettings = ({ setModalOpen }) => {
   const { currentUser, setCurrentUser } = useUser()
   const { notifications, setNotifications } = useNotifications()
   const [isNotifySound, setIsNotifySound] = useState(false)
-  const [selectedNotificationSound, setSelectedNotificationSound] = useState(
-    currentUser?.notificationSound
-  )
   const selectSounds = [
     "Select",
     notification0,
@@ -34,6 +31,12 @@ const NotificationSettings = ({ setModalOpen }) => {
     notification7,
     // Add more sound URLs as needed
   ]
+  const defaultNotificationSound = notification5
+  const [selectedNotificationSound, setSelectedNotificationSound] = useState(
+    currentUser?.notificationSound || defaultNotificationSound
+  );
+
+
   const handleSetNotifySound = async selectedSound => {
     const payload = {
       _id: currentUser?.userID,
@@ -61,15 +64,12 @@ const NotificationSettings = ({ setModalOpen }) => {
 
   const handleCheckboxChange = async event => {
     const isChecked = event.target.checked
-    console.log("isChecked :", isChecked)
     setIsNotifySound(isChecked)
     try {
       const response = await notifySound({
         _id: currentUser?.userID,
         isNotifySound: isChecked,
       })
-      console.log("API response:", response)
-      //  setCurrentUser( response?.data?.isNotifySound || false)
       localStorage.setItem("authUser", JSON.stringify(response))
       setCurrentUser(response)
     } catch (error) {
