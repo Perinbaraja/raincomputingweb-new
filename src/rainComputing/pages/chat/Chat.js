@@ -623,10 +623,10 @@ const ChatRc = () => {
 
     if (allCasesRes.success) {
       // Filter out cases that are not subcases
-      const filteredCases = allCasesRes.cases.filter(ca => !ca.isSubcase)
+      // const filteredCases = allCasesRes.cases.filter(ca => !ca.isSubcase)
 
       // Sort the filtered cases array by createdAt in descending order
-      const sortedCases = filteredCases.sort(
+      const sortedCases = allCasesRes.cases.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
 
@@ -1485,15 +1485,15 @@ const ChatRc = () => {
       setCurrentChat(groupChat)
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
-  useEffect(() => {
-    if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
-      const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
-      const tempCase = allSubCases?.find(c => c?._id === caseChatId)
-      setactiveTab("2")
-      setCurrentCase(tempCase)
-      setCurrentChat(groupChat)
-    }
-  }, [groupChatId, pageLoader, caseChatId, caseLoading])
+  // useEffect(() => {
+  //   if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
+  //     const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
+  //     const tempCase = allSubCases?.find(c => c?._id === caseChatId)
+  //     setactiveTab("2")
+  //     setCurrentCase(tempCase)
+  //     setCurrentChat(groupChat)
+  //   }
+  // }, [groupChatId, pageLoader, caseChatId, caseLoading])
 
   const handlecreatedAt = () => {
     const sortedCases = [...allCases].sort((a, b) => {

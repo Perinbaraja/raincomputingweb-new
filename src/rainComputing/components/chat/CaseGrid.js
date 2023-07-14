@@ -282,11 +282,11 @@ const CaseGrid = ({
             )}
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
-            <i
+            {/* <i
               style={{ cursor: "pointer" }}
               className="bx bxs-plus-square font-size-14 pt-1 me-2"
               onClick={() => handleClick()}
-            ></i>
+            ></i> */}
             <img
               src={Chevron}
               onClick={() => onAccordionButtonClick(index)}
@@ -418,7 +418,7 @@ const CaseGrid = ({
           </div> */}
           </Collapse>
 
-          <ul className="list-unstyled chat-list">
+          {/* <ul className="list-unstyled chat-list">
             {caseIdSubCases
               .map(caseData => ({
                 caseData,
@@ -448,7 +448,7 @@ const CaseGrid = ({
                   />
                 )
               )}
-          </ul>
+          </ul> */}
         </div>
       </li>
     </>
