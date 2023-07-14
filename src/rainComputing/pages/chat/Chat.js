@@ -281,44 +281,19 @@ const ChatRc = () => {
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
   const [currentChatDelete, setCurrentChatDelete] = useState()
-  const [isQuil, setIsQuil] = useState(false)
+  // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
-  const toggle_Quill = () => {
-    setIsQuil(!isQuil)
-  }
+  // const toggle_Quill = () => {
+  //   setIsQuil(!isQuil)
+  // }
 
-  const modules = {
-    toolbar: [
-      [{ header: "1" }, { header: "2" }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
-    mention: {
-      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-      mentionDenotationChars: ["@"],
-      spaceAfterInsert: true,
-      source: useCallback(
-        (searchTerm, renderList, mentionChar) => {
-          let values
-          if (mentionChar === "@") {
-            values = mentionsArray?.map(m => ({ id: m?.id, value: m?.display }))
-          }
-          if (searchTerm.length === 0) {
-            renderList(values, searchTerm)
-          } else {
-            const matches = values.filter(item =>
-              item.value.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            renderList(matches, searchTerm)
-          }
-        },
-        [mentionsArray]
-      ),
-    },
-  }
+  
+  const [isQuill, setIsQuill] = useState(false)
+  console.log("isQuill;",isQuill)
+      const toggle_Quill = () => {
+          setIsQuill(!isQuill)
+      }
 
   const startRecording = () => {
     navigator.mediaDevices
@@ -2566,7 +2541,7 @@ const ChatRc = () => {
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
                                             <>
-                                             <div
+                                              <div
                                                 style={{
                                                   whiteSpace: "break-spaces",
                                                 }}
@@ -2578,7 +2553,7 @@ const ChatRc = () => {
                                                 attachments={msg.attachments}
                                                 text={msg.messageData}
                                               />
-                                             
+
 
                                               <div
                                                 className="mt-1"
@@ -2756,11 +2731,12 @@ const ChatRc = () => {
                                             </div>
                                           )}</div>
                                           <div>
-                                          <ReactQuillInput
-                                          value={curMessage}
-                                          onChange={setcurMessage}
-                                          mentionsArray={mentionsArray}
-                                          />
+                                            <ReactQuillInput
+                                              value={curMessage}
+                                              onChange={setcurMessage}
+                                              mentionsArray={mentionsArray}
+                                              isQuill={isQuill}
+                                            />
                                           </div>
                                         </>
                                       )}
@@ -2854,18 +2830,28 @@ const ChatRc = () => {
                                 )}
                               </div>
                             )}
+
+                            <div style={{ position: "absolute", right: "133px", top: "5px" }}>
+                              <i className="bi bi-type"
+                                onClick={() => { toggle_Quill() }}
+                                style={{ color: "blue",fontSize: "20px", fontWeight:"bold",cursor: "pointer" }}
+                                
+                                title={isQuill? "Show Formatting":"Hide Formatting"}
+                                ></i>                                
+                            </div>
+                            
                           </div>
                         </div>
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
                       </Card>
                     )
                   ) : (
