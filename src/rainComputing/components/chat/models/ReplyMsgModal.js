@@ -29,10 +29,10 @@ const ReplyMsgModal = ({
   const handlereplyMsgCancel = () => {
     setOpen(false)
   }
-  // const [isQuill, setIsQuill] = useState(false)
-  // const toggle_Quill = () => {
-  //   setIsQuill(!isQuill)
-  // }
+  const [isQuill, setIsQuill] = useState(false)
+  const toggle_Quill = () => {
+    setIsQuill(!isQuill)
+}
   const handleReplyMessage = async id => {
     const payload = {
       id,
@@ -87,7 +87,16 @@ const ReplyMsgModal = ({
                 <ReactQuillInput
                   value={replyMessage}
                   onChange={setReplyMessage}
+                  isQuill={isQuill}
                 />
+              </div>
+              <div style={{ position: "absolute", right: "30px", top: "7px" }}>
+                <i className="bi bi-type"
+                  onClick={() => { toggle_Quill() }}
+                  style={{ color: "black", fontSize: "20px", fontWeight: "bold", cursor: "pointer" }}
+
+                  title={isQuill ? "Show Formatting" : "Hide Formatting"}
+                ></i>
               </div>
             </Col>
           </Row>

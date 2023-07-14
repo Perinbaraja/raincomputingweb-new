@@ -9,10 +9,15 @@ import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 
-const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId}) => {
+const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [updateMessages, setUpdateMessages] = useState(null)
+
+  const [isQuill, setIsQuill] = useState(false)
+  const toggle_Quill = () => {
+    setIsQuill(!isQuill)
+}
 
   const handleUpdateMsgCancel = () => {
     setOpen(false)
@@ -67,7 +72,16 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId}) => {
                   onChange={setUpdateMessages}
                   messages={messages}
                   curMessageId={curMessageId}
+                  isQuill={isQuill}
                 />
+              </div>
+              <div style={{ position: "absolute", right: "30px", top: "7px" }}>
+                <i className="bi bi-type"
+                  onClick={() => { toggle_Quill() }}
+                  style={{ color: "black", fontSize: "20px", fontWeight: "bold", cursor: "pointer" }}
+
+                  title={isQuill ? "Show Formatting" : "Hide Formatting"}
+                ></i>
               </div>
             </Col>
           </Row>
