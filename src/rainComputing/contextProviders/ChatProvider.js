@@ -69,6 +69,7 @@ export function ChatProvider({ socket, children }) {
         await getRoomsonEveryMessage()
       })
     } else {
+      const notification = new Audio(currentUser?.notificationSound)
       if (socket == null) return
       socket.off("receive_message").once("receive_message", async msgData => {
         setNotifications([msgData, ...notifications])
@@ -81,9 +82,27 @@ export function ChatProvider({ socket, children }) {
       if (socket == null) return
       socket.off("r_m").once("r_m", async msgData => {
         if (msgData?.groupId === currentRoom._id) {
-          setMessages([...messages, msgData])
+          const audioElement = new Audio(currentUser?.notificationSound)
+
+          const newMessages = messages.filter(
+            message =>
+              message?.groupId === currentRoom._id && !message.playedSound
+          )
+
+          if (newMessages.length > 0) {
+            newMessages.forEach(message => {
+              // Wait for user interaction before playing audio
+
+              audioElement.play()
+
+              // Update the message to mark it as played
+              message.playedSound = true
+            })
+            setMessages([...messages, msgData])
+          }
         } else {
           setNotifications([msgData, ...notifications])
+          console.log("msgData", msgData)
           const options = {
             title: "Rain Computing",
             body: `New Message From Rain Computing ${msgData?.messageData}`,
@@ -102,6 +121,7 @@ export function ChatProvider({ socket, children }) {
         setMessageStack([])
         setMessages([...messages, msgData])
       })
+
       socket.off("r_r").once("r_r", async msgData => {
         if (msgData?.groupId === currentRoom._id) {
           setMessages([...messages, msgData])
@@ -164,7 +184,8 @@ export function ChatProvider({ socket, children }) {
     socket.off("u_l").once("u_l", async msgData => {
       setNotifications([...msgData, ...notifications])
     })
-  }, [socket, handleSendingMessage, handleSendingReplyMessage])
+  }, [socket, handleSendingMessage, handleSendingReplyMessage, notifications])
+
   return (
     <ChatContext.Provider
       value={{
