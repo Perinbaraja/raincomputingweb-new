@@ -12,7 +12,10 @@ import CaseMembers from "./CaseMembers"
 import CaseFilesGrid from "./CaseFilesGrid"
 import DeleteModal from "../modals/DeleteModal"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { LeaveGroup } from "rainComputing/helpers/backend_helper"
+import {
+  LeaveGroup,
+  caseIdbySubCase,
+} from "rainComputing/helpers/backend_helper"
 import toastr from "toastr"
 import DocketResultModel from "./models/DocketResultModel"
 import EventMaster from "./models/EventMaster"
@@ -21,6 +24,9 @@ import EventCalender from "./models/EventCalender"
 import CreateEvent from "./models/CreateEvent"
 import { Link } from "react-router-dom"
 import { useHistory } from "react-router-dom"
+import SubCase from "./models/SubCase"
+import SubCaseGrid from "./SubCaseGrid"
+import useAccordian from "rainComputing/helpers/hooks/useAccordian"
 
 const CaseGrid = ({
   caseData,
@@ -36,7 +42,14 @@ const CaseGrid = ({
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const { currentUser } = useUser()
   const [casedetails, setCaseDetails] = useState(caseData)
+  const [caseIdSubCases, setCaseIdSubCases] = useState([])
+  const [newCaseId, setNewCaseId] = useState()
+  const [currentCase, setCurrentCase] = useState(null)
+  const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
 
+  const onSelectingCase = cas => {
+    setCurrentCase(cas)
+  }
   const {
     toggleOpen: membersModelOpen,
     setToggleOpen: setMembersModelOpen,
@@ -72,6 +85,11 @@ const CaseGrid = ({
     setToggleOpen: setEventCalenderModelOpen,
     toggleIt: toggleEventCalenderModelOpen,
   } = useToggle(false)
+  const {
+    toggleOpen: subCaseModelOpen,
+    setToggleOpen: setNewSubCaseModelOpen,
+    toggleIt: toggleNewSubCaseModelOpen,
+  } = useToggle(false)
   const handleLeave = () => {
     setLeaveGroupModalOpen(true)
   }
@@ -106,6 +124,38 @@ const CaseGrid = ({
       setLeaveGroupModalOpen(false)
     }
   }
+  const handleClick = () => {
+    if (caseIdSubCases && caseIdSubCases.length > 0) {
+      const lastCaseId = caseIdSubCases[caseIdSubCases.length - 1].caseId
+      const lastDigit = parseInt(lastCaseId.slice(-1))
+      const newLastDigit = lastDigit + 1
+      const newCaseId =
+        lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
+      setNewCaseId(newCaseId)
+    } else {
+      const lastCaseId = casedetails?.caseId
+      const lastDigit = parseInt(lastCaseId.slice(-1))
+      const newLastDigit = lastDigit + 1
+      const newCaseId =
+        lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
+      setNewCaseId(newCaseId)
+    }
+    setNewSubCaseModelOpen(true)
+  }
+
+  const onGetCaseIdSubcases = async () => {
+    const payload = {
+      caseId: casedetails?.caseId,
+    }
+    const res = await caseIdbySubCase(payload)
+    if (res.success) {
+      setCaseIdSubCases(res?.caseIdSubCases)
+    }
+  }
+  useEffect(() => {
+    onGetCaseIdSubcases()
+  }, [])
+
   return (
     <>
       <>
@@ -147,6 +197,22 @@ const CaseGrid = ({
             <EventMaster
               caseId={caseData}
               closeModal={toggleEventMasterModelOpen}
+            />
+          </DynamicSuspense>
+        </DynamicModel>
+        <DynamicModel
+          open={subCaseModelOpen}
+          toggle={toggleNewSubCaseModelOpen}
+          size="lg"
+          modalTitle="New Case"
+          footer={false}
+        >
+          <DynamicSuspense>
+            <SubCase
+              ongetAllCases={ongetAllCases}
+              setModalOpen={setNewSubCaseModelOpen}
+              caseId={caseData}
+              newCaseId={newCaseId}
             />
           </DynamicSuspense>
         </DynamicModel>
@@ -216,6 +282,11 @@ const CaseGrid = ({
             )}
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
+            {/* <i
+              style={{ cursor: "pointer" }}
+              className="bx bxs-plus-square font-size-14 pt-1 me-2"
+              onClick={() => handleClick()}
+            ></i> */}
             <img
               src={Chevron}
               onClick={() => onAccordionButtonClick(index)}
@@ -224,82 +295,101 @@ const CaseGrid = ({
             />
           </Col>
         </Row>
-         <div className="px-2 border-top">
-        <Collapse isOpen={index === active} className="accordion-collapse ">
-          <div className="mb-4 pointer">
-            <span className="fw-medium font-size-13 text-primary-emphasis">Case Members</span>
-            <AccordionContainer
-              handleAccordionClick={() => setMembersModelOpen(true)}
-            >
-              <div className="members-container">
-                {caseData?.caseMembers.map((member, m) => (
-                  <div className="align-self-center me-1" key={m}>
-                    <img
-                      src={
-                        member?.id?.profilePic
-                          ? member?.id?.profilePic
-                          : profile
-                      }
-                      className="avatar-xs rounded-circle "
-                      alt=""
-                      style={{ objectFit: "cover" }}
-                    />
-                    {/* <span className="d-flex fw-medium">
+        <div className="px-2 border-top">
+          <Collapse isOpen={index === active} className="accordion-collapse ">
+            <div className="mb-4 pointer">
+              <span className="fw-medium font-size-13 text-primary-emphasis">
+                Case Members
+              </span>
+              <AccordionContainer
+                handleAccordionClick={() => setMembersModelOpen(true)}
+              >
+                <div className="members-container">
+                  {caseData?.caseMembers.map((member, m) => (
+                    <div className="align-self-center me-1" key={m}>
+                      <img
+                        src={
+                          member?.id?.profilePic
+                            ? member?.id?.profilePic
+                            : profile
+                        }
+                        className="avatar-xs rounded-circle "
+                        alt=""
+                        style={{ objectFit: "cover" }}
+                      />
+                      {/* <span className="d-flex fw-medium">
                       {members?.id?.firstname}{" "}
                     </span> */}
-                  </div>
-                ))}
-              </div>
-            </AccordionContainer>
-          </div>
-          
-          <div className="mb-4 ">
-            
-            <AccordionContainer
-              handleAccordionClick={() => setEventMasterModelOpen(true)}
-            >
-              <div>
-                <span className="fw-medium font-size-12 text-secondary" style={{cursor: "pointer"}}>Manage Events</span>{" "}
-              </div>
-            </AccordionContainer>
-            <div>
-              <span
-                className="fw-medium font-size-11 pointer text-secondary"
-                onClick={() => handleAccordionClick(caseData)}
-              >
-                <i className="bi bi-calendar4-event" 
-                 style={{ fontSize: "12px",cursor:"pointer" }}>{" "}</i>                
-                Event Calendar
-              </span>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContainer>
             </div>
 
-            {/* <AccordionContainer>
+            <div className="mb-4 ">
+              <AccordionContainer
+                handleAccordionClick={() => setEventMasterModelOpen(true)}
+              >
+                <div>
+                  <span
+                    className="fw-medium font-size-12 text-secondary"
+                    style={{ cursor: "pointer" }}
+                  >
+                    Manage Events
+                  </span>{" "}
+                </div>
+              </AccordionContainer>
+              <div>
+                <span
+                  className="fw-medium font-size-11 pointer text-secondary"
+                  onClick={() => handleAccordionClick(caseData)}
+                >
+                  <i
+                    className="bi bi-calendar4-event"
+                    style={{ fontSize: "12px", cursor: "pointer" }}
+                  >
+                    {" "}
+                  </i>
+                  Event Calendar
+                </span>
+              </div>
+
+              {/* <AccordionContainer>
               <span>
                 Bookmarks <span>({caseData?.bookmarks?.length})</span>
               </span>
             </AccordionContainer> */}
-            {/* <AccordionContainer>
+              {/* <AccordionContainer>
               <span>
                 Pending Messages <span>(1)</span>
               </span>
             </AccordionContainer> */}
-            <br/>
-            <span className="fw-medium font-size-13 text-primary-emphasis">
-              Saved Messages & Files
-            </span>
-            
-            <AccordionContainer
-              handleAccordionClick={() => setFilesModelOpen(true)}
-            >
-              <i className="bi bi-share"
-              style={{ fontSize: "10px",fontWeight:"bold",cursor:"pointer" }}
-              >{" "}</i>             
-              <span className="fw-medium font-size-12 text-secondary">Shared Files</span>
-            </AccordionContainer>
-          </div>
+              <br />
+              <span className="fw-medium font-size-13 text-primary-emphasis">
+                Saved Messages & Files
+              </span>
 
-          <div className="d-flex justify-content-end">
-            {/* <button
+              <AccordionContainer
+                handleAccordionClick={() => setFilesModelOpen(true)}
+              >
+                <i
+                  className="bi bi-share"
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  {" "}
+                </i>
+                <span className="fw-medium font-size-12 text-secondary">
+                  Shared Files
+                </span>
+              </AccordionContainer>
+            </div>
+
+            <div className="d-flex justify-content-end">
+              {/* <button
               type="button"
               className="btn btn-primary "
               style={{ fontSize: "10px" }}
@@ -307,16 +397,16 @@ const CaseGrid = ({
             >
               Docket
             </button> */}
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={handleLeave}
-              style={{ fontSize: "10px" }}
-            >
-              Exit Case
-            </button>
-          </div>
-          {/* <div className="mb-2 pointer">
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleLeave}
+                style={{ fontSize: "10px" }}
+              >
+                Exit Case
+              </button>
+            </div>
+            {/* <div className="mb-2 pointer">
             <span className="fw-medium font-size-11">Case Notification</span>
             <div className="d-flex justify-content-between me-3">
               <span className="text-muted">Message Notification</span>
@@ -326,7 +416,39 @@ const CaseGrid = ({
               />
             </div>
           </div> */}
-        </Collapse>
+          </Collapse>
+
+          {/* <ul className="list-unstyled chat-list">
+            {caseIdSubCases
+              .map(caseData => ({
+                caseData,
+                notifyCount: notifyCountforCase(caseData._id),
+              }))
+              .sort((a, b) => {
+                const notifyCountDiff = b.notifyCount - a.notifyCount
+                if (notifyCountDiff !== 0) {
+                  return notifyCountDiff // Sort by notifyCount first
+                }
+              })
+              .map(
+                (
+                  { caseData, notifyCount },
+                  index // Define the 'index' variable here
+                ) => (
+                  <SubCaseGrid
+                    caseData={caseData}
+                    index={index}
+                    key={index}
+                    active={activeAccordian}
+                    onAccordionButtonClick={handleSettingActiveAccordion}
+                    handleSelectingCase={onSelectingCase}
+                    selected={currentCase?._id === caseData?._id}
+                    notifyCountforCase={notifyCountforCase}
+                    ongetAllCases={ongetAllCases}
+                  />
+                )
+              )}
+          </ul> */}
         </div>
       </li>
     </>

@@ -126,6 +126,8 @@ const createSubgroup = payload => post(`${BASE_URL}/group/createGroup`, payload)
 
 const updateSubgroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
 const updateCase = payload => post(`${BASE_URL}/case/updateCase`, payload)
+const caseIdbySubCase = payload => post(`${BASE_URL}/case/caseIdbySubCase`, payload)
+const getAllSubCases = payload => post(`${BASE_URL}/case/allSubCases`, payload)
 const createEvent = payload => post(`${BASE_URL}/event/create`, payload)
 const eventUpdate = payload => post(`${BASE_URL}/event/eventUpdate`, payload)
 const getEventById = payload => post(`${BASE_URL}/event/getEventdata`, payload)
@@ -302,5 +304,7 @@ export {
   intervalIdUpdate,
   profilePicRemove,
   notifySound,
-  notificationSound
+  notificationSound,
+  caseIdbySubCase,
+  getAllSubCases
 }

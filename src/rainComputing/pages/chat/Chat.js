@@ -63,6 +63,7 @@ import {
   completedCase,
   getPinnedMsg,
   updateGroup,
+  getAllSubCases,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -100,11 +101,11 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import EditMessageModel from "rainComputing/components/chat/models/EditMessageModel"
 import CompletedCaseModel from "rainComputing/components/chat/models/CompletedCaseModel"
-import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import Quill from "quill"
 import card from "../chat/card.css"
 import "quill-mention"
+import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -121,7 +122,6 @@ const initialPageCount = {
 
 const ChatRc = () => {
   let query = useQuery()
-  const reactQuillRef = React.useRef(null)
   const { currentUser } = useUser()
   const {
     toggleOpen: newCaseModelOpen,
@@ -180,6 +180,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
+
   const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
@@ -239,6 +240,7 @@ const ChatRc = () => {
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
+  const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
   const [allgroups, setAllgroups] = useState([])
@@ -257,7 +259,6 @@ const ChatRc = () => {
   const [searchMessageText, setSearchMessagesText] = useState("")
   const [searchedMessages, setSearchedMessages] = useState([])
   const [mentionsArray, setMentionsArray] = useState([])
-  console.log("mentionsArray:", mentionsArray)
   const [curReplyMessageId, setCurReplyMessageId] = useState(null)
   const [curEditMessageId, setCurEditMessageId] = useState("")
   const [curReminderMessageId, setCurReminderMessageId] = useState(null)
@@ -281,44 +282,16 @@ const ChatRc = () => {
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
   const [currentChatDelete, setCurrentChatDelete] = useState()
-  const [isQuil, setIsQuil] = useState(false)
+  // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
-  console.log("SetDeleteMessage:", deleteMessage)
-  const toggle_Quill = () => {
-    setIsQuil(!isQuil)
-  }
+  // const toggle_Quill = () => {
+  //   setIsQuil(!isQuil)
+  // }
 
-  const modules = {
-    toolbar: [
-      [{ header: "1" }, { header: "2" }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
-    mention: {
-      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-      mentionDenotationChars: ["@"],
-      spaceAfterInsert: true,
-      source: useCallback(
-        (searchTerm, renderList, mentionChar) => {
-          let values
-          if (mentionChar === "@") {
-            values = mentionsArray?.map(m => ({ id: m?.id, value: m?.display }))
-          }
-          if (searchTerm.length === 0) {
-            renderList(values, searchTerm)
-          } else {
-            const matches = values.filter(item =>
-              item.value.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            renderList(matches, searchTerm)
-          }
-        },
-        [mentionsArray]
-      ),
-    },
+  const [isQuill, setIsQuill] = useState(false)
+  const toggle_Quill = () => {
+    setIsQuill(!isQuill)
   }
 
   const startRecording = () => {
@@ -648,7 +621,10 @@ const ChatRc = () => {
     })
 
     if (allCasesRes.success) {
-      // Sort the cases array by createdAt in descending order
+      // Filter out cases that are not subcases
+      // const filteredCases = allCasesRes.cases.filter(ca => !ca.isSubcase)
+
+      // Sort the filtered cases array by createdAt in descending order
       const sortedCases = allCasesRes.cases.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
@@ -666,7 +642,18 @@ const ChatRc = () => {
 
     setCaseLoading(false)
   }
-
+  const onGetAllSubCases = async () => {
+    const payload = {
+      isSubcase: true,
+    }
+    const res = await getAllSubCases(payload)
+    if (res.success) {
+      setAllSubCases(res?.allsubCases)
+    }
+  }
+  useEffect(() => {
+    onGetAllSubCases()
+  }, [])
   //Fetching user,case,group count
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
@@ -971,8 +958,7 @@ const ChatRc = () => {
   })
   //Detecting Enter key Press in textbox
   const onKeyPress = e => {
-    const { key } = e
-    if (key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
     }
@@ -1499,6 +1485,15 @@ const ChatRc = () => {
       setCurrentChat(groupChat)
     }
   }, [groupChatId, pageLoader, caseChatId, caseLoading])
+  // useEffect(() => {
+  //   if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
+  //     const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
+  //     const tempCase = allSubCases?.find(c => c?._id === caseChatId)
+  //     setactiveTab("2")
+  //     setCurrentCase(tempCase)
+  //     setCurrentChat(groupChat)
+  //   }
+  // }, [groupChatId, pageLoader, caseChatId, caseLoading])
 
   const handlecreatedAt = () => {
     const sortedCases = [...allCases].sort((a, b) => {
@@ -2122,7 +2117,7 @@ const ChatRc = () => {
                         </Col>
                       </Row>
                     ) : (
-                      <Card className="chat-card">
+                      <Card className="chat-card ">
                         <div className="py-2 px-3 border-bottom">
                           <Row>
                             <Col md="4" xs="6">
@@ -2398,7 +2393,7 @@ const ChatRc = () => {
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "500px",
+                                  height: "300px",
                                   overflowY: "scroll",
                                 }}
                               >
@@ -2543,14 +2538,10 @@ const ChatRc = () => {
                                             ? getMemberName(msg.sender)
                                             : getSenderOneChat(msg.sender)}
                                         </div>
+
                                         <div className="mb-1">
                                           {msg.isAttachment ? (
                                             <>
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
-
                                               <div
                                                 style={{
                                                   whiteSpace: "break-spaces",
@@ -2559,6 +2550,11 @@ const ChatRc = () => {
                                                   __html: msg?.messageData,
                                                 }}
                                               />
+                                              <AttachmentViewer
+                                                attachments={msg.attachments}
+                                                text={msg.messageData}
+                                              />
+
                                               <div
                                                 className="mt-1"
                                                 style={{
@@ -2670,6 +2666,7 @@ const ChatRc = () => {
                               </div>
                             </ul>
                           </div>
+
                           {currentChat?.isGroup && (
                             <SubgroupBar
                               groups={allgroups}
@@ -2681,20 +2678,20 @@ const ChatRc = () => {
                             />
                           )}
                           <div class="p-2 chat-input-section">
-                            <div class="row">
-                              <div class="col">
-                                <div class="position-relative">
+                            <div className="row">
+                              <div className="col">
+                                <div className="position-relative">
                                   {recorder &&
                                   recorder.state === "recording" ? (
-                                    <div class="d-flex justify-content-center">
+                                    <div className="d-flex justify-content-center">
                                       <i
-                                        class="mdi mdi-microphone font-size-18 text-primary"
+                                        className="mdi mdi-microphone font-size-18 text-primary"
                                         style={{
                                           height: "30px",
                                           paddingLeft: "10px",
                                         }}
                                       ></i>
-                                      <p class="text-primary mt-1 font-size-12">
+                                      <p className="text-primary mt-1 font-size-12">
                                         {duration}Secs
                                       </p>
                                     </div>
@@ -2703,7 +2700,7 @@ const ChatRc = () => {
                                       {blobURL ? (
                                         <div>
                                           <audio
-                                            class="w-100 w-sm-100"
+                                            className="w-100 w-sm-100"
                                             style={{
                                               height: "33px",
                                               paddingLeft: "10px",
@@ -2714,57 +2711,61 @@ const ChatRc = () => {
                                         </div>
                                       ) : (
                                         <>
-                                          <ReactQuill
-                                            theme="snow"
-                                            value={curMessage}
-                                            onKeyPress={onKeyPress}
-                                            modules={modules}
-                                            placeholder="Enter Message..."
-                                            onChange={(
-                                              content,
-                                              delta,
-                                              source,
-                                              editor
-                                            ) => {
-                                              setcurMessage(
-                                                content,
-                                                delta,
-                                                source,
-                                                editor
-                                              )
-                                            }}
-                                          />
+                                          <div className="p-2 pt-0">
+                                            {" "}
+                                            {Array.from(allFiles)?.length >
+                                              0 && (
+                                              <div class="d-flex gap-2 flex-wrap mt-2">
+                                                {Array.from(allFiles)?.map(
+                                                  (att, a) => (
+                                                    <span
+                                                      class="badge badge-soft-primary font-size-13"
+                                                      key={a}
+                                                    >
+                                                      {att.name}
+                                                      <i
+                                                        class="bx bx-x-circle mx-1"
+                                                        onClick={() =>
+                                                          handleFileRemove(
+                                                            att?.name
+                                                          )
+                                                        }
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                      />
+                                                    </span>
+                                                  )
+                                                )}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div>
+                                            <ReactQuillInput
+                                              value={curMessage}
+                                              onChange={setcurMessage}
+                                              mentionsArray={mentionsArray}
+                                              isQuill={isQuill}
+                                            />
+                                          </div>
                                         </>
                                       )}
                                     </>
                                   )}
                                 </div>
-
-                                {Array.from(allFiles)?.length > 0 && (
-                                  <div class="d-flex gap-2 flex-wrap mt-2">
-                                    {Array.from(allFiles)?.map((att, a) => (
-                                      <span
-                                        class="badge badge-soft-primary font-size-13"
-                                        key={a}
-                                      >
-                                        {att.name}
-                                        <i
-                                          class="bx bx-x-circle mx-1"
-                                          onClick={() =>
-                                            handleFileRemove(att?.name)
-                                          }
-                                          style={{ cursor: "pointer" }}
-                                        />
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div style={{ position: "sticky" }}>
-                          <div className="col-auto d-flex justify-content-end gap-2">
+                        <div>
+                          <div
+                            className="col-auto d-flex justify-content-end  gap-2 "
+                            style={{
+                              position: "absolute",
+                              right: "19px",
+                              bottom: "202px",
+                            }}
+                          >
                             {recorder && recorder.state === "recording" ? (
                               <></>
                             ) : (
@@ -2845,8 +2846,44 @@ const ChatRc = () => {
                                 )}
                               </div>
                             )}
+
+                            <div
+                              style={{
+                                position: "absolute",
+                                right: "133px",
+                                top: "5px",
+                              }}
+                            >
+                              <i
+                                className="bi bi-type"
+                                onClick={() => {
+                                  toggle_Quill()
+                                }}
+                                style={{
+                                  color: "blue",
+                                  fontSize: "20px",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                }}
+                                title={
+                                  isQuill
+                                    ? "Show Formatting"
+                                    : "Hide Formatting"
+                                }
+                              ></i>
+                            </div>
                           </div>
                         </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
                       </Card>
                     )
                   ) : (

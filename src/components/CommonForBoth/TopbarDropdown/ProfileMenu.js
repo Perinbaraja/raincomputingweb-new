@@ -162,10 +162,12 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
-            <DropdownItem tag="a" onClick={() => handleNotificationModal()}>
-              <i className="bx bx-alarm font-size-16 align-middle me-1" />
-              {props.t("Notification Setting")}
-            </DropdownItem>
+            {currentAttorney && (
+              <DropdownItem tag="a" href="/reminderDashboard">
+                <i className="bx bx-alarm font-size-16 align-middle me-1" />
+                {props.t("Case Reminder")}
+              </DropdownItem>
+            )}
             {currentAttorney && (
               <DropdownItem
                 tag="a"
@@ -176,12 +178,12 @@ const ProfileMenu = props => {
                 {props.t("Completed Case")}
               </DropdownItem>
             )}
-            {currentAttorney && (
-              <DropdownItem tag="a" href="/reminderDashboard">
-                <i className="bx bx-check-circle font-size-16 align-middle me-1" />
-                {props.t("Case Reminder")}
-              </DropdownItem>
-            )}
+            <DropdownItem tag="a" onClick={() => handleNotificationModal()}>
+              <i className="bx bx-bell font-size-16 align-middle me-1" />
+              {props.t("Notification Settings")}
+            </DropdownItem>
+            
+            
 
             <div className="dropdown-divider" />
 
