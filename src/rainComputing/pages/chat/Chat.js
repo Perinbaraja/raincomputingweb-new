@@ -956,10 +956,17 @@ const ChatRc = () => {
       // setRecorder(updatedVoicemsg);
     },
   })
+  const onChange = (content, delta, source, editor) => {
+    // Remove <p> and <br> tags from the content
+    const strippedContent = content.replace(/<\/?(p|br)\s*\/?>/gi, '');
+  
+    setcurMessage(strippedContent);
+  };
+  
   //Detecting Enter key Press in textbox
-  const onKeyPress = e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
+  const onKeyPress = event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault()
       handleSendMessage()
     }
   }
@@ -2743,9 +2750,11 @@ const ChatRc = () => {
                                           <div>
                                             <ReactQuillInput
                                               value={curMessage}
-                                              onChange={setcurMessage}
+                                              onChange={onChange}
                                               mentionsArray={mentionsArray}
                                               isQuill={isQuill}
+                                              onKeyPress = {onKeyPress}
+                                              isEmptyOrSpaces={isEmptyOrSpaces}
                                             />
                                           </div>
                                         </>
