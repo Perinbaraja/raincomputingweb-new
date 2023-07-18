@@ -64,7 +64,6 @@ const EditCase = ({
         `Case ${res?.caseId} has been updated successfully`,
         "Success"
       )
-      await getAllCases({ isSet: true, isSearch: true })
       setOpen(false)
     } else {
       toastr.error(`Failed to update case due to ${res?.msg}`, "Failed!!!")
@@ -191,7 +190,7 @@ const EditCase = ({
               />
             </div>
           </Row>
-          
+
           <Row className="my-3">
             <label
               htmlFor="user-search-text"
