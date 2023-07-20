@@ -1748,6 +1748,8 @@ const ChatRc = () => {
                 currentCase={currentCase}
                 getAllCases={ongetAllCases}
                 getSubGroups={onGettingSubgroups}
+                allCases={allCases}
+                setAllCases={setAllCases}
               />
             )}
 

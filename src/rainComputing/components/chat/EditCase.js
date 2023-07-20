@@ -11,6 +11,8 @@ const EditCase = ({
   toggleOpen,
   currentCase,
   getAllCases,
+  allCases,
+  setAllCases,
   getSubGroups,
 }) => {
   const { currentUser } = useUser()
@@ -48,8 +50,8 @@ const EditCase = ({
   }
 
   const handleUpdatingCase = async () => {
-    setloading(true)
-    const structuredMembers = caseMembers?.map(m => m?._id)
+    setloading(true);
+    const structuredMembers = caseMembers?.map((m) => m?._id);
     const payLoad = {
       id: currentCase?._id,
       caseId,
@@ -57,19 +59,26 @@ const EditCase = ({
       serialNumber,
       members: structuredMembers,
       admin: currentUser?.userID,
-    }
-    const res = await updateCase(payLoad)
+    };
+    const res = await updateCase(payLoad);
     if (res.success) {
       toastr.success(
         `Case ${res?.caseId} has been updated successfully`,
         "Success"
-      )
-      setOpen(false)
+      );
+      setAllCases(
+        allCases.map(i =>
+         ( i._id === currentCase?._id ? res?.updatedCase : i)
+        )
+      );
+      setOpen(false);
     } else {
-      toastr.error(`Failed to update case due to ${res?.msg}`, "Failed!!!")
+      toastr.error(`Failed to update case due to ${res?.msg}`, "Failed!!!");
     }
-    setloading(false)
-  }
+    setloading(false);
+  };
+  
+  
 
   useEffect(() => {
     const handleFetchingContacts = async () => {
@@ -329,6 +338,8 @@ EditCase.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
   toggleOpen: PropTypes.func,
+  setAllCases: PropTypes.func,
+  allCases: PropTypes.func,
   getAllCases: PropTypes.any,
   getSubGroups: PropTypes.any,
   currentCase: PropTypes.object,
