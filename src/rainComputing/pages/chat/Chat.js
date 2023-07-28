@@ -1874,7 +1874,8 @@ const ChatRc = () => {
                   </div>
                 )}
 
-                <div className="my-1 px-2">
+                <div className="my-1 px-2"
+                 style={{paddingBottom: "60px"}}>
                   <Nav pills justified>
                     {sidebarNavItems.map((navItem, n) => (
                       <NavItem key={n}>
