@@ -9,6 +9,8 @@ const ReactQuillInput = ({
   messages,
   curMessageId,
   isQuill,
+  onKeyPress,
+  isEmptyOrSpaces
 }) => {
   let modules = {
     toolbar: false,
@@ -74,17 +76,18 @@ const ReactQuillInput = ({
           theme="snow"
           className="quil"
           value={value}
-          // onKeyPress={onKeyPress}
+          onKeyDown={onKeyPress}
           modules={modules}
           placeholder="Enter Message..."
           defaultValue={messages?.find(
             m => m._id === curMessageId?.messageData
           )}
-          // disabled={() => isEmptyOrSpaces()}
-          onChange={(content, delta, source, editor) => {
-            onChange(content, delta, source, editor)
-          }}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
+          disabled={() => isEmptyOrSpaces()}
+          // onChange={(content, delta, source, editor) => {
+          //   onChange(content, delta, source, editor)
+          // }}
+          onChange={onChange}
+          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px"  }}
         />
       )}
       {!isQuill && (
@@ -92,16 +95,17 @@ const ReactQuillInput = ({
           theme="snow"
           className="quil"
           value={value}
-          // onKeyPress={onKeyPress}
+          onKeyDown={onKeyPress}
           modules={modules1}
           placeholder="Enter Message..."
           defaultValue={messages?.find(
             m => m._id === curMessageId?.messageData
           )}
-          // disabled={() => isEmptyOrSpaces()}
-          onChange={(content, delta, source, editor) => {
-            onChange(content, delta, source, editor)
-          }}
+          disabled={() => isEmptyOrSpaces()}
+          // onChange={(content, delta, source, editor) => {
+          //   onChange(content, delta, source, editor)
+          // }}
+          onChange={onChange}
           style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
         />
       )}
@@ -116,6 +120,8 @@ ReactQuillInput.propTypes = {
   messages: PropTypes.func,
   curMessageId: PropTypes.any,
   isQuill: PropTypes.any,
+  onKeyPress: PropTypes.any,
+  isEmptyOrSpaces: PropTypes.any,
 }
 
 export default ReactQuillInput
