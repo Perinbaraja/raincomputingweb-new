@@ -974,14 +974,18 @@ const ChatRc = () => {
   }
 
   //Getting sender name
-  const getMemberName = id => {
-    const memberName = allCases
+  const getMemberName = (id) => {
+    const caseArray = [...allCases, ...allSubCases]; // Combine all cases and subcases
+  
+    const memberName = caseArray
       .find(cas => cas._id === currentCase?._id)
-      ?.caseMembers?.find(member => member?.id?._id === id)
-    if (memberName)
-      return memberName?.id?.firstname + " " + memberName?.id?.lastname
-    return id
-  }
+      ?.caseMembers?.find(member => member?.id?._id === id);
+  
+    if (memberName) {
+      return memberName?.id?.firstname + " " + memberName?.id?.lastname;
+    }
+    return id;
+  };
 
   //Scrolling to bottom of message
   // const scrollToBottom = () => {

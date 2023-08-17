@@ -43,10 +43,14 @@ const CaseGrid = ({
   const { currentUser } = useUser()
   const [casedetails, setCaseDetails] = useState(caseData)
   const [caseIdSubCases, setCaseIdSubCases] = useState([])
+  console.log("caseIdSubCases",caseIdSubCases)
   const [newCaseId, setNewCaseId] = useState()
   const [currentCase, setCurrentCase] = useState(null)
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
-
+  const [subCaseList, setSubCaseList] = useState(false)
+  const handleSubCaseClick = () => {
+    setSubCaseList(!subCaseList)
+  }
   const onSelectingCase = cas => {
     setCurrentCase(cas)
   }
@@ -281,18 +285,26 @@ const CaseGrid = ({
               <i className="bx bxs-bell bx-tada text-danger" />
             )}
           </Col>
-          <Col xs={1} style={{ padding: 2 }}>
-            {/* <i
+          <Col xs={1} style={{ padding: 2 }} className="position-relative">
+            <i
               style={{ cursor: "pointer" }}
               className="bx bxs-plus-square font-size-14 pt-1 me-2"
+              title="Create SubCase"
               onClick={() => handleClick()}
-            ></i> */}
+            ></i>
+            <i className="bi bi-ui-radios me-2"
+              style={{ cursor: "pointer",position:"absolute",top:"4px"}}
+              title="Sub Cases"
+              onClick={() => { handleSubCaseClick() }}
+            ></i>
+            <div className="md:ml-20">
             <img
               src={Chevron}
               onClick={() => onAccordionButtonClick(index)}
               aria-expanded={index === active}
               className="accordion-icon"
             />
+            </div>
           </Col>
         </Row>
         <div className="px-2 border-top">
@@ -417,38 +429,39 @@ const CaseGrid = ({
             </div>
           </div> */}
           </Collapse>
-
-          {/* <ul className="list-unstyled chat-list">
-            {caseIdSubCases
-              .map(caseData => ({
-                caseData,
-                notifyCount: notifyCountforCase(caseData._id),
-              }))
-              .sort((a, b) => {
-                const notifyCountDiff = b.notifyCount - a.notifyCount
-                if (notifyCountDiff !== 0) {
-                  return notifyCountDiff // Sort by notifyCount first
-                }
-              })
-              .map(
-                (
-                  { caseData, notifyCount },
-                  index // Define the 'index' variable here
-                ) => (
-                  <SubCaseGrid
-                    caseData={caseData}
-                    index={index}
-                    key={index}
-                    active={activeAccordian}
-                    onAccordionButtonClick={handleSettingActiveAccordion}
-                    handleSelectingCase={onSelectingCase}
-                    selected={currentCase?._id === caseData?._id}
-                    notifyCountforCase={notifyCountforCase}
-                    ongetAllCases={ongetAllCases}
-                  />
-                )
-              )}
-          </ul> */}
+          {subCaseList  && (
+            <ul className="list-unstyled chat-list">
+              {caseIdSubCases
+                .map(caseData => ({
+                  caseData,
+                  notifyCount: notifyCountforCase(caseData._id),
+                }))
+                .sort((a, b) => {
+                  const notifyCountDiff = b.notifyCount - a.notifyCount
+                  if (notifyCountDiff !== 0) {
+                    return notifyCountDiff // Sort by notifyCount first
+                  }
+                })
+                .map(
+                  (
+                    { caseData, notifyCount },
+                    index // Define the 'index' variable here
+                  ) => (
+                    <SubCaseGrid
+                      caseData={caseData}
+                      index={index}
+                      key={index}
+                      active={activeAccordian}
+                      onAccordionButtonClick={handleSettingActiveAccordion}
+                      handleSelectingCase={handleSelectingCase}   
+                      selected={selected}
+                      notifyCountforCase={notifyCountforCase}
+                      ongetAllCases={ongetAllCases}
+                    />
+                  )
+                )}
+            </ul>
+          )}
         </div>
       </li>
     </>
