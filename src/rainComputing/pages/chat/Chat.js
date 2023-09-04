@@ -64,6 +64,7 @@ import {
   getPinnedMsg,
   updateGroup,
   getAllSubCases,
+  caseIdbySubCase,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -285,6 +286,7 @@ const ChatRc = () => {
   // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
+
   // const toggle_Quill = () => {
   //   setIsQuil(!isQuil)
   // }
@@ -443,13 +445,14 @@ const ChatRc = () => {
   }
   //copy group Id
   const copyToClipboard = () => {
-    copy(`RCID __${currentChat?._id}`)
+    copy(`Thread Id: ${currentChat?.threadId}`)
     // alert(`You have copied "${currentChat?._id}"`);
   }
   const copyToemail = () => {
     copy(`rpmongotest@gmail.com`)
     // alert(`You have copied "${currentChat?._id}"`);
   }
+ 
   //Toggle Chat Box Menus
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
@@ -470,6 +473,7 @@ const ChatRc = () => {
     const notiCount = notifications.find(c => c.caseId === id)
     return notiCount ? true : false
   }
+  
   const handleForwardMessage = async msgId => {
     setChatLoader(true)
     const payload = {
@@ -855,6 +859,8 @@ const ChatRc = () => {
         isAttachment,
         isVoiceMessage,
         isForward: false,
+        maincaseId: currentCase?.maincaseId,
+        threadId: currentCase?.threadId
         // isPinned: false,
       }
       if (isAttachment) {
@@ -937,7 +943,6 @@ const ChatRc = () => {
     }
     setLoading(false)
   }
-
   const { getRootProps, getInputProps } = useDropzone({
     accept:
       ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
@@ -976,7 +981,6 @@ const ChatRc = () => {
   //Getting sender name
   const getMemberName = (id) => {
     const caseArray = [...allCases, ...allSubCases]; // Combine all cases and subcases
-  
     const memberName = caseArray
       .find(cas => cas._id === currentCase?._id)
       ?.caseMembers?.find(member => member?.id?._id === id);
@@ -1594,7 +1598,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
-
+ 
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2028,43 +2032,43 @@ const ChatRc = () => {
                         <ChatLoader />
                       ) : (
                         <PerfectScrollbar style={{ height: "500px" }}>
-                          <ul className="list-unstyled chat-list">
-                            {allCases
-                              .map(caseData => ({
-                                caseData,
-                                notifyCount: notifyCountforCase(caseData._id),
-                              }))
-                              .sort((a, b) => {
-                                const notifyCountDiff =
-                                  b.notifyCount - a.notifyCount
-                                if (notifyCountDiff !== 0) {
-                                  return notifyCountDiff // Sort by notifyCount first
-                                }
-                              })
-                              .map(
-                                (
-                                  { caseData, notifyCount },
-                                  index // Define the 'index' variable here
-                                ) => (
-                                  <CaseGrid
-                                    caseData={caseData}
-                                    index={index}
-                                    key={index}
-                                    active={activeAccordian}
-                                    onAccordionButtonClick={
-                                      handleSettingActiveAccordion
-                                    }
-                                    handleSelectingCase={onSelectingCase}
-                                    selected={
-                                      currentCase?._id === caseData?._id
-                                    }
-                                    notifyCountforCase={notifyCountforCase}
-                                    ongetAllCases={ongetAllCases}
-                                  />
-                                )
-                              )}
-                          </ul>
-                        </PerfectScrollbar>
+                        <ul className="list-unstyled chat-list">
+                          {allCases
+                            .map(caseData => ({
+                              caseData,
+                              notifyCount: notifyCountforCase(caseData._id),
+                            }))
+                            .sort((a, b) => {
+                              const notifyCountDiff =
+                                b.notifyCount - a.notifyCount
+                              if (notifyCountDiff !== 0) {
+                                return notifyCountDiff // Sort by notifyCount first
+                              }
+                            })
+                            .map(
+                              (
+                                { caseData, notifyCount },
+                                index // Define the 'index' variable here
+                              ) => (
+                                <CaseGrid
+                                  caseData={caseData}
+                                  index={index}
+                                  key={index}
+                                  active={activeAccordian}
+                                  onAccordionButtonClick={
+                                    handleSettingActiveAccordion
+                                  }
+                                  handleSelectingCase={onSelectingCase}
+                                  selected={
+                                    currentCase?._id === caseData?._id
+                                  }
+                                  notifyCountforCase={notifyCountforCase}
+                                  ongetAllCases={ongetAllCases}
+                                />
+                              )
+                            )}
+                        </ul>
+                      </PerfectScrollbar>
                       )}
                     </TabPane>
                     <TabPane tabId="3">
@@ -2201,13 +2205,13 @@ const ChatRc = () => {
                                             }}
                                           >
                                             <h6 className="fw-bold">
-                                              Group ID{" "}
+                                              Thread ID{" "}
                                               <i
                                                 className="bx bx-copy ms-2"
                                                 onClick={copyToClipboard}
                                               />
                                             </h6>
-                                            {`RCID __${currentChat?._id}`}
+                                            {`Thread Id: ${currentChat?.threadId}`}
                                           </span>
                                         </DropdownItem>
                                       </DropdownMenu>
