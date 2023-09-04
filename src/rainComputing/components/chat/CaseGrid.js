@@ -27,6 +27,7 @@ import { useHistory } from "react-router-dom"
 import SubCase from "./models/SubCase"
 import SubCaseGrid from "./SubCaseGrid"
 import useAccordian from "rainComputing/helpers/hooks/useAccordian"
+import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
 
 const CaseGrid = ({
   caseData,
@@ -37,20 +38,23 @@ const CaseGrid = ({
   selected,
   notifyCountforCase,
   ongetAllCases,
+  allCases,
 }) => {
   const history = useHistory()
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
   const { currentUser } = useUser()
   const [casedetails, setCaseDetails] = useState(caseData)
-  const [caseIdSubCases, setCaseIdSubCases] = useState([])
-  console.log("caseIdSubCases",caseIdSubCases)
+  const { notifications, setNotifications } = useNotifications()
+
   const [newCaseId, setNewCaseId] = useState()
   const [currentCase, setCurrentCase] = useState(null)
+  const [caseIdSubCases, setCaseIdSubCases] = useState([])
   const { activeAccordian, handleSettingActiveAccordion } = useAccordian(-1)
   const [subCaseList, setSubCaseList] = useState(false)
-  const handleSubCaseClick = () => {
-    setSubCaseList(!subCaseList)
-  }
+  // const handleSubCaseClick = () => {
+  //   setSubCaseList(!subCaseList)
+  //   onGetCaseIdSubcases(caseData?.caseId)
+  // }
   const onSelectingCase = cas => {
     setCurrentCase(cas)
   }
@@ -128,28 +132,27 @@ const CaseGrid = ({
       setLeaveGroupModalOpen(false)
     }
   }
-  const handleClick = () => {
-    if (caseIdSubCases && caseIdSubCases.length > 0) {
-      const lastCaseId = caseIdSubCases[caseIdSubCases.length - 1].caseId
-      const lastDigit = parseInt(lastCaseId.slice(-1))
-      const newLastDigit = lastDigit + 1
-      const newCaseId =
-        lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
-      setNewCaseId(newCaseId)
-    } else {
-      const lastCaseId = casedetails?.caseId
-      const lastDigit = parseInt(lastCaseId.slice(-1))
-      const newLastDigit = lastDigit + 1
-      const newCaseId =
-        lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
-      setNewCaseId(newCaseId)
-    }
-    setNewSubCaseModelOpen(true)
-  }
-
-  const onGetCaseIdSubcases = async () => {
+  // const handleClick = () => {
+  //   if (caseIdSubCases && caseIdSubCases.length > 0) {
+  //     const lastCaseId = caseIdSubCases[caseIdSubCases.length - 1].caseId
+  //     const lastDigit = parseInt(lastCaseId.slice(-1))
+  //     const newLastDigit = lastDigit + 1
+  //     const newCaseId =
+  //       lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
+  //     setNewCaseId(newCaseId)
+  //   } else {
+  //     const lastCaseId = casedetails?.caseId
+  //     const lastDigit = parseInt(lastCaseId.slice(-1))
+  //     const newLastDigit = lastDigit + 1
+  //     const newCaseId =
+  //       lastCaseId.slice(0, -1) + newLastDigit.toString().padStart(0, "0")
+  //     setNewCaseId(newCaseId)
+  //   }
+  //   setNewSubCaseModelOpen(true)
+  // }
+  const onGetCaseIdSubcases = async caseId => {
     const payload = {
-      caseId: casedetails?.caseId,
+      caseId: caseId,
     }
     const res = await caseIdbySubCase(payload)
     if (res.success) {
@@ -160,6 +163,10 @@ const CaseGrid = ({
     onGetCaseIdSubcases()
   }, [])
 
+  const notificationSubCase = id => {
+    const matchingCase = notifications.find(i => i?.maincaseId === id)
+    return matchingCase ? true : false
+  }
   return (
     <>
       <>
@@ -281,30 +288,39 @@ const CaseGrid = ({
             </span>
           </Col>
           <Col xs={1} style={{ padding: 2 }}>
+            {notificationSubCase(caseData?.caseId) && (
+              <i className="bx bxs-bell bx-tada text-danger" />
+            )}
             {notifyCountforCase(caseData?._id) && (
               <i className="bx bxs-bell bx-tada text-danger" />
             )}
           </Col>
-          <Col xs={1} style={{ padding: 2 }} className="position-relative">
-            <i
+          <Col
+            xs={1}
+            style={{ padding: 2, display: "flex", gap: "7px" }}
+            className=""
+          >
+            {/* <i
               style={{ cursor: "pointer" }}
-              className="bx bxs-plus-square font-size-14 pt-1 me-2"
+              className="bx bxs-plus-square font-size-14 "
               title="Create SubCase"
               onClick={() => handleClick()}
-            ></i>
-            <i className="bi bi-ui-radios me-2"
-              style={{ cursor: "pointer",position:"absolute",top:"4px"}}
+            />
+            <i
+              className="bi bi-ui-radios"
+              style={{ cursor: "pointer" }}
               title="Sub Cases"
-              onClick={() => { handleSubCaseClick() }}
-            ></i>
-            <div className="md:ml-20">
+              onClick={() => {
+                handleSubCaseClick()
+              }}
+            /> */}
             <img
               src={Chevron}
               onClick={() => onAccordionButtonClick(index)}
               aria-expanded={index === active}
               className="accordion-icon"
+              style={{ cursor: "pointer" }}
             />
-            </div>
           </Col>
         </Row>
         <div className="px-2 border-top">
@@ -429,11 +445,12 @@ const CaseGrid = ({
             </div>
           </div> */}
           </Collapse>
-          {subCaseList  && (
+          {subCaseList && (
             <ul className="list-unstyled chat-list">
               {caseIdSubCases
-                .map(caseData => ({
+                .map((caseData, index) => ({
                   caseData,
+                  index, // Include index here
                   notifyCount: notifyCountforCase(caseData._id),
                 }))
                 .sort((a, b) => {
@@ -441,25 +458,21 @@ const CaseGrid = ({
                   if (notifyCountDiff !== 0) {
                     return notifyCountDiff // Sort by notifyCount first
                   }
+                  return 0 // No need for additional sorting for sub-cases
                 })
-                .map(
-                  (
-                    { caseData, notifyCount },
-                    index // Define the 'index' variable here
-                  ) => (
-                    <SubCaseGrid
-                      caseData={caseData}
-                      index={index}
-                      key={index}
-                      active={activeAccordian}
-                      onAccordionButtonClick={handleSettingActiveAccordion}
-                      handleSelectingCase={handleSelectingCase}   
-                      selected={selected}
-                      notifyCountforCase={notifyCountforCase}
-                      ongetAllCases={ongetAllCases}
-                    />
-                  )
-                )}
+                .map(({ caseData, index, notifyCount }) => (
+                  <SubCaseGrid
+                    caseData={caseData}
+                    index={index}
+                    key={index}
+                    active={activeAccordian} // Replace with actual active check
+                    onAccordionButtonClick={handleSettingActiveAccordion}
+                    handleSelectingCase={handleSelectingCase}
+                    selected={selected}
+                    notifyCountforCase={notifyCountforCase}
+                    ongetAllCases={ongetAllCases}
+                  />
+                ))}
             </ul>
           )}
         </div>
@@ -475,6 +488,7 @@ CaseGrid.propTypes = {
   onAccordionButtonClick: PropTypes.func,
   handleSelectingCase: PropTypes.func,
   ongetAllCases: PropTypes.func,
+  allCases: PropTypes.func,
   children: PropTypes.any,
   selected: PropTypes.bool,
   notifyCountforCase: PropTypes.func,
