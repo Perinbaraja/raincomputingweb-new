@@ -35,6 +35,9 @@ const CasesList = caseid => {
   const caseidFormatter = (cell, row) => {
     return row?.caseId
   }
+  const casethreadidFormatter = (cell, row) => {
+    return row?.threadId
+  }
 
   const memcountFormatter = (cell, row) => {
     return row?.caseMembers?.length
@@ -77,6 +80,12 @@ const CasesList = caseid => {
       text: "Case ID",
       sort: true,
       formatter: caseidFormatter,
+    },
+    {
+      dataField: "threadid",
+      text: "Thread ID",
+      sort: true,
+      formatter: casethreadidFormatter,
     },
     {
       dataField: "memcount",

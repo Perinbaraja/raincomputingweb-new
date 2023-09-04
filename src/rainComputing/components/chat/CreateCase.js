@@ -30,6 +30,7 @@ const CreateCase = ({
     closeButton: true,
   }
 
+
   const handleFormValueChange = e => {
     const { name, value } = e.target
     setFormValues(prevState => ({ ...prevState, [name]: value }))
@@ -71,12 +72,21 @@ const CreateCase = ({
   const handleCreatingCase = async () => {
     setloading(true)
     const filteredMembers = formValues?.members.map(m => m?._id)
+    const generateThreadId = () => {
+      const min = 100000; // Minimum 6-digit number
+      const max = 999999; // Maximum 6-digit number
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+  
+    const randomThreadId = generateThreadId();
     const payLoad = {
       admin: currentUser?.userID,
       caseId: formValues?.caseId,
       caseName: formValues?.caseName,
       serialNumber:caseSerialNo,
       members: [currentUser?.userID, ...filteredMembers],
+      threadId: randomThreadId, // Assign the generated ThreadId
+
     }
     const caseRes = await createNewCase(payLoad)
     if (caseRes.success) {
