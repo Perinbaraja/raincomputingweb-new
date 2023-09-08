@@ -63,11 +63,11 @@ const EditSubGroup = ({
     }
     const res = await updateSubgroup(payload)
     if (res.success) {
+      await getSubGroups()
       toastr.success(
         `${subGroupName} has been updated successfully`,
         "Successfully updated"
       )
-      await getSubGroups()
       handleClose()
     } else {
       toastr.error(` ${subGroupName} ${res?.msg}`, "Failed to update Subgroup")

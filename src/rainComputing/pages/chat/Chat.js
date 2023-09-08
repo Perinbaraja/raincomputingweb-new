@@ -107,6 +107,7 @@ import Quill from "quill"
 import card from "../chat/card.css"
 import "quill-mention"
 import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
+import { log } from "logrocket"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -331,6 +332,21 @@ const ChatRc = () => {
     setDurationIntervalId(null)
   }
 
+  const handlerefreshemail = async () => {
+    setChatLoader(true)
+    const payload = {
+      groupId: currentChat?._id,
+      userId: currentUser?.userID,
+    }
+    const res = await getMessagesByUserIdandGroupId(payload)
+    if (res.success) {
+      setMessages(res.groupMessages)
+    } else {
+      console.log("Failed to fetch Group message", res)
+    }
+    setChatLoader(false)
+  }
+
   useEffect(() => {
     return () => {
       // Clean up the duration interval on component unmount
@@ -445,14 +461,14 @@ const ChatRc = () => {
   }
   //copy group Id
   const copyToClipboard = () => {
-    copy(`Thread Id: ${currentChat?.threadId}`)
+    copy(`[Thread Id: ${currentChat?.threadId}]`)
     // alert(`You have copied "${currentChat?._id}"`);
   }
   const copyToemail = () => {
     copy(`rpmongotest@gmail.com`)
     // alert(`You have copied "${currentChat?._id}"`);
   }
- 
+
   //Toggle Chat Box Menus
   const toggleSearch = () => {
     setsearch_Menu(!search_Menu)
@@ -473,7 +489,7 @@ const ChatRc = () => {
     const notiCount = notifications.find(c => c.caseId === id)
     return notiCount ? true : false
   }
-  
+
   const handleForwardMessage = async msgId => {
     setChatLoader(true)
     const payload = {
@@ -703,7 +719,7 @@ const ChatRc = () => {
   //Fetching Contacts
   const onGetContacts = async ({ isSearch = false }) => {
     if (searchText === "") {
-      setContacts([])
+      await onGetEmailContacts()
     } else {
       setContactsLoading(true)
       const userRes = await getAllUsers({
@@ -724,6 +740,24 @@ const ChatRc = () => {
     }
   }
 
+  const onGetEmailContacts = async () => {
+    const userRes = await getAllUsers({
+      userID: currentUser.userID,
+      email: currentUser?.email,
+    })
+    if (userRes.success) {
+      setContacts([...userRes.users])
+    } else {
+      setContacts(userRes?.users)
+    }
+  }
+  useEffect(() => {
+    if (activeTab === "3" && searchText === "") {
+      // Call onGetEmailContacts and clear searchText
+      onGetEmailContacts()
+      setSearchText("")
+    }
+  }, [activeTab, searchText])
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
@@ -860,7 +894,7 @@ const ChatRc = () => {
         isVoiceMessage,
         isForward: false,
         maincaseId: currentCase?.maincaseId,
-        threadId: currentCase?.threadId
+        threadId: currentCase?.threadId,
         // isPinned: false,
       }
       if (isAttachment) {
@@ -961,15 +995,14 @@ const ChatRc = () => {
       // setRecorder(updatedVoicemsg);
     },
   })
-  
+
   const onChange = (content, delta, source, editor) => {
     // Remove <p> and <br> tags from the content
-    const strippedContent = content.replace(/<p><br><\/p>/gi, '');
-  
-    setcurMessage(strippedContent);
-  };
-  
-  
+    const strippedContent = content.replace(/<p><br><\/p>/gi, "")
+
+    setcurMessage(strippedContent)
+  }
+
   //Detecting Enter key Press in textbox
   const onKeyPress = event => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -979,17 +1012,17 @@ const ChatRc = () => {
   }
 
   //Getting sender name
-  const getMemberName = (id) => {
-    const caseArray = [...allCases, ...allSubCases]; // Combine all cases and subcases
+  const getMemberName = id => {
+    const caseArray = [...allCases, ...allSubCases] // Combine all cases and subcases
     const memberName = caseArray
       .find(cas => cas._id === currentCase?._id)
-      ?.caseMembers?.find(member => member?.id?._id === id);
-  
+      ?.caseMembers?.find(member => member?.id?._id === id)
+
     if (memberName) {
-      return memberName?.id?.firstname + " " + memberName?.id?.lastname;
+      return memberName?.id?.firstname + " " + memberName?.id?.lastname
     }
-    return id;
-  };
+    return id
+  }
 
   //Scrolling to bottom of message
   // const scrollToBottom = () => {
@@ -1011,7 +1044,6 @@ const ChatRc = () => {
   //Handling File change
   const handleFileChange = e => {
     const selectedFiles = e.target.files
-    console.log("e.target.files", e.target.files)
     if (selectedFiles.length + allFiles.length > 10) {
       // Display warning message here
       toastr.error("You can select a maximum of 10 files.", "Warning")
@@ -1598,7 +1630,7 @@ const ChatRc = () => {
       }, 0)
     }
   })
- 
+
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -1884,8 +1916,7 @@ const ChatRc = () => {
                   </div>
                 )}
 
-                <div className="my-1 px-2"
-                 style={{paddingBottom: "60px"}}>
+                <div className="my-1 px-2" style={{ paddingBottom: "60px" }}>
                   <Nav pills justified>
                     {sidebarNavItems.map((navItem, n) => (
                       <NavItem key={n}>
@@ -1945,8 +1976,8 @@ const ChatRc = () => {
                                         ? chat.chat.groupName
                                         : getChatName(chat.chat.groupMembers)}
                                     </h5>
-                                    <p className="text-truncate mb-0">
-                                      {/* {chat.description} */}
+                                    <p className="font-size-12 mb-1 text-primary">
+                                      {getChatEmail(chat?.chat?.groupMembers)}
                                     </p>
                                   </div>
                                   <div className="font-size-11">
@@ -2032,43 +2063,43 @@ const ChatRc = () => {
                         <ChatLoader />
                       ) : (
                         <PerfectScrollbar style={{ height: "500px" }}>
-                        <ul className="list-unstyled chat-list">
-                          {allCases
-                            .map(caseData => ({
-                              caseData,
-                              notifyCount: notifyCountforCase(caseData._id),
-                            }))
-                            .sort((a, b) => {
-                              const notifyCountDiff =
-                                b.notifyCount - a.notifyCount
-                              if (notifyCountDiff !== 0) {
-                                return notifyCountDiff // Sort by notifyCount first
-                              }
-                            })
-                            .map(
-                              (
-                                { caseData, notifyCount },
-                                index // Define the 'index' variable here
-                              ) => (
-                                <CaseGrid
-                                  caseData={caseData}
-                                  index={index}
-                                  key={index}
-                                  active={activeAccordian}
-                                  onAccordionButtonClick={
-                                    handleSettingActiveAccordion
-                                  }
-                                  handleSelectingCase={onSelectingCase}
-                                  selected={
-                                    currentCase?._id === caseData?._id
-                                  }
-                                  notifyCountforCase={notifyCountforCase}
-                                  ongetAllCases={ongetAllCases}
-                                />
-                              )
-                            )}
-                        </ul>
-                      </PerfectScrollbar>
+                          <ul className="list-unstyled chat-list">
+                            {allCases
+                              .map(caseData => ({
+                                caseData,
+                                notifyCount: notifyCountforCase(caseData._id),
+                              }))
+                              .sort((a, b) => {
+                                const notifyCountDiff =
+                                  b.notifyCount - a.notifyCount
+                                if (notifyCountDiff !== 0) {
+                                  return notifyCountDiff // Sort by notifyCount first
+                                }
+                              })
+                              .map(
+                                (
+                                  { caseData, notifyCount },
+                                  index // Define the 'index' variable here
+                                ) => (
+                                  <CaseGrid
+                                    caseData={caseData}
+                                    index={index}
+                                    key={index}
+                                    active={activeAccordian}
+                                    onAccordionButtonClick={
+                                      handleSettingActiveAccordion
+                                    }
+                                    handleSelectingCase={onSelectingCase}
+                                    selected={
+                                      currentCase?._id === caseData?._id
+                                    }
+                                    notifyCountforCase={notifyCountforCase}
+                                    ongetAllCases={ongetAllCases}
+                                  />
+                                )
+                              )}
+                          </ul>
+                        </PerfectScrollbar>
                       )}
                     </TabPane>
                     <TabPane tabId="3">
@@ -2080,6 +2111,7 @@ const ChatRc = () => {
                             style={{ height: "500px" }}
                             onScroll={e => handleContactScroll(e?.target)}
                           >
+                            {searchText === "" && <p>Suggestions :</p>}
                             {contacts &&
                               contacts.map((contact, i) => (
                                 <ul key={i} className="list-unstyled chat-list">
@@ -2103,12 +2135,17 @@ const ChatRc = () => {
                                             alt=""
                                             style={{ objectFit: "cover" }}
                                           />
-                                          <h5 className="font-size-14 mb-0 ms-2">
+                                        </div>
+                                        <div className="flex-grow-1 overflow-hidden align-self-center me-3">
+                                          <h5 className="text-truncate font-size-14 mb-1">
                                             {contact.firstname}{" "}
                                             {contact.lastname}
+                                            {}
                                           </h5>
+                                          <p className="font-size-12 mb-1 text-primary ">
+                                            {contact.email}
+                                          </p>
                                         </div>
-
                                         <i className="font-size-24 bx bxl-messenger me-2" />
                                       </div>
                                     </Link>
@@ -2140,13 +2177,13 @@ const ChatRc = () => {
                       <Card className="chat-card ">
                         <div className="py-2 px-3 border-bottom">
                           <Row>
-                            <Col md="4" xs="6">
+                            <Col md="4" xs="8">
                               <h5 className="font-size-15 mb-1 text-sm-primary">
                                 {currentChat.isGroup
                                   ? currentCase?.caseName || "Case Chat"
                                   : getChatName(currentChat.groupMembers)}
                               </h5>
-                              <h5 className="font-size-12 mb-1 text-primary d-none d-sm-inline-block">
+                              <h5 className="font-size-12 mb-1 text-primary">
                                 {!currentChat.isGroup &&
                                   getChatEmail(currentChat.groupMembers)}
                               </h5>
@@ -2162,10 +2199,30 @@ const ChatRc = () => {
                                 </span>
                               )}
                             </Col>
-                            <Col md="8" xs="3">
+                          </Row>
+                          <Row>
+                            <Col md="12" xs="3">
                               <ul className="list-inline user-chat-nav d-flex justify-content-sm-end text-end mb-0">
                                 {currentChat?.isGroup && (
-                                  <li className="list-inline-item d-none d-sm-inline-block align-middle">
+                                  <li
+                                    className="list-inline-item "
+                                    title="Refresh to get Email "
+                                  >
+                                    <Dropdown toggle={handlerefreshemail}>
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
+                                )}
+                                {currentChat?.isGroup && (
+                                  <li
+                                    className="list-inline-item "
+                                    title="Send Email "
+                                  >
                                     <Dropdown
                                       isOpen={groupIdOpen}
                                       toggle={() => toggleGroupIdOpen(!open)}
@@ -2211,7 +2268,7 @@ const ChatRc = () => {
                                                 onClick={copyToClipboard}
                                               />
                                             </h6>
-                                            {`Thread Id: ${currentChat?.threadId}`}
+                                            {`[Thread Id: ${currentChat?.threadId}]`}
                                           </span>
                                         </DropdownItem>
                                       </DropdownMenu>
@@ -2233,7 +2290,10 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                   </Dropdown>
                                 </li>
-                                <li className="list-inline-item d-sm-flex">
+                                <li
+                                  className="list-inline-item d-sm-flex"
+                                  title="Pinned Messages"
+                                >
                                   <Dropdown
                                     isOpen={pinModal}
                                     toggle={tog_scroll}
@@ -2244,7 +2304,10 @@ const ChatRc = () => {
                                     />
                                   </Dropdown>
                                 </li>
-                                <li className="list-inline-item d-none d-sm-inline-block">
+                                <li
+                                  className="list-inline-item"
+                                  title="Search Messages"
+                                >
                                   <Dropdown
                                     isOpen={search_Menu}
                                     toggle={toggleSearch}
@@ -2295,7 +2358,10 @@ const ChatRc = () => {
                                     </DropdownMenu>
                                   </Dropdown>
                                 </li>
-                                <li className="list-inline-item align-middle">
+                                <li
+                                  className="list-inline-item align-middle"
+                                  title="Manage Case"
+                                >
                                   <Dropdown
                                     isOpen={chatSettingOpen}
                                     toggle={() => toggleChatSettingOpen(!open)}
@@ -2413,7 +2479,7 @@ const ChatRc = () => {
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "300px",
+                                  height: "50vh",
                                   overflowY: "scroll",
                                 }}
                               >
@@ -2766,7 +2832,7 @@ const ChatRc = () => {
                                               onChange={onChange}
                                               mentionsArray={mentionsArray}
                                               isQuill={isQuill}
-                                              onKeyPress = {onKeyPress}
+                                              onKeyPress={onKeyPress}
                                               isEmptyOrSpaces={isEmptyOrSpaces}
                                             />
                                           </div>
