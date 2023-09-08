@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Button, Col, Row } from "reactstrap"
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
@@ -18,7 +18,7 @@ const CreateCase = ({
   getAllCases,
 }) => {
   const { currentUser } = useUser()
-  const history = useHistory();
+  const history = useHistory()
   const [loading, setloading] = useState(false)
   const [contacts, setContacts] = useState([])
   const [searchText, setSearchText] = useState("")
@@ -29,7 +29,6 @@ const CreateCase = ({
     progressBar: true,
     closeButton: true,
   }
-
 
   const handleFormValueChange = e => {
     const { name, value } = e.target
@@ -73,20 +72,20 @@ const CreateCase = ({
     setloading(true)
     const filteredMembers = formValues?.members.map(m => m?._id)
     const generateThreadId = () => {
-      const min = 100000; // Minimum 6-digit number
-      const max = 999999; // Maximum 6-digit number
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-  
-    const randomThreadId = generateThreadId();
+      const min = 100000 // Minimum 6-digit number
+      const max = 999999 // Maximum 6-digit number
+      return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+
+    const randomThreadId = generateThreadId()
     const payLoad = {
       admin: currentUser?.userID,
       caseId: formValues?.caseId,
       caseName: formValues?.caseName,
-      serialNumber:caseSerialNo,
+      serialNumber: caseSerialNo,
       members: [currentUser?.userID, ...filteredMembers],
       threadId: randomThreadId, // Assign the generated ThreadId
-
+      threadIdCondition: "GroupMembers",
     }
     const caseRes = await createNewCase(payLoad)
     if (caseRes.success) {
@@ -95,7 +94,7 @@ const CreateCase = ({
         "Case creation success"
       )
       history.push(`/chat-rc?g_id=${caseRes?.group}&c_id=${caseRes?.case}`)
-      await getAllCases({ isSet: false }) 
+      await getAllCases({ isSet: false })
 
       handleCaseCreationCancel()
     } else {
@@ -261,11 +260,17 @@ const CreateCase = ({
                     onClick={() => handleAddingGroupMembers(contact)}
                   >
                     <div className="d-flex justify-content-between ">
-                     <div> {contact.firstname} {contact.lastname}   </div>                
-                     {contact?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
-
+                      <div>
+                        {" "}
+                        {contact.firstname} {contact.lastname}{" "}
+                      </div>
+                      {contact?.attorneyStatus === "approved" && (
+                        <div>
+                          {" "}
+                          <i className="fas fa-star text-warning"></i>
+                        </div>
+                      )}
                     </div>
-
 
                     <div className="font-size-0 text-body ">
                       {contact.email}
@@ -279,8 +284,9 @@ const CreateCase = ({
           <div className="d-flex flex-wrap gap-2 my-2">
             <Button color="success" className="btn mx-1 mb-2">
               <div className="d-flex  ">
-                <div>{currentUser?.firstname} {currentUser?.lastname}</div>
-
+                <div>
+                  {currentUser?.firstname} {currentUser?.lastname}
+                </div>
               </div>
 
               <div className="font-size-0 text-body ">{currentUser?.email}</div>
@@ -294,9 +300,13 @@ const CreateCase = ({
                   onClick={() => handleAddingGroupMembers(member)}
                 >
                   <div className="d-flex justify-content-between">
-                   <div> {member?.firstname + " " + member?.lastname}</div>
-                    {member?.attorneyStatus === "approved" &&<div> <i className="fas fa-star text-warning"></i></div>}
-
+                    <div> {member?.firstname + " " + member?.lastname}</div>
+                    {member?.attorneyStatus === "approved" && (
+                      <div>
+                        {" "}
+                        <i className="fas fa-star text-warning"></i>
+                      </div>
+                    )}
                   </div>
 
                   <div className="font-size-0 text-body ">{member?.email}</div>

@@ -23,7 +23,17 @@ const EditCase = ({
   const [caseMembers, setCaseMembers] = useState([])
   const [searchText, setSearchText] = useState("")
   const [loading, setloading] = useState(false)
+  const [threadIdCondition, setThreadIdCondition] = useState(
+    currentCase?.threadIdCondition
+  )
+  const [emailMembers, setEmailMembers] = useState([])
 
+  // useEffect(() => {
+  //   // Save the threadIdCondition to local storage whenever it changes
+  //   localStorage.setItem("threadIdCondition", threadIdCondition)
+  // }, [threadIdCondition])
+
+  // Initialize with a default condition
   toastr.options = {
     progressBar: true,
     closeButton: true,
@@ -31,6 +41,7 @@ const EditCase = ({
 
   /*Closing Modal */
   const handleClose = () => {
+    setThreadIdCondition(currentCase?.threadIdCondition)
     setOpen(false)
   }
 
@@ -49,9 +60,20 @@ const EditCase = ({
     }
   }
 
+  const handleEveryOne = () => {
+    setThreadIdCondition("EveryOne")
+    const structuredMembers = caseMembers?.map(m => m?._id)
+    setEmailMembers(structuredMembers)
+  }
+
+  const handleGroupMembers = () => {
+    setThreadIdCondition("GroupMembers")
+    setEmailMembers(currentCase?.admins)
+  }
+
   const handleUpdatingCase = async () => {
-    setloading(true);
-    const structuredMembers = caseMembers?.map((m) => m?._id);
+    setloading(true)
+    const structuredMembers = caseMembers?.map(m => m?._id)
     const payLoad = {
       id: currentCase?._id,
       caseId,
@@ -59,26 +81,23 @@ const EditCase = ({
       serialNumber,
       members: structuredMembers,
       admin: currentUser?.userID,
-    };
-    const res = await updateCase(payLoad);
+      threadIdCondition,
+    }
+    const res = await updateCase(payLoad)
     if (res.success) {
       toastr.success(
         `Case ${res?.caseId} has been updated successfully`,
         "Success"
-      );
+      )
       setAllCases(
-        allCases.map(i =>
-         ( i._id === currentCase?._id ? res?.updatedCase : i)
-        )
-      );
-      setOpen(false);
+        allCases.map(i => (i._id === currentCase?._id ? res?.updatedCase : i))
+      )
+      setOpen(false)
     } else {
-      toastr.error(`Failed to update case due to ${res?.msg}`, "Failed!!!");
+      toastr.error(`Failed to update case due to ${res?.msg}`, "Failed!!!")
     }
-    setloading(false);
-  };
-  
-  
+    setloading(false)
+  }
 
   useEffect(() => {
     const handleFetchingContacts = async () => {
@@ -219,6 +238,41 @@ const EditCase = ({
               />
             </div>
           </Row>
+          <Row className="my-3">
+            <label
+              htmlFor="user-search-text"
+              className="col-md-3 col-lg-2 col-form-label"
+            >
+              Email to Chat
+            </label>
+            <div className="col-md-8 mt-2">
+              <div className=" form-check-inline">
+                <input
+                  className=""
+                  type="radio"
+                  id="everyone-radio"
+                  name="threadIdCondition"
+                  checked={threadIdCondition === "EveryOne"}
+                  onChange={handleEveryOne}
+                />
+                <label>EveryOne</label>
+              </div>
+              <div className="form-check-inline">
+                <input
+                  className=""
+                  type="radio"
+                  id="admins-radio"
+                  name="threadIdCondition"
+                  checked={threadIdCondition === "GroupMembers"}
+                  onChange={handleGroupMembers}
+                />
+                <label className="form-check-label" htmlFor="admins-radio">
+                  Group Members
+                </label>
+              </div>
+            </div>
+          </Row>
+
           <Row>
             <Col xs={6} className="px-3 border-end border-info">
               <span className="text-muted">Members</span>
