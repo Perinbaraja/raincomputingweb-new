@@ -288,7 +288,7 @@ const ChatRc = () => {
   // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
-  // const [nonewmessage, setNoNewMessage] = useState([])
+  const [nonewmessage, setNoNewMessage] = useState([])
   // const toggle_Quill = () => {
   //   setIsQuil(!isQuil)
   // }
