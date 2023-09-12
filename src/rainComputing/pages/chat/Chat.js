@@ -65,6 +65,7 @@ import {
   updateGroup,
   getAllSubCases,
   caseIdbySubCase,
+  // sentMessageEmail,
 } from "rainComputing/helpers/backend_helper"
 import { Link } from "react-router-dom"
 import { indexOf, isEmpty, map, now, set } from "lodash"
@@ -287,7 +288,7 @@ const ChatRc = () => {
   // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
-
+  // const [nonewmessage, setNoNewMessage] = useState([])
   // const toggle_Quill = () => {
   //   setIsQuil(!isQuil)
   // }
@@ -332,21 +333,6 @@ const ChatRc = () => {
     setDurationIntervalId(null)
   }
 
-  const handlerefreshemail = async () => {
-    setChatLoader(true)
-    const payload = {
-      groupId: currentChat?._id,
-      userId: currentUser?.userID,
-    }
-    const res = await getMessagesByUserIdandGroupId(payload)
-    if (res.success) {
-      setMessages(res.groupMessages)
-    } else {
-      console.log("Failed to fetch Group message", res)
-    }
-    setChatLoader(false)
-  }
-
   useEffect(() => {
     return () => {
       // Clean up the duration interval on component unmount
@@ -384,7 +370,29 @@ const ChatRc = () => {
       behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
     })
   }
-
+  const handlerefreshemail = async () => {
+    setChatLoader(true)
+    const payload = {
+      groupId: currentChat?._id,
+      userId: currentUser?.userID,
+    }
+    const res = await getMessagesByUserIdandGroupId(payload)
+    if (res.success) {
+      setMessages(res.groupMessages)
+    } else {
+      console.log("Failed to fetch Group message", res)
+      setNoNewMessage(res.groupMessages)
+    }
+    setChatLoader(false)
+  }
+  useEffect(() => {
+    if (nonewmessage) {
+      const timer = setTimeout(() => {
+        scrollToBottom()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [messages])
   const filterChats = () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
@@ -483,7 +491,6 @@ const ChatRc = () => {
     const notiCount = notifications.filter(c => c.groupId === id)
     return notiCount ? notiCount.length : 0
   }
-
   //Getting Notofication for Case
   const notifyCountforCase = id => {
     const notiCount = notifications.find(c => c.caseId === id)
@@ -739,6 +746,22 @@ const ChatRc = () => {
       setContactsLoading(false)
     }
   }
+  //send message to email
+  // const onSendMessageEmail = async (msg) => {
+  //   const membersEmail = currentCase?.caseMembers.map((member) => member?.id?.email);
+  //   const payLoad = {
+  //     messageData: msg?.messageData,
+  //     chatRoomId: currentChat?._id,
+  //     caseName: currentCase?.caseName ? currentCase?.caseName : "PrivateChat",
+  //     groupName: currentChat?.isGroup
+  //       ? currentChat?.groupName
+  //       : getChatName(currentChat?.groupMembers),
+  //     membersEmail: membersEmail
+  //   }
+  //   const mailRes = await sentMessageEmail(payLoad)
+  //   toastr.success(`Mail has been Send successfully`, "Success")
+  //   setEmail(mailRes.true)
+  // }
 
   const onGetEmailContacts = async () => {
     const userRes = await getAllUsers({
@@ -2574,6 +2597,18 @@ const ChatRc = () => {
                                           >
                                             Delete
                                           </DropdownItem>
+                                          {/* <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              msg.sender === currentUser.userID
+                                                ? onSendMessageEmail(msg)
+                                                : toastr.info(
+                                                    "Unable to  Send  other's message"
+                                                  )
+                                            }}
+                                          >
+                                            Send Email
+                                          </DropdownItem> */}
                                         </DropdownMenu>
                                       </UncontrolledDropdown>
                                       <div
