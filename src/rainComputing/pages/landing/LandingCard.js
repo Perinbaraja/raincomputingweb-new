@@ -78,6 +78,21 @@ const LandingCard = props => {
                   Profile
                 </UncontrolledTooltip>
               </div>
+              {user?.domain && (
+                <div id="attmenus">
+                  <a
+                    href={`https://${user?.domain}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <i
+                      className="bx bx-link-external "
+                      id="atticon"
+                      title="visit domain"
+                    />
+                  </a>
+                </div>
+              )}
             </div>
           </CardBody>
         </Card>
