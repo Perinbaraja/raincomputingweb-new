@@ -79,18 +79,23 @@ const LandingCard = props => {
                 </UncontrolledTooltip>
               </div>
               {user?.domain && (
-                <div id="attmenus">
+                <div className="d-flex mx-3">
                   <a
                     href={`https://${user?.domain}`}
                     target="_blank"
                     rel="noreferrer"
+                    id={"domain" + user._id}
                   >
-                    <i
-                      className="bx bx-link-external "
-                      id="atticon"
-                      title="visit domain"
-                    />
+                    <div id="attmenus">
+                      <i className="bx bx-link-external" id="atticon" />
+                    </div>
                   </a>
+                  <UncontrolledTooltip
+                    placement="bottom"
+                    target={"domain" + user._id}
+                  >
+                    Visit Domain
+                  </UncontrolledTooltip>
                 </div>
               )}
             </div>
