@@ -1529,12 +1529,14 @@ const ChatRc = () => {
   useEffect(() => {
     if (privateChatId && !pageLoader) {
       const tempChat = chats?.find(ch => ch?._id === privateChatId)
+      setactiveTab("1")
       setCurrentChat(tempChat)
     }
   }, [privateChatId, pageLoader])
   useEffect(() => {
     if (privateReplyChatId && !pageLoader) {
       const tempChat = chats?.find(ch => ch?._id === privateReplyChatId)
+      setactiveTab("1")
       setCurrentChat(tempChat)
     }
   }, [privateReplyChatId, pageLoader])
