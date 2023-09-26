@@ -19,11 +19,12 @@ const GroupMsg = props => {
     }
     getGroupName()
   }, [caseId])
+  const chatRoomUrl = `/chat-rc?g_id=${groupId}&c_id=${caseId}`;
   return (
     <>    {isLoading ?(
       <ChatLoader />
     ):(
-      <Link to={`/chat-rc?g_id=${groupId}&c_id=${caseId}`} className="text-reset notification-item">
+      <Link to={chatRoomUrl} className="text-reset notification-item">
         <div className="d-flex">
           <div className="avatar-xs me-3">
             <span className="avatar-title bg-primary rounded-circle font-size-16">

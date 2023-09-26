@@ -20,7 +20,7 @@ const GroupReplyMsg = props => {
     }
     getGroupName()
   }, [caseId])
-
+  const chatRoomId = `/chat-rc?rg_id=${groupId}&rc_id=${caseId}&msg_id=${_id}&reply_id=${groupReplymsgId}`
   return (
     <>
       {" "}
@@ -28,7 +28,7 @@ const GroupReplyMsg = props => {
         <ChatLoader />
       ) : (
         <Link
-          to={`/chat-rc?rg_id=${groupId}&rc_id=${caseId}&msg_id=${_id}&reply_id=${groupReplymsgId}`}
+          to={chatRoomId}
           className="text-reset notification-item"
         >
           <div className="d-flex">
