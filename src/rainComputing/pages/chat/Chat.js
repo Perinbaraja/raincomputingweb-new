@@ -1096,28 +1096,32 @@ const ChatRc = () => {
   }
 
   const handleFetchFiles = async () => {
-    try {
-      const filesRes = await getCaseFiles(currentCase?._id)
-      if (filesRes.success && filesRes?.files?.length > 0) {
-        const updatedFiles = filesRes.files.map(file => {
-          const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
-          return { ...file, time: sendAt, isDownloading: true }
-        })
-        setCaseFile(updatedFiles)
-      } else {
-        setCaseFile([])
+    if (currentCase && currentCase._id) {
+      try {
+        const filesRes = await getCaseFiles({ caseId: currentCase._id });
+        if (filesRes.success && filesRes?.files?.length > 0) {
+          const updatedFiles = filesRes.files.map(file => {
+            const sendAt = moment(file.time).format("DD-MM-YY HH:mm");
+            return { ...file, time: sendAt, isDownloading: true };
+          });
+          setCaseFile(updatedFiles);
+        } else {
+          setCaseFile([]);
+        }
+      } catch (error) {
+        console.error(`Error fetching case files: ${error}`);
+        setCaseFile([]);
       }
-    } catch (error) {
-      console.error(`Error fetching case files: ${error}`)
-      setCaseFile([])
     }
-  }
+  };
+  
   useEffect(() => {
-    handleFetchFiles()
+    handleFetchFiles();
     return () => {
-      setCaseFile([])
+      setCaseFile([]);
     }
-  }, [])
+  }, [currentCase]); // Add currentCase as a dependency
+  
   // Archive Chat
   const onArchievingChat = async () => {
     setChatLoader(true)
@@ -1213,12 +1217,15 @@ const ChatRc = () => {
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
     const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat")
+    console.log("caseFolder",caseFolder)
     // Loop through each case file and add it to the ZIP file
     for (const file of caseFile) {
       try {
         // Fetch the file from MongoDB
         const res = await fetch(`${SERVER_URL}/file/${file.id}`)
+        console.log("res",res)
         const blob = await res.blob()
+        console.log("blob",blob)
         caseFolder.file(file.name, blob)
       } catch (err) {
         console.error(`Error fetching case file ${file.name}: ${err}`)
