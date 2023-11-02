@@ -21,4 +21,15 @@
   .card .ql-editor {
     min-height: 10px; /* Set the minimum height for the editor content area */
   }
+  .full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: white; /* You can change the background color to your preference */
+    overflow: auto;
+    /* Add any other styling you want for the full-screen view */
+  }
   

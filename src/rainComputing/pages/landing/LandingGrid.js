@@ -28,7 +28,7 @@ const LandingGrid = () => {
   const [attorneys, setAttorneys] = useState([])
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(12)
-
+console.log("attorneys",attorneys)
   const loadAttorney = async () => {
     const res = await getAllRegAttorneys({ page, limit, searchText })
     if (res.success) {
@@ -111,7 +111,19 @@ const LandingGrid = () => {
                         ?.toString()
                         .toLowerCase()
                         .includes(searchText.toString().toLowerCase()) ||
-                      item?.regUser?.firm
+                      item?.firm
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase()) ||
+                        item?.fee
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase()) ||
+                        item?.expertise
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchText.toString().toLowerCase()) ||
+                        item?.jurisdiction
                         ?.toString()
                         .toLowerCase()
                         .includes(searchText.toString().toLowerCase())

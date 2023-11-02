@@ -109,6 +109,8 @@ import card from "../chat/card.css"
 import "quill-mention"
 import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import { log } from "logrocket"
+import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
+import LinksModel from "rainComputing/components/chat/models/LinksModel"
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -231,6 +233,16 @@ const ChatRc = () => {
     setToggleOpen: setReplyMsgModalOpen,
     toggleIt: toggleReplyMessageModal,
   } = useToggle(false)
+  const {
+    toggleOpen: filesModelOpen,
+    setToggleOpen: setFilesModelOpen,
+    toggleIt: toggleFilesModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: linksModelOpen,
+    setToggleOpen: setLinksModelOpen,
+    toggleIt: toggleLinksModelOpen,
+  } = useToggle(false)
 
   const MESSAGE_CHUNK_SIZE = 50
 
@@ -285,14 +297,13 @@ const ChatRc = () => {
   const [modal_scroll, setmodal_scroll] = useState(false)
   const [curMessage, setcurMessage] = useState("")
   const [currentChatDelete, setCurrentChatDelete] = useState()
-  // const [isQuil, setIsQuil] = useState(false)
   const [sortedChats, setSortedChats] = useState([])
   const [deleteMessage, setDeleteMessage] = useState()
   const [nonewmessage, setNoNewMessage] = useState([])
-  // const toggle_Quill = () => {
-  //   setIsQuil(!isQuil)
-  // }
-
+  const [isFullScreen, setIsFullScreen] = useState(false)
+  const handleFullScreenView = () => {
+    setIsFullScreen(!isFullScreen)
+  }
   const [isQuill, setIsQuill] = useState(false)
   const toggle_Quill = () => {
     setIsQuill(!isQuill)
@@ -332,6 +343,16 @@ const ChatRc = () => {
     clearInterval(durationIntervalId)
     setDurationIntervalId(null)
   }
+
+
+  const regex = /<a href="([^"]+)"/; 
+
+  const filteredMessages = messages.filter(message => {
+    const messageData = message.messageData;
+
+    return regex.test(messageData);
+  }); 
+  console.log("filteredMessages", filteredMessages)
 
   useEffect(() => {
     return () => {
@@ -1114,14 +1135,14 @@ const ChatRc = () => {
       }
     }
   };
-  
+
   useEffect(() => {
     handleFetchFiles();
     return () => {
       setCaseFile([]);
     }
   }, [currentCase]); // Add currentCase as a dependency
-  
+
   // Archive Chat
   const onArchievingChat = async () => {
     setChatLoader(true)
@@ -1154,9 +1175,9 @@ const ChatRc = () => {
         attachments?.url,
         typeof attachments === "object" && attachments?.url
           ? {
-              url: attachments.url,
-              content: "View Attachment",
-            }
+            url: attachments.url,
+            content: "View Attachment",
+          }
           : "-",
       ]
       rows.push(tempRow)
@@ -1210,9 +1231,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1796,9 +1816,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1813,6 +1832,24 @@ const ChatRc = () => {
               </DynamicModel>
             )}
 
+            <DynamicModel
+              open={filesModelOpen}
+              toggle={toggleFilesModelOpen}
+              size="xl"
+              modalTitle="Shared Files"
+              isClose={true}
+            >
+              <CaseFilesGrid groupId={currentChat?._id} />
+            </DynamicModel>
+            <DynamicModel
+              open={linksModelOpen}
+              toggle={toggleLinksModelOpen}
+              size="lg"
+              modalTitle="Links"
+              isClose={true}
+            >
+              <LinksModel   />
+            </DynamicModel>
             {/* Modal for Editing Case*/}
             {currentCase && (
               <EditCase
@@ -1993,8 +2030,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                              chat.chat.groupMembers
-                                            )
+                                            chat.chat.groupMembers
+                                          )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -2127,6 +2164,7 @@ const ChatRc = () => {
                                     }
                                     notifyCountforCase={notifyCountforCase}
                                     ongetAllCases={ongetAllCases}
+                                    filteredMessages={filteredMessages}
                                   />
                                 )
                               )}
@@ -2307,6 +2345,38 @@ const ChatRc = () => {
                                     </Dropdown>
                                   </li>
                                 )}
+                                {/* {!currentChat?.isGroup && */}
+                                  <li className="list-inline-item">
+                                    <Dropdown
+                                      toggle={() => toggleLinksModelOpen(true)}
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i className="bi bi-link"
+                                          title="Links"
+                                        />
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
+                                {/* // } */}
+                                {!currentChat?.isGroup &&
+                                  <li className="list-inline-item">
+                                    <Dropdown
+                                      toggle={() => toggleFilesModelOpen(true)}
+                                    >
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
+                                      >
+                                        <i className="bi bi-files"
+                                          title="Shared Files"
+                                        />
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
+                                }
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
@@ -2352,7 +2422,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2504,14 +2574,14 @@ const ChatRc = () => {
                             </Col>
                           </Row>
                         </div>
-                        <div>
+                 
                           <div className="chat-conversation px-3 py-1">
                             <ul className="list-unstyled">
                               <div
                                 ref={containerRef}
                                 onScroll={event => handleScroll(event)}
                                 style={{
-                                  height: "50vh",
+                                  height: "90vh",
                                   overflowY: "scroll",
                                 }}
                               >
@@ -2567,16 +2637,16 @@ const ChatRc = () => {
                                           </DropdownItem>
                                           {msg?.sender ===
                                             currentUser.userID && (
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                          )}
+                                              <DropdownItem
+                                                href="#"
+                                                onClick={() => {
+                                                  setCurEditMessageId(msg)
+                                                  setMessageEditModalOpen(true)
+                                                }}
+                                              >
+                                                Edit
+                                              </DropdownItem>
+                                            )}
                                           <DropdownItem
                                             href="#"
                                             onClick={() => {
@@ -2600,8 +2670,8 @@ const ChatRc = () => {
                                               msg.sender === currentUser.userID
                                                 ? handleDelete(msg)
                                                 : toastr.info(
-                                                    "Unable to  delete other's message"
-                                                  )
+                                                  "Unable to  delete other's message"
+                                                )
                                             }}
                                           >
                                             Delete
@@ -2625,7 +2695,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2723,11 +2793,13 @@ const ChatRc = () => {
                                           </div>
                                         )}
                                         <p className="chat-time mb-0">
-                                          <i className="bx bx-comment-check align-middle me-1" />
+                                        <i className="bx bx-comment-check align-middle me-1" />
                                           {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                          {moment(msg.createdAt).format(
+                                          {msg.isEdit ? (moment(msg.updatedAt).format(
                                             "DD-MM-YY HH:mm"
-                                          )}
+                                          )) : (moment(msg.createdAt).format(
+                                            "DD-MM-YY HH:mm"
+                                          ))}
                                           {msg?.replies?.map((r, i) => (
                                             <div
                                               key={i}
@@ -2771,7 +2843,7 @@ const ChatRc = () => {
                                             backgroundColor:
                                               msg.sender ==
                                                 currentUser.userID &&
-                                              currentChat?.color
+                                                currentChat?.color
                                                 ? currentChat?.color + "33"
                                                 : "#00EE00" + "33",
                                           }}
@@ -2807,212 +2879,453 @@ const ChatRc = () => {
                               notifyCount={getNotificationCount}
                             />
                           )}
-                          <div class="p-2 chat-input-section">
-                            <div className="row">
-                              <div className="col">
-                                <div className="position-relative">
+                         {isFullScreen ? (
+                          <>
+                            <div
+                              className={`p-2 chat-input-section ${
+                                isFullScreen ? "full-screen" : ""
+                              }`}
+                            >
+                              <div className="row">
+                                <div className="col">
+                                  <div className="position-relative">
+                                    {recorder &&
+                                    recorder.state === "recording" ? (
+                                      <div className="d-flex justify-content-center">
+                                        <i
+                                          className="mdi mdi-microphone font-size-18 text-primary"
+                                          style={{
+                                            height: "30px",
+                                            paddingLeft: "10px",
+                                          }}
+                                        ></i>
+                                        <p className="text-primary mt-1 font-size-12">
+                                          {duration}Secs
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {blobURL ? (
+                                          <div>
+                                            <audio
+                                              className="w-100 w-sm-100"
+                                              style={{
+                                                height: "33px",
+                                                paddingLeft: "10px",
+                                              }}
+                                              src={blobURL}
+                                              controls="controls"
+                                            ></audio>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <div className="p-2 pt-0">
+                                              {" "}
+                                              {Array.from(allFiles)?.length >
+                                                0 && (
+                                                <div class="d-flex gap-2 flex-wrap mt-2">
+                                                  {Array.from(allFiles)?.map(
+                                                    (att, a) => (
+                                                      <span
+                                                        class="badge badge-soft-primary font-size-13"
+                                                        key={a}
+                                                      >
+                                                        {att.name}
+                                                        <i
+                                                          class="bx bx-x-circle mx-1"
+                                                          onClick={() =>
+                                                            handleFileRemove(
+                                                              att?.name
+                                                            )
+                                                          }
+                                                          style={{
+                                                            cursor: "pointer",
+                                                          }}
+                                                        />
+                                                      </span>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div>
+                                              <ReactQuillInput
+                                                value={curMessage}
+                                                onChange={onChange}
+                                                mentionsArray={mentionsArray}
+                                                isQuill={isQuill}
+                                                onKeyPress={onKeyPress}
+                                                isEmptyOrSpaces={
+                                                  isEmptyOrSpaces
+                                                }
+                                              />
+                                            </div>
+                                          </>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div
+                                  className="col-auto d-flex justify-content-end  gap-2 "
+                                  style={{
+                                    position: "absolute",
+                                    right: "19px",
+                                    top: "60px",
+                                  }}
+                                >
                                   {recorder &&
                                   recorder.state === "recording" ? (
-                                    <div className="d-flex justify-content-center">
-                                      <i
-                                        className="mdi mdi-microphone font-size-18 text-primary"
-                                        style={{
-                                          height: "30px",
-                                          paddingLeft: "10px",
-                                        }}
-                                      ></i>
-                                      <p className="text-primary mt-1 font-size-12">
-                                        {duration}Secs
-                                      </p>
-                                    </div>
+                                    <></>
                                   ) : (
-                                    <>
-                                      {blobURL ? (
-                                        <div>
-                                          <audio
-                                            className="w-100 w-sm-100"
-                                            style={{
-                                              height: "33px",
-                                              paddingLeft: "10px",
-                                            }}
-                                            src={blobURL}
-                                            controls="controls"
-                                          ></audio>
-                                        </div>
-                                      ) : (
-                                        <>
-                                          <div className="p-2 pt-0">
-                                            {" "}
-                                            {Array.from(allFiles)?.length >
-                                              0 && (
-                                              <div class="d-flex gap-2 flex-wrap mt-2">
-                                                {Array.from(allFiles)?.map(
-                                                  (att, a) => (
-                                                    <span
-                                                      class="badge badge-soft-primary font-size-13"
-                                                      key={a}
-                                                    >
-                                                      {att.name}
-                                                      <i
-                                                        class="bx bx-x-circle mx-1"
-                                                        onClick={() =>
-                                                          handleFileRemove(
-                                                            att?.name
-                                                          )
-                                                        }
-                                                        style={{
-                                                          cursor: "pointer",
-                                                        }}
-                                                      />
-                                                    </span>
-                                                  )
-                                                )}
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div>
-                                            <ReactQuillInput
-                                              value={curMessage}
-                                              onChange={onChange}
-                                              mentionsArray={mentionsArray}
-                                              isQuill={isQuill}
-                                              onKeyPress={onKeyPress}
-                                              isEmptyOrSpaces={isEmptyOrSpaces}
-                                            />
-                                          </div>
-                                        </>
-                                      )}
-                                    </>
+                                    <div>
+                                      <input
+                                        type="file"
+                                        name="file"
+                                        multiple="true"
+                                        id="hidden-file"
+                                        className="d-none"
+                                        accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
+                                        onChange={e => handleFileChange(e)}
+                                      ></input>
+                                      <label
+                                        for="hidden-file"
+                                        style={{ margin: "10px" }}
+                                      >
+                                        <i
+                                          class="mdi mdi-attachment mdi-rotate-315"
+                                          disabled={
+                                            recorder?.state === "recording"
+                                          }
+                                          title="Attachments"
+                                          style={{
+                                            color: "#556EE6",
+                                            fontSize: "16px",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                      </label>
+                                      <i
+                                        className="bi bi-fullscreen-exit"
+                                        onClick={handleFullScreenView}
+                                        style={{
+                                          color: "#556EE6",
+                                          fontSize: "16px",
+                                          cursor: "pointer",
+                                        }}
+                                        title={
+                                          isFullScreen
+                                            ? "Exit Full Screen"
+                                            : "Enter Full Screen"
+                                        }
+                                      ></i>
+                                    </div>
                                   )}
+                                  {recorder &&
+                                  recorder.state === "recording" ? (
+                                    <i
+                                      className="mdi mdi-microphone font-size-20 text-danger me-2"
+                                      title="Stop Recording"
+                                      onClick={stopRecording}
+                                      disabled={recorder?.state == "stopped"}
+                                      style={{
+                                        cursor: "pointer",
+                                        paddingTop: "6px",
+                                      }}
+                                    ></i>
+                                  ) : (
+                                    <i
+                                      className="mdi mdi-microphone font-size-20 text-primary me-2"
+                                      title="Start Recording"
+                                      onClick={startRecording}
+                                      disabled={recorder?.state == "recording"}
+                                      style={{
+                                        cursor: "pointer",
+                                        paddingTop: "6px",
+                                      }}
+                                    ></i>
+                                  )}
+
+                                  {recorder?.state !== "recording" && (
+                                    <div>
+                                      {loading ? (
+                                        <button
+                                          type="button"
+                                          className="btn btn-primary btn-rounded chat-send"
+                                          color="primary"
+                                          style={{
+                                            cursor: "not-allowed",
+                                          }}
+                                        >
+                                          <i className="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          className="btn btn-primary btn-rounded chat-send"
+                                          color="primary"
+                                          onClick={() => handleSendMessage()}
+                                          disabled={isEmptyOrSpaces()}
+                                        >
+                                          <i className="mdi mdi-send"></i>
+                                        </button>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      right: "133px",
+                                      top: "5px",
+                                    }}
+                                  >
+                                    <i
+                                      className="bi bi-type"
+                                      onClick={() => {
+                                        toggle_Quill()
+                                      }}
+                                      style={{
+                                        color: "blue",
+                                        fontSize: "20px",
+                                        fontWeight: "bold",
+                                        cursor: "pointer",
+                                      }}
+                                      title={
+                                        isQuill
+                                          ? "Show Formatting"
+                                          : "Hide Formatting"
+                                      }
+                                    ></i>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className="col-auto d-flex justify-content-end  gap-2 "
-                            style={{
-                              position: "absolute",
-                              right: "19px",
-                              bottom: "202px",
-                            }}
-                          >
-                            {recorder && recorder.state === "recording" ? (
-                              <></>
-                            ) : (
-                              <div>
-                                <input
-                                  type="file"
-                                  name="file"
-                                  multiple="true"
-                                  id="hidden-file"
-                                  className="d-none"
-                                  accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
-                                  onChange={e => handleFileChange(e)}
-                                ></input>
-                                <label
-                                  for="hidden-file"
-                                  style={{ margin: "10px" }}
-                                >
+                          </>
+                        ) : (
+                          <>
+                            <div class="p-2 chat-input-section">
+                              <div className="row">
+                                <div className="col">
+                                  <div className="position-relative">
+                                    {recorder &&
+                                    recorder.state === "recording" ? (
+                                      <div className="d-flex justify-content-center">
+                                        <i
+                                          className="mdi mdi-microphone font-size-18 text-primary"
+                                          style={{
+                                            height: "30px",
+                                            paddingLeft: "10px",
+                                          }}
+                                        ></i>
+                                        <p className="text-primary mt-1 font-size-12">
+                                          {duration}Secs
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {blobURL ? (
+                                          <div>
+                                            <audio
+                                              className="w-100 w-sm-100"
+                                              style={{
+                                                height: "33px",
+                                                paddingLeft: "10px",
+                                              }}
+                                              src={blobURL}
+                                              controls="controls"
+                                            ></audio>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <div className="p-2 pt-0">
+                                              {" "}
+                                              {Array.from(allFiles)?.length >
+                                                0 && (
+                                                <div class="d-flex gap-2 flex-wrap mt-2">
+                                                  {Array.from(allFiles)?.map(
+                                                    (att, a) => (
+                                                      <span
+                                                        class="badge badge-soft-primary font-size-13"
+                                                        key={a}
+                                                      >
+                                                        {att.name}
+                                                        <i
+                                                          class="bx bx-x-circle mx-1"
+                                                          onClick={() =>
+                                                            handleFileRemove(
+                                                              att?.name
+                                                            )
+                                                          }
+                                                          style={{
+                                                            cursor: "pointer",
+                                                          }}
+                                                        />
+                                                      </span>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div>
+                                              <ReactQuillInput
+                                                value={curMessage}
+                                                onChange={onChange}
+                                                mentionsArray={mentionsArray}
+                                                isQuill={isQuill}
+                                                onKeyPress={onKeyPress}
+                                                isEmptyOrSpaces={
+                                                  isEmptyOrSpaces
+                                                }
+                                              />
+                                            </div>
+                                          </>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div
+                                className="col-auto d-flex justify-content-end  gap-2 "
+                                style={{
+                                  position: "absolute",
+                                  right: "19px",
+                                  bottom: "70px",
+                                }}
+                              >
+                                {recorder && recorder.state === "recording" ? (
+                                  <></>
+                                ) : (
+                                  <div>
+                                    <input
+                                      type="file"
+                                      name="file"
+                                      multiple="true"
+                                      id="hidden-file"
+                                      className="d-none"
+                                      accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
+                                      onChange={e => handleFileChange(e)}
+                                    ></input>
+                                    <label
+                                      for="hidden-file"
+                                      style={{ margin: "10px" }}
+                                    >
+                                      <i
+                                        class="mdi mdi-attachment mdi-rotate-315"
+                                        disabled={
+                                          recorder?.state === "recording"
+                                        }
+                                        title="Attachments"
+                                        style={{
+                                          color: "#556EE6",
+                                          fontSize: "16px",
+                                          cursor: "pointer",
+                                        }}
+                                      ></i>
+                                    </label>
+                                    <i
+                                      className="bi bi-arrows-fullscreen"
+                                      onClick={handleFullScreenView}
+                                      style={{
+                                        color: "#556EE6",
+                                        fontSize: "16px",
+                                        cursor: "pointer",
+                                      }}
+                                      title={
+                                        isFullScreen
+                                          ? "Exit Full Screen"
+                                          : "Enter Full Screen"
+                                      }
+                                    ></i>
+                                  </div>
+                                )}
+                                {recorder && recorder.state === "recording" ? (
                                   <i
-                                    class="mdi mdi-attachment mdi-rotate-315"
-                                    disabled={recorder?.state === "recording"}
-                                    title="Attachments"
+                                    className="mdi mdi-microphone font-size-20 text-danger me-2"
+                                    title="Stop Recording"
+                                    onClick={stopRecording}
+                                    disabled={recorder?.state == "stopped"}
                                     style={{
-                                      color: "#556EE6",
-                                      fontSize: "16px",
                                       cursor: "pointer",
+                                      paddingTop: "6px",
                                     }}
                                   ></i>
-                                </label>
-                              </div>
-                            )}
-                            {recorder && recorder.state === "recording" ? (
-                              <i
-                                className="mdi mdi-microphone font-size-20 text-danger me-2"
-                                title="Stop Recording"
-                                onClick={stopRecording}
-                                disabled={recorder?.state == "stopped"}
-                                style={{
-                                  cursor: "pointer",
-                                  paddingTop: "6px",
-                                }}
-                              ></i>
-                            ) : (
-                              <i
-                                className="mdi mdi-microphone font-size-20 text-primary me-2"
-                                title="Start Recording"
-                                onClick={startRecording}
-                                disabled={recorder?.state == "recording"}
-                                style={{
-                                  cursor: "pointer",
-                                  paddingTop: "6px",
-                                }}
-                              ></i>
-                            )}
-
-                            {recorder?.state !== "recording" && (
-                              <div>
-                                {loading ? (
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary btn-rounded chat-send"
-                                    color="primary"
-                                    style={{
-                                      cursor: "not-allowed",
-                                    }}
-                                  >
-                                    <i className="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
-                                  </button>
                                 ) : (
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary btn-rounded chat-send"
-                                    color="primary"
-                                    onClick={() => handleSendMessage()}
-                                    disabled={isEmptyOrSpaces()}
-                                  >
-                                    <i className="mdi mdi-send"></i>
-                                  </button>
+                                  <i
+                                    className="mdi mdi-microphone font-size-20 text-primary me-2"
+                                    title="Start Recording"
+                                    onClick={startRecording}
+                                    disabled={recorder?.state == "recording"}
+                                    style={{
+                                      cursor: "pointer",
+                                      paddingTop: "6px",
+                                    }}
+                                  ></i>
                                 )}
-                              </div>
-                            )}
 
-                            <div
-                              style={{
-                                position: "absolute",
-                                right: "133px",
-                                top: "5px",
-                              }}
-                            >
-                              <i
-                                className="bi bi-type"
-                                onClick={() => {
-                                  toggle_Quill()
-                                }}
-                                style={{
-                                  color: "blue",
-                                  fontSize: "20px",
-                                  fontWeight: "bold",
-                                  cursor: "pointer",
-                                }}
-                                title={
-                                  isQuill
-                                    ? "Show Formatting"
-                                    : "Hide Formatting"
-                                }
-                              ></i>
+                                {recorder?.state !== "recording" && (
+                                  <div>
+                                    {loading ? (
+                                      <button
+                                        type="button"
+                                        className="btn btn-primary btn-rounded chat-send"
+                                        color="primary"
+                                        style={{
+                                          cursor: "not-allowed",
+                                        }}
+                                      >
+                                        <i className="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className="btn btn-primary btn-rounded chat-send"
+                                        color="primary"
+                                        onClick={() => handleSendMessage()}
+                                        disabled={isEmptyOrSpaces()}
+                                      >
+                                        <i className="mdi mdi-send"></i>
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    right: "133px",
+                                    top: "5px",
+                                  }}
+                                >
+                                  <i
+                                    className="bi bi-type"
+                                    onClick={() => {
+                                      toggle_Quill()
+                                    }}
+                                    style={{
+                                      color: "blue",
+                                      fontSize: "20px",
+                                      fontWeight: "bold",
+                                      cursor: "pointer",
+                                    }}
+                                    title={
+                                      isQuill
+                                        ? "Show Formatting"
+                                        : "Hide Formatting"
+                                    }
+                                  ></i>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
+                          </>
+                        )}
                         <br />
                         <br />
                         <br />

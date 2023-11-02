@@ -166,7 +166,7 @@ const CaseGrid = ({
   const notificationSubCase = id => {
     const matchingCase = notifications.find(i => i?.maincaseId === id)
     return matchingCase ? true : false
-  }
+  }  
   return (
     <>
       <>

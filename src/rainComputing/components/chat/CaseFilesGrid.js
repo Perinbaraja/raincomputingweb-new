@@ -29,6 +29,7 @@ import fileDownload from "js-file-download"
 //Import Breadcrumb
 import "./style/datatables.scss"
 import {
+  caseIdbySubCase,
   getCaseFiles,
   getFileFromGFS,
   userNotes,
@@ -36,7 +37,7 @@ import {
 import ChatLoader from "./ChatLoader"
 import moment from "moment"
 
-const CaseFilesGrid = ({ caseId }) => {
+const CaseFilesGrid = ({ caseId,groupId }) => {
   const [loading, setLoading] = useState(false)
   const [productData, setProductData] = useState([])
   const [addNotesModal, setAddNotesModal] = useState(false)
@@ -242,7 +243,24 @@ const CaseFilesGrid = ({ caseId }) => {
   const { SearchBar } = Search
 
   const handleFetchFiles = async () => {
+    if (groupId) {
     setLoading(true)
+    
+    const filesRes = await getCaseFiles({ groupId })
+    if (filesRes.success && filesRes?.files?.length > 0) {
+      let tempArray = []
+      filesRes?.files?.map(f => {
+        const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
+        tempArray.push({ ...f, time: sendAt, isDownloading: false })
+      })
+      setProductData(tempArray)
+    } else {
+      console.log("File Fetching Error :", filesRes)
+    }
+    setLoading(false)
+  }else {
+    setLoading(true)
+
     const filesRes = await getCaseFiles({ caseId })
     if (filesRes.success && filesRes?.files?.length > 0) {
       let tempArray = []
@@ -255,6 +273,7 @@ const CaseFilesGrid = ({ caseId }) => {
       console.log("File Fetching Error :", filesRes)
     }
     setLoading(false)
+  }
   }
   useEffect(() => {
     handleFetchFiles()
@@ -436,6 +455,7 @@ const CaseFilesGrid = ({ caseId }) => {
 
 CaseFilesGrid.propTypes = {
   caseId: PropTypes.string,
+  groupId: PropTypes.string,
 }
 
 export default CaseFilesGrid

@@ -10,6 +10,7 @@ import {
   createNewCase,
   getAllUsers,
 } from "rainComputing/helpers/backend_helper"
+import { buildEntryKey } from "@fullcalendar/react"
 
 const CreateCase = ({
   formValues,
@@ -129,6 +130,19 @@ const CreateCase = ({
     handleFetchingContacts()
   }, [searchText])
 
+  const generateSerialNumber = () => {
+
+    const min = 1000;
+    const max = 9999;
+    const randomSerialNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomSerialNumber.toString();
+  };
+
+  useEffect(() => {
+    setCaseSerialNo(generateSerialNumber());
+  }, []);
+
+
   return (
     <>
       <Row>
@@ -243,7 +257,7 @@ const CreateCase = ({
       <Row>
         <Col xs={6} className="px-3 border-end border-info">
           <span className="text-muted">Members</span>
-          <div className="d-flex flex-wrap gap-2 my-2">
+          {contacts?.length > 0 ? (<div className="d-flex flex-wrap gap-2 my-2">
             {contacts &&
               contacts
                 .filter(f => !formValues.members.some(g => g?._id === f?._id))
@@ -277,7 +291,21 @@ const CreateCase = ({
                     </div>
                   </Button>
                 ))}
-          </div>
+          </div>):(
+          <div className="">
+           <div>
+            <i 
+            className="bi bi-people pt-3 d-flex justify-content-center text-secondary"
+            style={{
+              fontSize: "25px",
+              fontWeight: "bold",
+            }}
+            ></i>
+            </div>
+            <div>
+            <h6 className="d-flex pt-1 justify-content-center text-secondary">Search to Select a Members for their Case..!!</h6>
+            </div>
+            </div>)}
         </Col>
         <Col xs={6} className="px-3">
           <span className="text-muted">Case Members</span>

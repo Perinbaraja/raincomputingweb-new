@@ -44,6 +44,9 @@ const AttorneyRegister = () => {
       state: "",
       city: "",
       postalCode: "",
+      expertise: "",
+      jurisdiction: "",
+      fee: "",
       email: currentUser.email,
     },
     validationSchema: Yup.object({
@@ -64,6 +67,9 @@ const AttorneyRegister = () => {
         state: values.state,
         city: values.city,
         postalCode: values.postalCode,
+        jurisdiction: values.jurisdiction,
+        expertise: values.expertise,
+        fee: values.fee,
         userID: currentUser.userID,
         status: "approved",
       })
@@ -326,8 +332,56 @@ const AttorneyRegister = () => {
                               </FormGroup>
                             </Col>
                           </Row>
+
                           <Row>
-                            <Col lg="12">
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">Expertise</Label>
+                                <Input
+                                  name="Expertise"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your Expertise"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.expertise || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  Jurisdiction
+                                </Label>
+                                <Input
+                                  name="Jurisdiction"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your Jurisdiction"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.jurisdiction || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+
+                          <Row>
+                          <Col lg="4">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">Fee</Label>
+                                <textarea
+                                  name="fee"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your fee"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.fee || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col lg="8">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Bio</Label>
                                 <textarea
