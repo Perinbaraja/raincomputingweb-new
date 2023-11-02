@@ -163,7 +163,7 @@ const PinnedModels = ({ handleLocateMessage }) => {
                                         wordBreak: "break-word fs-1S mx-2",
                                         overflowWrap: "break-word",
                                         whiteSpace: "pre-line",
-                                        height: "50px",
+                                        
                                       }}
                                       dangerouslySetInnerHTML={{
                                         __html: msg?.messageData,
@@ -177,7 +177,7 @@ const PinnedModels = ({ handleLocateMessage }) => {
                                     wordBreak: "break-word",
                                     overflowWrap: "break-word",
                                     whiteSpace: "pre-line",
-                                    height: "50px",
+                                    
                                   }}
                                   dangerouslySetInnerHTML={{
                                     __html: msg?.messageData,

@@ -58,16 +58,16 @@ const SubgroupBar = ({
               ))}
           </div>
         </Col>
-        {currentCase?.admins?.includes(currentUser?.userID)  && 
-        // isShowMenu&&
-        (
+        {/* {currentCase?.admins?.includes(currentUser?.userID)  &&  */}
+        {/* // isShowMenu&&
+        ( */}
           <Col xs={1}>
             <i
               className="bx bx-dots-vertical-rounded text-primary font-size-24 mt-1 pointer "
               onClick={() => openSubGroupmodel(true)}
             />
           </Col>
-        )}
+        {/* )} */}
       </Row>
     </div>
   )

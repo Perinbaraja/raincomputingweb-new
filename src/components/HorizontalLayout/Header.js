@@ -10,7 +10,7 @@ import "./headsearch.scss"
 // Redux Store
 import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 // reactstrap
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu } from "reactstrap"
+import { Row, Col, Dropdown, DropdownToggle, DropdownMenu,DropdownItem } from "reactstrap"
 
 // Import menuDropdown
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
@@ -31,6 +31,10 @@ const Header = props => {
   const { currentUser } = useUser()
   const [isMobile] = useMediaQuery("764")
   const [modal_scroll, setmodal_scroll] = useState(false)
+  const [subDomainOpen, setSubDomainOpen] = useState(false);
+  const toggleSubDomainOpen = () => {
+    setSubDomainOpen(!subDomainOpen);
+  };
 
   const tog_scroll = () => {
     setmodal_scroll(!modal_scroll)
@@ -40,12 +44,36 @@ const Header = props => {
       <header id="page-topbar">
         <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  ">
           <div className="d-flex ">
-            <div className="navbar-brand-box">
+            <div className="d-flex navbar-brand-box">
               <Link to="/" className="logo logo-dark">
                 <span className="logo-lg">
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
               </Link>
+              {currentAttorney?.subdomain && (
+              <div className="p-4">
+                <i
+                  className="bx bx-link-external"
+                  id="atticon"
+                  onClick={toggleSubDomainOpen}
+                  target="_blank"
+                  style={{cursor:"pointer"}}
+                />
+                <Dropdown
+                  isOpen={subDomainOpen}
+                  toggle={toggleSubDomainOpen}
+                  className="float-end me-2"
+                >
+                  <DropdownToggle className="btn nav-btn" tag="i">
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem href={currentAttorney?.subdomain}>
+                  {currentAttorney?.subdomain}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+              )}      
 
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">

@@ -56,6 +56,9 @@ const AttorneyDetailsCard = () => {
       state: attorneyDetail?.state,
       city: attorneyDetail?.city,
       postalCode: attorneyDetail?.postalCode,
+      expertise: attorneyDetail?.expertise,
+      jurisdiction: attorneyDetail?.jurisdiction,
+      fee: attorneyDetail?.fee,
     },
     validationSchema: Yup.object({
       phonenumber: Yup.string().required("Please Enter Your Phone Number"),
@@ -64,6 +67,10 @@ const AttorneyDetailsCard = () => {
       address: Yup.string().required("Please Enter Your address"),
       city: Yup.string().required("Please Enter Your city"),
       postalCode: Yup.string().required("Please Enter Your postalCode"),
+      expertise: Yup.string().required("Please Enter Your expertise"),
+      jurisdiction: Yup.string().required("Please Enter Your jurisdiction"),
+      fee: Yup.string().required("Please Enter Your fee"),
+      
     }),
     onSubmit: async values => {
       const res = await attorneyDetailsUpdate({
@@ -333,7 +340,7 @@ const AttorneyDetailsCard = () => {
                                 name="city"
                                 className="form-control"
                                 id="validationCustom04"
-                                placeholder="Enter Your Email ID"
+                                placeholder="Enter Your City"
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.city || ""}
@@ -362,7 +369,7 @@ const AttorneyDetailsCard = () => {
                                 name="postalCode"
                                 className="form-control"
                                 id="validationCustom04"
-                                placeholder="Enter Your Email ID"
+                                placeholder="Enter Your PostalCode"
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.postalCode || ""}
@@ -382,8 +389,95 @@ const AttorneyDetailsCard = () => {
                             </FormGroup>
                           </Col>
                         </Row>
+
                         <Row>
-                          <Col lg="12">
+                          <Col lg="6">
+                            <FormGroup className="mb-3">
+                              <Label htmlFor="validationCustom04">Expertise</Label>
+                              <Input
+                                type="text"
+                                name="expertise"
+                                className="form-control"
+                                id="validationCustom04"
+                                placeholder="Enter Your Expertise"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.expertise || ""}
+                                invalid={
+                                  validation.touched.expertise &&
+                                  validation.errors.expertise
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.expertise &&
+                              validation.errors.expertise ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.expertise}
+                                </FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col lg="6">
+                            <FormGroup className="mb-3">
+                              <Label htmlFor="validationCustom04">
+                                Jurisdiction
+                              </Label>
+                              <Input
+                                type="text"
+                                name="jurisdiction"
+                                className="form-control"
+                                id="validationCustom04"
+                                placeholder="Enter Your Jurisdiction"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.jurisdiction || ""}
+                                invalid={
+                                  validation.touched.jurisdiction &&
+                                  validation.errors.jurisdiction
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.jurisdiction &&
+                              validation.errors.jurisdiction ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.jurisdiction}
+                                </FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                        </Row>
+
+                        <Row>
+                        <Col lg="4">
+                            <FormGroup className="mb-3">
+                              <Label htmlFor="validationCustom04">Fee</Label>
+                              <textarea
+                                type="text"
+                                name="fee"
+                                className="form-control"
+                                id="validationCustom04"
+                                placeholder="Enter Your Fee"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.fee || ""}
+                                invalid={
+                                  validation.touched.fee &&
+                                  validation.errors.fee
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.fee &&
+                              validation.errors.fee ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.fee}
+                                </FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col lg="8">
                             <FormGroup className="mb-3">
                               <Label htmlFor="validationCustom04">Bio</Label>
                               <textarea
@@ -391,7 +485,7 @@ const AttorneyDetailsCard = () => {
                                 name="bio"
                                 className="form-control"
                                 id="validationCustom04"
-                                placeholder="Enter Your Email ID"
+                                placeholder="Enter Your Bio"
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.bio || ""}

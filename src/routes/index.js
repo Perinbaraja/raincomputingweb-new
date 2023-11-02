@@ -48,6 +48,7 @@ import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 import CreateEvents from "rainComputing/pages/docket/CreateEvents"
 import ManageEvents from "rainComputing/pages/docket/ManageEvents"
 import EventByCase from "rainComputing/pages/docket/EventByCase"
+import PremiumPage from "rainComputing/pages/user/PremiumPage"
 
 const authProtectedRoutes = [
   //Projects
@@ -80,6 +81,7 @@ const authProtectedRoutes = [
   { path: "/create_events", component: CreateEvents },
   { path: "/manage_events", component: ManageEvents },
   { path: "/case_events", component: EventByCase },
+  { path: "/premiumPage", component: PremiumPage },
 ]
 
 const publicRoutes = [
