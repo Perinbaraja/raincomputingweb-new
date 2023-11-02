@@ -158,6 +158,11 @@ const ProfileMenu = props => {
                 )}
               </DropdownItem>
             )}
+           { currentAttorney &&
+            <DropdownItem tag="a" href="/premiumPage">
+            <i className="bi bi-gem font-size-16 align-middle me-1"/> {props.t("Premium")}
+            </DropdownItem>
+            }
             <DropdownItem tag="a" href="/reminders">
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
