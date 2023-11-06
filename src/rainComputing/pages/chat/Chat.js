@@ -250,7 +250,7 @@ const ChatRc = () => {
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
-  const [activeTab, setactiveTab] = useState("1")
+  const [activeTab, setactiveTab] = useState('1')
   const [contacts, setContacts] = useState([])
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -301,6 +301,25 @@ const ChatRc = () => {
   const [deleteMessage, setDeleteMessage] = useState()
   const [nonewmessage, setNoNewMessage] = useState([])
   const [isFullScreen, setIsFullScreen] = useState(false)
+
+  // When the user changes the active tab, save it to localStorage
+  const handleTabChange = (newActiveTab) => {
+    localStorage.setItem('activeTab', newActiveTab);
+  }
+  // Check if there's a stored active tab in localStorage when the page loads
+  const setActiveTabOnLoad = () => {
+    const storedActiveTab = localStorage.getItem('activeTab');
+    if (storedActiveTab) {
+      // Set the active tab to the stored value
+      setactiveTab(storedActiveTab); // You need to implement this function
+    }
+  }
+  useEffect(() => {
+    setActiveTabOnLoad();
+  }, [activeTab])
+  // Call the function to set the active tab when the page loads
+
+
   const handleFullScreenView = () => {
     setIsFullScreen(!isFullScreen)
   }
@@ -345,13 +364,13 @@ const ChatRc = () => {
   }
 
 
-  const regex = /<a href="([^"]+)"/; 
+  const regex = /<a href="([^"]+)"/;
 
   const filteredMessages = messages.filter(message => {
     const messageData = message.messageData;
 
     return regex.test(messageData);
-  }); 
+  });
   console.log("filteredMessages", filteredMessages)
 
   useEffect(() => {
@@ -391,6 +410,11 @@ const ChatRc = () => {
       behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
     })
   }
+
+  useEffect(() => {
+    scrollToBottom(); // Scroll to the bottom when the component loads
+  }, [scrollToBottom]);
+
   const handlerefreshemail = async () => {
     setChatLoader(true)
     const payload = {
@@ -485,6 +509,7 @@ const ChatRc = () => {
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setactiveTab(tab)
+      handleTabChange(tab)
       setCurrentChat(null)
     }
   }
@@ -892,7 +917,7 @@ const ChatRc = () => {
         setMessages(res1.groupMessages)
       }
     } else {
-      toastr.error("Unable to delete Message after 1 min", "Failed!!!")
+      toastr.error("Unable to delete Message after 10 min", "Failed!!!")
     }
     setMsgDeleteModalOpen(false)
   }
@@ -1141,7 +1166,7 @@ const ChatRc = () => {
     return () => {
       setCaseFile([]);
     }
-  }, [currentCase]); // Add currentCase as a dependency
+  }, [currentCase, currentChat]); // Add currentCase as a dependency
 
   // Archive Chat
   const onArchievingChat = async () => {
@@ -1237,15 +1262,15 @@ const ChatRc = () => {
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
     const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat")
-    console.log("caseFolder",caseFolder)
+    console.log("caseFolder", caseFolder)
     // Loop through each case file and add it to the ZIP file
     for (const file of caseFile) {
       try {
         // Fetch the file from MongoDB
         const res = await fetch(`${SERVER_URL}/file/${file.id}`)
-        console.log("res",res)
+        console.log("res", res)
         const blob = await res.blob()
-        console.log("blob",blob)
+        console.log("blob", blob)
         caseFolder.file(file.name, blob)
       } catch (err) {
         console.error(`Error fetching case file ${file.name}: ${err}`)
@@ -1848,7 +1873,7 @@ const ChatRc = () => {
               modalTitle="Links"
               isClose={true}
             >
-              <LinksModel   />
+              <LinksModel />
             </DynamicModel>
             {/* Modal for Editing Case*/}
             {currentCase && (
@@ -1869,6 +1894,7 @@ const ChatRc = () => {
               setOpen={setMessageEditModalOpen}
               toggleOpen={toggleMessageEditModal}
               curMessageId={curEditMessageId}
+              curEditMessageId={curEditMessageId}
               msgData={curEditMessageId?.messageData}
             />
 
@@ -2210,7 +2236,7 @@ const ChatRc = () => {
                                           <h5 className="text-truncate font-size-14 mb-1">
                                             {contact.firstname}{" "}
                                             {contact.lastname}
-                                            {}
+                                            { }
                                           </h5>
                                           <p className="font-size-12 mb-1 text-primary ">
                                             {contact.email}
@@ -2346,20 +2372,20 @@ const ChatRc = () => {
                                   </li>
                                 )}
                                 {/* {!currentChat?.isGroup && */}
-                                  <li className="list-inline-item">
-                                    <Dropdown
-                                      toggle={() => toggleLinksModelOpen(true)}
+                                <li className="list-inline-item">
+                                  <Dropdown
+                                    toggle={() => toggleLinksModelOpen(true)}
+                                  >
+                                    <DropdownToggle
+                                      className="btn nav-btn"
+                                      tag="i"
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i className="bi bi-link"
-                                          title="Links"
-                                        />
-                                      </DropdownToggle>
-                                    </Dropdown>
-                                  </li>
+                                      <i className="bi bi-link"
+                                        title="Links"
+                                      />
+                                    </DropdownToggle>
+                                  </Dropdown>
+                                </li>
                                 {/* // } */}
                                 {!currentChat?.isGroup &&
                                   <li className="list-inline-item">
@@ -2574,49 +2600,49 @@ const ChatRc = () => {
                             </Col>
                           </Row>
                         </div>
-                 
-                          <div className="chat-conversation px-3 py-1">
-                            <ul className="list-unstyled">
-                              <div
-                                ref={containerRef}
-                                onScroll={event => handleScroll(event)}
-                                style={{
-                                  height: "90vh",
-                                  overflowY: "scroll",
-                                }}
-                              >
-                                {messages.map((msg, m) => (
-                                  <li
-                                    key={"test_k" + m}
-                                    className={
-                                      msg.sender === currentUser.userID
-                                        ? "right"
-                                        : ""
-                                    }
+
+                        <div className="chat-conversation px-3 py-1">
+                          <ul className="list-unstyled">
+                            <div
+                              ref={containerRef}
+                              onScroll={event => handleScroll(event)}
+                              style={{
+                                height: "90vh",
+                                overflowY: "scroll",
+                              }}
+                            >
+                              {messages.map((msg, m) => (
+                                <li
+                                  key={"test_k" + m}
+                                  className={
+                                    msg.sender === currentUser.userID
+                                      ? "right"
+                                      : ""
+                                  }
+                                >
+                                  <div
+                                    className="conversation-list"
+                                    id={msg?._id}
+                                    style={{
+                                      maxWidth: "80%",
+                                      color:
+                                        searchedMessages?.includes(msg) &&
+                                        "white",
+                                      backgroundColor:
+                                        searchedMessages?.includes(msg) &&
+                                        "black",
+                                    }}
                                   >
-                                    <div
-                                      className="conversation-list"
-                                      id={msg?._id}
-                                      style={{
-                                        maxWidth: "80%",
-                                        color:
-                                          searchedMessages?.includes(msg) &&
-                                          "white",
-                                        backgroundColor:
-                                          searchedMessages?.includes(msg) &&
-                                          "black",
-                                      }}
-                                    >
-                                      <UncontrolledDropdown>
-                                        <DropdownToggle
-                                          href="#"
-                                          className="btn nav-btn  "
-                                          tag="i"
-                                        >
-                                          <i className="bx bx-dots-vertical-rounded" />
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                          {/* <DropdownItem
+                                    <UncontrolledDropdown>
+                                      <DropdownToggle
+                                        href="#"
+                                        className="btn nav-btn  "
+                                        tag="i"
+                                      >
+                                        <i className="bx bx-dots-vertical-rounded" />
+                                      </DropdownToggle>
+                                      <DropdownMenu>
+                                        {/* <DropdownItem
                                                 href="#"
                                                 onClick={() =>
                                                   handleForwardMessage(
@@ -2626,57 +2652,57 @@ const ChatRc = () => {
                                               >
                                                 Forward
                                               </DropdownItem> */}
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              setCurReplyMessageId(msg)
-                                              setReplyMsgModalOpen(true)
-                                            }}
-                                          >
-                                            Reply
-                                          </DropdownItem>
-                                          {msg?.sender ===
-                                            currentUser.userID && (
-                                              <DropdownItem
-                                                href="#"
-                                                onClick={() => {
-                                                  setCurEditMessageId(msg)
-                                                  setMessageEditModalOpen(true)
-                                                }}
-                                              >
-                                                Edit
-                                              </DropdownItem>
-                                            )}
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              onPinnedMessage(msg)
-                                            }}
-                                          >
-                                            Pin
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              setCurReminderMessageId(msg)
-                                              setRemainderModelOpen(true)
-                                            }}
-                                          >
-                                            Reminder
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => {
-                                              msg.sender === currentUser.userID
-                                                ? handleDelete(msg)
-                                                : toastr.info(
-                                                  "Unable to  delete other's message"
-                                                )
-                                            }}
-                                          >
-                                            Delete
-                                          </DropdownItem>
-                                          {/* <DropdownItem
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => {
+                                            setCurReplyMessageId(msg)
+                                            setReplyMsgModalOpen(true)
+                                          }}
+                                        >
+                                          Reply
+                                        </DropdownItem>
+                                        {msg?.sender ===
+                                          currentUser.userID && (
+                                            <DropdownItem
+                                              href="#"
+                                              onClick={() => {
+                                                setCurEditMessageId(msg)
+                                                setMessageEditModalOpen(true)
+                                              }}
+                                            >
+                                              Edit
+                                            </DropdownItem>
+                                          )}
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => {
+                                            onPinnedMessage(msg)
+                                          }}
+                                        >
+                                          Pin
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => {
+                                            setCurReminderMessageId(msg)
+                                            setRemainderModelOpen(true)
+                                          }}
+                                        >
+                                          Reminder
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => {
+                                            msg.sender === currentUser.userID
+                                              ? handleDelete(msg)
+                                              : toastr.info(
+                                                "Unable to  delete other's message"
+                                              )
+                                          }}
+                                        >
+                                          Delete
+                                        </DropdownItem>
+                                        {/* <DropdownItem
                                             href="#"
                                             onClick={() => {
                                               msg.sender === currentUser.userID
@@ -2688,19 +2714,19 @@ const ChatRc = () => {
                                           >
                                             Send Email
                                           </DropdownItem> */}
-                                        </DropdownMenu>
-                                      </UncontrolledDropdown>
-                                      <div
-                                        className="ctext-wrap "
-                                        style={{
-                                          backgroundColor:
-                                            msg.sender == currentUser.userID &&
-                                              currentChat?.color
-                                              ? currentChat?.color + "33"
-                                              : "#00EE00" + "33",
-                                        }}
-                                      >
-                                        {/* {msg.isForward ? (
+                                      </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                    <div
+                                      className="ctext-wrap "
+                                      style={{
+                                        backgroundColor:
+                                          msg.sender == currentUser.userID &&
+                                            currentChat?.color
+                                            ? currentChat?.color + "33"
+                                            : "#00EE00" + "33",
+                                      }}
+                                    >
+                                      {/* {msg.isForward ? (
                                               <div className=" mdi mdi-forward">
                                                 Forwarded:
                                               </div>
@@ -2709,74 +2735,39 @@ const ChatRc = () => {
                                                 {" "}
                                               </div>
                                             )} */}
-                                        <div>
-                                          {msg?.isPinned ? (
-                                            <div>
-                                              <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
-                                            </div>
-                                          ) : (
-                                            <div className="conversation-name">
-                                              {" "}
-                                            </div>
-                                          )}
-                                        </div>
-                                        <div>
-                                          {msg?.isEdit ? (
-                                            <div>
-                                              <p className="text-primary">
-                                                Edited
-                                              </p>
-                                            </div>
-                                          ) : (
-                                            <div className="conversation-name">
-                                              {" "}
-                                            </div>
-                                          )}
-                                        </div>
-                                        <div className="conversation-name">
-                                          {currentChat.isGroup
-                                            ? getMemberName(msg.sender)
-                                            : getSenderOneChat(msg.sender)}
-                                        </div>
+                                      <div>
+                                        {msg?.isPinned ? (
+                                          <div>
+                                            <i className="mdi mdi-pin-outline mdi-rotate-315 text-danger"></i>
+                                          </div>
+                                        ) : (
+                                          <div className="conversation-name">
+                                            {" "}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div>
+                                        {msg?.isEdit ? (
+                                          <div>
+                                            <p className="text-primary">
+                                              Edited
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <div className="conversation-name">
+                                            {" "}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="conversation-name">
+                                        {currentChat.isGroup
+                                          ? getMemberName(msg.sender)
+                                          : getSenderOneChat(msg.sender)}
+                                      </div>
 
-                                        <div className="mb-1">
-                                          {msg.isAttachment ? (
-                                            <>
-                                              <div
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                                dangerouslySetInnerHTML={{
-                                                  __html: msg?.messageData,
-                                                }}
-                                              />
-                                              <AttachmentViewer
-                                                attachments={msg.attachments}
-                                                text={msg.messageData}
-                                              />
-
-                                              <div
-                                                className="mt-1"
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                              >
-                                                {/* {stringFormatter(
-                                                        msg.messageData
-                                                      )} */}
-                                              </div>
-                                            </>
-                                          ) : (
-                                            // <div
-                                            //   style={{
-                                            //     whiteSpace: "break-spaces",
-                                            //   }}
-                                            // >
-                                            //   {stringFormatter(
-                                            //     prettifyMsg(msg.messageData)
-                                            //   )}
-
-                                            // </div>
+                                      <div className="mb-1">
+                                        {msg.isAttachment ? (
+                                          <>
                                             <div
                                               style={{
                                                 whiteSpace: "break-spaces",
@@ -2785,112 +2776,146 @@ const ChatRc = () => {
                                                 __html: msg?.messageData,
                                               }}
                                             />
-                                          )}
-                                        </div>
-                                        {msg?.isVoiceMessage && (
-                                          <div>
-                                            <VoiceMessage msg={msg} />
-                                          </div>
-                                        )}
-                                        <p className="chat-time mb-0">
-                                        <i className="bx bx-comment-check align-middle me-1" />
-                                          {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                          {msg.isEdit ? (moment(msg.updatedAt).format(
-                                            "DD-MM-YY HH:mm"
-                                          )) : (moment(msg.createdAt).format(
-                                            "DD-MM-YY HH:mm"
-                                          ))}
-                                          {msg?.replies?.map((r, i) => (
+                                            <AttachmentViewer
+                                              attachments={msg.attachments}
+                                              text={msg.messageData}
+                                            />
+
                                             <div
-                                              key={i}
-                                              className=" mdi mdi-reply m-2"
+                                              className="mt-1"
+                                              style={{
+                                                whiteSpace: "break-spaces",
+                                              }}
                                             >
-                                              Replies:
-                                              <div className="conversation-name">
-                                                {currentChat.isGroup
-                                                  ? getMemberName(r?.sender)
-                                                  : getSenderOneChat(r?.sender)}
-                                              </div>
-                                              <div
-                                                style={{
-                                                  whiteSpace: "break-spaces",
-                                                }}
-                                                dangerouslySetInnerHTML={{
-                                                  __html: r?.replyMsg,
-                                                }}
-                                                // Check if _id is equal to replyMsgId and apply style if true
-                                                {...(r?._id === replymsgId && {
-                                                  style: {
-                                                    backgroundColor: "#e6e9f0",
-                                                  },
-                                                })}
-                                              />
+                                              {/* {stringFormatter(
+                                                        msg.messageData
+                                                      )} */}
                                             </div>
-                                          ))}
+                                          </>
+                                        ) : (
+                                          // <div
+                                          //   style={{
+                                          //     whiteSpace: "break-spaces",
+                                          //   }}
+                                          // >
+                                          //   {stringFormatter(
+                                          //     prettifyMsg(msg.messageData)
+                                          //   )}
+
+                                          // </div>
+                                          <div
+                                            style={{
+                                              whiteSpace: "break-spaces",
+                                            }}
+                                            dangerouslySetInnerHTML={{
+                                              __html: msg?.messageData,
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                      {msg?.isVoiceMessage && (
+                                        <div>
+                                          <VoiceMessage msg={msg} />
+                                        </div>
+                                      )}
+                                      <p className="chat-time mb-0">
+                                        <i className="bx bx-comment-check align-middle me-1" />
+                                        {/* <i className="bx bx-time-five align-middle me-1" /> */}
+                                        {msg.isEdit ? (moment(msg.updatedAt).format(
+                                          "DD-MM-YY HH:mm"
+                                        )) : (moment(msg.createdAt).format(
+                                          "DD-MM-YY HH:mm"
+                                        ))}
+                                        {msg?.replies?.map((r, i) => (
+                                          <div
+                                            key={i}
+                                            className=" mdi mdi-reply m-2"
+                                          >
+                                            Replies:
+                                            <div className="conversation-name">
+                                              {currentChat.isGroup
+                                                ? getMemberName(r?.sender)
+                                                : getSenderOneChat(r?.sender)}
+                                            </div>
+                                            <div
+                                              style={{
+                                                whiteSpace: "break-spaces",
+                                              }}
+                                              dangerouslySetInnerHTML={{
+                                                __html: r?.replyMsg,
+                                              }}
+                                              // Check if _id is equal to replyMsgId and apply style if true
+                                              {...(r?._id === replymsgId && {
+                                                style: {
+                                                  backgroundColor: "#e6e9f0",
+                                                },
+                                              })}
+                                            />
+                                          </div>
+                                        ))}
+                                      </p>
+                                      {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
+                                    </div>
+                                  </div>
+                                </li>
+                              ))}
+                              {messageStack?.length > 0 &&
+                                messageStack.map((msg, m) => (
+                                  <li key={"test_k" + m} className="right">
+                                    <div className="conversation-list">
+                                      <div
+                                        className="ctext-wrap "
+                                        style={{
+                                          backgroundColor:
+                                            msg.sender ==
+                                              currentUser.userID &&
+                                              currentChat?.color
+                                              ? currentChat?.color + "33"
+                                              : "#00EE00" + "33",
+                                        }}
+                                      >
+                                        <div className="conversation-name">
+                                          {currentUser?.firstname +
+                                            currentUser?.lastname}
+                                        </div>
+                                        <div className="mb-1">
+                                          {msg.messageData}
+                                        </div>
+                                        <p className="chat-time mb-0">
+                                          <i className="bx bx-loader bx-spin  align-middle me-1" />
+                                          {moment(msg.createdAt).format(
+                                            "DD-MM-YY HH:mm"
+                                          )}
                                         </p>
-                                        {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
                                       </div>
                                     </div>
                                   </li>
                                 ))}
-                                {messageStack?.length > 0 &&
-                                  messageStack.map((msg, m) => (
-                                    <li key={"test_k" + m} className="right">
-                                      <div className="conversation-list">
-                                        <div
-                                          className="ctext-wrap "
-                                          style={{
-                                            backgroundColor:
-                                              msg.sender ==
-                                                currentUser.userID &&
-                                                currentChat?.color
-                                                ? currentChat?.color + "33"
-                                                : "#00EE00" + "33",
-                                          }}
-                                        >
-                                          <div className="conversation-name">
-                                            {currentUser?.firstname +
-                                              currentUser?.lastname}
-                                          </div>
-                                          <div className="mb-1">
-                                            {msg.messageData}
-                                          </div>
-                                          <p className="chat-time mb-0">
-                                            <i className="bx bx-loader bx-spin  align-middle me-1" />
-                                            {moment(msg.createdAt).format(
-                                              "DD-MM-YY HH:mm"
-                                            )}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </li>
-                                  ))}
-                              </div>
-                            </ul>
-                          </div>
+                            </div>
+                          </ul>
+                        </div>
 
-                          {currentChat?.isGroup && (
-                            <SubgroupBar
-                              groups={allgroups}
-                              selectedGroup={currentChat}
-                              setSelectedgroup={setCurrentChat}
-                              openSubGroupmodel={setSubGroupModelOpen}
-                              currentCase={currentCase}
-                              notifyCount={getNotificationCount}
-                            />
-                          )}
-                         {isFullScreen ? (
+                        {currentChat?.isGroup && (
+                          <SubgroupBar
+                            groups={allgroups}
+                            selectedGroup={currentChat}
+                            setSelectedgroup={setCurrentChat}
+                            openSubGroupmodel={setSubGroupModelOpen}
+                            currentCase={currentCase}
+                            notifyCount={getNotificationCount}
+                          />
+                        )}
+                        {isFullScreen ? (
                           <>
                             <div
-                              className={`p-2 chat-input-section ${
-                                isFullScreen ? "full-screen" : ""
-                              }`}
+                              className={`p-2 chat-input-section ${isFullScreen ? "full-screen" : ""
+                                }`}
                             >
                               <div className="row">
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                    recorder.state === "recording" ? (
+                                      recorder.state === "recording" ? (
                                       <div className="d-flex justify-content-center">
                                         <i
                                           className="mdi mdi-microphone font-size-18 text-primary"
@@ -2923,30 +2948,30 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                <div class="d-flex gap-2 flex-wrap mt-2">
-                                                  {Array.from(allFiles)?.map(
-                                                    (att, a) => (
-                                                      <span
-                                                        class="badge badge-soft-primary font-size-13"
-                                                        key={a}
-                                                      >
-                                                        {att.name}
-                                                        <i
-                                                          class="bx bx-x-circle mx-1"
-                                                          onClick={() =>
-                                                            handleFileRemove(
-                                                              att?.name
-                                                            )
-                                                          }
-                                                          style={{
-                                                            cursor: "pointer",
-                                                          }}
-                                                        />
-                                                      </span>
-                                                    )
-                                                  )}
-                                                </div>
-                                              )}
+                                                  <div class="d-flex gap-2 flex-wrap mt-2">
+                                                    {Array.from(allFiles)?.map(
+                                                      (att, a) => (
+                                                        <span
+                                                          class="badge badge-soft-primary font-size-13"
+                                                          key={a}
+                                                        >
+                                                          {att.name}
+                                                          <i
+                                                            class="bx bx-x-circle mx-1"
+                                                            onClick={() =>
+                                                              handleFileRemove(
+                                                                att?.name
+                                                              )
+                                                            }
+                                                            style={{
+                                                              cursor: "pointer",
+                                                            }}
+                                                          />
+                                                        </span>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
                                             </div>
                                             <div>
                                               <ReactQuillInput
@@ -2978,7 +3003,7 @@ const ChatRc = () => {
                                   }}
                                 >
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <></>
                                   ) : (
                                     <div>
@@ -3025,7 +3050,7 @@ const ChatRc = () => {
                                     </div>
                                   )}
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-20 text-danger me-2"
                                       title="Stop Recording"
@@ -3112,7 +3137,7 @@ const ChatRc = () => {
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                    recorder.state === "recording" ? (
+                                      recorder.state === "recording" ? (
                                       <div className="d-flex justify-content-center">
                                         <i
                                           className="mdi mdi-microphone font-size-18 text-primary"
@@ -3145,30 +3170,30 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                <div class="d-flex gap-2 flex-wrap mt-2">
-                                                  {Array.from(allFiles)?.map(
-                                                    (att, a) => (
-                                                      <span
-                                                        class="badge badge-soft-primary font-size-13"
-                                                        key={a}
-                                                      >
-                                                        {att.name}
-                                                        <i
-                                                          class="bx bx-x-circle mx-1"
-                                                          onClick={() =>
-                                                            handleFileRemove(
-                                                              att?.name
-                                                            )
-                                                          }
-                                                          style={{
-                                                            cursor: "pointer",
-                                                          }}
-                                                        />
-                                                      </span>
-                                                    )
-                                                  )}
-                                                </div>
-                                              )}
+                                                  <div class="d-flex gap-2 flex-wrap mt-2">
+                                                    {Array.from(allFiles)?.map(
+                                                      (att, a) => (
+                                                        <span
+                                                          class="badge badge-soft-primary font-size-13"
+                                                          key={a}
+                                                        >
+                                                          {att.name}
+                                                          <i
+                                                            class="bx bx-x-circle mx-1"
+                                                            onClick={() =>
+                                                              handleFileRemove(
+                                                                att?.name
+                                                              )
+                                                            }
+                                                            style={{
+                                                              cursor: "pointer",
+                                                            }}
+                                                          />
+                                                        </span>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
                                             </div>
                                             <div>
                                               <ReactQuillInput

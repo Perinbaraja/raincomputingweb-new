@@ -5,11 +5,12 @@ import { Col, Modal, Row } from "reactstrap"
 import PropTypes from "prop-types"
 import { messageUpdate } from "rainComputing/helpers/backend_helper"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
-import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 
-const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
+const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessageId }) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [updateMessages, setUpdateMessages] = useState(null)
@@ -27,13 +28,16 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId }) => {
       _id: id,
       // sender: currentUser?.userID,
       messageData: updateMessages,
+      createdAt:curEditMessageId.createdAt
     }
     const res = await messageUpdate(payload)
     if (res?.success) {
       console.log("success :", res?.success)
-
+      toastr.success(`Message  has been Edited successfully`, "Success")
       setMessages(messages?.map(m => (m?._id === id ? res?.updatedMessage : m)))
       setUpdateMessages(curMessageId)
+    }else{
+      toastr.error("Unable to Edit Message after 10 min", "Failed!!!")
     }
     setOpen(false)
   }
@@ -116,6 +120,7 @@ EditMessageModel.propTypes = {
   setOpen: PropTypes.func,
   toggleOpen: PropTypes.func,
   curMessageId: PropTypes.any,
+  curEditMessageId: PropTypes.any,
   msgData: PropTypes.array,
 }
 
