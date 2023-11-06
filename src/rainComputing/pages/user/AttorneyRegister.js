@@ -338,7 +338,7 @@ const AttorneyRegister = () => {
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Expertise</Label>
                                 <Input
-                                  name="Expertise"
+                                  name="expertise"
                                   id="validationCustom05"
                                   className="form-control"
                                   rows="2"
@@ -354,7 +354,7 @@ const AttorneyRegister = () => {
                                   Jurisdiction
                                 </Label>
                                 <Input
-                                  name="Jurisdiction"
+                                  name="jurisdiction"
                                   id="validationCustom05"
                                   className="form-control"
                                   rows="2"
