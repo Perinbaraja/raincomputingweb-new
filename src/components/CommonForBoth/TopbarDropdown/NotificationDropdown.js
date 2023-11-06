@@ -15,7 +15,7 @@ import GroupReplyMsg from "rainComputing/components/chat/GroupReplyMsg"
 const NotificationDropdown = props => {
   const { currentUser, setCurrentUser } = useUser()
   const { notifications, setNotifications } = useNotifications()
- 
+
   const [loading, setLoading] = useState(false)
   const [menu, setMenu] = useState(false)
 
@@ -25,22 +25,31 @@ const NotificationDropdown = props => {
       const newNotifications = notifications.filter(
         notify => !notify.playedSound
       )
-
       if (newNotifications.length > 0) {
         // Play the audio notification for each new notification
         newNotifications.forEach(notify => {
           const audioElement = new Audio(currentUser?.notificationSound)
           audioElement.play()
-
           // Update the notification to mark it as played
           notify.playedSound = true
         })
-
+        setNotificationsInLocalStorage(notifications);
         // To trigger re-render and update the notifications array in state
         setNotifications([...notifications])
       }
     }
-  }, [currentUser?.isNotifySound, notifications, ])
+  }, [currentUser?.isNotifySound, notifications,])
+  const setNotificationsInLocalStorage = (notifications) => {
+    try {
+      // Convert the notifications array to a JSON string
+      const notificationsJSON = JSON.stringify(notifications);
+      // Store the JSON string in local storage under a specific key
+      localStorage.setItem('notifications', notificationsJSON);
+    } catch (error) {
+      console.error('Error saving notifications to local storage:', error);
+    }
+  };
+  const previousNotifications = JSON.parse(localStorage.getItem('notifications'));
 
   return (
     <React.Fragment>
@@ -83,6 +92,46 @@ const NotificationDropdown = props => {
               <SimpleBar style={{ height: "230px" }}>
                 <div>
                   {notifications.map((notify, i) => {
+                    if (notify.isReply && !notify.caseId) {
+                      return <PrivateReplyMsg notification={notify} key={i} />
+                    } else if (notify.isReply && notify.caseId) {
+                      return <GroupReplyMsg notification={notify} key={i} />
+                    } else if (notify.caseId) {
+                      return <GroupMsg notification={notify} key={i} />
+                    } else {
+                      return (
+                        <div className="text-reset notification-item" key={i}>
+                          <PrivateMsg notification={notify} key={i} />
+                        </div>
+                      )
+                    }
+                  })}
+                </div>
+              </SimpleBar>
+            )}
+          </DropdownMenu>
+        )}
+        {previousNotifications && (
+          <DropdownMenu className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
+            <div className="p-3">
+              <Row className="align-items-center">
+                <Col>
+                  <h6 className="m-0"> {props.t("Notifications")} </h6>
+                </Col>
+                <div className="col-auto">
+                  <a href="/chat-rc" className="small">
+                    {" "}
+                    View All
+                  </a>
+                </div>
+              </Row>
+            </div>
+            {loading ? (
+              <ChatLoader />
+            ) : (
+              <SimpleBar style={{ height: "230px" }}>
+                <div>
+                  {previousNotifications.map((notify, i) => {
                     if (notify.isReply && !notify.caseId) {
                       return <PrivateReplyMsg notification={notify} key={i} />
                     } else if (notify.isReply && notify.caseId) {

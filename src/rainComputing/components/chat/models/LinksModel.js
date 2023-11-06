@@ -61,6 +61,7 @@ const LinksModel = () => {
                 <div>
                     {filteredMessages.map((links, i) => (
                         <div key={i}
+                         className='border-bottom border-primary py-3'
                             style={{
                                 whiteSpace: "break-spaces",
                             }}
