@@ -79,7 +79,7 @@ console.log("attorneys",attorneys)
               <input
                 type="text-success"
                 className="form-control "
-                placeholder="Search for Attorney..."
+                placeholder="Search for Attorney with Name, Firm, Expertise, Jurisdiction and Fee..."
                 value={searchText}
                 onChange={e => setSearchText(e.target.value)}
               />
