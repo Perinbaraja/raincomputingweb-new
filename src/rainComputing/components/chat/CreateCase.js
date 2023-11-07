@@ -130,17 +130,17 @@ const CreateCase = ({
     handleFetchingContacts()
   }, [searchText])
 
-  const generateSerialNumber = () => {
+  // const generateSerialNumber = () => {
 
-    const min = 1000;
-    const max = 9999;
-    const randomSerialNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    return randomSerialNumber.toString();
-  };
+  //   const min = 1000;
+  //   const max = 9999;
+  //   const randomSerialNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  //   return randomSerialNumber.toString();
+  // };
 
-  useEffect(() => {
-    setCaseSerialNo(generateSerialNumber());
-  }, []);
+  // useEffect(() => {
+  //   setCaseSerialNo(generateSerialNumber());
+  // }, []);
 
 
   return (
