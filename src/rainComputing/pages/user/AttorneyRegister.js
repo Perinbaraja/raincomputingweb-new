@@ -47,6 +47,7 @@ const AttorneyRegister = () => {
       expertise: "",
       jurisdiction: "",
       fee: "",
+      subdomain: "",
       email: currentUser.email,
     },
     validationSchema: Yup.object({
@@ -70,6 +71,7 @@ const AttorneyRegister = () => {
         jurisdiction: values.jurisdiction,
         expertise: values.expertise,
         fee: values.fee,
+        subdomain: values.subdomain,
         userID: currentUser.userID,
         status: "approved",
       })
@@ -367,7 +369,7 @@ const AttorneyRegister = () => {
                           </Row>
 
                           <Row>
-                          <Col lg="4">
+                          <Col lg="2">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Fee</Label>
                                 <textarea
@@ -378,6 +380,20 @@ const AttorneyRegister = () => {
                                   placeholder="Enter Your fee"
                                   onChange={validation.handleChange}
                                   value={validation.values.fee || ""}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col lg="2">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">SubDomain</Label>
+                                <textarea
+                                  name="subdomain"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your subdomain"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.subdomain || ""}
                                 />
                               </FormGroup>
                             </Col>

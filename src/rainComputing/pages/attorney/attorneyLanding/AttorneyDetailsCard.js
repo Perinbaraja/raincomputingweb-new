@@ -59,6 +59,7 @@ const AttorneyDetailsCard = () => {
       expertise: attorneyDetail?.expertise,
       jurisdiction: attorneyDetail?.jurisdiction,
       fee: attorneyDetail?.fee,
+      subdomain: attorneyDetail?.subdomain,
     },
     validationSchema: Yup.object({
       phonenumber: Yup.string().required("Please Enter Your Phone Number"),
@@ -70,6 +71,7 @@ const AttorneyDetailsCard = () => {
       expertise: Yup.string().required("Please Enter Your expertise"),
       jurisdiction: Yup.string().required("Please Enter Your jurisdiction"),
       fee: Yup.string().required("Please Enter Your fee"),
+      subdomain: Yup.string().required("Please Enter Your subdomain"),
       
     }),
     onSubmit: async values => {
@@ -477,7 +479,34 @@ const AttorneyDetailsCard = () => {
                               ) : null}
                             </FormGroup>
                           </Col>
-                          <Col lg="8">
+                          <Col lg="4">
+                            <FormGroup className="mb-3">
+                              <Label htmlFor="validationCustom04">SubDomain</Label>
+                              <textarea
+                                type="text"
+                                name="subdomain"
+                                className="form-control"
+                                id="validationCustom04"
+                                placeholder="Enter Your subdomain"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.subdomain || ""}
+                                invalid={
+                                  validation.touched.subdomain &&
+                                  validation.errors.subdomain
+                                    ? true
+                                    : false
+                                }
+                              />
+                              {validation.touched.subdomain &&
+                              validation.errors.subdomain ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.subdomain}
+                                </FormFeedback>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                          <Col lg="4">
                             <FormGroup className="mb-3">
                               <Label htmlFor="validationCustom04">Bio</Label>
                               <textarea
