@@ -255,6 +255,7 @@ const ChatRc = () => {
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
+  console.log("allCases:",allCases)
   const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
@@ -434,7 +435,7 @@ const ChatRc = () => {
     if (nonewmessage) {
       const timer = setTimeout(() => {
         scrollToBottom()
-      }, 500)
+      },)
       return () => clearTimeout(timer)
     }
   }, [messages])
@@ -478,7 +479,7 @@ const ChatRc = () => {
     } else {
       const timer = setTimeout(() => {
         scrollToBottom()
-      }, 500)
+      },)
       return () => clearTimeout(timer)
     }
   }, [messages?.length])
