@@ -255,7 +255,6 @@ const ChatRc = () => {
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
   const [allCases, setAllCases] = useState([])
-  console.log("allCases:",allCases)
   const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
@@ -412,10 +411,6 @@ const ChatRc = () => {
     })
   }
 
-  useEffect(() => {
-    scrollToBottom(); // Scroll to the bottom when the component loads
-  }, [scrollToBottom]);
-
   const handlerefreshemail = async () => {
     setChatLoader(true)
     const payload = {
@@ -435,7 +430,7 @@ const ChatRc = () => {
     if (nonewmessage) {
       const timer = setTimeout(() => {
         scrollToBottom()
-      },)
+      },500)
       return () => clearTimeout(timer)
     }
   }, [messages])
@@ -479,7 +474,7 @@ const ChatRc = () => {
     } else {
       const timer = setTimeout(() => {
         scrollToBottom()
-      },)
+      },500)
       return () => clearTimeout(timer)
     }
   }, [messages?.length])
