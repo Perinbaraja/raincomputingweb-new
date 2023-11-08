@@ -369,7 +369,7 @@ const AttorneyRegister = () => {
                           </Row>
 
                           <Row>
-                          <Col lg="2">
+                          <Col lg="4">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Fee</Label>
                                 <textarea
@@ -383,7 +383,7 @@ const AttorneyRegister = () => {
                                 />
                               </FormGroup>
                             </Col>
-                            <Col lg="2">
+                            <Col lg="4">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">SubDomain</Label>
                                 <textarea
@@ -397,7 +397,7 @@ const AttorneyRegister = () => {
                                 />
                               </FormGroup>
                             </Col>
-                            <Col lg="8">
+                            <Col lg="4">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Bio</Label>
                                 <textarea
