@@ -1,21 +1,15 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
-
 import { connect } from "react-redux"
-
 import { Link } from "react-router-dom"
-
 import "./headsearch.scss"
-
 // Redux Store
 import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 // reactstrap
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu,DropdownItem } from "reactstrap"
-
+import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
 // Import menuDropdown
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu"
-
 import rainlogo from "assets/images/rain-drop.png"
 import rainlglogo from "assets/images/raincom_Logo1.png"
 //i18n
@@ -35,7 +29,9 @@ const Header = props => {
   const toggleSubDomainOpen = () => {
     setSubDomainOpen(!subDomainOpen);
   };
-
+  const handleIconClick = () => {
+    window.open(currentAttorney?.subdomain, '_blank');
+  };
   const tog_scroll = () => {
     setmodal_scroll(!modal_scroll)
   }
@@ -51,30 +47,28 @@ const Header = props => {
                 </span>
               </Link>
               {currentAttorney?.subdomain && (
-              <div className="p-4">
-                <i
-                  className="bx bx-link-external"
-                  id="atticon"
-                  onClick={toggleSubDomainOpen}
-                  target="_blank"
-                  style={{cursor:"pointer"}}
-                />
-                <Dropdown
-                  isOpen={subDomainOpen}
-                  toggle={toggleSubDomainOpen}
-                  className="float-end me-2"
-                >
-                  <DropdownToggle className="btn nav-btn" tag="i">
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem href={currentAttorney?.subdomain}>
-                  {currentAttorney?.subdomain}
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
-              )}      
-
+                <div className="p-4">
+                  <i
+                    className="bx bx-link-external"
+                    id="atticon"
+                    onClick={toggleSubDomainOpen}
+                    target="_blank"
+                    style={{ cursor: "pointer" }}
+                  />
+                  <Dropdown
+                    isOpen={subDomainOpen}
+                    toggle={toggleSubDomainOpen}
+                    className="float-end me-2"
+                  >
+                    <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem onClick={() => window.open(currentAttorney?.subdomain, '_blank')}>
+                        {currentAttorney?.subdomain}
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
+              )}
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
                   <img src={rainlglogo} alt="" height="22" />
@@ -101,7 +95,7 @@ const Header = props => {
                           className=""
                           to="/chat-rc"
                         >
-                         ChatPro<sup>TM</sup>
+                          ChatPro<sup>TM</sup>
                         </Link>
                       </Link>
                     </li>
@@ -115,14 +109,14 @@ const Header = props => {
                         <Link to="/req-user">Requests</Link>
                       </li>
                     )}
-                    {currentUser &&!currentAttorney&&(
+                    {currentUser && !currentAttorney && (
                       <li id="navmen" className="">
-                        <Link to="/appointment-status">Connection</Link>   
+                        <Link to="/appointment-status">Connection</Link>
                       </li>
                     )}
                     <li id="navmen" className="">
-                    <DocketMenu />
-                    </li>                      
+                      <DocketMenu />
+                    </li>
                   </ul>
                 </div>
                 <div className="d-flex align-items-center gap-2">
@@ -142,7 +136,6 @@ const Header = props => {
                 <MobileNav />
               </div>
             )}
-
             {/* <div id="topinput">
             <form >
             <span className="bx bx-search-alt mx-2 bg-primary text-white px-2 py-1" id="topsearch"/>
@@ -155,7 +148,6 @@ const Header = props => {
     </React.Fragment>
   )
 }
-
 Header.propTypes = {
   leftMenu: PropTypes.any,
   showRightSidebar: PropTypes.any,
@@ -163,12 +155,10 @@ Header.propTypes = {
   t: PropTypes.any,
   toggleLeftmenu: PropTypes.func,
 }
-
 const mapStatetoProps = state => {
   const { layoutType, showRightSidebar, leftMenu } = state.Layout
   return { layoutType, showRightSidebar, leftMenu }
 }
-
 export default connect(mapStatetoProps, {
   showRightSidebarAction,
   toggleLeftmenu,
