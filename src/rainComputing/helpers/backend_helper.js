@@ -18,7 +18,7 @@ const createChatRoom = payload =>
 
 const getRoomMessages = payload =>
   post(`${BASE_URL}/pchat/getRoomMessages`, payload)
-
+  // const sentMessageEmail = payload => post(`${BASE_URL}/message/sendmessagemail`, payload)
 const userRegisteration = payload => post(`${BASE_URL}/user/register`, payload)
 const userLogin = payload => post(`${BASE_URL}/user/login`, payload)
 const userUpdate = payload => put(`${BASE_URL}/user/edit`, payload)
@@ -198,7 +198,10 @@ const removeReminder = payload =>
 const UpdateReminder = payload =>
   put(`${BASE_URL}/remainder/updateReminder`, payload)
   const updateGroup = payload => post(`${BASE_URL}/group/updateGroup`, payload)
-
+  const createDomains = payload => post(`${BASE_URL}/user/createdomains`, payload)
+  const   updateDomains= payload => post(`${BASE_URL}/user/updatedomains`, payload)
+  const   deleteDomains= payload => post(`${BASE_URL}/user/deletedomains`, payload)
+  
 export {
   getAllAttorneys,
   getAttorneysCount,
@@ -214,6 +217,7 @@ export {
   getRoomMessages,
   userRegisteration,
   userLogin,
+  // sentMessageEmail,
   regScheduleDates,
   regAttorneyUpdate,
   userUpdate,
@@ -306,5 +310,8 @@ export {
   notifySound,
   notificationSound,
   caseIdbySubCase,
-  getAllSubCases
+  getAllSubCases,
+  createDomains,
+    updateDomains,
+    deleteDomains
 }
