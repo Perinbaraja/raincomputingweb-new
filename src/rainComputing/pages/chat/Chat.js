@@ -111,6 +111,8 @@ import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import { log } from "logrocket"
 import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
 import LinksModel from "rainComputing/components/chat/models/LinksModel"
+import SubDomainDetails from "rainComputing/components/chat/models/SubDomainDetails"
+
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -242,6 +244,11 @@ const ChatRc = () => {
     toggleOpen: linksModelOpen,
     setToggleOpen: setLinksModelOpen,
     toggleIt: toggleLinksModelOpen,
+  } = useToggle(false)
+  const {
+    toggleOpen: subdomainModelOpen,
+    setToggleOpen: setsubdomainModelOpen,
+    toggleIt: togglesubdomainModelOpen,
   } = useToggle(false)
 
   const MESSAGE_CHUNK_SIZE = 50
@@ -1871,6 +1878,15 @@ const ChatRc = () => {
             >
               <LinksModel />
             </DynamicModel>
+            <DynamicModel
+              open={subdomainModelOpen}
+              toggle={togglesubdomainModelOpen}
+              size="lg"
+              modalTitle="subdomain details"
+              isClose={true}
+            >
+              <SubDomainDetails />
+            </DynamicModel>
             {/* Modal for Editing Case*/}
             {currentCase && (
               <EditCase
@@ -2370,6 +2386,21 @@ const ChatRc = () => {
                                 {/* {!currentChat?.isGroup && */}
                                 <li className="list-inline-item">
                                   <Dropdown
+                                    toggle={() => togglesubdomainModelOpen(true)}
+                                  >
+                                    <DropdownToggle
+                                      className="btn nav-btn"
+                                      tag="i"
+                                    >
+                                      <i className="bi bi-subtract"
+                                        title="SubDomain Details"
+                                      />
+                                    </DropdownToggle>
+                                  </Dropdown> 
+                                </li>
+
+                                <li className="list-inline-item">
+                                  <Dropdown
                                     toggle={() => toggleLinksModelOpen(true)}
                                   >
                                     <DropdownToggle
@@ -2605,7 +2636,7 @@ const ChatRc = () => {
                               style={{
                                 height: "90vh",
                                 overflowY: "scroll",
-                              }}
+                                                              }}
                             >
                               {messages.map((msg, m) => (
                                 <li
@@ -2970,14 +3001,18 @@ const ChatRc = () => {
                                                 )}
                                             </div>
                                             <div>
-                                              <ReactQuillInput
+                                            <ReactQuillInput
                                                 value={curMessage}
                                                 onChange={onChange}
                                                 mentionsArray={mentionsArray}
                                                 isQuill={isQuill}
                                                 onKeyPress={onKeyPress}
+                                                currentChat={currentChat}
+                                                  currentCase={currentCase}
+                                                  getChatName={getChatName}
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
+                                                  
                                                 }
                                               />
                                             </div>
@@ -3192,14 +3227,18 @@ const ChatRc = () => {
                                                 )}
                                             </div>
                                             <div>
-                                              <ReactQuillInput
+                                            <ReactQuillInput
                                                 value={curMessage}
                                                 onChange={onChange}
                                                 mentionsArray={mentionsArray}
                                                 isQuill={isQuill}
                                                 onKeyPress={onKeyPress}
+                                                currentChat={currentChat}
+                                                  currentCase={currentCase}
+                                                  getChatName={getChatName}
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
+                                                  
                                                 }
                                               />
                                             </div>

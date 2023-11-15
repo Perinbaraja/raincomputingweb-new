@@ -72,6 +72,7 @@ const CreateCase = ({
   const handleCreatingCase = async () => {
     setloading(true)
     const filteredMembers = formValues?.members.map(m => m?._id)
+    const membersEmail=formValues?.members.map(m => m?.email)
     const generateThreadId = () => {
       const min = 100000 // Minimum 6-digit number
       const max = 999999 // Maximum 6-digit number
@@ -85,6 +86,7 @@ const CreateCase = ({
       caseName: formValues?.caseName,
       serialNumber: caseSerialNo,
       members: [currentUser?.userID, ...filteredMembers],
+      membersEmail: [currentUser?.email, ...membersEmail],
       threadId: randomThreadId, // Assign the generated ThreadId
       threadIdCondition: "GroupMembers",
     }

@@ -7,9 +7,10 @@ import {
   updateDomains,
   deleteDomains,
 } from "rainComputing/helpers/backend_helper"
-const CreateDomains = () => {
+const ManageDomains = () => {
   const user = localStorage.getItem("authUser")
   const { currentUser, setCurrentUser } = useUser(user)
+  console.log("currentUser",currentUser)
   // const alldomains = currentUser?.domains
   const [domainsname, setDomainsName] = useState([])
   const [alldomains, setAlldomains] = useState([])
@@ -43,6 +44,7 @@ const CreateDomains = () => {
     }
     const res = await createDomains(payload)
     if (res.success) {
+      setDomainsName([])
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
       toastr.success("Domains has been Created successfully", "Success!!!")
@@ -142,7 +144,7 @@ const CreateDomains = () => {
             handleSubmit()
           }}
         >
-          Create
+          Add domains
         </button>
       </div>
       {alldomains && 
@@ -189,4 +191,4 @@ const CreateDomains = () => {
     </div>
   )
 }
-export default CreateDomains
+export default ManageDomains
