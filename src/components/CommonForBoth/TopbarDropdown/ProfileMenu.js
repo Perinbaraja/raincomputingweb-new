@@ -138,8 +138,8 @@ const ProfileMenu = props => {
               <i className="bx bx-user font-size-16 align-middle me-1" />
               {props.t("Profile")}{" "}
             </DropdownItem>
-            <DropdownItem tag="a" href="/create_domains">
-            <i className="bi bi-gem font-size-16 align-middle me-1"/> {props.t("CreateDomains")}
+            <DropdownItem tag="a" href="/manage_domains">
+            <i className="bi bi-gem font-size-16 align-middle me-1"/> {props.t("Manage Domains")}
             </DropdownItem>
             {!currentUser?.attorneyStatus ? (
               <DropdownItem tag="a" href="/attorney-signup">

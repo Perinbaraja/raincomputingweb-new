@@ -2,6 +2,10 @@ import React from "react"
 import PropTypes from "prop-types"
 import { useCallback, useState } from "react"
 import ReactQuill from "react-quill"
+import "quill-emoji/dist/quill-emoji.css";
+import EmojiBlot from "quill-emoji/dist/quill-emoji"
+import Quill from 'quill';
+
 const ReactQuillInput = ({
   value,
   onChange,
@@ -10,7 +14,13 @@ const ReactQuillInput = ({
   curMessageId,
   isQuill,
   onKeyPress,
-  isEmptyOrSpaces
+  isEmptyOrSpaces,
+  setModalOpen,
+  isFullScreen,
+  currentChat,
+  currentCase,
+  getChatName,
+  
 }) => {
   let modules = {
     toolbar: false,
@@ -37,6 +47,7 @@ const ReactQuillInput = ({
       ),
     },
   }
+  Quill.register("modules/emoji", EmojiBlot);
   let modules1 = {
     toolbar: [
       [{ header: "1" }, { header: "2" }],
@@ -44,6 +55,7 @@ const ReactQuillInput = ({
       [{ list: "ordered" }, { list: "bullet" }],
       ["link"],
       ["clean"],
+      [{ emoji: true }],
     ],
     mention: {
       allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
@@ -67,7 +79,14 @@ const ReactQuillInput = ({
         [mentionsArray]
       ),
     },
+    "emoji-toolbar": true,
+    "emoji-shortname": true,
   }
+  const place =currentChat.isGroup
+  ? currentCase?.caseName || "Case Chat"
+  : getChatName(currentChat.groupMembers)
+  const placeholder =`Message ${place}`;
+
 
   return (
     <div style={{ position: "relative" }}>
@@ -78,7 +97,7 @@ const ReactQuillInput = ({
           value={value}
           onKeyDown={onKeyPress}
           modules={modules}
-          placeholder="Enter Message..."
+          placeholder={placeholder}
           defaultValue={messages?.find(
             m => m._id === curMessageId?.messageData
           )}
@@ -87,10 +106,29 @@ const ReactQuillInput = ({
           //   onChange(content, delta, source, editor)
           // }}
           onChange={onChange}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px"  }}
+          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
         />
       )}
       {!isQuill && (
+        <ReactQuill
+          theme="snow"
+          className="quil"
+          value={value}
+          onKeyDown={onKeyPress}
+          modules={modules1}
+          placeholder={placeholder}
+          defaultValue={messages?.find(
+            m => m._id === curMessageId?.messageData
+          )}
+          disabled={() => isEmptyOrSpaces()}
+          // onChange={(content, delta, source, editor) => {
+          //   onChange(content, delta, source, editor)
+          // }}
+          onChange={onChange}
+          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px", }}
+        />
+      )}
+      {!isQuill && isFullScreen   &&(
         <ReactQuill
           theme="snow"
           className="quil"
@@ -106,7 +144,7 @@ const ReactQuillInput = ({
           //   onChange(content, delta, source, editor)
           // }}
           onChange={onChange}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
+          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px",height:"700px" }}
         />
       )}
     </div>
@@ -122,6 +160,11 @@ ReactQuillInput.propTypes = {
   isQuill: PropTypes.any,
   onKeyPress: PropTypes.any,
   isEmptyOrSpaces: PropTypes.any,
+  setModalOpen: PropTypes.any,
+  isFullScreen: PropTypes.any,
+  currentChat:PropTypes.any,
+  currentCase:PropTypes.any,
+  getChatName:PropTypes.any,
 }
 
 export default ReactQuillInput

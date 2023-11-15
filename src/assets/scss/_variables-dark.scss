@@ -1741,3 +1741,11 @@ $kbd-color: $white;
 $kbd-bg: $gray-900;
 
 $pre-color: $gray-900;
+.domain-item {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.domain-item:hover {
+  background-color: #e0e0e0; /* Change this color to your desired hover effect */
+}
