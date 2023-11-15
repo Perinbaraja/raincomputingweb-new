@@ -32,4 +32,13 @@
     overflow: auto;
     /* Add any other styling you want for the full-screen view */
   }
+  .domain-item {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+ 
+
+.domain-item:hover {
+  background-color: #e0e0e0;
+  color: #333; 
   
+}

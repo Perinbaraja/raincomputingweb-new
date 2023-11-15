@@ -35,6 +35,17 @@ const Header = props => {
   const tog_scroll = () => {
     setmodal_scroll(!modal_scroll)
   }
+  const handleDomainClick = () => {
+    const subdomain = currentAttorney?.subdomain;
+    const url = subdomain ? (subdomain.startsWith("https://") ? subdomain : `https://${subdomain}`) : null;
+
+    if (url) {
+        window.open(url, '_blank');
+    } else {
+        console.error("Invalid subdomain or subdomain is missing.");
+    }
+};
+
   return (
     <React.Fragment>
       <header id="page-topbar">
@@ -62,7 +73,7 @@ const Header = props => {
                   >
                     <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
                     <DropdownMenu>
-                      <DropdownItem onClick={() => window.open(currentAttorney?.subdomain, '_blank')}>
+                      <DropdownItem onClick={() =>handleDomainClick()}>
                         {currentAttorney?.subdomain}
                       </DropdownItem>
                     </DropdownMenu>
