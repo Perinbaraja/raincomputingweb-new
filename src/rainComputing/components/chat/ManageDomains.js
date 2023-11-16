@@ -14,6 +14,7 @@ const ManageDomains = () => {
   // const alldomains = currentUser?.domains
   const [domainsname, setDomainsName] = useState([])
   const [alldomains, setAlldomains] = useState([])
+  console.log("alldomains",alldomains)
   useEffect(() => {
     setAlldomains(currentUser?.domains)
   }, [currentUser])
@@ -147,6 +148,8 @@ const ManageDomains = () => {
           Add domains
         </button>
       </div>
+      <br/>
+      <br/>
       {alldomains && 
       <div className="col-md-5 col-sm-12 mb-3">
         <label htmlFor="example-text-input" className="form-label">
@@ -161,7 +164,7 @@ const ManageDomains = () => {
               onChange={e => handleChange(index, e.target.value)}
             />
             <span className="input-group-text">
-              {alldomains.length === 1 ? (
+              {alldomains.length === 0 ? (
                 <i
                   className="bx bx-minus-circle text-danger pointer"
                   title="Minimum one Event is required"
@@ -178,6 +181,7 @@ const ManageDomains = () => {
           </div>
         ))}
       </div>}
+      <br/>
       <div className="d-flex justify-content-start">
         <button
           className="btn btn-primary"
