@@ -3,7 +3,7 @@ import { Modal, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap"
 import PropTypes from "prop-types"
 import GroupReminder from "./GroupReminder"
 import SelfReminder from "./SelfReminder"
-import { getReminder } from "rainComputing/helpers/backend_helper"
+// import { getReminder } from "rainComputing/helpers/backend_helper"
 import moment from "moment"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import toastr from "toastr"
@@ -14,61 +14,61 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
   const { currentUser } = useUser()
 
   // console.log("groupReminder",groupReminder)
-  const getReminderData = async () => {
-    try {
-      if (!currentUser) {
-        return
-      }
-      const res = await getReminder({ currentUserID: currentUser?.userID })
-      if (!res.success) {
-        return
-      }
-      const reminders = res?.nextReminders[0]
+  // const getReminderData = async () => {
+  //   try {
+  //     if (!currentUser) {
+  //       return
+  //     }
+  //     const res = await getReminder({ currentUserID: currentUser?.userID })
+  //     if (!res.success) {
+  //       return
+  //     }
+  //     const reminders = res?.nextReminders[0]
 
-      const nextNotify = res?.nextNotificationTime
-      if (nextNotify) {
-        const newReminders = []
+  //     const nextNotify = res?.nextNotificationTime
+  //     if (nextNotify) {
+  //       const newReminders = []
 
-        const now = new Date()
+  //       const now = new Date()
 
-        // for (const notificationTime of scheduledTime) {
-        const currentNotify = new Date(nextNotify)
-        currentNotify.setHours(currentNotify.getHours() - 5)
-        currentNotify.setMinutes(currentNotify.getMinutes() - 30)
+  //       // for (const notificationTime of scheduledTime) {
+  //       const currentNotify = new Date(nextNotify)
+  //       currentNotify.setHours(currentNotify.getHours() - 5)
+  //       currentNotify.setMinutes(currentNotify.getMinutes() - 30)
 
-        const timeDiff = currentNotify - now
-        // console.log("now",now)
-        // console.log("notificationTime",notificationTime.getTime())
-        // console.log("timeDiff",timeDiff)
+  //       const timeDiff = currentNotify - now
+  //       // console.log("now",now)
+  //       // console.log("notificationTime",notificationTime.getTime())
+  //       // console.log("timeDiff",timeDiff)
 
-        if (timeDiff < 30000) {
-          setTimeout(() => {
-            // setGroupReminder(reminders);
+  //       if (timeDiff < 30000) {
+  //         setTimeout(() => {
+  //           // setGroupReminder(reminders);
 
-            toastr.success(`You have new  remainder`)
-            setOpen(true)
-          }, timeDiff)
-        } else {
-          newReminders.push(reminders)
-        }
+  //           toastr.success(`You have new  remainder`)
+  //           setOpen(true)
+  //         }, timeDiff)
+  //       } else {
+  //         newReminders.push(reminders)
+  //       }
 
-        // }
+  //       // }
 
-        setGroupReminder(reminders)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  //       setGroupReminder(reminders)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
-  const intervalTime = 30000 // 30 seconds in milliseconds
+  // const intervalTime = 30000 // 30 seconds in milliseconds
 
-  useEffect(() => {
-    // define a function to run the getReminderData function at the specified interval
-    const intervalId = setInterval(getReminderData, intervalTime)
-    // clear the interval on component unmount
-    return () => clearInterval(intervalId)
-  }, [])
+  // useEffect(() => {
+  //   // define a function to run the getReminderData function at the specified interval
+  //   const intervalId = setInterval(getReminderData, intervalTime)
+  //   // clear the interval on component unmount
+  //   return () => clearInterval(intervalId)
+  // }, [])
 
   // console.log("dk:",groupReminder);
   // useEffect(() => {
@@ -78,9 +78,9 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
   //   return () => clearInterval(interval)
   // }, [currentUser])
 
-  useEffect(() => {
-    getReminderData()
-  }, [currentUser])
+  // useEffect(() => {
+  //   getReminderData()
+  // }, [currentUser])
   return (
     <div>
       <i
@@ -111,7 +111,7 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
           <span aria-hidden="true">&times;</span>
         </button>
 
-        <GroupReminder groupReminder={groupReminder} />
+        <GroupReminder />
       </Modal>
     </div>
   )

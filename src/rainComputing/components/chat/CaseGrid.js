@@ -150,18 +150,18 @@ const CaseGrid = ({
   //   }
   //   setNewSubCaseModelOpen(true)
   // }
-  const onGetCaseIdSubcases = async caseId => {
-    const payload = {
-      caseId: caseId,
-    }
-    const res = await caseIdbySubCase(payload)
-    if (res.success) {
-      setCaseIdSubCases(res?.caseIdSubCases)
-    }
-  }
-  useEffect(() => {
-    onGetCaseIdSubcases()
-  }, [])
+  // const onGetCaseIdSubcases = async caseId => {
+  //   const payload = {
+  //     caseId: caseId,
+  //   }
+  //   const res = await caseIdbySubCase(payload)
+  //   if (res.success) {
+  //     setCaseIdSubCases(res?.caseIdSubCases)
+  //   }
+  // }
+  // useEffect(() => {
+  //   onGetCaseIdSubcases()
+  // }, [])
 
   const notificationSubCase = id => {
     const matchingCase = notifications.find(i => i?.maincaseId === id)

@@ -117,18 +117,18 @@ const SubCaseGrid = ({
     }
   }
  
-  const onGetCaseIdSubcases = async () => {
-    const payload = {
-      caseId: casedetails?.caseId,
-    }
-    const res = await caseIdbySubCase(payload)
-    if (res.success) {
-      setCaseIdSubCases(res?.caseIdSubCases)
-    }
-  }
-  useEffect(() => {
-    onGetCaseIdSubcases()
-  }, [])
+  // const onGetCaseIdSubcases = async () => {
+  //   const payload = {
+  //     caseId: casedetails?.caseId,
+  //   }
+  //   const res = await caseIdbySubCase(payload)
+  //   if (res.success) {
+  //     setCaseIdSubCases(res?.caseIdSubCases)
+  //   }
+  // }
+  // useEffect(() => {
+  //   onGetCaseIdSubcases()
+  // }, [])
   return (
     <>
       <>
