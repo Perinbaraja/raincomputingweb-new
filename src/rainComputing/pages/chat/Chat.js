@@ -441,7 +441,7 @@ const ChatRc = () => {
       return () => clearTimeout(timer)
     }
   }, [messages])
-  const filterChats = () => {
+  const filterChats = async() => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
         chat.groupMembers.some(member =>
@@ -455,7 +455,7 @@ const ChatRc = () => {
       setIsSearchTextCleared(false)
     } else {
       if (!isSearchTextCleared) {
-        ongetAllChatRooms() // Call the function to get all chats
+        await ongetAllChatRooms() // Call the function to get all chats
         setIsSearchTextCleared(true)
       }
     }
@@ -1567,7 +1567,7 @@ const ChatRc = () => {
     const handleAllAsyncReq = async () => {
       setPageLoader(true)
       await ongetCounts()
-      await ongetAllChatRooms()
+      // await ongetAllChatRooms()
       setPageLoader(false)
       // await onGetContacts({ isSearch: false })
       await ongetAllCases({ isSet: false, isSearch: false })
