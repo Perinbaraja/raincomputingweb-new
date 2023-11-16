@@ -28,7 +28,6 @@ const LandingGrid = () => {
   const [attorneys, setAttorneys] = useState([])
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(12)
-console.log("attorneys",attorneys)
   const loadAttorney = async () => {
     const res = await getAllRegAttorneys({ page, limit, searchText })
     if (res.success) {
@@ -53,21 +52,10 @@ console.log("attorneys",attorneys)
       setLoading(false)
     }
     handleLoad()
-  }, [page, limit])
+  }, [page, limit,searchText])
 
   useEffect(() => {
     setPage(1)
-  }, [searchText])
-
-  useEffect(() => {
-    const handleLoad = async () => {
-      setLoading(true)
-      // await loadAttorneyCount()
-      await loadAttorney()
-      setLoading(false)
-    }
-
-    handleLoad()
   }, [searchText])
 
   return (
