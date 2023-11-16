@@ -718,18 +718,18 @@ const ChatRc = () => {
 
     setCaseLoading(false)
   }
-  const onGetAllSubCases = async () => {
-    const payload = {
-      isSubcase: true,
-    }
-    const res = await getAllSubCases(payload)
-    if (res.success) {
-      setAllSubCases(res?.allsubCases)
-    }
-  }
-  useEffect(() => {
-    onGetAllSubCases()
-  }, [])
+  // const onGetAllSubCases = async () => {
+  //   const payload = {
+  //     isSubcase: true,
+  //   }
+  //   const res = await getAllSubCases(payload)
+  //   if (res.success) {
+  //     setAllSubCases(res?.allsubCases)
+  //   }
+  // }
+  // useEffect(() => {
+  //   onGetAllSubCases()
+  // }, [])
   //Fetching user,case,group count
   const ongetCounts = async () => {
     const countRes = await getCounts({ userId: currentUser?.userID })
