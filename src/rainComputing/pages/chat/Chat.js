@@ -2172,9 +2172,9 @@ console.log("searchText",searchText)
                         )} */}
                       </div>
 
-                      {/* {caseLoading ? (
+                      {caseLoading ? (
                         <ChatLoader />
-                      ) : ( */}
+                      ) : (
                         <PerfectScrollbar style={{ height: "500px" }}>
                           <ul className="list-unstyled chat-list">
                             {allCases
@@ -2214,7 +2214,7 @@ console.log("searchText",searchText)
                               )}
                           </ul>
                         </PerfectScrollbar>
-                     
+                      )}
                     </TabPane>
                     <TabPane tabId="3">
                       <div className="my-2">
