@@ -84,10 +84,10 @@ const ReactQuillInput = ({
     "emoji-toolbar": true,
     "emoji-shortname": true,
   }
-  // const place =currentChat?.isGroup
-  // ? currentCase?.caseName || "Case Chat"
-  // : getChatName(currentChat.groupMembers)
-  // const placeholder =`Message ${place}`;
+  const place =currentChat?.isGroup
+  ? currentCase?.caseName || "Case Chat"
+  : getChatName(currentChat.groupMembers)
+  const placeholder =`Message ${place}`;
 
 
   return (
@@ -99,7 +99,7 @@ const ReactQuillInput = ({
           value={value}
           onKeyDown={onKeyPress}
           modules={modules}
-          // placeholder={placeholder}
+          placeholder={placeholder}
           defaultValue={messages?.find(
             m => m._id === curMessageId?.messageData
           )}
@@ -118,7 +118,7 @@ const ReactQuillInput = ({
           value={value}
           onKeyDown={onKeyPress}
           modules={modules1}
-          // placeholder={placeholder}
+          placeholder={placeholder}
           defaultValue={messages?.find(
             m => m._id === curMessageId?.messageData
           )}

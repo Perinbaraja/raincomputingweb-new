@@ -21,6 +21,7 @@ const ReplyMsgModal = ({
   receivers,
   currentChat,
   caseId,
+  getChatName
 }) => {
   const { currentUser } = useUser()
   const { socket } = useSocket()
@@ -88,6 +89,8 @@ const ReplyMsgModal = ({
                   value={replyMessage}
                   onChange={setReplyMessage}
                   isQuill={isQuill}
+                  currentChat={currentChat}
+                  getChatName={getChatName}
                 />
               </div>
               <div style={{ position: "absolute", right: "30px", top: "7px" }}>
@@ -138,5 +141,6 @@ ReplyMsgModal.propTypes = {
   receivers: PropTypes.any,
   currentChat: PropTypes.any,
   caseId: PropTypes.any,
+  getChatName: PropTypes.any,
 }
 export default ReplyMsgModal

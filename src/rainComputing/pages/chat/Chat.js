@@ -257,7 +257,7 @@ const ChatRc = () => {
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
-  const [activeTab, setactiveTab] = useState('1')
+  const [activeTab, setactiveTab] = useState("1")
   const [contacts, setContacts] = useState([])
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -308,24 +308,23 @@ const ChatRc = () => {
   const [deleteMessage, setDeleteMessage] = useState()
   const [nonewmessage, setNoNewMessage] = useState([])
   const [isFullScreen, setIsFullScreen] = useState(false)
-
+console.log("searchText",searchText)
   // When the user changes the active tab, save it to localStorage
-  const handleTabChange = (newActiveTab) => {
-    localStorage.setItem('activeTab', newActiveTab);
+  const handleTabChange = newActiveTab => {
+    localStorage.setItem("activeTab", newActiveTab)
   }
   // Check if there's a stored active tab in localStorage when the page loads
   const setActiveTabOnLoad = () => {
-    const storedActiveTab = localStorage.getItem('activeTab');
+    const storedActiveTab = localStorage.getItem("activeTab")
     if (storedActiveTab) {
       // Set the active tab to the stored value
-      setactiveTab(storedActiveTab); // You need to implement this function
+      setactiveTab(storedActiveTab) // You need to implement this function
     }
   }
   useEffect(() => {
-    setActiveTabOnLoad();
+    setActiveTabOnLoad()
   }, [activeTab])
   // Call the function to set the active tab when the page loads
-
 
   const handleFullScreenView = () => {
     setIsFullScreen(!isFullScreen)
@@ -370,14 +369,13 @@ const ChatRc = () => {
     setDurationIntervalId(null)
   }
 
-
-  const regex = /<a href="([^"]+)"/;
+  const regex = /<a href="([^"]+)"/
 
   const filteredMessages = messages.filter(message => {
-    const messageData = message.messageData;
+    const messageData = message.messageData
 
-    return regex.test(messageData);
-  });
+    return regex.test(messageData)
+  })
   console.log("filteredMessages", filteredMessages)
 
   useEffect(() => {
@@ -437,11 +435,11 @@ const ChatRc = () => {
     if (nonewmessage) {
       const timer = setTimeout(() => {
         scrollToBottom()
-      },500)
+      }, 500)
       return () => clearTimeout(timer)
     }
   }, [messages])
-  const filterChats = async() => {
+  const filterChats = async () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
         chat.groupMembers.some(member =>
@@ -481,7 +479,7 @@ const ChatRc = () => {
     } else {
       const timer = setTimeout(() => {
         scrollToBottom()
-      },500)
+      }, 500)
       return () => clearTimeout(timer)
     }
   }, [messages?.length])
@@ -514,6 +512,11 @@ const ChatRc = () => {
       setactiveTab(tab)
       handleTabChange(tab)
       setCurrentChat(null)
+      setSearchText("")
+      if(searchText === ""){
+        ongetAllCases({isSet: false })
+      }
+      
     }
   }
   //copy group Id
@@ -1147,29 +1150,29 @@ const ChatRc = () => {
   const handleFetchFiles = async () => {
     if (currentCase && currentCase._id) {
       try {
-        const filesRes = await getCaseFiles({ caseId: currentCase._id });
+        const filesRes = await getCaseFiles({ caseId: currentCase._id })
         if (filesRes.success && filesRes?.files?.length > 0) {
           const updatedFiles = filesRes.files.map(file => {
-            const sendAt = moment(file.time).format("DD-MM-YY HH:mm");
-            return { ...file, time: sendAt, isDownloading: true };
-          });
-          setCaseFile(updatedFiles);
+            const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
+            return { ...file, time: sendAt, isDownloading: true }
+          })
+          setCaseFile(updatedFiles)
         } else {
-          setCaseFile([]);
+          setCaseFile([])
         }
       } catch (error) {
-        console.error(`Error fetching case files: ${error}`);
-        setCaseFile([]);
+        console.error(`Error fetching case files: ${error}`)
+        setCaseFile([])
       }
     }
-  };
+  }
 
   useEffect(() => {
-    handleFetchFiles();
+    handleFetchFiles()
     return () => {
-      setCaseFile([]);
+      setCaseFile([])
     }
-  }, [currentCase, currentChat]); // Add currentCase as a dependency
+  }, [currentCase, currentChat]) // Add currentCase as a dependency
 
   // Archive Chat
   const onArchievingChat = async () => {
@@ -1203,9 +1206,9 @@ const ChatRc = () => {
         attachments?.url,
         typeof attachments === "object" && attachments?.url
           ? {
-            url: attachments.url,
-            content: "View Attachment",
-          }
+              url: attachments.url,
+              content: "View Attachment",
+            }
           : "-",
       ]
       rows.push(tempRow)
@@ -1259,8 +1262,9 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
-      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+    const chatDocName = `${
+      currentCase?.caseName ?? "Private Chat"
+    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1844,8 +1848,9 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
-                  } subgroups`}
+                modalSubtitle={`You have ${
+                  allgroups.filter(a => !a.isParent)?.length || 0
+                } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1918,6 +1923,7 @@ const ChatRc = () => {
               receivers={receivers}
               currentChat={currentChat}
               caseId={currentCase?._id}
+              getChatName={getChatName}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -2068,8 +2074,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                            chat.chat.groupMembers
-                                          )
+                                              chat.chat.groupMembers
+                                            )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -2248,7 +2254,7 @@ const ChatRc = () => {
                                           <h5 className="text-truncate font-size-14 mb-1">
                                             {contact.firstname}{" "}
                                             {contact.lastname}
-                                            { }
+                                            {}
                                           </h5>
                                           <p className="font-size-12 mb-1 text-primary ">
                                             {contact.email}
@@ -2386,17 +2392,20 @@ const ChatRc = () => {
                                 {/* {!currentChat?.isGroup && */}
                                 <li className="list-inline-item">
                                   <Dropdown
-                                    toggle={() => togglesubdomainModelOpen(true)}
+                                    toggle={() =>
+                                      togglesubdomainModelOpen(true)
+                                    }
                                   >
                                     <DropdownToggle
                                       className="btn nav-btn"
                                       tag="i"
                                     >
-                                      <i className="bi bi-subtract"
+                                      <i
+                                        className="bi bi-subtract"
                                         title="SubDomain Details"
                                       />
                                     </DropdownToggle>
-                                  </Dropdown> 
+                                  </Dropdown>
                                 </li>
 
                                 <li className="list-inline-item">
@@ -2407,14 +2416,12 @@ const ChatRc = () => {
                                       className="btn nav-btn"
                                       tag="i"
                                     >
-                                      <i className="bi bi-link"
-                                        title="Links"
-                                      />
+                                      <i className="bi bi-link" title="Links" />
                                     </DropdownToggle>
                                   </Dropdown>
                                 </li>
                                 {/* // } */}
-                                {!currentChat?.isGroup &&
+                                {!currentChat?.isGroup && (
                                   <li className="list-inline-item">
                                     <Dropdown
                                       toggle={() => toggleFilesModelOpen(true)}
@@ -2423,13 +2430,14 @@ const ChatRc = () => {
                                         className="btn nav-btn"
                                         tag="i"
                                       >
-                                        <i className="bi bi-files"
+                                        <i
+                                          className="bi bi-files"
                                           title="Shared Files"
                                         />
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
-                                }
+                                )}
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
@@ -2475,7 +2483,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                        searchedMessages?.length > 1 ? (
+                                      searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2633,10 +2641,17 @@ const ChatRc = () => {
                             <div
                               ref={containerRef}
                               onScroll={event => handleScroll(event)}
-                              style={{
-                                height: "90vh",
-                                overflowY: "scroll",
-                                                              }}
+                              style={
+                                messages.length <= 5
+                                  ? {
+                                      height: "40vh",
+                                      overflowY: "scroll",
+                                    }
+                                  : {
+                                      height: "80vh",
+                                      overflowY: "scroll",
+                                    }
+                              }
                             >
                               {messages.map((msg, m) => (
                                 <li
@@ -2688,18 +2703,17 @@ const ChatRc = () => {
                                         >
                                           Reply
                                         </DropdownItem>
-                                        {msg?.sender ===
-                                          currentUser.userID && (
-                                            <DropdownItem
-                                              href="#"
-                                              onClick={() => {
-                                                setCurEditMessageId(msg)
-                                                setMessageEditModalOpen(true)
-                                              }}
-                                            >
-                                              Edit
-                                            </DropdownItem>
-                                          )}
+                                        {msg?.sender === currentUser.userID && (
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => {
+                                              setCurEditMessageId(msg)
+                                              setMessageEditModalOpen(true)
+                                            }}
+                                          >
+                                            Edit
+                                          </DropdownItem>
+                                        )}
                                         <DropdownItem
                                           href="#"
                                           onClick={() => {
@@ -2723,8 +2737,8 @@ const ChatRc = () => {
                                             msg.sender === currentUser.userID
                                               ? handleDelete(msg)
                                               : toastr.info(
-                                                "Unable to  delete other's message"
-                                              )
+                                                  "Unable to  delete other's message"
+                                                )
                                           }}
                                         >
                                           Delete
@@ -2748,7 +2762,7 @@ const ChatRc = () => {
                                       style={{
                                         backgroundColor:
                                           msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                          currentChat?.color
                                             ? currentChat?.color + "33"
                                             : "#00EE00" + "33",
                                       }}
@@ -2848,11 +2862,13 @@ const ChatRc = () => {
                                       <p className="chat-time mb-0">
                                         <i className="bx bx-comment-check align-middle me-1" />
                                         {/* <i className="bx bx-time-five align-middle me-1" /> */}
-                                        {msg.isEdit ? (moment(msg.updatedAt).format(
-                                          "DD-MM-YY HH:mm"
-                                        )) : (moment(msg.createdAt).format(
-                                          "DD-MM-YY HH:mm"
-                                        ))}
+                                        {msg.isEdit
+                                          ? moment(msg.updatedAt).format(
+                                              "DD-MM-YY HH:mm"
+                                            )
+                                          : moment(msg.createdAt).format(
+                                              "DD-MM-YY HH:mm"
+                                            )}
                                         {msg?.replies?.map((r, i) => (
                                           <div
                                             key={i}
@@ -2894,9 +2910,8 @@ const ChatRc = () => {
                                         className="ctext-wrap "
                                         style={{
                                           backgroundColor:
-                                            msg.sender ==
-                                              currentUser.userID &&
-                                              currentChat?.color
+                                            msg.sender == currentUser.userID &&
+                                            currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2935,14 +2950,15 @@ const ChatRc = () => {
                         {isFullScreen ? (
                           <>
                             <div
-                              className={`p-2 chat-input-section ${isFullScreen ? "full-screen" : ""
-                                }`}
+                              className={`p-2 chat-input-section ${
+                                isFullScreen ? "full-screen" : ""
+                              }`}
                             >
                               <div className="row">
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                      recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                       <div className="d-flex justify-content-center">
                                         <i
                                           className="mdi mdi-microphone font-size-18 text-primary"
@@ -2975,44 +2991,43 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                  <div class="d-flex gap-2 flex-wrap mt-2">
-                                                    {Array.from(allFiles)?.map(
-                                                      (att, a) => (
-                                                        <span
-                                                          class="badge badge-soft-primary font-size-13"
-                                                          key={a}
-                                                        >
-                                                          {att.name}
-                                                          <i
-                                                            class="bx bx-x-circle mx-1"
-                                                            onClick={() =>
-                                                              handleFileRemove(
-                                                                att?.name
-                                                              )
-                                                            }
-                                                            style={{
-                                                              cursor: "pointer",
-                                                            }}
-                                                          />
-                                                        </span>
-                                                      )
-                                                    )}
-                                                  </div>
-                                                )}
+                                                <div class="d-flex gap-2 flex-wrap mt-2">
+                                                  {Array.from(allFiles)?.map(
+                                                    (att, a) => (
+                                                      <span
+                                                        class="badge badge-soft-primary font-size-13"
+                                                        key={a}
+                                                      >
+                                                        {att.name}
+                                                        <i
+                                                          class="bx bx-x-circle mx-1"
+                                                          onClick={() =>
+                                                            handleFileRemove(
+                                                              att?.name
+                                                            )
+                                                          }
+                                                          style={{
+                                                            cursor: "pointer",
+                                                          }}
+                                                        />
+                                                      </span>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )}
                                             </div>
                                             <div>
-                                            <ReactQuillInput
+                                              <ReactQuillInput
                                                 value={curMessage}
                                                 onChange={onChange}
                                                 mentionsArray={mentionsArray}
                                                 isQuill={isQuill}
                                                 onKeyPress={onKeyPress}
                                                 currentChat={currentChat}
-                                                  currentCase={currentCase}
-                                                  getChatName={getChatName}
+                                                currentCase={currentCase}
+                                                getChatName={getChatName}
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
-                                                  
                                                 }
                                               />
                                             </div>
@@ -3034,7 +3049,7 @@ const ChatRc = () => {
                                   }}
                                 >
                                   {recorder &&
-                                    recorder.state === "recording" ? (
+                                  recorder.state === "recording" ? (
                                     <></>
                                   ) : (
                                     <div>
@@ -3081,7 +3096,7 @@ const ChatRc = () => {
                                     </div>
                                   )}
                                   {recorder &&
-                                    recorder.state === "recording" ? (
+                                  recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-20 text-danger me-2"
                                       title="Stop Recording"
@@ -3168,7 +3183,7 @@ const ChatRc = () => {
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                      recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                       <div className="d-flex justify-content-center">
                                         <i
                                           className="mdi mdi-microphone font-size-18 text-primary"
@@ -3201,44 +3216,43 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                  <div class="d-flex gap-2 flex-wrap mt-2">
-                                                    {Array.from(allFiles)?.map(
-                                                      (att, a) => (
-                                                        <span
-                                                          class="badge badge-soft-primary font-size-13"
-                                                          key={a}
-                                                        >
-                                                          {att.name}
-                                                          <i
-                                                            class="bx bx-x-circle mx-1"
-                                                            onClick={() =>
-                                                              handleFileRemove(
-                                                                att?.name
-                                                              )
-                                                            }
-                                                            style={{
-                                                              cursor: "pointer",
-                                                            }}
-                                                          />
-                                                        </span>
-                                                      )
-                                                    )}
-                                                  </div>
-                                                )}
+                                                <div class="d-flex gap-2 flex-wrap mt-2">
+                                                  {Array.from(allFiles)?.map(
+                                                    (att, a) => (
+                                                      <span
+                                                        class="badge badge-soft-primary font-size-13"
+                                                        key={a}
+                                                      >
+                                                        {att.name}
+                                                        <i
+                                                          class="bx bx-x-circle mx-1"
+                                                          onClick={() =>
+                                                            handleFileRemove(
+                                                              att?.name
+                                                            )
+                                                          }
+                                                          style={{
+                                                            cursor: "pointer",
+                                                          }}
+                                                        />
+                                                      </span>
+                                                    )
+                                                  )}
+                                                </div>
+                                              )}
                                             </div>
                                             <div>
-                                            <ReactQuillInput
+                                              <ReactQuillInput
                                                 value={curMessage}
                                                 onChange={onChange}
                                                 mentionsArray={mentionsArray}
                                                 isQuill={isQuill}
                                                 onKeyPress={onKeyPress}
                                                 currentChat={currentChat}
-                                                  currentCase={currentCase}
-                                                  getChatName={getChatName}
+                                                currentCase={currentCase}
+                                                getChatName={getChatName}
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
-                                                  
                                                 }
                                               />
                                             </div>
