@@ -7,37 +7,55 @@ import {
   updateDomains,
   deleteDomains,
 } from "rainComputing/helpers/backend_helper"
+
 const ManageDomains = () => {
   const user = localStorage.getItem("authUser")
   const { currentUser, setCurrentUser } = useUser(user)
-  console.log("currentUser",currentUser)
-  // const alldomains = currentUser?.domains
   const [domainsname, setDomainsName] = useState([])
   const [alldomains, setAlldomains] = useState([])
-  console.log("alldomains",alldomains)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [hasUpdateChanges, setHasUpdateChanges] = useState(false)
+
+  const isAddButtonEnabled = domainsname.some(domain => domain.trim() !== '');
+  // const isUpdateButtonEnabled = hasUnsavedChanges;
+useEffect(()=>{
+  if(isAddButtonEnabled){
+    setHasUnsavedChanges(true)
+  }else{
+    setHasUnsavedChanges(false)
+  }
+},[isAddButtonEnabled])
   useEffect(() => {
     setAlldomains(currentUser?.domains)
+    setHasUnsavedChanges(false) // Reset unsaved changes flag when data is updated
   }, [currentUser])
+
   const handleIconClick = () => {
-    setDomainsName(prevInputs => [...prevInputs, ""])
-  }
+    setDomainsName(prevInputs => [...prevInputs, ""]);
+    setHasUnsavedChanges(true);
+  };
+useEffect(()=>{
+  setDomainsName(prevInputs => [...prevInputs, ""])
+
+},[])
   const handleEventTextChange = (index, value) => {
     setDomainsName(prevInputs => {
       const newEventsTexts = [...prevInputs]
       newEventsTexts[index] = value
+      
       return newEventsTexts
     })
   }
+
   const handleRemoveField = index => {
-    // if (setDomainsName.length === 1) {
-    //   return // Do not remove the input when there is only one input
-    // }
     setDomainsName(prevInputs => {
       const newInputs = [...prevInputs]
       newInputs.splice(index, 1)
+      setHasUnsavedChanges(true)
       return newInputs
     })
   }
+
   const handleSubmit = async () => {
     const payload = {
       email: currentUser?.email,
@@ -45,17 +63,21 @@ const ManageDomains = () => {
     }
     const res = await createDomains(payload)
     if (res.success) {
-      setDomainsName([])
+      setDomainsName([""])
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
-      toastr.success("Domains has been Created successfully", "Success!!!")
+      setHasUnsavedChanges(false)
+      toastr.success("Domains have been created successfully", "Success!!!")
     }
   }
+
   const handleChange = (index, value) => {
     const updatedDomains = [...alldomains]
     updatedDomains[index].name = value
     setAlldomains(updatedDomains)
+    setHasUpdateChanges(true)
   }
+
   const handleUpdate = async () => {
     const payload = {
       email: currentUser?.email,
@@ -65,33 +87,29 @@ const ManageDomains = () => {
     if (res.success) {
       localStorage.setItem("authUser", JSON.stringify(res))
       setCurrentUser(res)
-      toastr.success("Domains has been updated successfully", "Success!!!")
+      setHasUnsavedChanges(false)
+      toastr.success("Domains have been updated successfully", "Success!!!")
     }
   }
+
   const handleRemoveDomains = async (domainId, index) => {
     const deldomain = alldomains.filter(domain => domain._id === domainId)
     try {
-      // Prepare the payload for the server
       const payload = {
         email: currentUser?.email,
         domains: deldomain,
       }
-      // Make the API call to update the domains on the server
       const response = await deleteDomains(payload)
       if (response.success) {
-        // Update the local user state only after a successful API call
         setAlldomains(alldomains.filter(domain => domain._id !== domainId))
-        // Update the local user state
         localStorage.setItem("authUser", JSON.stringify(response))
         setCurrentUser(response)
-        // Show a success message
+        setHasUnsavedChanges(false)
         toastr.success("Domain has been removed successfully", "Success!!!")
       } else {
-        // Handle failure, show an error message or take appropriate action
         console.error("Domain removal failed:", response.msg)
       }
     } catch (error) {
-      // Handle API call error
       console.error("Error during domain removal:", error.message)
     }
   }
@@ -121,7 +139,7 @@ const ManageDomains = () => {
               onChange={e => handleEventTextChange(index, e.target.value)}
             />
             <span className="input-group-text">
-              {domainsname.length === 1 ? (
+              {domainsname.length === 0 ? (
                 <i
                   className="bx bx-minus-circle text-danger pointer"
                   title="Minimum one Event is required"
@@ -144,6 +162,8 @@ const ManageDomains = () => {
           onClick={() => {
             handleSubmit()
           }}
+          disabled={!hasUnsavedChanges}
+           
         >
           Add domains
         </button>
@@ -188,6 +208,7 @@ const ManageDomains = () => {
           onClick={() => {
             handleUpdate()
           }}
+          disabled={!hasUpdateChanges}
         >
           update
         </button>
