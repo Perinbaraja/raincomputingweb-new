@@ -257,7 +257,10 @@ const ChatRc = () => {
   const [messageBox, setMessageBox] = useState(null)
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
-  const [activeTab, setactiveTab] = useState("1")
+  const [activeTab, setactiveTab] = useState(() => {
+    const storedActiveTab = sessionStorage.getItem('activeTab');
+    return storedActiveTab || '1';
+  });
   const [contacts, setContacts] = useState([])
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -308,22 +311,14 @@ const ChatRc = () => {
   const [deleteMessage, setDeleteMessage] = useState()
   const [nonewmessage, setNoNewMessage] = useState([])
   const [isFullScreen, setIsFullScreen] = useState(false)
-console.log("searchText",searchText)
   // When the user changes the active tab, save it to localStorage
   const handleTabChange = newActiveTab => {
-    localStorage.setItem("activeTab", newActiveTab)
+    setactiveTab(newActiveTab);
   }
-  // Check if there's a stored active tab in localStorage when the page loads
-  const setActiveTabOnLoad = () => {
-    const storedActiveTab = localStorage.getItem("activeTab")
-    if (storedActiveTab) {
-      // Set the active tab to the stored value
-      setactiveTab(storedActiveTab) // You need to implement this function
-    }
-  }
+
   useEffect(() => {
-    setActiveTabOnLoad()
-  }, [activeTab])
+    sessionStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
   // Call the function to set the active tab when the page loads
 
   const handleFullScreenView = () => {
@@ -629,7 +624,7 @@ console.log("searchText",searchText)
       })
 
       setChats(updatedChats)
-      setCurrentChat(updatedChats[0])
+      // setCurrentChat(updatedChats[0])
       if (updatedChats.length < 1) {
         setactiveTab("3")
       }
@@ -719,9 +714,9 @@ console.log("searchText",searchText)
 
       setAllCases(sortedCases)
 
-      if (isSet) {
-        setCurrentCase(sortedCases[0])
-      }
+      // if (isSet) {
+      //   setCurrentCase(sortedCases[0])
+      // }
     } else {
       setAllCases([])
       setCurrentCase(null)
