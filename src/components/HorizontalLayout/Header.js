@@ -35,16 +35,22 @@ const Header = props => {
   const tog_scroll = () => {
     setmodal_scroll(!modal_scroll)
   }
-  const handleDomainClick = () => {
+  const handleSubDomainClick = () => {
     const subdomain = currentAttorney?.subdomain;
     const url = subdomain ? (subdomain.startsWith("https://") ? subdomain : `https://${subdomain}`) : null;
 
     if (url) {
-        window.open(url, '_blank');
+      window.open(url, '_blank');
     } else {
-        console.error("Invalid subdomain or subdomain is missing.");
+      console.error("Invalid subdomain or subdomain is missing.");
     }
-};
+  };
+
+  const handleDomainClick = (domainName) => {
+    const url = domainName ? (domainName.startsWith("https://") ? domainName : `https://${domainName}`) : null;
+    window.open(url, '_blank');
+  };
+
 
   return (
     <React.Fragment>
@@ -57,29 +63,54 @@ const Header = props => {
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
               </Link>
-              {currentAttorney?.subdomain && (
-                <div className="p-4">
-                  <i
-                    className="bx bx-link-external"
-                    id="atticon"
-                    onClick={toggleSubDomainOpen}
-                    target="_blank"
-                    style={{ cursor: "pointer" }}
-                  />
-                  <Dropdown
-                    isOpen={subDomainOpen}
-                    toggle={toggleSubDomainOpen}
-                    className="float-end me-2"
+
+              <div className="p-4">
+                <i
+                  className="bx bx-link-external"
+                  id="atticon"
+                  onClick={toggleSubDomainOpen}
+                  target="_blank"
+                  style={{ cursor: "pointer" }}
+                />
+                <Dropdown
+                  isOpen={subDomainOpen}
+                  toggle={toggleSubDomainOpen}
+                  className="float-end me-2"
+                >
+                  <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
+                  <DropdownMenu className="custom-dropdown-menu"
+                    style={{
+                      whiteSpace: "break-spaces",
+                      overflow: "hidden",
+                      wordWrap: "break-word",
+                    }}
                   >
-                    <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
-                    <DropdownMenu>
-                      <DropdownItem onClick={() =>handleDomainClick()}>
+                    {currentAttorney?.subdomain &&
+                      <DropdownItem
+                        className="border-bottom px-3 py-3 domain-items"
+                        onClick={() => handleSubDomainClick()}
+                      >
                         {currentAttorney?.subdomain}
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-              )}
+                      </DropdownItem>}
+                    {currentUser?.domains ? (
+                      currentUser.domains.map((user, i) => (
+                        <div
+                          className="border-bottom px-3 py-3 domain-item"
+                          key={i}
+                          onClick={() => handleDomainClick(user?.name)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {user?.name}
+                        </div>
+                      ))
+                    ) : (
+                      <p>No domains available</p>
+                    )}
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+
+
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
                   <img src={rainlglogo} alt="" height="22" />

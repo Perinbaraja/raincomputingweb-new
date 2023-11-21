@@ -111,7 +111,7 @@ import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import { log } from "logrocket"
 import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
 import LinksModel from "rainComputing/components/chat/models/LinksModel"
-import SubDomainDetails from "rainComputing/components/chat/models/SubDomainDetails"
+
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -245,11 +245,11 @@ const ChatRc = () => {
     setToggleOpen: setLinksModelOpen,
     toggleIt: toggleLinksModelOpen,
   } = useToggle(false)
-  const {
-    toggleOpen: subdomainModelOpen,
-    setToggleOpen: setsubdomainModelOpen,
-    toggleIt: togglesubdomainModelOpen,
-  } = useToggle(false)
+  // const {
+  //   toggleOpen: subdomainModelOpen,
+  //   setToggleOpen: setsubdomainModelOpen,
+  //   toggleIt: togglesubdomainModelOpen,
+  // } = useToggle(false)
 
   const MESSAGE_CHUNK_SIZE = 50
 
@@ -409,12 +409,21 @@ console.log("searchText",searchText)
   }
 
   const scrollToBottom = () => {
-    containerRef.current?.scrollTo({
-      left: 0,
-      top: containerRef.current.scrollHeight,
-      behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
-    })
-  }
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      console.log("containerRef.current.scrollTop",containerRef.current.scrollTop)
+      console.log("containerRef.current.scrollHeight",containerRef.current.scrollHeight)
+      containerRef.current.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+
+  };
+  // useEffect(() => {
+  //   scrollToBottom(); 
+  // }, []);
+  useEffect(() => {
+    scrollToBottom(); 
+  }, [messages,currentChat]);
+
 
   const handlerefreshemail = async () => {
     setChatLoader(true)
@@ -1571,7 +1580,7 @@ console.log("searchText",searchText)
     const handleAllAsyncReq = async () => {
       setPageLoader(true)
       await ongetCounts()
-      // await ongetAllChatRooms()
+      await ongetAllChatRooms()
       setPageLoader(false)
       // await onGetContacts({ isSearch: false })
       await ongetAllCases({ isSet: false, isSearch: false })
@@ -1883,7 +1892,7 @@ console.log("searchText",searchText)
             >
               <LinksModel />
             </DynamicModel>
-            <DynamicModel
+            {/* <DynamicModel
               open={subdomainModelOpen}
               toggle={togglesubdomainModelOpen}
               size="lg"
@@ -1891,7 +1900,7 @@ console.log("searchText",searchText)
               isClose={true}
             >
               <SubDomainDetails />
-            </DynamicModel>
+            </DynamicModel> */}
             {/* Modal for Editing Case*/}
             {currentCase && (
               <EditCase
@@ -2390,7 +2399,7 @@ console.log("searchText",searchText)
                                   </li>
                                 )}
                                 {/* {!currentChat?.isGroup && */}
-                                <li className="list-inline-item">
+                                {/* <li className="list-inline-item">
                                   <Dropdown
                                     toggle={() =>
                                       togglesubdomainModelOpen(true)
@@ -2406,7 +2415,7 @@ console.log("searchText",searchText)
                                       />
                                     </DropdownToggle>
                                   </Dropdown>
-                                </li>
+                                </li> */}
 
                                 <li className="list-inline-item">
                                   <Dropdown
@@ -3184,22 +3193,23 @@ console.log("searchText",searchText)
                                   <div className="position-relative">
                                     {recorder &&
                                     recorder.state === "recording" ? (
-                                      <div className="d-flex justify-content-center">
+                                      <div className="border border-primary d-flex justify-content-center recorder">
                                         <i
-                                          className="mdi mdi-microphone font-size-18 text-primary"
+                                          className="d-block d-md-inline mdi mdi-microphone font-size-18 text-primary"
                                           style={{
                                             height: "30px",
-                                            paddingLeft: "10px",
+                                            paddingLeft: "50px",
                                           }}
                                         ></i>
-                                        <p className="text-primary mt-1 font-size-12">
+                                        <p className="text-primary mt-1 font-size-12"
+                                         style={{ height: "30px", paddingRight: "50px" }}>
                                           {duration}Secs
                                         </p>
                                       </div>
                                     ) : (
                                       <>
                                         {blobURL ? (
-                                          <div>
+                                          <div className="p-5">
                                             <audio
                                               className="w-100 w-sm-100"
                                               style={{
@@ -3220,7 +3230,7 @@ console.log("searchText",searchText)
                                                   {Array.from(allFiles)?.map(
                                                     (att, a) => (
                                                       <span
-                                                        class="badge badge-soft-primary font-size-13"
+                                                        class="badge badge-soft-primary font-size-13 p-2"
                                                         key={a}
                                                       >
                                                         {att.name}
