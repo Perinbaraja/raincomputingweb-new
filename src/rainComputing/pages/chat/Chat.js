@@ -1580,7 +1580,7 @@ console.log("searchText",searchText)
     const handleAllAsyncReq = async () => {
       setPageLoader(true)
       await ongetCounts()
-      // await ongetAllChatRooms()
+      await ongetAllChatRooms()
       setPageLoader(false)
       // await onGetContacts({ isSearch: false })
       await ongetAllCases({ isSet: false, isSearch: false })
