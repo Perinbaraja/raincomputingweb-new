@@ -112,7 +112,6 @@ import { log } from "logrocket"
 import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
 import LinksModel from "rainComputing/components/chat/models/LinksModel"
 
-
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
 )
@@ -258,9 +257,9 @@ const ChatRc = () => {
   const [pageLoader, setPageLoader] = useState(true)
   const [chatLoader, setChatLoader] = useState(true)
   const [activeTab, setactiveTab] = useState(() => {
-    const storedActiveTab = sessionStorage.getItem('activeTab');
-    return storedActiveTab || '1';
-  });
+    const storedActiveTab = sessionStorage.getItem("activeTab")
+    return storedActiveTab || "1"
+  })
   const [contacts, setContacts] = useState([])
   const [contactsLoading, setContactsLoading] = useState(false)
   const [newCase, setNewCase] = useState(initialNewCaseValues)
@@ -313,12 +312,12 @@ const ChatRc = () => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   // When the user changes the active tab, save it to localStorage
   const handleTabChange = newActiveTab => {
-    setactiveTab(newActiveTab);
+    setactiveTab(newActiveTab)
   }
 
   useEffect(() => {
-    sessionStorage.setItem('activeTab', activeTab);
-  }, [activeTab]);
+    sessionStorage.setItem("activeTab", activeTab)
+  }, [activeTab])
   // Call the function to set the active tab when the page loads
 
   const handleFullScreenView = () => {
@@ -405,20 +404,17 @@ const ChatRc = () => {
 
   const scrollToBottom = () => {
     if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-      console.log("containerRef.current.scrollTop",containerRef.current.scrollTop)
-      console.log("containerRef.current.scrollHeight",containerRef.current.scrollHeight)
-      containerRef.current.scrollIntoView({ behavior: "auto", block: "end" });
-    }
+      containerRef.current.scrollTop = containerRef.current.scrollHeight
 
-  };
+      containerRef.current.scrollIntoView({ behavior: "auto", block: "end" })
+    }
+  }
   // useEffect(() => {
-  //   scrollToBottom(); 
+  //   scrollToBottom();
   // }, []);
   useEffect(() => {
-    scrollToBottom(); 
-  }, [messages,currentChat]);
-
+    scrollToBottom()
+  }, [messages, currentChat])
 
   const handlerefreshemail = async () => {
     setChatLoader(true)
@@ -446,10 +442,15 @@ const ChatRc = () => {
   const filterChats = async () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
-        chat.groupMembers.some(member =>
-          member?.id?.firstname
-            ?.toLowerCase()
-            .includes(searchText.toLowerCase())
+        chat.groupMembers.some(
+          member =>
+            member.id?.firstname
+              ?.toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            member.id?.lastname
+              ?.toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            member.id?.email?.toLowerCase().includes(searchText.toLowerCase())
         )
       )
       setFilteredChats(filteredChats)
@@ -462,7 +463,6 @@ const ChatRc = () => {
       }
     }
   }
-
   useEffect(() => {
     if (searchText === "") {
       setIsSearchTextCleared(true)
@@ -517,10 +517,9 @@ const ChatRc = () => {
       handleTabChange(tab)
       setCurrentChat(null)
       setSearchText("")
-      if(searchText === ""){
-        ongetAllCases({isSet: false })
+      if (searchText === "") {
+        ongetAllCases({ isSet: false })
       }
-      
     }
   }
   //copy group Id
@@ -1917,6 +1916,9 @@ const ChatRc = () => {
               curMessageId={curEditMessageId}
               curEditMessageId={curEditMessageId}
               msgData={curEditMessageId?.messageData}
+              currentChat={currentChat}
+              currentCase={currentCase}
+              getChatName={getChatName}
             />
 
             <ReplyMsgModal
@@ -1926,6 +1928,7 @@ const ChatRc = () => {
               curMessageId={curReplyMessageId}
               receivers={receivers}
               currentChat={currentChat}
+              currentCase={currentCase}
               caseId={currentCase?._id}
               getChatName={getChatName}
             />
@@ -3196,8 +3199,13 @@ const ChatRc = () => {
                                             paddingLeft: "50px",
                                           }}
                                         ></i>
-                                        <p className="text-primary mt-1 font-size-12"
-                                         style={{ height: "30px", paddingRight: "50px" }}>
+                                        <p
+                                          className="text-primary mt-1 font-size-12"
+                                          style={{
+                                            height: "30px",
+                                            paddingRight: "50px",
+                                          }}
+                                        >
                                           {duration}Secs
                                         </p>
                                       </div>

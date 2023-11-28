@@ -10,7 +10,16 @@ import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
 
-const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessageId }) => {
+const EditMessageModel = ({
+  open,
+  setOpen,
+  toggleOpen,
+  curMessageId,
+  curEditMessageId,
+  currentChat,
+  getChatName,
+  currentCase,
+}) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
   const [updateMessages, setUpdateMessages] = useState(null)
@@ -18,7 +27,7 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessa
   const [isQuill, setIsQuill] = useState(false)
   const toggle_Quill = () => {
     setIsQuill(!isQuill)
-}
+  }
 
   const handleUpdateMsgCancel = () => {
     setOpen(false)
@@ -28,7 +37,7 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessa
       _id: id,
       // sender: currentUser?.userID,
       messageData: updateMessages,
-      createdAt:curEditMessageId.createdAt
+      createdAt: curEditMessageId.createdAt,
     }
     const res = await messageUpdate(payload)
     if (res?.success) {
@@ -36,7 +45,7 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessa
       toastr.success(`Message  has been Edited successfully`, "Success")
       setMessages(messages?.map(m => (m?._id === id ? res?.updatedMessage : m)))
       setUpdateMessages(curMessageId)
-    }else{
+    } else {
       toastr.error("Unable to Edit Message after 10 min", "Failed!!!")
     }
     setOpen(false)
@@ -77,13 +86,23 @@ const EditMessageModel = ({ open, setOpen, toggleOpen, curMessageId,curEditMessa
                   messages={messages}
                   curMessageId={curMessageId}
                   isQuill={isQuill}
+                  currentChat={currentChat}
+                  getChatName={getChatName}
+                  currentCase={currentCase}
                 />
               </div>
               <div style={{ position: "absolute", right: "30px", top: "7px" }}>
-                <i className="bi bi-type"
-                  onClick={() => { toggle_Quill() }}
-                  style={{ color: "black", fontSize: "20px", fontWeight: "bold", cursor: "pointer" }}
-
+                <i
+                  className="bi bi-type"
+                  onClick={() => {
+                    toggle_Quill()
+                  }}
+                  style={{
+                    color: "black",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
                   title={isQuill ? "Show Formatting" : "Hide Formatting"}
                 ></i>
               </div>
@@ -122,6 +141,9 @@ EditMessageModel.propTypes = {
   curMessageId: PropTypes.any,
   curEditMessageId: PropTypes.any,
   msgData: PropTypes.array,
+  currentChat: PropTypes.any,
+  getChatName: PropTypes.any,
+  currentCase: PropTypes.any,
 }
 
 export default EditMessageModel
