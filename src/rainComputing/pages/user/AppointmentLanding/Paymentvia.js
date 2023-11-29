@@ -196,7 +196,7 @@ useEffect(() =>{
                           Consultation Fees
                         </label>
                         <div className="col-md-5 col-lg-2 col-form-label ">
-                          <label className="fw-bolder text-danger">$ 200</label>
+                        <label className="fw-bolder text-danger"> ${attorneyDetails?.fee}</label>
                         </div>
                       </Row>
 
