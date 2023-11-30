@@ -159,7 +159,7 @@ useEffect(() =>{
 
   const handleClick = () => {
     handleAppointmentRequest();
-    onSendEmail();
+    // onSendEmail();
   }
   return (
     <React.Fragment>
