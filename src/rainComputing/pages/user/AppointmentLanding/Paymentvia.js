@@ -60,10 +60,10 @@ const PaymentVia = () => {
 useEffect(() =>{
   getAttorneyinfo()
 },[])
-  const onSendEmail = async () => {
-    const mailRes = await attorneyInvite({id:query.get("uid")})
-    setEmail(mailRes.true)
-  }
+  // const onSendEmail = async () => {
+  //   const mailRes = await attorneyInvite({id:query.get("uid")})
+  //   setEmail(mailRes.true)
+  // }
 
   //SideEffect for setting isAttachments
   useEffect(() => {
