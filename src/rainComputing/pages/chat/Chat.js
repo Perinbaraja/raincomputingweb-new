@@ -111,6 +111,7 @@ import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import { log } from "logrocket"
 import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
 import LinksModel from "rainComputing/components/chat/models/LinksModel"
+import ReplyMessageComponent from "rainComputing/components/chat/ReplyMessage"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -955,7 +956,7 @@ const ChatRc = () => {
   }, [recorder, isVoiceMessage])
 
   //Sending Message
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (rID) => {
     setLoading(true)
     if (isEmptyOrSpaces()) {
       console.log("You can't send empty message")
@@ -963,6 +964,7 @@ const ChatRc = () => {
       let voiceMessageId = []
       let attachmentsId = []
       let payLoad = {
+        rID,
         caseId: currentCase?._id,
         groupId: currentChat?._id,
         sender: currentUser?.userID,
@@ -1054,6 +1056,7 @@ const ChatRc = () => {
       setBlobURL(null)
     }
     setLoading(false)
+    setReplyMsgModalOpen(false)
   }
   const { getRootProps, getInputProps } = useDropzone({
     accept:
@@ -1085,7 +1088,7 @@ const ChatRc = () => {
   const onKeyPress = event => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
-      handleSendMessage()
+      // handleSendMessage()
     }
   }
 
@@ -1209,9 +1212,9 @@ const ChatRc = () => {
         attachments?.url,
         typeof attachments === "object" && attachments?.url
           ? {
-              url: attachments.url,
-              content: "View Attachment",
-            }
+            url: attachments.url,
+            content: "View Attachment",
+          }
           : "-",
       ]
       rows.push(tempRow)
@@ -1267,7 +1270,7 @@ const ChatRc = () => {
     })
     const chatDocName = `${
       currentCase?.caseName ?? "Private Chat"
-    } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
+      } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
@@ -1853,7 +1856,7 @@ const ChatRc = () => {
                 modalTitle="Subgroup Setting"
                 modalSubtitle={`You have ${
                   allgroups.filter(a => !a.isParent)?.length || 0
-                } subgroups`}
+                  } subgroups`}
                 footer={true}
                 size="lg"
               >
@@ -1931,6 +1934,9 @@ const ChatRc = () => {
               currentCase={currentCase}
               caseId={currentCase?._id}
               getChatName={getChatName}
+              curMessage={curMessage}
+              setcurMessage={setcurMessage}
+              handleSendMessage={handleSendMessage}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -2081,8 +2087,8 @@ const ChatRc = () => {
                                         chat.chat.isGroup
                                           ? profile
                                           : getChatProfilePic(
-                                              chat.chat.groupMembers
-                                            )
+                                            chat.chat.groupMembers
+                                          )
                                       }
                                       className="rounded-circle avatar-sm"
                                       alt=""
@@ -2490,7 +2496,7 @@ const ChatRc = () => {
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
-                                      searchedMessages?.length > 1 ? (
+                                        searchedMessages?.length > 1 ? (
                                         <span className="ps-3 fw-bold">
                                           {searchedMessages?.length} results
                                           found
@@ -2651,13 +2657,13 @@ const ChatRc = () => {
                               style={
                                 messages.length <= 5
                                   ? {
-                                      height: "40vh",
-                                      overflowY: "scroll",
-                                    }
+                                    height: "40vh",
+                                    overflowY: "scroll",
+                                  }
                                   : {
-                                      height: "80vh",
-                                      overflowY: "scroll",
-                                    }
+                                    height: "80vh",
+                                    overflowY: "scroll",
+                                  }
                               }
                             >
                               {messages.map((msg, m) => (
@@ -2744,8 +2750,8 @@ const ChatRc = () => {
                                             msg.sender === currentUser.userID
                                               ? handleDelete(msg)
                                               : toastr.info(
-                                                  "Unable to  delete other's message"
-                                                )
+                                                "Unable to  delete other's message"
+                                              )
                                           }}
                                         >
                                           Delete
@@ -2769,11 +2775,21 @@ const ChatRc = () => {
                                       style={{
                                         backgroundColor:
                                           msg.sender == currentUser.userID &&
-                                          currentChat?.color
+                                            currentChat?.color
                                             ? currentChat?.color + "33"
                                             : "#00EE00" + "33",
                                       }}
                                     >
+                                      <ReplyMessageComponent
+                                        rID={msg.rID}
+                                        messages={messages}
+                                        handleLocateMessage={handleLocateMessage}
+                                        currentChat={currentChat}
+                                        getMemberName={getMemberName}
+                                        getSenderOneChat={getSenderOneChat}
+                                      />
+                                      {msg?.rID && <p className="pt-3 fw-bolder">Replies :</p>}
+
                                       {/* {msg.isForward ? (
                                               <div className=" mdi mdi-forward">
                                                 Forwarded:
@@ -2871,12 +2887,12 @@ const ChatRc = () => {
                                         {/* <i className="bx bx-time-five align-middle me-1" /> */}
                                         {msg.isEdit
                                           ? moment(msg.updatedAt).format(
-                                              "DD-MM-YY HH:mm"
-                                            )
+                                            "DD-MM-YY HH:mm"
+                                          )
                                           : moment(msg.createdAt).format(
-                                              "DD-MM-YY HH:mm"
-                                            )}
-                                        {msg?.replies?.map((r, i) => (
+                                            "DD-MM-YY HH:mm"
+                                          )}
+                                        {/* {msg?.replies?.map((r, i) => (
                                           <div
                                             key={i}
                                             className=" mdi mdi-reply m-2"
@@ -2902,7 +2918,7 @@ const ChatRc = () => {
                                               })}
                                             />
                                           </div>
-                                        ))}
+                                        ))} */}
                                       </p>
                                       {/* <p className=" mt-2" > Reply :{msg?.replies?.replyMsg}</p> */}
                                     </div>
@@ -2918,7 +2934,7 @@ const ChatRc = () => {
                                         style={{
                                           backgroundColor:
                                             msg.sender == currentUser.userID &&
-                                            currentChat?.color
+                                              currentChat?.color
                                               ? currentChat?.color + "33"
                                               : "#00EE00" + "33",
                                         }}
@@ -2959,13 +2975,13 @@ const ChatRc = () => {
                             <div
                               className={`p-2 chat-input-section ${
                                 isFullScreen ? "full-screen" : ""
-                              }`}
+                                }`}
                             >
                               <div className="row">
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                    recorder.state === "recording" ? (
+                                      recorder.state === "recording" ? (
                                       <div className="d-flex justify-content-center">
                                         <i
                                           className="mdi mdi-microphone font-size-18 text-primary"
@@ -2998,30 +3014,30 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                <div class="d-flex gap-2 flex-wrap mt-2">
-                                                  {Array.from(allFiles)?.map(
-                                                    (att, a) => (
-                                                      <span
-                                                        class="badge badge-soft-primary font-size-13"
-                                                        key={a}
-                                                      >
-                                                        {att.name}
-                                                        <i
-                                                          class="bx bx-x-circle mx-1"
-                                                          onClick={() =>
-                                                            handleFileRemove(
-                                                              att?.name
-                                                            )
-                                                          }
-                                                          style={{
-                                                            cursor: "pointer",
-                                                          }}
-                                                        />
-                                                      </span>
-                                                    )
-                                                  )}
-                                                </div>
-                                              )}
+                                                  <div class="d-flex gap-2 flex-wrap mt-2">
+                                                    {Array.from(allFiles)?.map(
+                                                      (att, a) => (
+                                                        <span
+                                                          class="badge badge-soft-primary font-size-13"
+                                                          key={a}
+                                                        >
+                                                          {att.name}
+                                                          <i
+                                                            class="bx bx-x-circle mx-1"
+                                                            onClick={() =>
+                                                              handleFileRemove(
+                                                                att?.name
+                                                              )
+                                                            }
+                                                            style={{
+                                                              cursor: "pointer",
+                                                            }}
+                                                          />
+                                                        </span>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
                                             </div>
                                             <div>
                                               <ReactQuillInput
@@ -3056,7 +3072,7 @@ const ChatRc = () => {
                                   }}
                                 >
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <></>
                                   ) : (
                                     <div>
@@ -3103,7 +3119,7 @@ const ChatRc = () => {
                                     </div>
                                   )}
                                   {recorder &&
-                                  recorder.state === "recording" ? (
+                                    recorder.state === "recording" ? (
                                     <i
                                       className="mdi mdi-microphone font-size-20 text-danger me-2"
                                       title="Stop Recording"
@@ -3190,7 +3206,7 @@ const ChatRc = () => {
                                 <div className="col">
                                   <div className="position-relative">
                                     {recorder &&
-                                    recorder.state === "recording" ? (
+                                      recorder.state === "recording" ? (
                                       <div className="border border-primary d-flex justify-content-center recorder">
                                         <i
                                           className="d-block d-md-inline mdi mdi-microphone font-size-18 text-primary"
@@ -3229,30 +3245,30 @@ const ChatRc = () => {
                                               {" "}
                                               {Array.from(allFiles)?.length >
                                                 0 && (
-                                                <div class="d-flex gap-2 flex-wrap mt-2">
-                                                  {Array.from(allFiles)?.map(
-                                                    (att, a) => (
-                                                      <span
-                                                        class="badge badge-soft-primary font-size-13 p-2"
-                                                        key={a}
-                                                      >
-                                                        {att.name}
-                                                        <i
-                                                          class="bx bx-x-circle mx-1"
-                                                          onClick={() =>
-                                                            handleFileRemove(
-                                                              att?.name
-                                                            )
-                                                          }
-                                                          style={{
-                                                            cursor: "pointer",
-                                                          }}
-                                                        />
-                                                      </span>
-                                                    )
-                                                  )}
-                                                </div>
-                                              )}
+                                                  <div class="d-flex gap-2 flex-wrap mt-2">
+                                                    {Array.from(allFiles)?.map(
+                                                      (att, a) => (
+                                                        <span
+                                                          class="badge badge-soft-primary font-size-13 p-2"
+                                                          key={a}
+                                                        >
+                                                          {att.name}
+                                                          <i
+                                                            class="bx bx-x-circle mx-1"
+                                                            onClick={() =>
+                                                              handleFileRemove(
+                                                                att?.name
+                                                              )
+                                                            }
+                                                            style={{
+                                                              cursor: "pointer",
+                                                            }}
+                                                          />
+                                                        </span>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
                                             </div>
                                             <div>
                                               <ReactQuillInput

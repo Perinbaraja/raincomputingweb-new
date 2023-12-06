@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback ,useState } from "react"
 import { Mention, MentionsInput } from "react-mentions"
 import { Col, Modal, Row } from "reactstrap"
 import PropTypes from "prop-types"
@@ -21,7 +21,11 @@ const ReplyMsgModal = ({
   receivers,
   currentChat,
   caseId,
-  getChatName
+  getChatName,
+  mentionsArray,
+  handleSendMessage,
+  curMessage,
+  setcurMessage,
 }) => {
   const { currentUser } = useUser()
   const { socket } = useSocket()
@@ -34,29 +38,30 @@ const ReplyMsgModal = ({
   const toggle_Quill = () => {
     setIsQuill(!isQuill)
 }
-  const handleReplyMessage = async id => {
-    const payload = {
-      id,
-      sender: currentUser?.userID,
-      currentChat,
-      groupId: currentChat?._id,
-      caseId: caseId,
-      receivers,
-      msg: replyMessage,
-      isReply: true,
-    }
+  // const handleReplyMessage = async id => {
+  //   const payload = {
+  //     id,
+  //     sender: currentUser?.userID,
+  //     currentChat,
+  //     groupId: currentChat?._id,
+  //     caseId: caseId,
+  //     receivers,
+  //     msg: replyMessage,
+  //     isReply: true,
+  //   }
 
-    const res = await postReplies(payload)
+  //   const res = await postReplies(payload)
 
-    if (res?.success) {
-      setMessages(messages?.map(m => (m?._id === id ? res?.replyMessage : m)))
-      socket.emit("s_r", payload)
+  //   if (res?.success) {
+  //     setMessages(messages?.map(m => (m?._id === id ? res?.replyMessage : m)))
+  //     socket.emit("s_r", payload)
 
-      setReplyMessage("")
-      setOpen(false)
-    }
-  }
+  //     setReplyMessage("")
+  //     setOpen(false)
+  //   }
+  // }
 
+ 
   return (
     <>
       <Modal
@@ -65,7 +70,7 @@ const ReplyMsgModal = ({
         toggle={toggleOpen}
         backdrop={"static"}
         id="staticBackdrop"
-        centered
+       
       >
         <div className="modal-header">
           <button
@@ -86,11 +91,13 @@ const ReplyMsgModal = ({
             <Col>
               <div className="position-relative">
                 <ReactQuillInput
-                  value={replyMessage}
-                  onChange={setReplyMessage}
+                mentionsArray={mentionsArray}
+                  value={curMessage}
+                  onChange={setcurMessage}
                   isQuill={isQuill}
                   currentChat={currentChat}
                   getChatName={getChatName}
+                  
                 />
               </div>
               <div style={{ position: "absolute", right: "30px", top: "7px" }}>
@@ -122,7 +129,7 @@ const ReplyMsgModal = ({
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => handleReplyMessage(curMessageId?._id)}
+            onClick={() => handleSendMessage(curMessageId?._id)}
           >
             Send
           </button>
@@ -142,5 +149,9 @@ ReplyMsgModal.propTypes = {
   currentChat: PropTypes.any,
   caseId: PropTypes.any,
   getChatName: PropTypes.any,
+  mentionsArray: PropTypes.any,
+  handleSendMessage: PropTypes.any,
+  curMessage: PropTypes.any,
+  setcurMessage: PropTypes.any,
 }
 export default ReplyMsgModal
