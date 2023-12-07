@@ -5,6 +5,7 @@ import ReactQuill from "react-quill"
 import "quill-emoji/dist/quill-emoji.css";
 import EmojiBlot from "quill-emoji/dist/quill-emoji"
 import Quill from 'quill';
+import "react-quill/dist/quill.snow.css";
 
 const ReactQuillInput = ({
   value,
@@ -20,7 +21,8 @@ const ReactQuillInput = ({
   currentChat,
   currentCase,
   getChatName,
-  
+  inputBoxHeight,
+
 }) => {
 
   console.log("currentChat",currentChat)
@@ -85,8 +87,8 @@ const ReactQuillInput = ({
     "emoji-shortname": true,
   }
   const place =currentChat?.isGroup
-  ? currentCase?.caseName || "Case Chat"
-  : getChatName(currentChat.groupMembers)
+    ? currentCase?.caseName || "Case Chat"
+    : getChatName(currentChat.groupMembers)
   const placeholder =`Message ${place}`;
 
 
@@ -108,7 +110,17 @@ const ReactQuillInput = ({
           //   onChange(content, delta, source, editor)
           // }}
           onChange={onChange}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px" }}
+          style={{
+            flex: 1,
+            // border: "2px solid #9BAADD",
+            // borderRadius: "10px",
+            height: inputBoxHeight,
+            // overflow: "hidden",
+            // wordWrap: "break-word",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+            whiteSpace: "pre-line",
+          }}
         />
       )}
       {!isQuill && (
@@ -127,13 +139,23 @@ const ReactQuillInput = ({
           //   onChange(content, delta, source, editor)
           // }}
           onChange={onChange}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px", }}
+          style={{
+            flex: 1,
+            // border: "2px solid #9BAADD",
+            // borderRadius: "10px",
+            height: inputBoxHeight,
+            // overflow: "hidden",
+            // wordWrap: "break-word",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+            whiteSpace: "pre-line",
+          }}
         />
       )}
       {!isQuill && isFullScreen   &&(
         <ReactQuill
           theme="snow"
-          className="quil"
+          className=""
           value={value}
           onKeyDown={onKeyPress}
           modules={modules1}
@@ -146,7 +168,17 @@ const ReactQuillInput = ({
           //   onChange(content, delta, source, editor)
           // }}
           onChange={onChange}
-          style={{ flex: 1, border: "2px solid #9BAADD", borderRadius: "15px",height:"700px" }}
+          style={{
+            flex: 1,
+            // border: "2px solid #9BAADD",
+            // borderRadius: "10px",
+            height: inputBoxHeight,
+            // overflow: "hidden",
+            // wordWrap: "break-word",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+            whiteSpace: "pre-line",
+          }}
         />
       )}
     </div>
@@ -167,6 +199,7 @@ ReactQuillInput.propTypes = {
   currentChat:PropTypes.any,
   currentCase:PropTypes.any,
   getChatName:PropTypes.any,
+  inputBoxHeight: PropTypes.any,
 }
 
 export default ReactQuillInput
