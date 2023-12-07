@@ -89,7 +89,7 @@ const ReplyMsgModal = ({
           <h5>Reply :</h5>
           <Row>
             <Col>
-              <div className="position-relative">
+              <div className="position-relative border border-2 border-primary rounded-4">
                 <ReactQuillInput
                 mentionsArray={mentionsArray}
                   value={curMessage}

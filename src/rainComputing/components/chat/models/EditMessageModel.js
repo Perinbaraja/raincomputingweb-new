@@ -76,10 +76,10 @@ const EditMessageModel = ({
           </button>
         </div>
         <div className="modal-body">
-          <h5>Update Message:</h5>
+          <h5>Edit :</h5>
           <Row>
             <Col>
-              <div className="position-relative">
+              <div className="position-relative border border-2 border-primary rounded-4">
                 <ReactQuillInput
                   value={updateMessages}
                   onChange={setUpdateMessages}

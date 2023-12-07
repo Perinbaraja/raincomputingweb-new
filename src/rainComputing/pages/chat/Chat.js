@@ -311,6 +311,15 @@ const ChatRc = () => {
   const [deleteMessage, setDeleteMessage] = useState()
   const [nonewmessage, setNoNewMessage] = useState([])
   const [isFullScreen, setIsFullScreen] = useState(false)
+  const [inputBoxHeight, setInputBoxHeight] = useState("100%");
+  const toggleFullScreen = () => {
+    if (isFullScreen) {
+      setInputBoxHeight("100%");
+    } else {
+      setInputBoxHeight("80vh"); // You can adjust the height as needed
+    }
+    setIsFullScreen(!isFullScreen);
+  };
   // When the user changes the active tab, save it to localStorage
   const handleTabChange = newActiveTab => {
     setactiveTab(newActiveTab)
@@ -321,9 +330,9 @@ const ChatRc = () => {
   }, [activeTab])
   // Call the function to set the active tab when the page loads
 
-  const handleFullScreenView = () => {
-    setIsFullScreen(!isFullScreen)
-  }
+  // const handleFullScreenView = () => {
+  //   setIsFullScreen(!isFullScreen)
+  // }
   const [isQuill, setIsQuill] = useState(false)
   const toggle_Quill = () => {
     setIsQuill(!isQuill)
@@ -2556,10 +2565,10 @@ const ChatRc = () => {
                                         </div>
                                       </DropdownToggle>
                                     ) : (
-                                      currentChat &&
-                                      currentChat?.admins?.includes(
-                                        currentUser?.userID
-                                      ) && (
+                                      // currentChat &&
+                                      // currentChat?.admins?.includes(
+                                      //   currentUser?.userID
+                                      // ) && (
                                         <div className="conversation-name">
                                           <DropdownToggle
                                             className="btn nav-btn"
@@ -2570,7 +2579,7 @@ const ChatRc = () => {
                                             </div>
                                           </DropdownToggle>
                                         </div>
-                                      )
+                                      // )
                                     )}
                                     {currentCase?.admins?.includes(
                                       currentUser?.userID
@@ -2612,10 +2621,10 @@ const ChatRc = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                     ) : (
-                                      currentChat &&
-                                      currentChat?.admins?.includes(
-                                        currentUser?.userID
-                                      ) && (
+                                      // currentChat &&
+                                      // currentChat?.admins?.includes(
+                                      //   currentUser?.userID
+                                      // ) && (
                                         <DropdownMenu>
                                           <DropdownItem
                                             href="#"
@@ -2640,7 +2649,7 @@ const ChatRc = () => {
                                             Delete chat
                                           </DropdownItem>
                                         </DropdownMenu>
-                                      )
+                                      // )
                                     )}
                                   </Dropdown>
                                 </li>
@@ -2788,7 +2797,7 @@ const ChatRc = () => {
                                         getMemberName={getMemberName}
                                         getSenderOneChat={getSenderOneChat}
                                       />
-                                      {msg?.rID && <p className="pt-3 fw-bolder">Replies :</p>}
+                                      {msg?.rID && <p className="pt-3 fw-bolder mdi mdi-reply">Replies :</p>}
 
                                       {/* {msg.isForward ? (
                                               <div className=" mdi mdi-forward">
@@ -2963,7 +2972,7 @@ const ChatRc = () => {
                         {currentChat?.isGroup && (
                           <SubgroupBar
                             groups={allgroups}
-                            selectedGroup={currentChat}
+                            selectedGroup={currentChat}ute
                             setSelectedgroup={setCurrentChat}
                             openSubGroupmodel={setSubGroupModelOpen}
                             currentCase={currentCase}
@@ -2973,9 +2982,10 @@ const ChatRc = () => {
                         {isFullScreen ? (
                           <>
                             <div
-                              className={`p-2 chat-input-section ${
+                              className={`border border-2 border-primary rounded-4 p-2 chat-input-section ${
                                 isFullScreen ? "full-screen" : ""
                                 }`}
+                            // style={{border: "4px solid #9BAADD"}}
                             >
                               <div className="row">
                                 <div className="col">
@@ -3052,6 +3062,7 @@ const ChatRc = () => {
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
                                                 }
+                                                inputBoxHeight={inputBoxHeight}
                                               />
                                             </div>
                                           </>
@@ -3064,11 +3075,11 @@ const ChatRc = () => {
 
                               <div>
                                 <div
-                                  className="col-auto d-flex justify-content-end  gap-2 "
+                                  className=" col-auto d-flex justify-content-end  gap-2 "
                                   style={{
                                     position: "absolute",
-                                    right: "19px",
-                                    top: "60px",
+                                    right: "20px",
+                                    top: "670px",
                                   }}
                                 >
                                   {recorder &&
@@ -3104,7 +3115,7 @@ const ChatRc = () => {
                                       </label>
                                       <i
                                         className="bi bi-fullscreen-exit"
-                                        onClick={handleFullScreenView}
+                                        onClick={toggleFullScreen}
                                         style={{
                                           color: "#556EE6",
                                           fontSize: "16px",
@@ -3201,7 +3212,7 @@ const ChatRc = () => {
                           </>
                         ) : (
                           <>
-                            <div class="p-2 chat-input-section">
+                            <div class=" chat-input-section border border-2 border-primary rounded-4">
                               <div className="row">
                                 <div className="col">
                                   <div className="position-relative">
@@ -3283,6 +3294,7 @@ const ChatRc = () => {
                                                 isEmptyOrSpaces={
                                                   isEmptyOrSpaces
                                                 }
+                                                inputBoxHeight={inputBoxHeight}
                                               />
                                             </div>
                                           </>
@@ -3300,7 +3312,7 @@ const ChatRc = () => {
                                 style={{
                                   position: "absolute",
                                   right: "19px",
-                                  bottom: "70px",
+                                  bottom: "30px",
                                 }}
                               >
                                 {recorder && recorder.state === "recording" ? (
@@ -3335,7 +3347,7 @@ const ChatRc = () => {
                                     </label>
                                     <i
                                       className="bi bi-arrows-fullscreen"
-                                      onClick={handleFullScreenView}
+                                      onClick={toggleFullScreen}
                                       style={{
                                         color: "#556EE6",
                                         fontSize: "16px",
@@ -3432,7 +3444,9 @@ const ChatRc = () => {
                         <br />
                         <br />
                         <br />
-                      </Card>
+                        <br />
+                        
+                   </Card>
                     )
                   ) : (
                     <NoChat />

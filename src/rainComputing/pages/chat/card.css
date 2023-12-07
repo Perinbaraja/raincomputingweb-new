@@ -12,14 +12,15 @@
   }
   
   .card .ql-container {
-    /* box-sizing: border-box;
+   /* box-sizing: border-box;
     border-top: none; */
   border: none;
   padding-top: 5px;
   }
   
   .card .ql-editor {
-    min-height: 10px; /* Set the minimum height for the editor content area */
+    min-height: 10px;
+    min-width: fit-content; /* Set the minimum height for the editor content area */ 
   }
   .full-screen {
     position: fixed;
@@ -30,7 +31,7 @@
     z-index: 9999;
     background: white; /* You can change the background color to your preference */
     overflow: auto;
-    /* Add any other styling you want for the full-screen view */
+/* Add any other styling you want for the full-screen view */
   }
   .domain-item {
     transition: background-color 0.3s ease, color 0.3s ease;
