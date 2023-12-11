@@ -1946,6 +1946,27 @@ const ChatRc = () => {
               curMessage={curMessage}
               setcurMessage={setcurMessage}
               handleSendMessage={handleSendMessage}
+              handleFileChange={handleFileChange}
+              setAllFiles={setAllFiles}
+              allFiles={allFiles}
+              handleFileRemove={handleFileRemove}
+              recorder={recorder}
+              setRecorder={setRecorder}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
+              allVoicemsg={allVoicemsg}
+              setAllVoicemsg={setAllVoicemsg}
+              isAttachment={isAttachment}
+              blobURL={blobURL}
+              duration={duration}
+              isVoiceMessage={isVoiceMessage}
+              durationIntervalId={durationIntervalId}
+              setDurationIntervalId={setDurationIntervalId}
+              setBlobURL={setBlobURL}
+              setIsAttachment={setIsAttachment}
+              setIsVoiceMessage={setIsVoiceMessage}
+              setDuration={setDuration}
+                      
             />
             {/* {contacts && (
               <ForwardMsg
