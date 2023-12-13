@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import { Col, Row } from "reactstrap"
+import { Col, Row, UncontrolledTooltip } from "reactstrap"
 import "./style/subgroup-bar.scss"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import "../../pages/landing/landingcard.scss"
@@ -65,7 +65,14 @@ const SubgroupBar = ({
             <i
               className="bx bx-dots-vertical-rounded text-primary font-size-24 mt-1 pointer "
               onClick={() => openSubGroupmodel(true)}
+              id="CreateSubgroupTooltip"
             />
+            <UncontrolledTooltip
+              placement="left"
+              target="CreateSubgroupTooltip"
+            >
+              Create Subgroup
+            </UncontrolledTooltip>
           </Col>
         {/* )} */}
       </Row>

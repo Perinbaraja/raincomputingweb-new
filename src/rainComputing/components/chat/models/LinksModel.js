@@ -3,11 +3,13 @@ import PropTypes from "prop-types"
 import { useChat } from 'rainComputing/contextProviders/ChatProvider';
 import { getMessagesByUserIdandGroupId } from 'rainComputing/helpers/backend_helper';
 import { useUser } from 'rainComputing/contextProviders/UserProvider';
+import moment from 'moment';
 
-const LinksModel = () => {
+const LinksModel = ({ setLinksModelOpen, handleLocateMessage }) => {
   const [messages, setMessages] = useState([])
+  const [locatefilemessageId, setLocateFileMessageId] = useState()
   const { currentUser } = useUser()
-  const {currentRoom: currentChat}= useChat()
+  const { currentRoom: currentChat } = useChat()
 
   const handlegetlinkmessages = async () => {
     if (currentChat?.isGroup) {
@@ -37,6 +39,17 @@ const LinksModel = () => {
     }
   }
 
+  const handleClick = (id) => {
+    setLinksModelOpen(false)
+    setLocateFileMessageId(id)
+  }
+
+  useEffect(() => {
+    if (locatefilemessageId) {
+      handleLocateMessage(locatefilemessageId)
+    }
+  }, [locatefilemessageId])
+
   useEffect(() => {
     handlegetlinkmessages()
   }, [])
@@ -53,17 +66,28 @@ const LinksModel = () => {
       {filteredMessages?.length > 0 ? (
         <div>
           {filteredMessages.map((links, i) => (
-            <div key={i}
-              className='border-bottom border-black px-3 py-3'
-              style={{
-                whiteSpace: "break-spaces",
-                overflow:"hidden",
-                wordWrap: "break-word",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: links?.messageData,
-              }}
-            />
+            <div key={i} className='border-bottom border-black'
+              style={{ cursor: "pointer" }}
+              onClick={() => handleClick(links?._id)}
+            >
+              <div key={i}
+                className='pt-2'
+                style={{
+                  whiteSpace: "break-spaces",
+                  overflow: "hidden",
+                  wordWrap: "break-word",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: links?.messageData,
+                }}
+
+              />
+              <p key={i}
+                className='d-flex justify-content-end'>
+                {moment(links.createdAt).format("DD-MM-YY HH:mm")}
+              </p>
+
+            </div>
           ))}
         </div>
       ) : (
@@ -75,5 +99,9 @@ const LinksModel = () => {
   )
 }
 
+LinksModel.propTypes = {
+  setLinksModelOpen: PropTypes.bool,
+  handleLocateMessage: PropTypes.any,
+}
 
 export default LinksModel

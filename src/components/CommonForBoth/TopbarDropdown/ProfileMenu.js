@@ -183,7 +183,7 @@ const ProfileMenu = props => {
                 onClick={() => handleCaseCompletedModal()}
               >
                 <i className="bx bx-check-circle font-size-16 align-middle me-1" />
-                {props.t("Completed Case")}
+                {props.t("Completed Cases")}
               </DropdownItem>
             )}
             <DropdownItem tag="a" onClick={() => handleNotificationModal()}>

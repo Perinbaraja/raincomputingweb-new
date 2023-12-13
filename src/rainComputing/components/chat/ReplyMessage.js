@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from "prop-types"
+import AttachmentViewer from './AttachmentViewer';
 const ReplyMessageComponent = ({ rID, messages, handleLocateMessage, currentChat, getMemberName, getSenderOneChat }) => {
     const stripHtmlTags = (html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -12,13 +13,26 @@ const ReplyMessageComponent = ({ rID, messages, handleLocateMessage, currentChat
             <div>
                 {rID && messages.map((message) =>
                     message._id === rID ? (
-                        <div key={message._id} className='px-2 pt-2'>
+                        <div key={message._id} className='px-2 py-2'>
                             <div className="conversation-name">
                                 {currentChat.isGroup
                                     ? getMemberName(message.sender)
                                     : getSenderOneChat(message.sender)}
                             </div>
-                            <p>{stripHtmlTags(message.messageData)}</p>
+                            {message.isAttachment === true ? (
+                                <div >
+                                    <p>{stripHtmlTags(message.messageData)}</p>
+                                    <div >
+                                        <AttachmentViewer
+                                            attachments={message.attachments}
+                                            text={message.messageData}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <p>{stripHtmlTags(message.messageData)}</p>
+                            )}
+                            {/* <p>{stripHtmlTags(message.messageData)}</p> */}
                         </div>
                     ) : null
                 )}
