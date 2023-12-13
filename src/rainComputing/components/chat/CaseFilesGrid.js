@@ -37,12 +37,14 @@ import {
 import ChatLoader from "./ChatLoader"
 import moment from "moment"
 
-const CaseFilesGrid = ({ caseId,groupId }) => {
+const CaseFilesGrid = ({ caseId, groupId, handleLocateMessage, setFilesModelOpen }) => {
   const [loading, setLoading] = useState(false)
   const [productData, setProductData] = useState([])
   const [addNotesModal, setAddNotesModal] = useState(false)
   const [currentFileStatus, setCurrentFileStatus] = useState({})
   const [notes, setNotes] = useState(" ")
+  const [filesRes, setFilesRes] = useState(" ")
+  const [locatefilemessageId, setLocateFileMessageId] = useState()
 
   const toggle_addNotesModal = () => {
     setAddNotesModal(!addNotesModal)
@@ -59,6 +61,16 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
     onSubmit: values => {
     },
   })
+  const handleClick = (id) => {
+    setFilesModelOpen(false)
+    setLocateFileMessageId(id)
+  }
+
+  useEffect(() => {
+    if (locatefilemessageId) {
+      handleLocateMessage(locatefilemessageId)
+    }
+  }, [locatefilemessageId])
 
   //Document Notes:
   const handleTakeNotes = async () => {
@@ -244,36 +256,36 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
 
   const handleFetchFiles = async () => {
     if (groupId) {
-    setLoading(true)
-    
-    const filesRes = await getCaseFiles({ groupId })
-    if (filesRes.success && filesRes?.files?.length > 0) {
-      let tempArray = []
-      filesRes?.files?.map(f => {
-        const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
-        tempArray.push({ ...f, time: sendAt, isDownloading: false })
-      })
-      setProductData(tempArray)
-    } else {
-      console.log("File Fetching Error :", filesRes)
-    }
-    setLoading(false)
-  }else {
-    setLoading(true)
+      setLoading(true)
 
-    const filesRes = await getCaseFiles({ caseId })
-    if (filesRes.success && filesRes?.files?.length > 0) {
-      let tempArray = []
-      filesRes?.files?.map(f => {
-        const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
-        tempArray.push({ ...f, time: sendAt, isDownloading: false })
-      })
-      setProductData(tempArray)
+      const filesRes = await getCaseFiles({ groupId })
+      if (filesRes.success && filesRes?.files?.length > 0) {
+        let tempArray = []
+        filesRes?.files?.map(f => {
+          const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
+          tempArray.push({ ...f, time: sendAt, isDownloading: false })
+        })
+        setProductData(tempArray)
+      } else {
+        console.log("File Fetching Error :", filesRes)
+      }
+      setLoading(false)
     } else {
-      console.log("File Fetching Error :", filesRes)
+      setLoading(true)
+
+      const filesRes = await getCaseFiles({ caseId })
+      if (filesRes.success && filesRes?.files?.length > 0) {
+        let tempArray = []
+        filesRes?.files?.map(f => {
+          const sendAt = moment(f.time).format("DD-MM-YY HH:mm")
+          tempArray.push({ ...f, time: sendAt, isDownloading: false })
+        })
+        setProductData(tempArray)
+      } else {
+        console.log("File Fetching Error :", filesRes)
+      }
+      setLoading(false)
     }
-    setLoading(false)
-  }
   }
   useEffect(() => {
     handleFetchFiles()
@@ -301,7 +313,7 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
         >
           <div className="modal-header">
             <h5 className="modal-title mt-0" id="myLargeModalLabel">
-            Document Notes
+              Document Notes
             </h5>
             <button
               onClick={() => {
@@ -316,13 +328,13 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
             </button>
           </div>
           <div className="modal-body">
-          <ul><li> <p className="fs-5 fw-bold text-primary ">{currentFileStatus?.note}</p></li></ul>
-           
+            <ul><li> <p className="fs-5 fw-bold text-primary ">{currentFileStatus?.note}</p></li></ul>
+
             <Form className="needs-validation">
               <Row className="mb-3">
                 <Col>
                   <FormGroup className="mb-3">
-                   
+
                     <Label htmlFor="validationCustom01">Notes</Label>
                     <textarea
                       type="text"
@@ -417,6 +429,11 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
                                     headerWrapperClasses={"thead-light"}
                                     {...toolkitProps.baseProps}
                                     {...paginationTableProps}
+                                    rowEvents={{
+                                      onClick: (e, row, rowIndex) => {
+                                        handleClick(row?.msgId); // Assuming `row.id` represents the ID you want to pass
+                                      },
+                                    }}
                                   />
                                 </div>
                               </Col>
@@ -456,6 +473,8 @@ const CaseFilesGrid = ({ caseId,groupId }) => {
 CaseFilesGrid.propTypes = {
   caseId: PropTypes.string,
   groupId: PropTypes.string,
+  handleLocateMessage: PropTypes.func,
+  setFilesModelOpen: PropTypes.bool,
 }
 
 export default CaseFilesGrid
