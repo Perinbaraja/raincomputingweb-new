@@ -651,10 +651,10 @@ const ChatRc = () => {
     setChatLoader(false)
   }
 
-  useEffect(() => {
-    ongetAllChatRooms()
-    ongetAllCases({ isSet: false })
-  }, [messages, notifications])
+  // useEffect(() => {
+  //   ongetAllChatRooms()
+  //   ongetAllCases({ isSet: false })
+  // }, [messages, notifications])
 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
