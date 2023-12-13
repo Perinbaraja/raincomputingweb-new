@@ -173,7 +173,7 @@ const ReplyMsgModal = ({
                                   isQuill={isQuill}
                                   currentChat={currentChat}
                                   getChatName={getChatName}
-
+                                  setAllFiles={setAllFiles}
                                 />
                               </div>
                             </>

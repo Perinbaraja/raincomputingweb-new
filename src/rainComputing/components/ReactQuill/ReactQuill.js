@@ -6,6 +6,7 @@ import "quill-emoji/dist/quill-emoji.css";
 import EmojiBlot from "quill-emoji/dist/quill-emoji"
 import Quill from 'quill';
 import "react-quill/dist/quill.snow.css";
+import { useDropzone } from "react-dropzone";
 
 const ReactQuillInput = ({
   value,
@@ -22,7 +23,7 @@ const ReactQuillInput = ({
   currentCase,
   getChatName,
   inputBoxHeight,
-
+  setAllFiles
 }) => {
 
   console.log("currentChat",currentChat)
@@ -91,10 +92,27 @@ const ReactQuillInput = ({
     : getChatName(currentChat.groupMembers)
   const placeholder =`Message ${place}`;
 
-
+// InputBox Drag And Drop Function
+const { getRootProps, getInputProps } = useDropzone({
+  accept:
+    ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
+  onDrop: acceptedFiles => {
+    setAllFiles(
+      acceptedFiles.map(allFiles =>
+        Object.assign(allFiles, {
+          preview: URL.createObjectURL(allFiles),
+        })
+      )
+    )
+  },
+  noClick: true, // Prevent opening file dialog on click
+  noKeyboard: true,
+})
   return (
     <div style={{ position: "relative" }}>
       {isQuill && (
+        <div {...getRootProps()}>
+        <input {...getInputProps()} />
         <ReactQuill
           theme="snow"
           className="quil"
@@ -122,8 +140,11 @@ const ReactQuillInput = ({
             whiteSpace: "pre-line",
           }}
         />
+        </div>
       )}
       {!isQuill && (
+        <div {...getRootProps()}>
+        <input {...getInputProps()} />
         <ReactQuill
           theme="snow"
           className="quil"
@@ -151,8 +172,11 @@ const ReactQuillInput = ({
             whiteSpace: "pre-line",
           }}
         />
+        </div>
       )}
       {!isQuill && isFullScreen   &&(
+        <div {...getRootProps()}>
+        <input {...getInputProps()} />
         <ReactQuill
           theme="snow"
           className=""
@@ -180,6 +204,7 @@ const ReactQuillInput = ({
             whiteSpace: "pre-line",
           }}
         />
+        </div>
       )}
     </div>
   )
@@ -200,6 +225,7 @@ ReactQuillInput.propTypes = {
   currentCase:PropTypes.any,
   getChatName:PropTypes.any,
   inputBoxHeight: PropTypes.any,
+  setAllFiles: PropTypes.any,
 }
 
 export default ReactQuillInput
