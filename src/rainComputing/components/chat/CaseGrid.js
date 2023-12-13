@@ -39,6 +39,7 @@ const CaseGrid = ({
   notifyCountforCase,
   ongetAllCases,
   allCases,
+
 }) => {
   const history = useHistory()
   const { toggleOpen: notifyOn, toggleIt: setNotifyOn } = useToggle(false)
@@ -166,7 +167,7 @@ const CaseGrid = ({
   const notificationSubCase = id => {
     const matchingCase = notifications.find(i => i?.maincaseId === id)
     return matchingCase ? true : false
-  }  
+  }
   return (
     <>
       <>
@@ -178,15 +179,15 @@ const CaseGrid = ({
           onCloseClick={toggleleavegroupModal}
         />
         {/*Case files Model*/}
-        <DynamicModel
+        {/* <DynamicModel
           open={filesModelOpen}
           toggle={toggleFilesModelOpen}
           size="xl"
           modalTitle="Shared Files"
           isClose={true}
         >
-          <CaseFilesGrid caseId={caseData?._id} />
-        </DynamicModel>
+          <CaseFilesGrid caseId={caseData?._id} setFilesModelOpen={setFilesModelOpen} handleLocateMessage={handleLocateMessage}/>
+        </DynamicModel> */}
         <DynamicModel
           open={docketModelOpen}
           toggle={toggleDocketModelOpen}
@@ -393,7 +394,7 @@ const CaseGrid = ({
               </span>
             </AccordionContainer> */}
               <br />
-              <span className="fw-medium font-size-13 text-primary-emphasis">
+              {/* <span className="fw-medium font-size-13 text-primary-emphasis">
                 Saved Messages & Files
               </span>
 
@@ -413,7 +414,7 @@ const CaseGrid = ({
                 <span className="fw-medium font-size-12 text-secondary">
                   Shared Files
                 </span>
-              </AccordionContainer>
+              </AccordionContainer> */}
             </div>
 
             <div className="d-flex justify-content-end">
@@ -493,6 +494,7 @@ CaseGrid.propTypes = {
   selected: PropTypes.bool,
   notifyCountforCase: PropTypes.func,
   handleAccordionClick: PropTypes.func,
+  // handleLocateMessage: PropTypes.func,
 }
 
 export default CaseGrid
