@@ -751,7 +751,8 @@ const ChatRc = () => {
   useEffect(() => {
     ongetAllCases({ isSet: false })
   }, [notifications])
-
+console.log("chats",chats)
+console.log("allcases",allCases)
   // const onGetAllSubCases = async () => {
   //   const payload = {
   //     isSubcase: true,
@@ -2611,7 +2612,7 @@ const ChatRc = () => {
                                   </Dropdown>
                                 </li>
                                 {/* // } */}
-                                {!currentChat?.isGroup && (
+                                {/* {!currentChat?.isGroup && ( */}
                                   <li className="list-inline-item">
                                     <Dropdown
                                       toggle={() => toggleFilesModelOpen(true)}
@@ -2634,7 +2635,7 @@ const ChatRc = () => {
                                       </UncontrolledTooltip>
                                     </Dropdown>
                                   </li>
-                                )}
+                                {/* )} */}
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
