@@ -100,7 +100,7 @@ const LinksModel = ({ setLinksModelOpen, handleLocateMessage }) => {
 }
 
 LinksModel.propTypes = {
-  setLinksModelOpen: PropTypes.bool,
+  setLinksModelOpen: PropTypes.func,
   handleLocateMessage: PropTypes.any,
 }
 
