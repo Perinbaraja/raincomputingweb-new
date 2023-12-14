@@ -474,7 +474,7 @@ CaseFilesGrid.propTypes = {
   caseId: PropTypes.string,
   groupId: PropTypes.string,
   handleLocateMessage: PropTypes.func,
-  setFilesModelOpen: PropTypes.bool,
+  setFilesModelOpen: PropTypes.func,
 }
 
 export default CaseFilesGrid
