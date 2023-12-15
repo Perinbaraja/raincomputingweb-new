@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
-import { Dropdown, DropdownToggle, DropdownMenu, Row, Col,TabContent, Nav, NavItem, NavLink } from "reactstrap"
+import { Dropdown, DropdownToggle, DropdownMenu, Row, Col,TabContent, Nav, NavItem, NavLink, UncontrolledTooltip } from "reactstrap"
 import SimpleBar from "simplebar-react"
 import { withTranslation } from "react-i18next"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
@@ -72,8 +72,15 @@ const NotificationDropdown = (props) => {
           className="btn header-item noti-icon"
           tag="button"
           id="page-header-notifications-dropdown"
+          
         >
-          {currentUser && <i className="bx bx-bell" />}
+          {currentUser && <i className="bx bx-bell" id="notificationTooltip"/>}
+          <UncontrolledTooltip
+          placement="bottom"
+          target="notificationTooltip"
+        >
+          Notification
+        </UncontrolledTooltip>
           {notifications.length > 0 && (
             <span className="badge bg-danger rounded-pill">
               {notifications.length}
