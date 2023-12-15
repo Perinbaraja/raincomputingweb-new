@@ -727,11 +727,11 @@ const ChatRc = () => {
       // const filteredCases = allCasesRes.cases.filter(ca => !ca.isSubcase)
 
       // Sort the filtered cases array by createdAt in descending order
-      // const sortedCases = allCasesRes.cases.sort(
-      //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      // )
+      const sortedCases = allCasesRes.cases.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
 
-      setAllCases(allCasesRes.cases)
+      setAllCases(sortedCases)
 
       // if (isSet) {
       //   setCurrentCase(sortedCases[0])
