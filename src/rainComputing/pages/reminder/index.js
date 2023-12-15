@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Modal, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap"
+import { Modal, Nav, NavItem, NavLink, TabContent, TabPane, UncontrolledTooltip } from "reactstrap"
 import PropTypes from "prop-types"
 import GroupReminder from "./GroupReminder"
 import SelfReminder from "./SelfReminder"
@@ -90,9 +90,14 @@ const Reminders = ({ toggle, open, setOpen, show = false }) => {
         style={{
           cursor: "pointer",
         }}
-        title="Reminder"
-
+        id="reminder1Tooltip"
       ></i>
+      <UncontrolledTooltip
+      placement="bottom"
+      target="reminder1Tooltip"
+    >
+      Reminder
+    </UncontrolledTooltip>
 
       <Modal isOpen={open} toggle={toggle} scrollable={true}>
         <div className="d-flex justify-content-center p-4">

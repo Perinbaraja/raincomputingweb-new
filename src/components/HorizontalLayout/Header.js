@@ -6,7 +6,7 @@ import "./headsearch.scss"
 // Redux Store
 import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 // reactstrap
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
+import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledTooltip } from "reactstrap"
 // Import menuDropdown
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu"
@@ -64,14 +64,21 @@ const Header = props => {
                 </span>
               </Link>
 
-              <div className="p-4">
+              <div className="p-4" id="domainTooltip">
                 <i
                   className="bx bx-link-external"
                   id="atticon"
                   onClick={toggleSubDomainOpen}
                   target="_blank"
                   style={{ cursor: "pointer" }}
+                  
                 />
+                <UncontrolledTooltip
+                                          placement="bottom"
+                                          target="domainTooltip"
+                                        >
+                                          Domains
+                                        </UncontrolledTooltip>
                 <Dropdown
                   isOpen={subDomainOpen}
                   toggle={toggleSubDomainOpen}
