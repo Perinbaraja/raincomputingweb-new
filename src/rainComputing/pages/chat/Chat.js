@@ -30,7 +30,6 @@ import {
   UncontrolledDropdown,
   Modal,
   ModalHeader,
-  UncontrolledTooltip,
 } from "reactstrap"
 import PerfectScrollbar from "react-perfect-scrollbar"
 
@@ -382,7 +381,6 @@ const ChatRc = () => {
     return regex.test(messageData)
   })
 
-
   useEffect(() => {
     return () => {
       // Clean up the duration interval on component unmount
@@ -608,50 +606,41 @@ const ChatRc = () => {
   }, [chats, notifications])
 
   const ongetAllChatRooms = async () => {
-    const chatRoomsRes = await getOnevsOneChat({ userId: currentUser.userID });
-
+    const chatRoomsRes = await getOnevsOneChat({ userId: currentUser.userID })
     if (chatRoomsRes.success) {
-      const updatedChats = chatRoomsRes.groups.map((chat) => {
-        const notification = notifications.find((n) => n.groupId === chat._id);
+      const updatedChats = chatRoomsRes.groups.map(chat => {
+        const notification = notifications.find(n => n.groupId === chat._id)
         return {
           ...chat,
           notification,
-        };
-      });
+        }
+      })
 
       updatedChats.sort((a, b) => {
         if (a.notification && b.notification) {
           return (
             new Date(b.notification.updatedAt) -
             new Date(a.notification.updatedAt)
-          );
+          )
         } else if (a.notification) {
-          return -1; // Move chat with notification to the top
+          return -1 // Move chat with notification to the top
         } else if (b.notification) {
-          return 1; // Move chat with notification to the top
+          return 1 // Move chat with notification to the top
         } else {
-          return 0; // No notifications for both chats, maintain order
+          return 0 // No notifications for both chats, maintain order
         }
-      });
+      })
 
-      setChats(updatedChats);
-
-      // setCurrentChat(updatedChats[0]); // You may uncomment this line if needed
-
+      setChats(updatedChats)
+      // setCurrentChat(updatedChats[0])
       if (updatedChats.length < 1) {
-        setactiveTab("3");
+        setactiveTab("3")
       }
     } else {
-      setChats([]);
+      setChats([])
     }
-
-    setChatLoader(false);
-  };
-
-  // useEffect(() => {
-  //   ongetAllChatRooms()
-  //   ongetAllCases({ isSet: false })
-  // }, [messages, notifications])
+    setChatLoader(false)
+  }
 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
@@ -1287,7 +1276,8 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
+    const chatDocName = `${
+      currentCase?.caseName ?? "Private Chat"
       } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
@@ -1395,61 +1385,16 @@ const ChatRc = () => {
     if (searchMessageText) {
       setSearchedMessages(
         messages?.filter(m =>
-          m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase()) ||
-          moment(m.createdAt).format("DD-MM-YY HH:mm").includes(searchMessageText.toLowerCase())
+          m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
         )
       )
-    } else if (!searchText) {
-      setSearchedMessages([])
-      setsearch_Menu(false)
-      setSearchMessagesText("") // Clear searchMessageText
-      const timer = setTimeout(() => {
-        scrollToBottom()
-      }, 500)
-      return () => clearTimeout(timer)
-    }
-  }, [searchMessageText, searchText, searchIndex, currentChat])
-  useEffect(() => {
-    if (searchText) {
-      setsearch_Menu(true)
-      setSearchMessagesText(searchText)
-      setSearchedMessages(
-        messages?.filter(m =>
-          m?.messageData.toLowerCase().includes(searchText.toLowerCase())
-
-        )
-      )
-    } else if (!isSearchTextCleared) {
-      setsearch_Menu(false)
-      setSearchedMessages([])
-      setSearchMessagesText("")
-      setCurrentChat(null) // Clear searchMessageText
-    }
-  }, [
-    searchText,
-    searchIndex,
-    searchMessageText,
-    isSearchTextCleared,
-    currentChat,
-    messages,
-  ])
-  useEffect(() => {
-    if (searchedMessages?.length > 0 && searchIndex >= 0) {
-      const elementid = searchedMessages[searchIndex]?._id
-      const messageElem = document.getElementById(elementid)
-      if (messageElem) {
-        messageElem.scrollIntoView({ behavior: "auto" })
-      }
     } else {
-      setSearchIndex(0)
+      setSearchedMessages([])
     }
-  }, [
-    searchedMessages,
-    searchIndex,
-    currentChat,
-    searchMessageText,
-    searchText,
-  ])
+    return () => {
+      setSearchedMessages([])
+    }
+  }, [searchMessageText])
 
   const handleFileDownload = async ({ id, filename }) => {
     getFileFromGFS(
@@ -1462,14 +1407,14 @@ const ChatRc = () => {
     })
   }
 
-  // useEffect(() => {
-  //   if (searchedMessages?.length > 0) {
-  //     const elementid = searchedMessages[0]?._id
-  //     document.getElementById(elementid)?.scrollIntoView(false)
-  //   } else {
-  //     setSearchIndex(0)
-  //   }
-  // }, [searchedMessages])
+  useEffect(() => {
+    if (searchedMessages?.length > 0) {
+      const elementid = searchedMessages[0]?._id
+      document.getElementById(elementid)?.scrollIntoView(false)
+    } else {
+      setSearchIndex(0)
+    }
+  }, [searchedMessages])
 
   //Text Convert into Link URL
   const stringFormatter = txt => {
@@ -1686,7 +1631,7 @@ const ChatRc = () => {
       setCurrentCase(tempCase)
       setCurrentChat(groupChat)
     }
-  }, [groupChatId, pageLoader, caseChatId,caseLoading])
+  }, [groupChatId, pageLoader, caseChatId, caseLoading])
   // useEffect(() => {
   //   if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
   //     const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
@@ -1783,56 +1728,6 @@ const ChatRc = () => {
       }, 0)
     }
   })
-  const allowedFileTypes = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/x-zip-compressed",
-    "audio/mpeg",
-    "audio/webm",
-    "audio/ogg",
-    "audio/wav",
-  ];
-  const handlePaste = (event) => {
-    const clipboardData = event.clipboardData || window.clipboardData;
-    const items = clipboardData.items;
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      if (allowedFileTypes.includes(item.type)) {
-        const blob = item.getAsFile();
-        const originalFileName =
-          item.kind === "file"
-            ? item.getAsFile().name
-            : `pasted-file.${blob.type.split("/")[1]}`;
-
-        const file = new File([blob], originalFileName, {
-          type: blob.type,
-        });
-
-        setAllFiles((prevFiles) => [
-          ...prevFiles,
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          }),
-        ]);
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("paste", handlePaste);
-
-    return () => {
-      document.removeEventListener("paste", handlePaste);
-    };
-  }, []);
 
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
@@ -1967,7 +1862,8 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
+                modalSubtitle={`You have ${
+                  allgroups.filter(a => !a.isParent)?.length || 0
                   } subgroups`}
                 footer={true}
                 size="lg"
@@ -1990,7 +1886,7 @@ const ChatRc = () => {
               modalTitle="Shared Files"
               isClose={true}
             >
-              <CaseFilesGrid caseId={currentCase?._id} groupId={currentChat?._id} setFilesModelOpen={setFilesModelOpen} handleLocateMessage={handleLocateMessage} />
+              <CaseFilesGrid groupId={currentChat?._id} />
             </DynamicModel>
             <DynamicModel
               open={linksModelOpen}
@@ -1999,7 +1895,7 @@ const ChatRc = () => {
               modalTitle="Links"
               isClose={true}
             >
-              <LinksModel handleLocateMessage={handleLocateMessage} setLinksModelOpen={setLinksModelOpen} />
+              <LinksModel />
             </DynamicModel>
             {/* <DynamicModel
               open={subdomainModelOpen}
@@ -2069,7 +1965,7 @@ const ChatRc = () => {
               setIsAttachment={setIsAttachment}
               setIsVoiceMessage={setIsVoiceMessage}
               setDuration={setDuration}
-
+                      
             />
             {/* {contacts && (
               <ForwardMsg
@@ -2236,7 +2132,7 @@ const ChatRc = () => {
                                         : getChatName(chat.chat.groupMembers)}
                                     </h5>
                                     <p className="font-size-12 mb-1 text-primary">
-                                      {getChatEmail(chat?.chat.groupMembers)}
+                                      {getChatEmail(chat?.chat?.groupMembers)}
                                     </p>
                                   </div>
                                   <div className="font-size-11">
@@ -2400,7 +2296,7 @@ const ChatRc = () => {
                                           <h5 className="text-truncate font-size-14 mb-1">
                                             {contact.firstname}{" "}
                                             {contact.lastname}
-                                            { }
+                                            {}
                                           </h5>
                                           <p className="font-size-12 mb-1 text-primary ">
                                             {contact.email}
@@ -2466,21 +2362,14 @@ const ChatRc = () => {
                                 {currentChat?.isGroup && (
                                   <li
                                     className="list-inline-item "
-
+                                    title="Refresh to get Email "
                                   >
                                     <Dropdown toggle={handlerefreshemail}>
                                       <DropdownToggle
                                         className="btn nav-btn"
                                         tag="i"
-                                        id="RefreshtogetEmailTooltip"
                                       >
                                         <i class="bi bi-arrow-clockwise"></i>
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="RefreshtogetEmailTooltip"
-                                        >
-                                          Refresh to get Email
-                                        </UncontrolledTooltip>
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
@@ -2488,7 +2377,7 @@ const ChatRc = () => {
                                 {currentChat?.isGroup && (
                                   <li
                                     className="list-inline-item "
-
+                                    title="Send Email "
                                   >
                                     <Dropdown
                                       isOpen={groupIdOpen}
@@ -2497,15 +2386,8 @@ const ChatRc = () => {
                                       <DropdownToggle
                                         className="btn nav-btn"
                                         tag="i"
-                                        id="SendEmailTooltip"
                                       >
                                         <i className="bx bx-info-circle" />
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="SendEmailTooltip"
-                                        >
-                                          Send Email
-                                        </UncontrolledTooltip>
                                       </DropdownToggle>
 
                                       <DropdownMenu>
@@ -2575,42 +2457,29 @@ const ChatRc = () => {
                                     <DropdownToggle
                                       className="btn nav-btn"
                                       tag="i"
-                                      id="linksTooltip"
                                     >
-                                      <i className="bi bi-link" />
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="linksTooltip"
-                                      >
-                                        Links
-                                      </UncontrolledTooltip>
+                                      <i className="bi bi-link" title="Links" />
                                     </DropdownToggle>
                                   </Dropdown>
                                 </li>
                                 {/* // } */}
-
-                                <li className="list-inline-item">
-                                  <Dropdown
-                                    toggle={() => toggleFilesModelOpen(true)}
-                                  >
-                                    <DropdownToggle
-                                      className="btn nav-btn"
-                                      tag="i"
-                                      id="filesTooltip"
+                                {!currentChat?.isGroup && (
+                                  <li className="list-inline-item">
+                                    <Dropdown
+                                      toggle={() => toggleFilesModelOpen(true)}
                                     >
-                                      <i
-                                        className="bi bi-files"
-                                      />
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="filesTooltip"
+                                      <DropdownToggle
+                                        className="btn nav-btn"
+                                        tag="i"
                                       >
-                                        Files
-                                      </UncontrolledTooltip>
-                                    </DropdownToggle>
-                                  </Dropdown>
-                                </li>
-
+                                        <i
+                                          className="bi bi-files"
+                                          title="Shared Files"
+                                        />
+                                      </DropdownToggle>
+                                    </Dropdown>
+                                  </li>
+                                )}
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
@@ -2618,23 +2487,17 @@ const ChatRc = () => {
                                     <DropdownToggle
                                       className="btn nav-btn"
                                       tag="i"
-                                      id="remindersTooltip"
                                     >
                                       <i
                                         className="bi bi-calendar"
+                                        title="Reminder"
                                       />
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="remindersTooltip"
-                                      >
-                                        Reminder
-                                      </UncontrolledTooltip>
                                     </DropdownToggle>
                                   </Dropdown>
                                 </li>
                                 <li
                                   className="list-inline-item d-sm-flex"
-                                  id="pinnedMessagesTooltip"
+                                  title="Pinned Messages"
                                 >
                                   <Dropdown
                                     isOpen={pinModal}
@@ -2644,17 +2507,11 @@ const ChatRc = () => {
                                       handleLocateMessage={handleLocateMessage}
                                       closeModal={() => setPinModal(false)}
                                     />
-                                    <UncontrolledTooltip
-                                      placement="bottom"
-                                      target="pinnedMessagesTooltip"
-                                    >
-                                      Pinned Messages
-                                    </UncontrolledTooltip>
                                   </Dropdown>
                                 </li>
                                 <li
                                   className="list-inline-item"
-                                  id="SearchMessagesTooltip"
+                                  title="Search Messages"
                                 >
                                   <Dropdown
                                     isOpen={search_Menu}
@@ -2665,12 +2522,6 @@ const ChatRc = () => {
                                       tag="i"
                                     >
                                       <i className="bx bx-search-alt-2" />
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="SearchMessagesTooltip"
-                                      >
-                                        Search Messages
-                                      </UncontrolledTooltip>
                                     </DropdownToggle>
                                     <DropdownMenu className="dropdown-menu-md">
                                       {searchMessageText &&
@@ -2693,8 +2544,8 @@ const ChatRc = () => {
                                       <InputGroup>
                                         <Input
                                           type="text"
-                                          className="form-control fw-light"
-                                          placeholder="DD-MM-YYYY & Messages"
+                                          className="form-control"
+                                          placeholder="Search ..."
                                           aria-label="Recipient's username"
                                           value={searchMessageText}
                                           onChange={e =>
@@ -2702,7 +2553,6 @@ const ChatRc = () => {
                                               e.target.value
                                             )
                                           }
-                                          style={{ textAlign: 'center' }}
                                         />
                                         {/* <InputGroupAddon addonType="append"> */}
                                         <Button color="primary" type="submit">
@@ -2715,7 +2565,7 @@ const ChatRc = () => {
                                 </li>
                                 <li
                                   className="list-inline-item align-middle"
-                                  id="ManageCaseTooltip"
+                                  title="Manage Case"
                                 >
                                   <Dropdown
                                     isOpen={chatSettingOpen}
@@ -2732,12 +2582,6 @@ const ChatRc = () => {
                                       >
                                         <div>
                                           <i className="bx bx-cog" />
-                                          <UncontrolledTooltip
-                                            placement="bottom"
-                                            target="ManageCaseTooltip"
-                                          >
-                                            Manage Case
-                                          </UncontrolledTooltip>
                                         </div>
                                       </DropdownToggle>
                                     ) : (
@@ -2745,23 +2589,16 @@ const ChatRc = () => {
                                       // currentChat?.admins?.includes(
                                       //   currentUser?.userID
                                       // ) && (
-                                      <div className="conversation-name">
-                                        <DropdownToggle
-                                          className="btn nav-btn"
-                                          tag="i"
-                                          id="ManageChatTooltip"
-                                        >
-                                          <div>
-                                            <i className="bx bx-cog" />
-                                            <UncontrolledTooltip
-                                              placement="bottom"
-                                              target="ManageChatTooltip"
-                                            >
-                                              Manage Chat
-                                            </UncontrolledTooltip>
-                                          </div>
-                                        </DropdownToggle>
-                                      </div>
+                                        <div className="conversation-name">
+                                          <DropdownToggle
+                                            className="btn nav-btn"
+                                            tag="i"
+                                          >
+                                            <div>
+                                              <i className="bx bx-cog" />
+                                            </div>
+                                          </DropdownToggle>
+                                        </div>
                                       // )
                                     )}
                                     {currentCase?.admins?.includes(
@@ -2772,15 +2609,6 @@ const ChatRc = () => {
                                           href="#"
                                           onClick={() => onArchievingChat()}
                                         >
-                                          <i
-                                            className="bi bi-archive"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
                                           Archive Chat
                                         </DropdownItem>
                                         <DropdownItem
@@ -2789,15 +2617,6 @@ const ChatRc = () => {
                                             setCaseEditModalOpen(true)
                                           }
                                         >
-                                          <i
-                                            className="bi bi-pen"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
                                           Manage Case
                                         </DropdownItem>
                                         <DropdownItem
@@ -2806,46 +2625,18 @@ const ChatRc = () => {
                                             toggle_emailModal(true)
                                           }
                                         >
-                                          <i
-                                            className="bi bi-envelope"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                              color: "black"
-                                            }}
-                                          ></i>
-                                          {" "}
                                           Email
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
                                           onClick={() => handleCaseDelete()}
                                         >
-                                          <i
-                                            className="bi bi-trash"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
                                           Delete case
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
                                           onClick={() => handleCaseCompleted()}
                                         >
-                                          <i
-                                            className="bi bi-check-circle"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
                                           Completed case
                                         </DropdownItem>
                                       </DropdownMenu>
@@ -2854,58 +2645,30 @@ const ChatRc = () => {
                                       // currentChat?.admins?.includes(
                                       //   currentUser?.userID
                                       // ) && (
-                                      <DropdownMenu>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() => onArchievingChat()}
-                                        >
-                                          <i
-                                            className="bi bi-archive"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
-                                          Archive Chat
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() =>
-                                            toggle_emailModal(true)
-                                          }
-                                        >
-                                          <i
-                                            className="bi bi-envelope"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                              color: "black"
-                                            }}
-                                          ></i>
-                                          {" "}
-                                          Email
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() =>
-                                            handleChatDelete(currentChat?._id)
-                                          }
-                                        >
-                                          <i
-                                            className="bi bi-trash"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          ></i>
-                                          {" "}
-                                          Delete chat
-                                        </DropdownItem>
-                                      </DropdownMenu>
+                                        <DropdownMenu>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => onArchievingChat()}
+                                          >
+                                            Archive Chat
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              toggle_emailModal(true)
+                                            }
+                                          >
+                                            Email
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              handleChatDelete(currentChat?._id)
+                                            }
+                                          >
+                                            Delete chat
+                                          </DropdownItem>
+                                        </DropdownMenu>
                                       // )
                                     )}
                                   </Dropdown>
@@ -2959,16 +2722,8 @@ const ChatRc = () => {
                                         href="#"
                                         className="btn nav-btn  "
                                         tag="i"
-                                        id="MoreActionTooltip"
                                       >
                                         <i className="bx bx-dots-vertical-rounded" />
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="MoreActionTooltip"
-                                          className=""
-                                        >
-                                          More Actions
-                                        </UncontrolledTooltip>
                                       </DropdownToggle>
                                       <DropdownMenu>
                                         {/* <DropdownItem
@@ -2988,17 +2743,6 @@ const ChatRc = () => {
                                             setReplyMsgModalOpen(true)
                                           }}
                                         >
-                                          <i
-                                            className="bi bi-reply"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          // id="replyTooltip"
-                                          >
-                                          </i>
-                                          {" "}
                                           Reply
                                         </DropdownItem>
                                         {msg?.sender === currentUser.userID && (
@@ -3009,16 +2753,6 @@ const ChatRc = () => {
                                               setMessageEditModalOpen(true)
                                             }}
                                           >
-                                            <i
-                                              className="bi bi-pen"
-                                              style={{
-                                                fontSize: "15px",
-                                                fontWeight: "bold",
-                                                cursor: "pointer",
-                                              }}
-                                            // id="editTooltip"
-                                            ></i>
-                                            {" "}
                                             Edit
                                           </DropdownItem>
                                         )}
@@ -3028,16 +2762,6 @@ const ChatRc = () => {
                                             onPinnedMessage(msg)
                                           }}
                                         >
-                                          <i
-                                            className="bi bi-pin-angle"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          // id="pinTooltip"
-                                          ></i>
-                                          {" "}
                                           Pin
                                         </DropdownItem>
                                         <DropdownItem
@@ -3047,16 +2771,6 @@ const ChatRc = () => {
                                             setRemainderModelOpen(true)
                                           }}
                                         >
-                                          <i
-                                            className="bi bi-alarm"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                          // id="reminderTooltip"
-                                          ></i>
-                                          {" "}
                                           Reminder
                                         </DropdownItem>
                                         <DropdownItem
@@ -3069,16 +2783,6 @@ const ChatRc = () => {
                                               )
                                           }}
                                         >
-                                          <i
-                                            className="bi bi-trash"
-                                            style={{
-                                              fontSize: "15px",
-                                              fontWeight: "bold",
-                                              cursor: "pointer",
-                                            }}
-                                            id="deleteTooltip"
-                                          ></i>
-                                          {" "}
                                           Delete
                                         </DropdownItem>
                                         {/* <DropdownItem
@@ -3288,7 +2992,7 @@ const ChatRc = () => {
                         {currentChat?.isGroup && (
                           <SubgroupBar
                             groups={allgroups}
-                            selectedGroup={currentChat} ute
+                            selectedGroup={currentChat}ute
                             setSelectedgroup={setCurrentChat}
                             openSubGroupmodel={setSubGroupModelOpen}
                             currentCase={currentCase}
@@ -3298,7 +3002,8 @@ const ChatRc = () => {
                         {isFullScreen ? (
                           <>
                             <div
-                              className={`border border-2 border-primary rounded-4 p-2 chat-input-section ${isFullScreen ? "full-screen" : ""
+                              className={`border border-2 border-primary rounded-4 p-2 chat-input-section ${
+                                isFullScreen ? "full-screen" : ""
                                 }`}
                             // style={{border: "4px solid #9BAADD"}}
                             >
@@ -3378,7 +3083,6 @@ const ChatRc = () => {
                                                   isEmptyOrSpaces
                                                 }
                                                 inputBoxHeight={inputBoxHeight}
-                                                setAllFiles={setAllFiles}
                                               />
                                             </div>
                                           </>
@@ -3421,46 +3125,28 @@ const ChatRc = () => {
                                           disabled={
                                             recorder?.state === "recording"
                                           }
-                                          id="attachmentsTooltip"
+                                          title="Attachments"
                                           style={{
                                             color: "#556EE6",
                                             fontSize: "16px",
                                             cursor: "pointer",
                                           }}
                                         ></i>
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="attachmentsTooltip"
-                                        >
-                                          Attachments
-                                        </UncontrolledTooltip>
                                       </label>
                                       <i
                                         className="bi bi-fullscreen-exit"
-                                        id="fullScreenTooltip"
                                         onClick={toggleFullScreen}
                                         style={{
                                           color: "#556EE6",
                                           fontSize: "16px",
                                           cursor: "pointer",
                                         }}
-
+                                        title={
+                                          isFullScreen
+                                            ? "Exit Full Screen"
+                                            : "Enter Full Screen"
+                                        }
                                       ></i>
-                                      {isFullScreen ?
-                                        (<UncontrolledTooltip
-                                          placement="bottom"
-                                          target="fullScreenTooltip"
-                                        >
-                                          Exit FullScreen
-                                        </UncontrolledTooltip>
-                                        ) : (
-                                          <UncontrolledTooltip
-                                            placement="bottom"
-                                            target="fullScreenTooltip"
-                                          >
-                                            Enter FullScreen
-                                          </UncontrolledTooltip>)
-                                      }
                                     </div>
                                   )}
                                   {recorder &&
@@ -3478,7 +3164,7 @@ const ChatRc = () => {
                                   ) : (
                                     <i
                                       className="mdi mdi-microphone font-size-20 text-primary me-2"
-                                      id="micTooltip"
+                                      title="Start Recording"
                                       onClick={startRecording}
                                       disabled={recorder?.state == "recording"}
                                       style={{
@@ -3487,12 +3173,6 @@ const ChatRc = () => {
                                       }}
                                     ></i>
                                   )}
-                                  <UncontrolledTooltip
-                                    placement="bottom"
-                                    target="micTooltip"
-                                  >
-                                    Start Recording
-                                  </UncontrolledTooltip>
 
                                   {recorder?.state !== "recording" && (
                                     <div>
@@ -3530,7 +3210,6 @@ const ChatRc = () => {
                                   >
                                     <i
                                       className="bi bi-type"
-                                      id="typeTooltip"
                                       onClick={() => {
                                         toggle_Quill()
                                       }}
@@ -3540,22 +3219,12 @@ const ChatRc = () => {
                                         fontWeight: "bold",
                                         cursor: "pointer",
                                       }}
-
+                                      title={
+                                        isQuill
+                                          ? "Show Formatting"
+                                          : "Hide Formatting"
+                                      }
                                     ></i>
-                                    {isQuill ?
-                                      (<UncontrolledTooltip
-                                        placement="bottom"
-                                        target="typeTooltip"
-                                      >
-                                        Show Formatting
-                                      </UncontrolledTooltip>
-                                      ) : (
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="typeTooltip"
-                                        >
-                                          Hide Formatting
-                                        </UncontrolledTooltip>)}
                                   </div>
                                 </div>
                               </div>
@@ -3646,7 +3315,6 @@ const ChatRc = () => {
                                                   isEmptyOrSpaces
                                                 }
                                                 inputBoxHeight={inputBoxHeight}
-                                                setAllFiles={setAllFiles}
                                               />
                                             </div>
                                           </>
@@ -3689,47 +3357,28 @@ const ChatRc = () => {
                                         disabled={
                                           recorder?.state === "recording"
                                         }
-                                        id="attachmentsTooltip"
+                                        title="Attachments"
                                         style={{
                                           color: "#556EE6",
                                           fontSize: "16px",
                                           cursor: "pointer",
                                         }}
-
                                       ></i>
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="attachmentsTooltip"
-                                      >
-                                        Attachments
-                                      </UncontrolledTooltip>
                                     </label>
                                     <i
                                       className="bi bi-arrows-fullscreen"
-                                      id="fullScreenTooltip"
                                       onClick={toggleFullScreen}
                                       style={{
                                         color: "#556EE6",
                                         fontSize: "16px",
                                         cursor: "pointer",
                                       }}
-
+                                      title={
+                                        isFullScreen
+                                          ? "Exit Full Screen"
+                                          : "Enter Full Screen"
+                                      }
                                     ></i>
-                                    {isFullScreen ?
-                                      (<UncontrolledTooltip
-                                        placement="bottom"
-                                        target="fullScreenTooltip"
-                                      >
-                                        Exit FullScreen
-                                      </UncontrolledTooltip>
-                                      ) : (
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="fullScreenTooltip"
-                                        >
-                                          Enter FullScreen
-                                        </UncontrolledTooltip>)
-                                    }
                                   </div>
                                 )}
                                 {recorder && recorder.state === "recording" ? (
@@ -3746,7 +3395,7 @@ const ChatRc = () => {
                                 ) : (
                                   <i
                                     className="mdi mdi-microphone font-size-20 text-primary me-2"
-                                    id="micTooltip"
+                                    title="Start Recording"
                                     onClick={startRecording}
                                     disabled={recorder?.state == "recording"}
                                     style={{
@@ -3755,19 +3404,12 @@ const ChatRc = () => {
                                     }}
                                   ></i>
                                 )}
-                                <UncontrolledTooltip
-                                  placement="bottom"
-                                  target="micTooltip"
-                                >
-                                  Start Recording
-                                </UncontrolledTooltip>
 
                                 {recorder?.state !== "recording" && (
                                   <div>
                                     {loading ? (
                                       <button
                                         type="button"
-                                        id="sendTooltip"
                                         className="btn btn-primary btn-rounded chat-send"
                                         color="primary"
                                         style={{
@@ -3775,29 +3417,16 @@ const ChatRc = () => {
                                         }}
                                       >
                                         <i className="bx bx-loader-alt bx-spin font-size-20 align-middle"></i>
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="sendTooltip"
-                                        >
-                                          Send Now
-                                        </UncontrolledTooltip>
                                       </button>
                                     ) : (
                                       <button
                                         type="button"
-                                        id="sendTooltip"
                                         className="btn btn-primary btn-rounded chat-send"
                                         color="primary"
                                         onClick={() => handleSendMessage()}
                                         disabled={isEmptyOrSpaces()}
                                       >
                                         <i className="mdi mdi-send"></i>
-                                        <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="sendTooltip"
-                                        >
-                                          Send Now
-                                        </UncontrolledTooltip>
                                       </button>
                                     )}
                                   </div>
@@ -3812,7 +3441,6 @@ const ChatRc = () => {
                                 >
                                   <i
                                     className="bi bi-type"
-                                    id="typeTooltip"
                                     onClick={() => {
                                       toggle_Quill()
                                     }}
@@ -3822,22 +3450,12 @@ const ChatRc = () => {
                                       fontWeight: "bold",
                                       cursor: "pointer",
                                     }}
-
+                                    title={
+                                      isQuill
+                                        ? "Show Formatting"
+                                        : "Hide Formatting"
+                                    }
                                   ></i>
-                                  {isQuill ?
-                                    (<UncontrolledTooltip
-                                      placement="bottom"
-                                      target="typeTooltip"
-                                    >
-                                      Show Formatting
-                                    </UncontrolledTooltip>
-                                    ) : (
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="typeTooltip"
-                                      >
-                                        Hide Formatting
-                                      </UncontrolledTooltip>)}
                                 </div>
                               </div>
                             </div>
@@ -3847,8 +3465,8 @@ const ChatRc = () => {
                         <br />
                         <br />
                         <br />
-
-                      </Card>
+                        
+                   </Card>
                     )
                   ) : (
                     <NoChat />
