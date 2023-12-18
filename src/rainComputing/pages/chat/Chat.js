@@ -2807,10 +2807,10 @@ const ChatRc = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                     ) : (
-                                      currentChat &&
-                                      currentChat?.admins?.includes(
-                                        currentUser?.userID
-                                      ) && (
+                                      // currentChat &&
+                                      // currentChat?.admins?.includes(
+                                      //   currentUser?.userID
+                                      // ) && (
                                       <DropdownMenu>
                                         <DropdownItem
                                           href="#"
@@ -2860,7 +2860,7 @@ const ChatRc = () => {
                                           Delete chat
                                         </DropdownItem>
                                       </DropdownMenu>
-                                      )
+                                      // )
                                     )}
                                   </Dropdown>
                                 </li>
