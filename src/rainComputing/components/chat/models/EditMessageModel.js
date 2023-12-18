@@ -1,7 +1,7 @@
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import React, { useEffect, useState } from "react"
 import { Mention, MentionsInput } from "react-mentions"
-import { Col, Modal, Row } from "reactstrap"
+import { Col, Modal, Row, UncontrolledTooltip } from "reactstrap"
 import PropTypes from "prop-types"
 import { messageUpdate } from "rainComputing/helpers/backend_helper"
 import { useChat } from "rainComputing/contextProviders/ChatProvider"
@@ -19,6 +19,8 @@ const EditMessageModel = ({
   currentChat,
   getChatName,
   currentCase,
+  subject,
+  setSubject
 }) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
@@ -36,6 +38,7 @@ const EditMessageModel = ({
     const payload = {
       _id: id,
       // sender: currentUser?.userID,
+      subject: subject,
       messageData: updateMessages,
       createdAt: curEditMessageId.createdAt,
     }
@@ -49,11 +52,13 @@ const EditMessageModel = ({
       toastr.error("Unable to Edit Message after 10 min", "Failed!!!")
     }
     setOpen(false)
+    setSubject("")
   }
 
   useEffect(() => {
     setUpdateMessages(curMessageId?.messageData)
-  }, [curMessageId?.messageData])
+    setSubject(curMessageId?.subject)
+  }, [curMessageId?.messageData, curMessageId?.subject])
   return (
     <>
       <Modal
@@ -89,6 +94,8 @@ const EditMessageModel = ({
                   currentChat={currentChat}
                   getChatName={getChatName}
                   currentCase={currentCase}
+                  subject={subject}
+                  setSubject={setSubject}
                 />
               </div>
               <div style={{ position: "absolute", right: "30px", top: "7px" }}>
@@ -103,8 +110,22 @@ const EditMessageModel = ({
                     fontWeight: "bold",
                     cursor: "pointer",
                   }}
-                  title={isQuill ? "Show Formatting" : "Hide Formatting"}
+                  id="typeTooltip"
                 ></i>
+                {isQuill ?
+                  (<UncontrolledTooltip
+                    placement="bottom"
+                    target="typeTooltip"
+                  >
+                    Show Formatting
+                  </UncontrolledTooltip>
+                  ) : (
+                    <UncontrolledTooltip
+                      placement="bottom"
+                      target="typeTooltip"
+                    >
+                      Hide Formatting
+                    </UncontrolledTooltip>)}
               </div>
             </Col>
           </Row>
@@ -144,6 +165,8 @@ EditMessageModel.propTypes = {
   currentChat: PropTypes.any,
   getChatName: PropTypes.any,
   currentCase: PropTypes.any,
+  subject: PropTypes.any,
+  setSubject: PropTypes.any,
 }
 
 export default EditMessageModel
