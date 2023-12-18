@@ -2707,6 +2707,7 @@ const ChatRc = () => {
                                         </div>
                                       </DropdownToggle>
                                     ) : (
+
                                       // currentChat &&
                                       // currentChat?.admins?.includes(
                                       //   currentUser?.userID
@@ -2722,6 +2723,7 @@ const ChatRc = () => {
                                         </DropdownToggle>
                                       </div>
                                       // )
+                                      
                                     )}
                                     {currentCase?.admins?.includes(
                                       currentUser?.userID
