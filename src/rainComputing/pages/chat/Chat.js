@@ -188,7 +188,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
-
+  console.log("currentChat:", currentChat)
   const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
@@ -269,6 +269,7 @@ const ChatRc = () => {
   const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
+  console.log("currentCase:", currentCase)
   const [allgroups, setAllgroups] = useState([])
   const [receivers, setReceivers] = useState([])
   const [isAttachment, setIsAttachment] = useState(false)
@@ -413,19 +414,28 @@ const ChatRc = () => {
     }
   }
 
-  const scrollToBottom = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight
+  // const scrollToBottom = () => {
+  //   if (containerRef.current) {
+  //     containerRef.current.scrollTop = containerRef.current.scrollHeight
 
-      containerRef.current.scrollIntoView({ behavior: "auto", block: "end" })
-    }
+  //     containerRef.current.scrollIntoView({ behavior: "auto", block: "end" })
+  //   }
+  // }
+
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      left: 0,
+      top: containerRef.current.scrollHeight,
+      behavior: "auto", // Changing behavior to "auto" will cause the scrolling to happen instantly
+    })
   }
+
   // useEffect(() => {
   //   scrollToBottom();
   // }, []);
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages, currentChat])
+  // useEffect(() => {
+  //   scrollToBottom()
+  // }, [messages, currentChat])
 
   const handlerefreshemail = async () => {
     setChatLoader(true)
@@ -2708,22 +2718,22 @@ const ChatRc = () => {
                                       </DropdownToggle>
                                     ) : (
 
-                                      // currentChat &&
-                                      // currentChat?.admins?.includes(
-                                      //   currentUser?.userID
-                                      // ) && (
-                                      <div className="conversation-name">
-                                        <DropdownToggle
-                                          className="btn nav-btn"
-                                          tag="i"
-                                        >
-                                          <div>
-                                            <i className="bx bx-cog" />
-                                          </div>
-                                        </DropdownToggle>
-                                      </div>
-                                      // )
-                                      
+                                      currentChat &&
+                                      currentChat?.admins?.includes(
+                                        currentUser?.userID
+                                      ) && (
+                                        <div className="conversation-name">
+                                          <DropdownToggle
+                                            className="btn nav-btn"
+                                            tag="i"
+                                          >
+                                            <div>
+                                              <i className="bx bx-cog" />
+                                            </div>
+                                          </DropdownToggle>
+                                        </div>
+                                      )
+
                                     )}
                                     {currentCase?.admins?.includes(
                                       currentUser?.userID
@@ -2807,60 +2817,60 @@ const ChatRc = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                     ) : (
-                                      // currentChat &&
-                                      // currentChat?.admins?.includes(
-                                      //   currentUser?.userID
-                                      // ) && (
-                                      <DropdownMenu>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() => onArchievingChat()}
-                                        ><i
-                                          className="bi bi-archive"
-                                          style={{
-                                            fontSize: "15px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer",
-                                          }}
-                                        ></i>
-                                          {" "}
-                                          Archive Chat
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() =>
-                                            toggle_emailModal(true)
-                                          }
-                                        ><i
-                                          className="bi bi-envelope"
-                                          style={{
-                                            fontSize: "15px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer",
-                                            color: "black"
-                                          }}
-                                        ></i>
-                                          {" "}
-                                          Email
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          href="#"
-                                          onClick={() =>
-                                            handleChatDelete(currentChat?._id)
-                                          }
-                                        ><i
-                                          className="bi bi-trash"
-                                          style={{
-                                            fontSize: "15px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer",
-                                          }}
-                                        ></i>
-                                          {" "}
-                                          Delete chat
-                                        </DropdownItem>
-                                      </DropdownMenu>
-                                      // )
+                                      currentChat &&
+                                      currentChat?.admins?.includes(
+                                        currentUser?.userID
+                                      ) && (
+                                        <DropdownMenu>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() => onArchievingChat()}
+                                          ><i
+                                            className="bi bi-archive"
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bold",
+                                              cursor: "pointer",
+                                            }}
+                                          ></i>
+                                            {" "}
+                                            Archive Chat
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              toggle_emailModal(true)
+                                            }
+                                          ><i
+                                            className="bi bi-envelope"
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bold",
+                                              cursor: "pointer",
+                                              color: "black"
+                                            }}
+                                          ></i>
+                                            {" "}
+                                            Email
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            href="#"
+                                            onClick={() =>
+                                              handleChatDelete(currentChat?._id)
+                                            }
+                                          ><i
+                                            className="bi bi-trash"
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bold",
+                                              cursor: "pointer",
+                                            }}
+                                          ></i>
+                                            {" "}
+                                            Delete chat
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      )
                                     )}
                                   </Dropdown>
                                 </li>
