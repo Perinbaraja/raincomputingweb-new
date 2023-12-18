@@ -23,10 +23,17 @@ const ReactQuillInput = ({
   currentCase,
   getChatName,
   inputBoxHeight,
-  setAllFiles
+  setAllFiles,
+  subject,
+  setSubject
 }) => {
 
-  console.log("currentChat",currentChat)
+  console.log("currentChat", currentChat)
+
+  const onSubjectChange = (e) => {
+    // Handle the subject input change here
+    setSubject(e.target.value);
+  };
   let modules = {
     toolbar: false,
     mention: {
@@ -87,123 +94,101 @@ const ReactQuillInput = ({
     "emoji-toolbar": true,
     "emoji-shortname": true,
   }
-  const place =currentChat?.isGroup
+  const place = currentChat?.isGroup
     ? currentCase?.caseName || "Case Chat"
     : getChatName(currentChat.groupMembers)
-  const placeholder =`Message ${place}`;
+  const placeholder = `Message ${place}`;
 
-// InputBox Drag And Drop Function
-const { getRootProps, getInputProps } = useDropzone({
-  accept:
-    ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
-  onDrop: acceptedFiles => {
-    setAllFiles(
-      acceptedFiles.map(allFiles =>
-        Object.assign(allFiles, {
-          preview: URL.createObjectURL(allFiles),
-        })
+  // InputBox Drag And Drop Function
+  const { getRootProps, getInputProps } = useDropzone({
+    accept:
+      ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
+    onDrop: acceptedFiles => {
+      setAllFiles(
+        acceptedFiles.map(allFiles =>
+          Object.assign(allFiles, {
+            preview: URL.createObjectURL(allFiles),
+          })
+        )
       )
-    )
-  },
-  noClick: true, // Prevent opening file dialog on click
-  noKeyboard: true,
-})
+    },
+    noClick: true, // Prevent opening file dialog on click
+    noKeyboard: true,
+  })
   return (
     <div style={{ position: "relative" }}>
       {isQuill && (
         <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        <ReactQuill
-          theme="snow"
-          className="quil"
-          value={value}
-          onKeyDown={onKeyPress}
-          modules={modules}
-          placeholder={placeholder}
-          defaultValue={messages?.find(
-            m => m._id === curMessageId?.messageData
-          )}
-          disabled={() => isEmptyOrSpaces()}
-          // onChange={(content, delta, source, editor) => {
-          //   onChange(content, delta, source, editor)
-          // }}
-          onChange={onChange}
-          style={{
-            flex: 1,
-            // border: "2px solid #9BAADD",
-            // borderRadius: "10px",
-            height: inputBoxHeight,
-            // overflow: "hidden",
-            // wordWrap: "break-word",
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
-            whiteSpace: "pre-line",
-          }}
-        />
+          <input {...getInputProps()} />
+          <ReactQuill
+            theme="snow"
+            className="quil"
+            value={value}
+            onKeyDown={onKeyPress}
+            modules={modules}
+            placeholder={placeholder}
+            defaultValue={messages?.find(
+              m => m._id === curMessageId?.messageData
+            )}
+            disabled={() => isEmptyOrSpaces()}
+            // onChange={(content, delta, source, editor) => {
+            //   onChange(content, delta, source, editor)
+            // }}
+            onChange={onChange}
+            style={{
+              flex: 1,
+              height: inputBoxHeight,
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-line",
+            }}
+          />
         </div>
       )}
       {!isQuill && (
         <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        <ReactQuill
-          theme="snow"
-          className="quil"
-          value={value}
-          onKeyDown={onKeyPress}
-          modules={modules1}
-          placeholder={placeholder}
-          defaultValue={messages?.find(
-            m => m._id === curMessageId?.messageData
-          )}
-          disabled={() => isEmptyOrSpaces()}
-          // onChange={(content, delta, source, editor) => {
-          //   onChange(content, delta, source, editor)
-          // }}
-          onChange={onChange}
-          style={{
-            flex: 1,
-            // border: "2px solid #9BAADD",
-            // borderRadius: "10px",
-            height: inputBoxHeight,
-            // overflow: "hidden",
-            // wordWrap: "break-word",
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
-            whiteSpace: "pre-line",
-          }}
-        />
-        </div>
-      )}
-      {!isQuill && isFullScreen   &&(
-        <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        <ReactQuill
-          theme="snow"
-          className=""
-          value={value}
-          onKeyDown={onKeyPress}
-          modules={modules1}
-          placeholder="Enter Message..."
-          defaultValue={messages?.find(
-            m => m._id === curMessageId?.messageData
-          )}
-          disabled={() => isEmptyOrSpaces()}
-          // onChange={(content, delta, source, editor) => {
-          //   onChange(content, delta, source, editor)
-          // }}
-          onChange={onChange}
-          style={{
-            flex: 1,
-            // border: "2px solid #9BAADD",
-            // borderRadius: "10px",
-            height: inputBoxHeight,
-            // overflow: "hidden",
-            // wordWrap: "break-word",
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
-            whiteSpace: "pre-line",
-          }}
-        />
+          <input {...getInputProps()} />
+          <input
+            type="text"
+            placeholder="Type the Subject of this message..."
+            value={subject}
+            onChange={onSubjectChange}
+            className="px-2 py-1 text-break mb-1 border border-2 border-dark rounded-3 "
+            style={{
+              position: "absolute",
+              right: "50px",
+              top: "5px",
+              width: "250px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-line",
+              minWidth: "fit-content"
+            }}
+          />
+
+          <ReactQuill
+            theme="snow"
+            className="quil"
+            value={value}
+            onKeyDown={onKeyPress}
+            modules={modules1}
+            placeholder={placeholder}
+            defaultValue={messages?.find(
+              m => m._id === curMessageId?.messageData
+            )}
+            disabled={() => isEmptyOrSpaces()}
+            // onChange={(content, delta, source, editor) => {
+            //   onChange(content, delta, source, editor)
+            // }}
+            onChange={onChange}
+            style={{
+              flex: 1,
+              height: inputBoxHeight,
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-line",
+            }}
+          />
         </div>
       )}
     </div>
@@ -221,11 +206,13 @@ ReactQuillInput.propTypes = {
   isEmptyOrSpaces: PropTypes.any,
   setModalOpen: PropTypes.any,
   isFullScreen: PropTypes.any,
-  currentChat:PropTypes.any,
-  currentCase:PropTypes.any,
-  getChatName:PropTypes.any,
+  currentChat: PropTypes.any,
+  currentCase: PropTypes.any,
+  getChatName: PropTypes.any,
   inputBoxHeight: PropTypes.any,
   setAllFiles: PropTypes.any,
+  subject: PropTypes.any,
+  setSubject: PropTypes.any,
 }
 
 export default ReactQuillInput

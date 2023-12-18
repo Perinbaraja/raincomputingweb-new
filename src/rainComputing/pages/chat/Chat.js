@@ -112,6 +112,7 @@ import { log } from "logrocket"
 import CaseFilesGrid from "rainComputing/components/chat/CaseFilesGrid"
 import LinksModel from "rainComputing/components/chat/models/LinksModel"
 import ReplyMessageComponent from "rainComputing/components/chat/ReplyMessage"
+import { Search } from "react-bootstrap-table2-toolkit"
 
 const CreateCase = lazy(() =>
   import("rainComputing/components/chat/CreateCase")
@@ -312,6 +313,7 @@ const ChatRc = () => {
   const [nonewmessage, setNoNewMessage] = useState([])
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [inputBoxHeight, setInputBoxHeight] = useState("100%");
+  const [subject, setSubject] = useState('');
   const toggleFullScreen = () => {
     if (isFullScreen) {
       setInputBoxHeight("100%");
@@ -983,6 +985,7 @@ const ChatRc = () => {
         groupId: currentChat?._id,
         sender: currentUser?.userID,
         receivers,
+        subject: subject,
         messageData: curMessage,
         isAttachment,
         isVoiceMessage,
@@ -1064,6 +1067,7 @@ const ChatRc = () => {
       setAllFiles([])
       setAllVoicemsg([])
       setcurMessage("")
+      setSubject("")
       setIsAttachment(false)
       setIsVoiceMessage(false)
       setRecorder([])
@@ -1090,6 +1094,55 @@ const ChatRc = () => {
       // setRecorder(updatedVoicemsg);
     },
   })
+
+  // Copy Paste Function
+
+  const allowedFileTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/x-zip-compressed",
+    "audio/mpeg",
+    "audio/webm",
+    "audio/ogg",
+    "audio/wav",
+  ];
+
+  const handlePaste = (event) => {
+    const clipboardData = event.clipboardData || window.clipboardData;
+    const items = clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (allowedFileTypes.includes(item.type)) {
+        const blob = item.getAsFile();
+        const originalFileName =
+          item.kind === "file"
+            ? item.getAsFile().name
+            : `pasted-file.${blob.type.split("/")[1]}`;
+        const file = new File([blob], originalFileName, {
+          type: blob.type,
+        });
+        setAllFiles((prevFiles) => [
+          ...prevFiles,
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          }),
+        ]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
 
   const onChange = (content, delta, source, editor) => {
     // Remove <p> and <br> tags from the content
@@ -1282,8 +1335,7 @@ const ChatRc = () => {
         )
       },
     })
-    const chatDocName = `${
-      currentCase?.caseName ?? "Private Chat"
+    const chatDocName = `${currentCase?.caseName ?? "Private Chat"
       } - ${groupName} - ${moment(Date.now()).format("DD-MM-YY HH:mm")}`
     const chatDocBlob = doc.output("blob")
     const zip = new JSZip()
@@ -1387,20 +1439,82 @@ const ChatRc = () => {
   //     setSearchedMessages([])
   //   }
   // }, [searchMessageText])
+
+  // Latest Search
+
   useEffect(() => {
     if (searchMessageText) {
       setSearchedMessages(
         messages?.filter(m =>
-          m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
+          m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase()) ||
+          (searchMessageText.length === 8 && moment(m.createdAt).format("DD-MM-YY").includes(searchMessageText.toLowerCase()))
         )
       )
+    } else if (!searchText) {
+      setSearchedMessages([])
+      setsearch_Menu(false)
+      setSearchMessagesText("") // Clear searchMessageText
+      const timer = setTimeout(() => {
+        scrollToBottom()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchMessageText, searchText, searchIndex, currentChat])
+  useEffect(() => {
+    if (searchText) {
+      setsearch_Menu(true)
+      setSearchMessagesText(searchText)
+      setSearchedMessages(
+        messages?.filter(m =>
+          m?.messageData.toLowerCase().includes(searchText.toLowerCase())
+        )
+      )
+    } else if (!isSearchTextCleared) {
+      setsearch_Menu(false)
+      setSearchedMessages([])
+      setSearchMessagesText("")
+      setCurrentChat(null) // Clear searchMessageText
+    }
+  }, [
+    searchText,
+    searchIndex,
+    searchMessageText,
+    isSearchTextCleared,
+    currentChat,
+    messages,
+  ])
+  useEffect(() => {
+    if (searchedMessages?.length > 0 && searchIndex >= 0) {
+      const elementid = searchedMessages[searchIndex]?._id
+      const messageElem = document.getElementById(elementid)
+      if (messageElem) {
+        messageElem.scrollIntoView({ behavior: "auto" })
+      }
     } else {
-      setSearchedMessages([])
+      setSearchIndex(0)
     }
-    return () => {
-      setSearchedMessages([])
-    }
-  }, [searchMessageText])
+  }, [
+    searchedMessages,
+    searchIndex,
+    currentChat,
+    searchMessageText,
+    searchText,
+  ])
+
+  // useEffect(() => {
+  //   if (searchMessageText) {
+  //     setSearchedMessages(
+  //       messages?.filter(m =>
+  //         m?.messageData.toLowerCase().includes(searchMessageText.toLowerCase())
+  //       )
+  //     )
+  //   } else {
+  //     setSearchedMessages([])
+  //   }
+  //   return () => {
+  //     setSearchedMessages([])
+  //   }
+  // }, [searchMessageText])
 
   const handleFileDownload = async ({ id, filename }) => {
     getFileFromGFS(
@@ -1413,14 +1527,14 @@ const ChatRc = () => {
     })
   }
 
-  useEffect(() => {
-    if (searchedMessages?.length > 0) {
-      const elementid = searchedMessages[0]?._id
-      document.getElementById(elementid)?.scrollIntoView(false)
-    } else {
-      setSearchIndex(0)
-    }
-  }, [searchedMessages])
+  // useEffect(() => {
+  //   if (searchedMessages?.length > 0) {
+  //     const elementid = searchedMessages[0]?._id
+  //     document.getElementById(elementid)?.scrollIntoView(false)
+  //   } else {
+  //     setSearchIndex(0)
+  //   }
+  // }, [searchedMessages])
 
   //Text Convert into Link URL
   const stringFormatter = txt => {
@@ -1868,8 +1982,7 @@ const ChatRc = () => {
                 open={subGroupModelOpen}
                 toggle={togglesubGroupModelOpen}
                 modalTitle="Subgroup Setting"
-                modalSubtitle={`You have ${
-                  allgroups.filter(a => !a.isParent)?.length || 0
+                modalSubtitle={`You have ${allgroups.filter(a => !a.isParent)?.length || 0
                   } subgroups`}
                 footer={true}
                 size="lg"
@@ -1892,7 +2005,7 @@ const ChatRc = () => {
               modalTitle="Shared Files"
               isClose={true}
             >
-              <CaseFilesGrid groupId={currentChat?._id} />
+              <CaseFilesGrid groupId={currentChat?._id} caseId={currentCase?._id} setFilesModelOpen={setFilesModelOpen} handleLocateMessage={handleLocateMessage} />
             </DynamicModel>
             <DynamicModel
               open={linksModelOpen}
@@ -1901,7 +2014,7 @@ const ChatRc = () => {
               modalTitle="Links"
               isClose={true}
             >
-              <LinksModel />
+              <LinksModel setLinksModelOpen={setLinksModelOpen} handleLocateMessage={handleLocateMessage} />
             </DynamicModel>
             {/* <DynamicModel
               open={subdomainModelOpen}
@@ -1936,6 +2049,8 @@ const ChatRc = () => {
               currentChat={currentChat}
               currentCase={currentCase}
               getChatName={getChatName}
+              subject={subject}
+              setSubject={setSubject}
             />
 
             <ReplyMsgModal
@@ -1971,7 +2086,8 @@ const ChatRc = () => {
               setIsAttachment={setIsAttachment}
               setIsVoiceMessage={setIsVoiceMessage}
               setDuration={setDuration}
-                      
+              subject={subject}
+              setSubject={setSubject}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -2302,7 +2418,7 @@ const ChatRc = () => {
                                           <h5 className="text-truncate font-size-14 mb-1">
                                             {contact.firstname}{" "}
                                             {contact.lastname}
-                                            {}
+                                            { }
                                           </h5>
                                           <p className="font-size-12 mb-1 text-primary ">
                                             {contact.email}
@@ -2551,7 +2667,7 @@ const ChatRc = () => {
                                         <Input
                                           type="text"
                                           className="form-control"
-                                          placeholder="Search ..."
+                                          placeholder="Messages & DD-MM-YY.."
                                           aria-label="Recipient's username"
                                           value={searchMessageText}
                                           onChange={e =>
@@ -2595,16 +2711,16 @@ const ChatRc = () => {
                                       // currentChat?.admins?.includes(
                                       //   currentUser?.userID
                                       // ) && (
-                                        <div className="conversation-name">
-                                          <DropdownToggle
-                                            className="btn nav-btn"
-                                            tag="i"
-                                          >
-                                            <div>
-                                              <i className="bx bx-cog" />
-                                            </div>
-                                          </DropdownToggle>
-                                        </div>
+                                      <div className="conversation-name">
+                                        <DropdownToggle
+                                          className="btn nav-btn"
+                                          tag="i"
+                                        >
+                                          <div>
+                                            <i className="bx bx-cog" />
+                                          </div>
+                                        </DropdownToggle>
+                                      </div>
                                       // )
                                     )}
                                     {currentCase?.admins?.includes(
@@ -2615,6 +2731,15 @@ const ChatRc = () => {
                                           href="#"
                                           onClick={() => onArchievingChat()}
                                         >
+                                          <i
+                                            className="bi bi-archive"
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bold",
+                                              cursor: "pointer",
+                                            }}
+                                          ></i>
+                                          {" "}
                                           Archive Chat
                                         </DropdownItem>
                                         <DropdownItem
@@ -2622,7 +2747,15 @@ const ChatRc = () => {
                                           onClick={() =>
                                             setCaseEditModalOpen(true)
                                           }
-                                        >
+                                        ><i
+                                          className="bi bi-pen"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                          {" "}
                                           Manage Case
                                         </DropdownItem>
                                         <DropdownItem
@@ -2630,19 +2763,44 @@ const ChatRc = () => {
                                           onClick={() =>
                                             toggle_emailModal(true)
                                           }
-                                        >
+                                        ><i
+                                          className="bi bi-envelope"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                            color: "black"
+                                          }}
+                                        ></i>
+                                          {" "}
                                           Email
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
                                           onClick={() => handleCaseDelete()}
-                                        >
+                                        ><i
+                                          className="bi bi-trash"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                          {" "}
                                           Delete case
                                         </DropdownItem>
                                         <DropdownItem
                                           href="#"
                                           onClick={() => handleCaseCompleted()}
-                                        >
+                                        ><i
+                                          className="bi bi-check-circle"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                          {" "}
                                           Completed case
                                         </DropdownItem>
                                       </DropdownMenu>
@@ -2651,30 +2809,55 @@ const ChatRc = () => {
                                       // currentChat?.admins?.includes(
                                       //   currentUser?.userID
                                       // ) && (
-                                        <DropdownMenu>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() => onArchievingChat()}
-                                          >
-                                            Archive Chat
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() =>
-                                              toggle_emailModal(true)
-                                            }
-                                          >
-                                            Email
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            href="#"
-                                            onClick={() =>
-                                              handleChatDelete(currentChat?._id)
-                                            }
-                                          >
-                                            Delete chat
-                                          </DropdownItem>
-                                        </DropdownMenu>
+                                      <DropdownMenu>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() => onArchievingChat()}
+                                        ><i
+                                          className="bi bi-archive"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                          {" "}
+                                          Archive Chat
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() =>
+                                            toggle_emailModal(true)
+                                          }
+                                        ><i
+                                          className="bi bi-envelope"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                            color: "black"
+                                          }}
+                                        ></i>
+                                          {" "}
+                                          Email
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          href="#"
+                                          onClick={() =>
+                                            handleChatDelete(currentChat?._id)
+                                          }
+                                        ><i
+                                          className="bi bi-trash"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        ></i>
+                                          {" "}
+                                          Delete chat
+                                        </DropdownItem>
+                                      </DropdownMenu>
                                       // )
                                     )}
                                   </Dropdown>
@@ -2748,7 +2931,17 @@ const ChatRc = () => {
                                             setCurReplyMessageId(msg)
                                             setReplyMsgModalOpen(true)
                                           }}
+                                        ><i
+                                          className="bi bi-reply"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        // id="replyTooltip"
                                         >
+                                          </i>
+                                          {" "}
                                           Reply
                                         </DropdownItem>
                                         {msg?.sender === currentUser.userID && (
@@ -2758,7 +2951,16 @@ const ChatRc = () => {
                                               setCurEditMessageId(msg)
                                               setMessageEditModalOpen(true)
                                             }}
-                                          >
+                                          ><i
+                                            className="bi bi-pen"
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bold",
+                                              cursor: "pointer",
+                                            }}
+                                          // id="editTooltip"
+                                          ></i>
+                                            {" "}
                                             Edit
                                           </DropdownItem>
                                         )}
@@ -2767,7 +2969,16 @@ const ChatRc = () => {
                                           onClick={() => {
                                             onPinnedMessage(msg)
                                           }}
-                                        >
+                                        ><i
+                                          className="bi bi-pin-angle"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        // id="pinTooltip"
+                                        ></i>
+                                          {" "}
                                           Pin
                                         </DropdownItem>
                                         <DropdownItem
@@ -2776,7 +2987,16 @@ const ChatRc = () => {
                                             setCurReminderMessageId(msg)
                                             setRemainderModelOpen(true)
                                           }}
-                                        >
+                                        ><i
+                                          className="bi bi-alarm"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                        // id="reminderTooltip"
+                                        ></i>
+                                          {" "}
                                           Reminder
                                         </DropdownItem>
                                         <DropdownItem
@@ -2788,7 +3008,16 @@ const ChatRc = () => {
                                                 "Unable to  delete other's message"
                                               )
                                           }}
-                                        >
+                                        ><i
+                                          className="bi bi-trash"
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                          }}
+                                          id="deleteTooltip"
+                                        ></i>
+                                          {" "}
                                           Delete
                                         </DropdownItem>
                                         {/* <DropdownItem
@@ -2892,6 +3121,7 @@ const ChatRc = () => {
                                             </div>
                                           </>
                                         ) : (
+
                                           // <div
                                           //   style={{
                                           //     whiteSpace: "break-spaces",
@@ -2902,14 +3132,21 @@ const ChatRc = () => {
                                           //   )}
 
                                           // </div>
-                                          <div
-                                            style={{
-                                              whiteSpace: "break-spaces",
-                                            }}
-                                            dangerouslySetInnerHTML={{
-                                              __html: msg?.messageData,
-                                            }}
-                                          />
+                                          <>
+                                            {msg?.subject &&
+                                              <div>
+                                                <p className="fw-bolder">Subject : {msg?.subject}</p>
+                                              </div>
+                                            }
+                                            <div
+                                              style={{
+                                                whiteSpace: "break-spaces",
+                                              }}
+                                              dangerouslySetInnerHTML={{
+                                                __html: msg?.messageData,
+                                              }}
+                                            />
+                                          </>
                                         )}
                                       </div>
                                       {msg?.isVoiceMessage && (
@@ -2978,6 +3215,11 @@ const ChatRc = () => {
                                           {currentUser?.firstname +
                                             currentUser?.lastname}
                                         </div>
+                                        {msg?.subject &&
+                                          <div className="mb-1">
+                                            <p className="fw-bolder">Subject : {msg.subject}</p>
+                                          </div>
+                                        }
                                         <div className="mb-1">
                                           {msg.messageData}
                                         </div>
@@ -2998,7 +3240,7 @@ const ChatRc = () => {
                         {currentChat?.isGroup && (
                           <SubgroupBar
                             groups={allgroups}
-                            selectedGroup={currentChat}ute
+                            selectedGroup={currentChat} ute
                             setSelectedgroup={setCurrentChat}
                             openSubGroupmodel={setSubGroupModelOpen}
                             currentCase={currentCase}
@@ -3008,8 +3250,7 @@ const ChatRc = () => {
                         {isFullScreen ? (
                           <>
                             <div
-                              className={`border border-2 border-primary rounded-4 p-2 chat-input-section ${
-                                isFullScreen ? "full-screen" : ""
+                              className={`border border-2 border-primary rounded-4 p-2 chat-input-section ${isFullScreen ? "full-screen" : ""
                                 }`}
                             // style={{border: "4px solid #9BAADD"}}
                             >
@@ -3089,6 +3330,9 @@ const ChatRc = () => {
                                                   isEmptyOrSpaces
                                                 }
                                                 inputBoxHeight={inputBoxHeight}
+                                                setAllFiles={setAllFiles}
+                                                subject={subject}
+                                                setSubject={setSubject}
                                               />
                                             </div>
                                           </>
@@ -3321,6 +3565,9 @@ const ChatRc = () => {
                                                   isEmptyOrSpaces
                                                 }
                                                 inputBoxHeight={inputBoxHeight}
+                                                setAllFiles={setAllFiles}
+                                                subject={subject}
+                                                setSubject={setSubject}
                                               />
                                             </div>
                                           </>
@@ -3471,8 +3718,8 @@ const ChatRc = () => {
                         <br />
                         <br />
                         <br />
-                        
-                   </Card>
+
+                      </Card>
                     )
                   ) : (
                     <NoChat />
