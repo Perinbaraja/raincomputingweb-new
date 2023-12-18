@@ -47,7 +47,9 @@ const ReplyMsgModal = ({
   setIsVoiceMessage,
   setIsAttachment,
   startRecording,
-  stopRecording
+  stopRecording,
+  subject,
+  setSubject
 }) => {
   const { currentUser } = useUser();
   const { socket } = useSocket();
@@ -174,6 +176,8 @@ const ReplyMsgModal = ({
                                   currentChat={currentChat}
                                   getChatName={getChatName}
                                   setAllFiles={setAllFiles}
+                                  subject={subject}
+                                  setSubject={setSubject}
                                 />
                               </div>
                             </>
@@ -185,7 +189,7 @@ const ReplyMsgModal = ({
                 </div>
               </div>
 
-              <div style={{ position: "absolute", right: "30px", top: "7px" }}>
+              <div style={{ position: "absolute", right: "30px", top: "15px" }}>
                 <i
                   className="bi bi-type"
                   onClick={() => {
@@ -300,7 +304,7 @@ ReplyMsgModal.propTypes = {
   handleFileRemove: PropTypes.any,
   curMessage: PropTypes.any,
   setcurMessage: PropTypes.any,
-  setAllVoicemsg:PropTypes.any,
+  setAllVoicemsg: PropTypes.any,
   setRecorder: PropTypes.any,
   recorder: PropTypes.any,
   allVoicemsg: PropTypes.any,
@@ -309,12 +313,14 @@ ReplyMsgModal.propTypes = {
   duration: PropTypes.any,
   isVoiceMessage: PropTypes.any,
   startRecording: PropTypes.any,
-  stopRecording:  PropTypes.any,
-  durationIntervalId:  PropTypes.any,
-  setDurationIntervalId:  PropTypes.any,
-  setBlobURL:  PropTypes.any,
-  setIsAttachment:  PropTypes.any,
-  setIsVoiceMessage:  PropTypes.any,
-  setDuration:  PropTypes.any
+  stopRecording: PropTypes.any,
+  durationIntervalId: PropTypes.any,
+  setDurationIntervalId: PropTypes.any,
+  setBlobURL: PropTypes.any,
+  setIsAttachment: PropTypes.any,
+  setIsVoiceMessage: PropTypes.any,
+  setDuration: PropTypes.any,
+  subject: PropTypes.any,
+  setSubject: PropTypes.any,
 }
 export default ReplyMsgModal
