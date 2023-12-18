@@ -2595,7 +2595,7 @@ const ChatRc = () => {
                                   </Dropdown>
                                 </li>
                                 {/* // } */}
-                                {!currentChat?.isGroup && (
+                              
                                   <li className="list-inline-item">
                                     <Dropdown
                                       toggle={() => toggleFilesModelOpen(true)}
@@ -2611,7 +2611,7 @@ const ChatRc = () => {
                                       </DropdownToggle>
                                     </Dropdown>
                                   </li>
-                                )}
+                                
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
