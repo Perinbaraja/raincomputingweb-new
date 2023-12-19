@@ -746,11 +746,6 @@ const ChatRc = () => {
     setCaseLoading(false)
   }
 
-  useEffect(() => {
-    ongetAllChatRooms()
-    ongetAllCases({ isSet: false })
-  }, [messages, notifications])
-
   // const onGetAllSubCases = async () => {
   //   const payload = {
   //     isSubcase: true,
@@ -1082,6 +1077,8 @@ const ChatRc = () => {
       setIsVoiceMessage(false)
       setRecorder([])
       setBlobURL(null)
+      await ongetAllChatRooms();
+      await ongetAllCases({ isSet: false });
     }
     setLoading(false)
     setReplyMsgModalOpen(false)
