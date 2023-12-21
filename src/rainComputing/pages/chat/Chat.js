@@ -188,7 +188,7 @@ const ChatRc = () => {
     setMessages,
     messageStack,
   } = useChat()
-  console.log("currentChat:", currentChat)
+
   const { currentAttorney } = useUser()
   const privateChatId = query.get("p_id")
   const privateReplyChatId = query.get("rp_id")
@@ -269,7 +269,6 @@ const ChatRc = () => {
   const [allSubCases, setAllSubCases] = useState([])
   const [caseLoading, setCaseLoading] = useState(true)
   const [currentCase, setCurrentCase] = useState(null)
-  console.log("currentCase:", currentCase)
   const [allgroups, setAllgroups] = useState([])
   const [receivers, setReceivers] = useState([])
   const [isAttachment, setIsAttachment] = useState(false)
@@ -339,6 +338,13 @@ const ChatRc = () => {
   const [isQuill, setIsQuill] = useState(false)
   const toggle_Quill = () => {
     setIsQuill(!isQuill)
+  }
+
+  const handleCancel = () => {
+    setAllVoicemsg([])
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
   }
 
   const startRecording = () => {
@@ -1152,8 +1158,8 @@ const ChatRc = () => {
   }, []);
 
   const onChange = (content, delta, source, editor) => {
-    // Remove <p> and <br> tags from the content
-    const strippedContent = content.replace(/<p><br><\/p>/gi, "")
+    // Remove <p> tags from the content
+    const strippedContent = content.replace(/<p><\/p>/gi, "")
 
     setcurMessage(strippedContent)
   }
@@ -1228,30 +1234,31 @@ const ChatRc = () => {
   }
 
   const handleFetchFiles = async () => {
+    let payload = {};
     if (currentCase && currentCase._id) {
-      try {
-        const filesRes = await getCaseFiles({ caseId: currentCase._id })
-        if (filesRes.success && filesRes?.files?.length > 0) {
-          const updatedFiles = filesRes.files.map(file => {
-            const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
-            return { ...file, time: sendAt, isDownloading: true }
-          })
-          setCaseFile(updatedFiles)
-        } else {
-          setCaseFile([])
-        }
-      } catch (error) {
-        console.error(`Error fetching case files: ${error}`)
+      payload = { caseId: currentCase._id };
+    } else if (currentChat && currentChat._id) {
+      payload = { groupId: currentChat._id };
+    }
+    try {
+      const filesRes = await getCaseFiles(payload)
+      if (filesRes.success && filesRes?.files?.length > 0) {
+        const updatedFiles = filesRes.files.map(file => {
+          const sendAt = moment(file.time).format("DD-MM-YY HH:mm")
+          return { ...file, time: sendAt, isDownloading: true }
+        })
+        setCaseFile(updatedFiles)
+      } else {
         setCaseFile([])
       }
+    } catch (error) {
+      console.error(`Error fetching case files: ${error}`)
+      setCaseFile([])
     }
   }
 
   useEffect(() => {
     handleFetchFiles()
-    return () => {
-      setCaseFile([])
-    }
   }, [currentCase, currentChat]) // Add currentCase as a dependency
 
   // Archive Chat
@@ -1855,7 +1862,14 @@ const ChatRc = () => {
       }, 0)
     }
   })
-
+  const handleReplyModalOpen = () => {
+    setAllFiles([])
+    setAllVoicemsg([])
+    setIsAttachment(false)
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
+  }
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2058,6 +2072,7 @@ const ChatRc = () => {
               getChatName={getChatName}
               subject={subject}
               setSubject={setSubject}
+              setAllFiles={setAllFiles}
             />
 
             <ReplyMsgModal
@@ -2072,7 +2087,6 @@ const ChatRc = () => {
               getChatName={getChatName}
               curMessage={curMessage}
               setcurMessage={setcurMessage}
-              handleSendMessage={handleSendMessage}
               handleFileChange={handleFileChange}
               setAllFiles={setAllFiles}
               allFiles={allFiles}
@@ -2095,6 +2109,11 @@ const ChatRc = () => {
               setDuration={setDuration}
               subject={subject}
               setSubject={setSubject}
+              handleSendingMessage={handleSendingMessage}
+              setReplyMsgModalOpen={setReplyMsgModalOpen}
+              ongetAllChatRooms={ongetAllChatRooms}
+              ongetAllCases={ongetAllCases}
+              setLoading={setLoading}
             />
             {/* {contacts && (
               <ForwardMsg
@@ -2592,23 +2611,23 @@ const ChatRc = () => {
                                   </Dropdown>
                                 </li>
                                 {/* // } */}
-                              
-                                  <li className="list-inline-item">
-                                    <Dropdown
-                                      toggle={() => toggleFilesModelOpen(true)}
+
+                                <li className="list-inline-item">
+                                  <Dropdown
+                                    toggle={() => toggleFilesModelOpen(true)}
+                                  >
+                                    <DropdownToggle
+                                      className="btn nav-btn"
+                                      tag="i"
                                     >
-                                      <DropdownToggle
-                                        className="btn nav-btn"
-                                        tag="i"
-                                      >
-                                        <i
-                                          className="bi bi-files"
-                                          title="Shared Files"
-                                        />
-                                      </DropdownToggle>
-                                    </Dropdown>
-                                  </li>
-                                
+                                      <i
+                                        className="bi bi-files"
+                                        title="Shared Files"
+                                      />
+                                    </DropdownToggle>
+                                  </Dropdown>
+                                </li>
+
                                 <li className="list-inline-item ">
                                   <Dropdown
                                     toggle={() => toggleCalendarModelOpen(true)}
@@ -2939,6 +2958,7 @@ const ChatRc = () => {
                                           onClick={() => {
                                             setCurReplyMessageId(msg)
                                             setReplyMsgModalOpen(true)
+                                            handleReplyModalOpen()
                                           }}
                                         ><i
                                           className="bi bi-reply"
@@ -3276,23 +3296,38 @@ const ChatRc = () => {
                                             paddingLeft: "10px",
                                           }}
                                         ></i>
-                                        <p className="text-primary mt-1 font-size-12">
+                                        <p className="text-primary mt-1 font-size-12"
+                                          style={{
+                                            height: "10px",
+                                            paddingRight: "50px",
+                                          }}>
                                           {duration}Secs
                                         </p>
                                       </div>
                                     ) : (
                                       <>
                                         {blobURL ? (
-                                          <div>
+                                          <div className="p-3">
                                             <audio
-                                              className="w-100 w-sm-100"
+                                              className="w-500 w-sm-100"
                                               style={{
-                                                height: "33px",
+                                                height: "30px",
                                                 paddingLeft: "10px",
                                               }}
                                               src={blobURL}
                                               controls="controls"
                                             ></audio>
+                                            <i className="bi bi-trash text-danger"
+                                              onClick={() => handleCancel()}
+                                              style={{
+                                                position: "absolute",
+                                                right: "870px",
+                                                top: "25px",
+                                                cursor: "pointer"
+                                              }}
+                                              title="Delete"
+                                            >
+                                            </i>
                                           </div>
                                         ) : (
                                           <>
@@ -3508,7 +3543,7 @@ const ChatRc = () => {
                                         <p
                                           className="text-primary mt-1 font-size-12"
                                           style={{
-                                            height: "30px",
+                                            height: "10px",
                                             paddingRight: "50px",
                                           }}
                                         >
@@ -3518,16 +3553,27 @@ const ChatRc = () => {
                                     ) : (
                                       <>
                                         {blobURL ? (
-                                          <div className="p-5">
+                                          <div className="p-3">
                                             <audio
-                                              className="w-100 w-sm-100"
+                                              className="w-500 w-sm-100"
                                               style={{
-                                                height: "33px",
+                                                height: "30px",
                                                 paddingLeft: "10px",
                                               }}
                                               src={blobURL}
                                               controls="controls"
                                             ></audio>
+                                            <i className="bi bi-trash text-danger"
+                                              onClick={() => handleCancel()}
+                                              style={{
+                                                position: "absolute",
+                                                right: "470px",
+                                                top: "25px",
+                                                cursor: "pointer"
+                                              }}
+                                              title="Delete"
+                                            >
+                                            </i>
                                           </div>
                                         ) : (
                                           <>
