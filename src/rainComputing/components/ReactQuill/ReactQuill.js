@@ -28,8 +28,6 @@ const ReactQuillInput = ({
   setSubject
 }) => {
 
-  console.log("currentChat", currentChat)
-
   const onSubjectChange = (e) => {
     // Handle the subject input change here
     setSubject(e.target.value);
