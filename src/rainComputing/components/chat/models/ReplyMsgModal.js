@@ -7,12 +7,12 @@ import {
   postReplies,
 } from "rainComputing/helpers/backend_helper"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-import { useChat } from "rainComputing/contextProviders/ChatProvider"
-import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import RecordRTC from "recordrtc"
+import axios from "axios"
+import { SERVER_URL } from "rainComputing/helpers/configuration"
 
 
 const ReplyMsgModal = ({
@@ -22,12 +22,13 @@ const ReplyMsgModal = ({
   curMessageId,
   receivers,
   currentChat,
+  currentCase,
   caseId,
   getChatName,
   mentionsArray,
-  handleSendMessage,
-  curMessage,
-  setcurMessage,
+  handleSendingMessage,
+  ongetAllChatRooms,
+  ongetAllCases,
   setAllFiles,
   allFiles,
   handleFileChange,
@@ -49,15 +50,40 @@ const ReplyMsgModal = ({
   startRecording,
   stopRecording,
   subject,
-  setSubject
+  setSubject,
+  setReplyMsgModalOpen,
+  setLoading,
 }) => {
   const { currentUser } = useUser();
-  const { socket } = useSocket();
-  const { setMessages, messages } = useChat();
   const [isQuill, setIsQuill] = useState(false);
+  const [replyMessage, setReplyMessage] = useState("");
+
   const handlereplyMsgCancel = () => {
-    setOpen(false);
+    setOpen(false)
+    setReplyMessage("")
+    setAllFiles([])
+    setAllVoicemsg([])
+    setIsAttachment(false)
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
   };
+
+  const handleCancel = () => {
+    setAllVoicemsg([])
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
+  }
+
+  const isEmptyOrSpaces = () => {
+    if (isAttachment) {
+      return false
+    } else if (isVoiceMessage) {
+      return false
+    }
+    return replyMessage === null || replyMessage.match(/^ *$/) !== null
+  }
 
   const toggle_Quill = () => {
     setIsQuill(!isQuill);
@@ -69,8 +95,115 @@ const ReplyMsgModal = ({
       setIsAttachment(false)
     }
   }, [allFiles])
-  
 
+  const handleSendMessage = async (rID) => {
+    setLoading(true)
+    if (isEmptyOrSpaces()) {
+      console.log("You can't send empty message")
+    } else {
+      let voiceMessageId = []
+      let attachmentsId = []
+      let payLoad = {
+        rID,
+        caseId: currentCase?._id,
+        groupId: currentChat?._id,
+        sender: currentUser?.userID,
+        receivers,
+        subject: subject,
+        messageData: replyMessage,
+        isAttachment,
+        isVoiceMessage,
+        isForward: false,
+        maincaseId: currentCase?.maincaseId,
+        threadId: currentCase?.threadId,
+        // isPinned: false,
+      }
+      if (isAttachment) {
+        const formData = new FormData()
+        for (var i = 0; i < allFiles.length; i++) {
+          formData.append("file", allFiles[i])
+        }
+        // formData.append("file", allFiles)
+        const fileUploadRes = await axios.post(
+          `${SERVER_URL}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": `multipart/form-data`,
+            },
+          }
+        )
+        const { data } = fileUploadRes
+        if (data.success) {
+          await data.files?.map(file =>
+            attachmentsId.push({
+              type: file.contentType,
+              size: file.size,
+              id: file.id,
+              name: file.originalname,
+              dbName: file.filename,
+              aflag: true,
+            })
+          )
+        } else {
+          setLoading(false)
+        }
+      } else if (isVoiceMessage) {
+        const formData = new FormData()
+
+        for (let i = 0; i < allVoicemsg.length; i++) {
+          const audioBlob = new Blob([allVoicemsg[i].getBlob()], {
+            type: "audio/webm",
+          })
+
+          formData.append("file", audioBlob, `audio-${i}.webm`)
+        }
+
+        const fileUploadRes = await axios.post(
+          `${SERVER_URL}/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": `multipart/form-data`,
+            },
+          }
+        )
+
+        const { data } = fileUploadRes
+        if (data.success) {
+          await data?.files?.map(file =>
+            voiceMessageId.push({
+              type: file?.contentType,
+              size: file?.size,
+              id: file.id,
+              name: file.originalname,
+              dbName: file.filename,
+              aflag: true,
+            })
+          )
+        } else {
+          setLoading(false)
+        }
+      }
+      payLoad.attachments = attachmentsId
+      payLoad.voiceMessage = voiceMessageId
+      handleSendingMessage(payLoad)
+      setAllFiles([])
+      setAllVoicemsg([])
+      setReplyMessage("")
+      setSubject("")
+      setIsAttachment(false)
+      setIsVoiceMessage(false)
+      setRecorder([])
+      setBlobURL(null)
+      await ongetAllChatRooms();
+      await ongetAllCases({ isSet: false });
+
+
+    }
+    setLoading(false)
+    setReplyMsgModalOpen(false)
+  }
   return (
     <>
       <Modal
@@ -115,7 +248,7 @@ const ReplyMsgModal = ({
                           <p
                             className="text-primary mt-1 font-size-12"
                             style={{
-                              height: "30px",
+                              height: "10px",
                               paddingRight: "50px",
                             }}
                           >
@@ -125,9 +258,9 @@ const ReplyMsgModal = ({
                       ) : (
                         <>
                           {blobURL ? (
-                            <div className="p-5">
+                            <div className="p-3">
                               <audio
-                                className="w-100 w-sm-100"
+                                className="w-500 w-sm-100"
                                 style={{
                                   height: "33px",
                                   paddingLeft: "10px",
@@ -135,6 +268,17 @@ const ReplyMsgModal = ({
                                 src={blobURL}
                                 controls="controls"
                               ></audio>
+                              <i className="bi bi-trash text-danger"
+                                onClick={() => handleCancel()}
+                                style={{
+                                  position: "absolute",
+                                  right: "400px",
+                                  top: "25px",
+                                  cursor: "pointer"
+                                }}
+                                title="Delete"
+                              >
+                              </i>
                             </div>
                           ) : (
                             <>
@@ -170,8 +314,8 @@ const ReplyMsgModal = ({
                               <div>
                                 <ReactQuillInput
                                   mentionsArray={mentionsArray}
-                                  value={curMessage}
-                                  onChange={setcurMessage}
+                                  value={replyMessage}
+                                  onChange={setReplyMessage}
                                   isQuill={isQuill}
                                   currentChat={currentChat}
                                   getChatName={getChatName}
@@ -189,7 +333,7 @@ const ReplyMsgModal = ({
                 </div>
               </div>
 
-              <div style={{ position: "absolute", right: "30px", top: "15px" }}>
+              <div style={{ position: "absolute", right: "30px", top: "10px" }}>
                 <i
                   className="bi bi-type"
                   onClick={() => {
@@ -204,7 +348,12 @@ const ReplyMsgModal = ({
                   title={isQuill ? "Show Formatting" : "Hide Formatting"}
                 ></i>
               </div>
-              <div style={{ position: "absolute", right: "15px", top: "50px" }}>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col>
+              <div style={{ position: "absolute", right: "20px", top: "3px" }}>
                 <input
                   type="file"
                   name="file"
@@ -255,12 +404,11 @@ const ReplyMsgModal = ({
                     }}
                   ></i>
                 )}
-            
               </div>
-
             </Col>
           </Row>
         </div>
+        <br />
         <div className="modal-footer">
           <button
             type="button"
@@ -277,6 +425,7 @@ const ReplyMsgModal = ({
             type="button"
             className="btn btn-primary"
             onClick={() => handleSendMessage(curMessageId?._id)}
+            disabled={isEmptyOrSpaces()}
           >
             Send
           </button>
@@ -294,10 +443,11 @@ ReplyMsgModal.propTypes = {
   socket: PropTypes.any,
   receivers: PropTypes.any,
   currentChat: PropTypes.any,
+  currentCase: PropTypes.any,
   caseId: PropTypes.any,
   getChatName: PropTypes.any,
   mentionsArray: PropTypes.any,
-  handleSendMessage: PropTypes.any,
+  handleSendingMessage: PropTypes.any,
   setAllFiles: PropTypes.any,
   allFiles: PropTypes.any,
   handleFileChange: PropTypes.any,
@@ -322,5 +472,9 @@ ReplyMsgModal.propTypes = {
   setDuration: PropTypes.any,
   subject: PropTypes.any,
   setSubject: PropTypes.any,
+  setReplyMsgModalOpen: PropTypes.any,
+  ongetAllChatRooms: PropTypes.any,
+  ongetAllCases: PropTypes.any,
+  setLoading: PropTypes.any,
 }
 export default ReplyMsgModal

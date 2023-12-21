@@ -20,7 +20,8 @@ const EditMessageModel = ({
   getChatName,
   currentCase,
   subject,
-  setSubject
+  setSubject,
+  setAllFiles
 }) => {
   const { setMessages, messages } = useChat()
   const { currentUser } = useUser()
@@ -96,6 +97,7 @@ const EditMessageModel = ({
                   currentCase={currentCase}
                   subject={subject}
                   setSubject={setSubject}
+                  setAllFiles={setAllFiles}
                 />
               </div>
               <div style={{ position: "absolute", right: "30px", top: "7px" }}>
@@ -167,6 +169,7 @@ EditMessageModel.propTypes = {
   currentCase: PropTypes.any,
   subject: PropTypes.any,
   setSubject: PropTypes.any,
+  setAllFiles: PropTypes.any,
 }
 
 export default EditMessageModel
