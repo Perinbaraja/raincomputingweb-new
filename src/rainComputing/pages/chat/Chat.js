@@ -1087,7 +1087,7 @@ const ChatRc = () => {
       await ongetAllCases({ isSet: false });
     }
     setLoading(false)
-    setReplyMsgModalOpen(false)
+    // setReplyMsgModalOpen(false)
   }
   const { getRootProps, getInputProps } = useDropzone({
     accept:

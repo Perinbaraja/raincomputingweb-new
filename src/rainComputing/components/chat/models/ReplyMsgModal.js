@@ -188,6 +188,7 @@ const ReplyMsgModal = ({
       payLoad.attachments = attachmentsId
       payLoad.voiceMessage = voiceMessageId
       handleSendingMessage(payLoad)
+      setReplyMsgModalOpen(false)
       setAllFiles([])
       setAllVoicemsg([])
       setReplyMessage("")
@@ -198,11 +199,8 @@ const ReplyMsgModal = ({
       setBlobURL(null)
       await ongetAllChatRooms();
       await ongetAllCases({ isSet: false });
-
-
     }
     setLoading(false)
-    setReplyMsgModalOpen(false)
   }
   return (
     <>
