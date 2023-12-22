@@ -13,7 +13,8 @@ import ReactQuillInput from "rainComputing/components/ReactQuill/ReactQuill"
 import RecordRTC from "recordrtc"
 import axios from "axios"
 import { SERVER_URL } from "rainComputing/helpers/configuration"
-
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 
 const ReplyMsgModal = ({
   open,
@@ -100,7 +101,9 @@ const ReplyMsgModal = ({
     setLoading(true)
     if (isEmptyOrSpaces()) {
       console.log("You can't send empty message")
-    } else {
+    } else if (replyMessage.length > 1000) {
+      toastr.error("Message should be exactly 1000 characters", "Error");
+    }else {
       let voiceMessageId = []
       let attachmentsId = []
       let payLoad = {
