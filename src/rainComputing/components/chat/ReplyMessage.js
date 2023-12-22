@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from "prop-types"
 import AttachmentViewer from './AttachmentViewer';
+import VoiceMessage from '../audio';
 const ReplyMessageComponent = ({ rID, messages, handleLocateMessage, currentChat, getMemberName, getSenderOneChat }) => {
     const stripHtmlTags = (html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -20,9 +21,9 @@ const ReplyMessageComponent = ({ rID, messages, handleLocateMessage, currentChat
                                     : getSenderOneChat(message.sender)}
                             </div>
                             {message.isAttachment === true ? (
-                                <div >
+                                <div>
                                     <p>{stripHtmlTags(message.messageData)}</p>
-                                    <div >
+                                    <div>
                                         <AttachmentViewer
                                             attachments={message.attachments}
                                             text={message.messageData}
@@ -30,7 +31,16 @@ const ReplyMessageComponent = ({ rID, messages, handleLocateMessage, currentChat
                                     </div>
                                 </div>
                             ) : (
-                                <p>{stripHtmlTags(message.messageData)}</p>
+                                message.messageData ? (
+                                    <p>{stripHtmlTags(message.messageData)}</p>
+                                ) : (
+                                    <div>
+                                        <p>{stripHtmlTags(message.messageData)}</p>
+                                        <div>
+                                            <VoiceMessage msg={message} />
+                                        </div>
+                                    </div>
+                                )
                             )}
                             {/* <p>{stripHtmlTags(message.messageData)}</p> */}
                         </div>

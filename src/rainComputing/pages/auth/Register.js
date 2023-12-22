@@ -76,9 +76,9 @@ const RainRegister = () => {
     },
     
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      firstname: Yup.string().required("Please Enter Your firstname"),
-      lastname: Yup.string().required("Please Enter Your lastname"),
+      email: Yup.string().required("Please Enter Your Email").max(30, 'Must be 30 characters or less'),
+      firstname: Yup.string().required("Please Enter Your firstname").max(30, 'Must be 30 characters or less'),
+      lastname: Yup.string().required("Please Enter Your lastname").max(10, 'Must be 10 characters or less'),
       password: Yup.string()
         .required("Please Enter Your Password")
         .matches(/^(?=.{5,16}$)/, "Must Contain 5 to 16 Characters"),
@@ -197,6 +197,7 @@ const RainRegister = () => {
                             <Input
                               name="firstname"
                               type="text"
+                              maxLength={31}
                               placeholder="Enter first name"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -220,6 +221,7 @@ const RainRegister = () => {
                             <Input
                               name="lastname"
                               type="text"
+                              maxLength={11}
                               placeholder="Enter last name"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -243,6 +245,7 @@ const RainRegister = () => {
                             <Input
                               id="email"
                               name="email"
+                              maxLength={31}
                               className="form-control"
                               placeholder="Enter email"
                               type="email"
