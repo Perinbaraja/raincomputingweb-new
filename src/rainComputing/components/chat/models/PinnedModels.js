@@ -74,6 +74,7 @@ const PinnedModels = ({ handleLocateMessage }) => {
     <div>
       <Modal
         isOpen={pinModal}
+        size="lg"
         toggle={() => {
           tog_scroll()
         }}

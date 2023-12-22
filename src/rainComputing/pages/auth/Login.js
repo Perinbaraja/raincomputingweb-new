@@ -39,7 +39,8 @@ import { google } from "config"
 import { userLogin } from "rainComputing/helpers/backend_helper"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
 import { useUser } from "rainComputing/contextProviders/UserProvider"
-
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 const RainLogin = props => {
   const { setSocket } = useSocket()
   const { setCurrentUser } = useUser()
@@ -52,25 +53,33 @@ const RainLogin = props => {
     initialValues: {
       email: "",
       password: "",
+      captcha: "",
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
       password: Yup.string().required("Please Enter Your Password"),
+      captcha: Yup.string().required("Please Enter Your captcha"),
     }),
     onSubmit: async values => {
-      setLoading(true)
-      const res = await userLogin(values)
-      if (res.success) {
-        setSocket(res.userID)
-        localStorage.setItem("authUser", JSON.stringify(res))
-        setCurrentUser(res)
-        props.history.push("/")
+      if (validation.values.captcha === captchaCode) {
+        setLoading(true);
+        const res = await userLogin(values);
+    
+        if (res.success) {
+          setSocket(res.userID);
+          localStorage.setItem("authUser", JSON.stringify(res));
+          setCurrentUser(res);
+          props.history.push("/");
+        } else {
+          setLoginError(res?.msg);
+        }
+    
+        setLoading(false);
       } else {
-        setLoginError(res?.msg)
+        toastr.error("Invalid captcha code", "Error");
       }
-      setLoading(false)
     },
-  })
+      })
 
   //handleGoogleLoginResponse
   const googleResponse = response => {}
@@ -80,6 +89,24 @@ const RainLogin = props => {
 
   //handleFacebookLoginResponse
   const facebookResponse = e => {}
+
+
+  const generateRandomString = () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const length = 6;
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  };
+  const [captchaCode, setCaptchaCode] = useState(generateRandomString());
+  console.log("captchaCode", captchaCode)
+
+  const regenerateCaptcha = () => {
+    setCaptchaCode(generateRandomString());
+    validation.setFieldValue("captcha", "");
+  };
 
   return (
     <React.Fragment>
@@ -196,6 +223,41 @@ const RainLogin = props => {
                               {validation.errors.password}
                             </FormFeedback>
                           ) : null}
+                        </div>
+
+                        <div className="mb-3">
+                          <Label className="form-label">Captcha</Label>
+                          <Input
+                            name="captcha"
+                            value={validation.values.captcha || ""}
+                            type="captcha"
+                            placeholder="Enter captcha"
+                            onChange={validation.handleChange}
+                            onBlur={validation.handleBlur}
+                            invalid={
+                              validation.touched.captcha &&
+                              validation.errors.captcha
+                                ? true
+                                : false
+                            }
+                          />
+                          {validation.touched.captcha &&
+                          validation.errors.captcha ? (
+                            <FormFeedback type="invalid">
+                              {validation.errors.captcha}
+                            </FormFeedback>
+                          ) : null}
+                           <img
+                              src={`https://via.placeholder.com/300x150?text=${captchaCode}`} // Adjust size as needed
+                              alt="Captcha"
+
+                              style={{ cursor: "pointer", marginTop: "10px", width: "200px", height: "50px" }}
+                            />
+                            <i
+                              className="bi bi-arrow-repeat"
+                              onClick={regenerateCaptcha}
+                              style={{ cursor: "pointer", fontSize: "2rem", position: "relative", top: "10px" }}
+                            ></i>
                         </div>
 
                         {/* <div className="form-check">

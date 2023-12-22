@@ -37,6 +37,27 @@ const RainRegister = () => {
   const [registrationError, setRegistrationError] = useState("")
   const [registrationSuccess, setRegistrationSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const generateRandomString = () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const length = 6;
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  };
+
+  const [captchaCode, setCaptchaCode] = useState(generateRandomString());
+  console.log("captchaCode", captchaCode)
+
+  const regenerateCaptcha = () => {
+    setCaptchaCode(generateRandomString());
+    validation.setFieldValue("captcha", "");
+  };
+
+
+
   const {
     toggleOpen: termsModelOpen,
     setToggleOpen: setTermsModelOpen,
@@ -51,16 +72,20 @@ const RainRegister = () => {
       firstname: "",
       lastname: "",
       password: "",
+      captcha: "",
     },
+    
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
       firstname: Yup.string().required("Please Enter Your firstname"),
       lastname: Yup.string().required("Please Enter Your lastname"),
       password: Yup.string()
         .required("Please Enter Your Password")
-        .matches(/^(?=.{5,})/, "Must Contain 5 Characters"),
+        .matches(/^(?=.{5,16}$)/, "Must Contain 5 to 16 Characters"),
+      captcha: Yup.string().required("Please Enter Your captcha"),
     }),
-    onSubmit: async (values, onSubmitProps) => {
+        onSubmit: async (values, onSubmitProps) => {
+     if(validation.values.captcha ===captchaCode) {
       setLoading(true)
       //   dispatch(registerUser({ ...values, aflag: true }))
       const res = await userRegisteration({ ...values, aflag: true })
@@ -76,7 +101,11 @@ const RainRegister = () => {
         setRegistrationError(res.msg)
       }
       setLoading(false)
-    },
+    
+  }else{
+    toastr.error(`invalid captcha `, "error")
+  }
+}
   })
 
   return (
@@ -174,13 +203,13 @@ const RainRegister = () => {
                               value={validation.values.firstname || ""}
                               invalid={
                                 validation.touched.firstname &&
-                                validation.errors.firstname
+                                  validation.errors.firstname
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.firstname &&
-                            validation.errors.firstname ? (
+                              validation.errors.firstname ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.firstname}
                               </FormFeedback>
@@ -197,13 +226,13 @@ const RainRegister = () => {
                               value={validation.values.lastname || ""}
                               invalid={
                                 validation.touched.lastname &&
-                                validation.errors.lastname
+                                  validation.errors.lastname
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.lastname &&
-                            validation.errors.lastname ? (
+                              validation.errors.lastname ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.lastname}
                               </FormFeedback>
@@ -222,13 +251,13 @@ const RainRegister = () => {
                               value={validation.values.email || ""}
                               invalid={
                                 validation.touched.email &&
-                                validation.errors.email
+                                  validation.errors.email
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.email &&
-                            validation.errors.email ? (
+                              validation.errors.email ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.email}
                               </FormFeedback>
@@ -246,20 +275,49 @@ const RainRegister = () => {
                               value={validation.values.password || ""}
                               invalid={
                                 validation.touched.password &&
-                                validation.errors.password
+                                  validation.errors.password
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.password &&
-                            validation.errors.password ? (
+                              validation.errors.password ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.password}
                               </FormFeedback>
                             ) : null}
                           </div>
+                          <div className="mb-2">
+                            <Label className="form-label">Captcha</Label>
+                            <Input
+                              id="captcha"
+                              name="captcha"
+                              className="form-control"
+                              placeholder="Enter captcha"
+                              type="text"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.captcha || ""}
+                              invalid={validation.touched.captcha && validation.errors.captcha}
+                            />
+                            {validation.touched.captcha && validation.errors.captcha ? (
+                              <FormFeedback type="invalid">{validation.errors.captcha}</FormFeedback>
+                            ) : null}
+                            <img
+                              src={`https://via.placeholder.com/300x150?text=${captchaCode}`} // Adjust size as needed
+                              alt="Captcha"
+
+                              style={{ cursor: "pointer", marginTop: "10px", width: "200px", height: "50px" }}
+                            />
+                            <i
+                              className="bi bi-arrow-repeat"
+                              onClick={regenerateCaptcha}
+                              style={{ cursor: "pointer", fontSize: "2rem", position: "relative", top: "10px" }}
+                            ></i>
+                          </div>
+
                           <div className="mt-1">
-                          <DynamicModel
+                            <DynamicModel
                               open={termsModelOpen}
                               toggle={toggleTermsModelOpen}
                               size="lg"
@@ -268,8 +326,8 @@ const RainRegister = () => {
                               isClose={true}
                             >
                               <DynamicSuspense>
-                                <TermsModal 
-                                setModalOpen={setTermsModelOpen}/>
+                                <TermsModal
+                                  setModalOpen={setTermsModelOpen} />
                               </DynamicSuspense>
                             </DynamicModel>
                             <p className="">
@@ -280,10 +338,10 @@ const RainRegister = () => {
                                 id="flexCheckDefault"
                               />
                               By registering you agree to the raincomputing{" "}
-                             
+
                               <a
                                 className="text-primary font-sm"
-                               onClick={()=>{setTermsModelOpen(true)}}
+                                onClick={() => { setTermsModelOpen(true) }}
                               >
                                 Terms of Use
                               </a>

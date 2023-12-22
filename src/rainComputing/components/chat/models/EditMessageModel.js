@@ -36,6 +36,12 @@ const EditMessageModel = ({
     setOpen(false)
   }
   const handleUpdateMessage = async id => {
+    const maxLength = 1000; // Set the maximum length
+
+    if (updateMessages.length > maxLength) {
+      toastr.error(`Message must be ${maxLength} characters or less`);
+      return;
+    }
     const payload = {
       _id: id,
       // sender: currentUser?.userID,

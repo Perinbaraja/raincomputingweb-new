@@ -55,4 +55,19 @@
   border-radius: 20px;
   background-color: #e0e0e0;
 }
+/* Add this CSS to your stylesheet or style section in your React component */
+.search-box {
+  height: 40px;
+  width: 300px;
+  padding: 10px;
+  padding-top: 10px;
+  border: 1px solid blue;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-right: 10px;
+  
+}
+.search-form{
+  padding-bottom: 20px;
+}
 

@@ -7,9 +7,12 @@ import rainlglogo from "assets/images/raincom_Logo1.png"
 import NotificationDropdown from "components/CommonForBoth/TopbarDropdown/NotificationDropdown"
 import Reminders from "rainComputing/pages/reminder"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
+import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledTooltip } from "reactstrap"
+
 
 const MobileNav = () => {
   const [isMobile, setIsMobile] = useState(false)
+  const [subDomainOpen, setSubDomainOpen] = useState(false);
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ")
   }
@@ -20,6 +23,29 @@ const MobileNav = () => {
   const tog_scroll = () => {
     setmodal_scroll(!modal_scroll)
   }
+  const toggleSubDomainOpen = () => {
+    setSubDomainOpen(!subDomainOpen);
+  };
+  const handleIconClick = () => {
+    window.open(currentAttorney?.subdomain, '_blank');
+  };
+ 
+  const handleSubDomainClick = () => {
+    const subdomain = currentAttorney?.subdomain;
+    const url = subdomain ? (subdomain.startsWith("https://") ? subdomain : `https://${subdomain}`) : null;
+
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      console.error("Invalid subdomain or subdomain is missing.");
+    }
+  };
+
+  const handleDomainClick = (domainName) => {
+    const url = domainName ? (domainName.startsWith("https://") ? domainName : `https://${domainName}`) : null;
+    window.open(url, '_blank');
+  };
+
   return (
     <div>
       {isMobile && (
@@ -98,6 +124,58 @@ const MobileNav = () => {
             {" "}
             <ProfileMenu />
           </div>{" "}
+          <div className="p-4" id="domainTooltip">
+                <i
+                  className="bx bx-link-external"
+                  id="atticon"
+                  onClick={toggleSubDomainOpen}
+                  target="_blank"
+                  style={{ cursor: "pointer" }}
+
+                />
+                <UncontrolledTooltip
+                  placement="bottom"
+                  target="domainTooltip"
+                >
+                  Domains
+                </UncontrolledTooltip>
+                <Dropdown
+                  isOpen={subDomainOpen}
+                  toggle={toggleSubDomainOpen}
+                  className="float-end me-2"
+                >
+                  <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
+                  <DropdownMenu className="custom-dropdown-menu"
+                    style={{
+                      whiteSpace: "break-spaces",
+                      overflow: "hidden",
+                      wordWrap: "break-word",
+                    }}
+                  >
+                    {currentAttorney?.subdomain &&
+                      <DropdownItem
+                        className="border-bottom px-3 py-3 domain-items"
+                        onClick={() => handleSubDomainClick()}
+                      >
+                        {currentAttorney?.subdomain}
+                      </DropdownItem>}
+                    {currentUser?.domains ? (
+                      currentUser.domains.map((user, i) => (
+                        <div
+                          className="border-bottom px-3 py-3 domain-item"
+                          key={i}
+                          onClick={() => handleDomainClick(user?.name)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {user?.name}
+                        </div>
+                      ))
+                    ) : (
+                      <p>No domains available</p>
+                    )}
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
         </div>
       </div>
     </div>
