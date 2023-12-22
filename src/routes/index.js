@@ -43,7 +43,7 @@ import Reminder from "rainComputing/pages/reminder"
 import UserReminders from "rainComputing/pages/reminder/UserReminders"
 import Calender from "rainComputing/pages/Calendar/Calendar"
 import CompletedCase from "rainComputing/components/chat/CompletedCase"
-import Dashboard from "rainComputing/pages/reminder/Dashboard"
+// import Dashboard from "rainComputing/pages/reminder/Dashboard"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 import CreateEvents from "rainComputing/pages/docket/CreateEvents"
 import ManageEvents from "rainComputing/pages/docket/ManageEvents"
@@ -76,7 +76,7 @@ const authProtectedRoutes = [
   { path: "/reminder-data", component: Reminder },
   { path: "/reminders", component: UserReminders },
   { path: "/completedCase", component: CompletedCase },
-  { path: "/reminderDashboard", component: Dashboard },
+  // { path: "/reminderDashboard", component: Dashboard },
   { path: "/calendar", component: Calender },
   { path: "/docket", component: DocketMenu },
   { path: "/create_events", component: CreateEvents },

@@ -314,6 +314,7 @@ const ChatRc = () => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [inputBoxHeight, setInputBoxHeight] = useState("100%");
   const [subject, setSubject] = useState('');
+  const [searchTextError, setSearchTextError] = useState("");
   const toggleFullScreen = () => {
     if (isFullScreen) {
       setInputBoxHeight("100%");
@@ -663,7 +664,7 @@ const ChatRc = () => {
   useEffect(() => {
     ongetAllChatRooms();
     ongetAllCases({ isSet: false });
-  }, [messages,notifications])
+  }, [messages, notifications])
 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
@@ -914,7 +915,7 @@ const ChatRc = () => {
     }
     setCaseDeleteModalOpen(false)
   }
-  
+
   const handleCaseDelete = () => {
     setCaseDeleteModalOpen(true)
   }
@@ -995,7 +996,10 @@ const ChatRc = () => {
     setLoading(true)
     if (isEmptyOrSpaces()) {
       console.log("You can't send empty message")
-    } else {
+    } else if (curMessage.length > 1000) {
+      toastr.error("Message should be exactly 1000 characters", "Error");
+    }
+    else {
       let voiceMessageId = []
       let attachmentsId = []
       let payLoad = {
@@ -1145,15 +1149,21 @@ const ChatRc = () => {
           item.kind === "file"
             ? item.getAsFile().name
             : `pasted-file.${blob.type.split("/")[1]}`;
-        const file = new File([blob], originalFileName, {
-          type: blob.type,
-        });
-        setAllFiles((prevFiles) => [
-          ...prevFiles,
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          }),
-        ]);
+        const fileSizeInMB = blob.size / (1024 * 1024); // Convert bytes to megabytes
+
+        if (fileSizeInMB <= 25) {
+          const file = new File([blob], originalFileName, {
+            type: blob.type,
+          });
+          setAllFiles((prevFiles) => [
+            ...prevFiles,
+            Object.assign(file, {
+              preview: URL.createObjectURL(file),
+            }),
+          ]);
+        } else {
+          toastr.error("File size should be 25 MB or less", "Error");
+        }
       }
     }
   };
@@ -1212,15 +1222,29 @@ const ChatRc = () => {
 
   //Handling File change
   const handleFileChange = e => {
-    const selectedFiles = e.target.files
+    const selectedFiles = Array.from(e.target.files);
+    console.log("selectedFiles", selectedFiles);
+
+    // Check individual file sizes and display an error for files exceeding 25 MB
+    const exceedingFiles = selectedFiles.filter(file => file.size > 25 * 1024 * 1024);
+
+    if (exceedingFiles.length > 0) {
+      // Display warning message for each exceeding file
+      exceedingFiles.forEach(file => {
+        toastr.error(`File "${file.name}" exceeds the maximum size of 25 megabytes.`, "Warning");
+      });
+      return;
+    }
     if (selectedFiles.length + allFiles.length > 10) {
       // Display warning message here
-      toastr.error("You can select a maximum of 10 files.", "Warning")
-      return
+      toastr.error("You can select a maximum of 10 files.", "Warning");
+      return;
     }
-    const updatedFiles = [...allFiles, ...selectedFiles]
-    setAllFiles(updatedFiles)
-  }
+
+    const updatedFiles = [...allFiles, ...selectedFiles];
+    setAllFiles(updatedFiles);
+  };
+
   const handleFileRemove = fileName => {
     const updatedFiles = allFiles.filter(file => file.name !== fileName)
     setAllFiles(updatedFiles)
@@ -2201,30 +2225,36 @@ const ChatRc = () => {
                 {activeTab !== "1" && (
                   <div className="mx-2 mt-2  border-bottom">
                     <input
-                      className="form-control"
+                      className={`form-control ${searchText.length > 20 ? 'is-invalid' : ''}`}
                       type="text"
                       id="user-search-text"
                       placeholder="Search here"
                       value={searchText}
                       name="searchText"
-                      onChange={e => setSearchText(e.target.value)}
+                      onChange={(e) => setSearchText(e.target.value.slice(0, 20))}
                     />
+                    {searchText.length > 20 && (
+                      <div className="invalid-feedback">Search text cannot exceed 20 characters</div>
+                    )}
                   </div>
                 )}
                 {activeTab === "1" && (
                   <div className="mx-2 mt-2  border-bottom">
                     <input
-                      className="form-control"
+                      className={`form-control ${searchText.length > 20 ? 'is-invalid' : ''}`}
                       type="text"
                       id="user-search-text"
                       placeholder="Search here"
                       value={searchText}
                       name="searchText"
-                      onChange={e => {
-                        setSearchText(e.target.value)
-                        setIsSearchTextCleared(false)
+                      onChange={(e) => {
+                        setSearchText(e.target.value.slice(0, 20));
+                        setIsSearchTextCleared(false);
                       }}
                     />
+                    {searchText.length > 20 && (
+                      <div className="invalid-feedback">Search text cannot exceed 20 characters</div>
+                    )}
                   </div>
                 )}
 
@@ -2701,22 +2731,27 @@ const ChatRc = () => {
                                       <InputGroup>
                                         <Input
                                           type="text"
-                                          className="form-control"
-                                          placeholder="Messages & DD-MM-YY.."
+                                          className={`form-control ${searchTextError ? 'is-invalid' : ''}`}
+                                          placeholder="Message & DD-MM-YY"
                                           aria-label="Recipient's username"
                                           value={searchMessageText}
-                                          onChange={e =>
-                                            setSearchMessagesText(
-                                              e.target.value
-                                            )
-                                          }
+                                          onChange={(e) => {
+                                            const text = e.target.value;
+                                            if (text.length <= 20) {
+                                              setSearchMessagesText(text);
+                                              setSearchTextError("");
+                                            } else {
+                                              setSearchTextError("Search text cannot exceed 20 characters");
+                                            }
+                                          }}
                                         />
-                                        {/* <InputGroupAddon addonType="append"> */}
                                         <Button color="primary" type="submit">
                                           <i className="mdi mdi-magnify" />
                                         </Button>
-                                        {/* </InputGroupAddon> */}
                                       </InputGroup>
+                                      {searchTextError && (
+                                        <div className="invalid-feedback">{searchTextError}</div>
+                                      )}
                                     </DropdownMenu>
                                   </Dropdown>
                                 </li>

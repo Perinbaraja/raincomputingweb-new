@@ -24,6 +24,7 @@ import { useDropzone } from "react-dropzone"
 
 const LandingGrid = () => {
   const [searchText, setSearchText] = useState("")
+  const [searchTextError, setSearchTextError] = useState("");
   const [loading, setLoading] = useState(true)
   const [attorneys, setAttorneys] = useState([])
   const [page, setPage] = useState(1)
@@ -58,6 +59,10 @@ const LandingGrid = () => {
     setPage(1)
   }, [searchText])
 
+  
+  {searchTextError && (
+    <div className="invalid-feedback">{searchTextError}</div>
+  )}
   return (
     <React.Fragment>
       <div>
@@ -69,7 +74,15 @@ const LandingGrid = () => {
                 className="form-control "
                 placeholder="Search for Attorney with Name, Firm, Expertise, Jurisdiction and Fee..."
                 value={searchText}
-                onChange={e => setSearchText(e.target.value)}
+                onChange={(e) => {
+                  const text = e.target.value;
+                  if (text.length <= 30) {
+                    setSearchText(text);
+                    setSearchTextError("");
+                  } else {
+                    setSearchTextError("Search text cannot exceed 30 characters");
+                  }
+                }}
               />
               {/* <span className="bx bx-search-alt mt-3" /> */}
             </div>

@@ -38,14 +38,21 @@ useEffect(()=>{
   setDomainsName(prevInputs => [...prevInputs, ""])
 
 },[])
-  const handleEventTextChange = (index, value) => {
-    setDomainsName(prevInputs => {
-      const newEventsTexts = [...prevInputs]
-      newEventsTexts[index] = value
-      
-      return newEventsTexts
-    })
+const handleEventTextChange = (index, value) => {
+  // Validate the length before updating the state
+  if (value.length > 50) {
+    toastr.error('Domain name must be 50 characters or less',);
+    return;
   }
+
+  setDomainsName(prevInputs => {
+    const newEventsTexts = [...prevInputs];
+    newEventsTexts[index] = value;
+    
+    return newEventsTexts;
+  });
+};
+
 
   const handleRemoveField = index => {
     setDomainsName(prevInputs => {

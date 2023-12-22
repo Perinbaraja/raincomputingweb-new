@@ -32,9 +32,17 @@ const CreateCase = ({
   }
 
   const handleFormValueChange = e => {
-    const { name, value } = e.target
-    setFormValues(prevState => ({ ...prevState, [name]: value }))
-  }
+    const { name, value } = e.target;
+    // Filter out unwanted characters and limit the input to 30 characters
+    const filteredValue = value.replace(/[^a-zA-Z0-9\s]/g, '').slice(0, 30);
+
+    if (filteredValue !== value) {
+      // Display error notification for invalid characters
+      toastr.error("Maximum 30 characters allowed", "Error");
+    }
+
+    setFormValues(prevState => ({ ...prevState, [name]: filteredValue }));
+  };
 
   const handleAddingGroupMembers = member => {
     if (formValues.members.includes(member)) {
@@ -72,7 +80,7 @@ const CreateCase = ({
   const handleCreatingCase = async () => {
     setloading(true)
     const filteredMembers = formValues?.members.map(m => m?._id)
-    const membersEmail=formValues?.members.map(m => m?.email)
+    const membersEmail = formValues?.members.map(m => m?.email)
     const generateThreadId = () => {
       const min = 100000 // Minimum 6-digit number
       const max = 999999 // Maximum 6-digit number
@@ -144,7 +152,15 @@ const CreateCase = ({
   //   setCaseSerialNo(generateSerialNumber());
   // }, []);
 
+  const handleCaseSerialNoChange = e => {
+    const value = e.target.value;
 
+    if (value.length <= 20) {
+      setCaseSerialNo(value);
+    } else {
+      toastr.error('Maximum character limit reached (20 characters).');
+    }
+  };
   return (
     <>
       <Row>
@@ -197,7 +213,7 @@ const CreateCase = ({
             placeholder="xxxx-xxxx"
             value={caseSerialNo}
             name="caseId"
-            onChange={e => setCaseSerialNo(e.target.value)}
+            onChange={handleCaseSerialNoChange}
           />
         </div>
       </Row>
@@ -257,58 +273,62 @@ const CreateCase = ({
       </Row>
 
       <Row>
-        <Col xs={6} className="px-3 border-end border-info">
+        <Col xs={12} sm={6} className="px-3 border-end border-info">
           <span className="text-muted">Members</span>
-          {contacts?.length > 0 ? (<div className="d-flex flex-wrap gap-2 my-2">
-            {contacts &&
-              contacts
-                .filter(f => !formValues.members.some(g => g?._id === f?._id))
-                .filter(a => a?._id !== currentUser?.userID)
-                .map((contact, c) => (
-                  <Button
-                    key={c}
-                    color={
-                      formValues.members.includes(contact._id)
-                        ? "success"
-                        : "light"
-                    }
-                    className="btn mx-1 mb-2"
-                    onClick={() => handleAddingGroupMembers(contact)}
-                  >
-                    <div className="d-flex justify-content-between ">
-                      <div>
-                        {" "}
-                        {contact.firstname} {contact.lastname}{" "}
-                      </div>
-                      {contact?.attorneyStatus === "approved" && (
+          {contacts?.length > 0 ? (
+            <div className="d-flex flex-wrap gap-2 my-2">
+              {contacts &&
+                contacts
+                  .filter(f => !formValues.members.some(g => g?._id === f?._id))
+                  .filter(a => a?._id !== currentUser?.userID)
+                  .map((contact, c) => (
+                    <Button
+                      key={c}
+                      color={
+                        formValues.members.includes(contact._id)
+                          ? "success"
+                          : "light"
+                      }
+                      className="btn mx-1 mb-2 flex-grow-1" // Added flex-grow-1 class
+                      onClick={() => handleAddingGroupMembers(contact)}
+                    >
+                      <div className="d-flex justify-content-between">
                         <div>
-                          {" "}
-                          <i className="fas fa-star text-warning"></i>
+                          {contact.firstname} {contact.lastname}
                         </div>
-                      )}
-                    </div>
+                        {contact?.attorneyStatus === "approved" && (
+                          <div>
+                            <i className="fas fa-star text-warning"></i>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="font-size-0 text-body ">
-                      {contact.email}
-                    </div>
-                  </Button>
-                ))}
-          </div>):(
-          <div className="">
-           <div>
-            <i 
-            className="bi bi-people pt-3 d-flex justify-content-center text-secondary"
-            style={{
-              fontSize: "25px",
-              fontWeight: "bold",
-            }}
-            ></i>
+                      <div className="font-size-0 text-body">
+                        {contact.email}
+                      </div>
+                    </Button>
+                  ))}
             </div>
-            <div>
-            <h6 className="d-flex pt-1 justify-content-center text-secondary">Search to Select a Members for their Case..!!</h6>
+          ) : (
+            <div className="text-center">
+              <div>
+                <i
+                  className="bi bi-people pt-3 text-secondary"
+                  style={{
+                    fontSize: "25px",
+                    fontWeight: "bold",
+                  }}
+                ></i>
+              </div>
+              <div>
+                <h6 className="pt-1 text-secondary">
+                  Search to Select Members for their Case..!!
+                </h6>
+              </div>
             </div>
-            </div>)}
+          )}
         </Col>
+
         <Col xs={6} className="px-3">
           <span className="text-muted">Case Members</span>
           <div className="d-flex flex-wrap gap-2 my-2">

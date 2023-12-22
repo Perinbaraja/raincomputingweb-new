@@ -7,6 +7,9 @@ import EmojiBlot from "quill-emoji/dist/quill-emoji"
 import Quill from 'quill';
 import "react-quill/dist/quill.snow.css";
 import { useDropzone } from "react-dropzone";
+import { error } from "logrocket";
+import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 
 const ReactQuillInput = ({
   value,
@@ -30,8 +33,15 @@ const ReactQuillInput = ({
 
   const onSubjectChange = (e) => {
     // Handle the subject input change here
-    setSubject(e.target.value);
+    const inputValue = e.target.value; // Truncate to 20 characters
+
+    if (e.target.value.length > 20) {
+      toastr.error("Maximum 20 characters allowed", "Error");
+    } else {
+      setSubject(inputValue);
+    }
   };
+
   let modules = {
     toolbar: false,
     mention: {
@@ -100,19 +110,27 @@ const ReactQuillInput = ({
   // InputBox Drag And Drop Function
   const { getRootProps, getInputProps } = useDropzone({
     accept:
-      ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav ",
-    onDrop: acceptedFiles => {
-      setAllFiles(
-        acceptedFiles.map(allFiles =>
-          Object.assign(allFiles, {
-            preview: URL.createObjectURL(allFiles),
-          })
-        )
-      )
+      ".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm,.ogg,.wav",
+    onDrop: (acceptedFiles) => {
+      acceptedFiles.forEach((file) => {
+        const fileSizeInMB = file.size / (1024 * 1024); // Convert bytes to megabytes
+
+        if (fileSizeInMB <= 25) {
+          setAllFiles((prevFiles) => [
+            ...prevFiles,
+            Object.assign(file, {
+              preview: URL.createObjectURL(file),
+            }),
+          ]);
+        } else {
+          toastr.error("File size should be 25 MB or less", "Error");
+        }
+      });
     },
     noClick: true, // Prevent opening file dialog on click
     noKeyboard: true,
-  })
+  });
+
   return (
     <div style={{ position: "relative" }}>
       {isQuill && (

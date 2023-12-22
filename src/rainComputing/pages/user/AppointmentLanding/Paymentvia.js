@@ -161,6 +161,14 @@ useEffect(() =>{
     handleAppointmentRequest();
     // onSendEmail();
   }
+  const handlesCaseDatachange =(value) =>{
+    if (value.length > 50) {
+      toastr.error('Case data text must be 50 characters or less',);
+      return;
+    }else{
+      setCaseData(value)
+    }
+  }
   return (
     <React.Fragment>
       <div className="page-content">
@@ -217,7 +225,7 @@ useEffect(() =>{
                                     onKeyPress={onKeyPress}
                                     name="caseData"
                                     // onChange={validation.handleChange}
-                                    onChange={e => setCaseData(e.target.value)}
+                                    onChange={(e) => handlesCaseDatachange(e.target.value)}
                                     onBlur={validation.handleBlur}
                                     // value={validation.values.caseData || ""}
                                     value={caseData}
