@@ -174,6 +174,7 @@ const AttorneyDetailsCard = () => {
 
                               <Input
                                 name="attorneybarnumber"
+                                maxLength={31}
                                 type="text"
                                 readOnly
                                 className="form-control"
@@ -206,6 +207,7 @@ const AttorneyDetailsCard = () => {
                               </Label>
                               <Input
                                 type="text"
+                                maxLength={21}
                                 name="phonenumber"
                                 className="form-control"
                                 id="validationCustom03"
@@ -236,6 +238,7 @@ const AttorneyDetailsCard = () => {
                               <Input
                                 type="text"
                                 name="firm"
+                                maxLength={31}
                                 className="form-control"
                                 id="validationCustom04"
                                 placeholder="Enter Your Email ID"
@@ -264,6 +267,7 @@ const AttorneyDetailsCard = () => {
                               </Label>
                               <Input
                                 type="text"
+                                maxLength={61}
                                 name="address"
                                 className="form-control"
                                 id="validationCustom04"
@@ -340,6 +344,7 @@ const AttorneyDetailsCard = () => {
                               <Input
                                 type="text"
                                 name="city"
+                                maxLength={31}
                                 className="form-control"
                                 id="validationCustom04"
                                 placeholder="Enter Your City"
@@ -369,6 +374,7 @@ const AttorneyDetailsCard = () => {
                               <Input
                                 type="text"
                                 name="postalCode"
+                                maxLength={11}
                                 className="form-control"
                                 id="validationCustom04"
                                 placeholder="Enter Your PostalCode"
@@ -398,6 +404,7 @@ const AttorneyDetailsCard = () => {
                               <Label htmlFor="validationCustom04">Expertise</Label>
                               <Input
                                 type="text"
+                                maxLength={31}
                                 name="expertise"
                                 className="form-control"
                                 id="validationCustom04"
@@ -427,6 +434,7 @@ const AttorneyDetailsCard = () => {
                               </Label>
                               <Input
                                 type="text"
+                                maxLength={31}
                                 name="jurisdiction"
                                 className="form-control"
                                 id="validationCustom04"
@@ -458,6 +466,7 @@ const AttorneyDetailsCard = () => {
                               <textarea
                                 type="text"
                                 name="fee"
+                                maxLength={11}
                                 className="form-control"
                                 id="validationCustom04"
                                 placeholder="Enter Your Fee"
@@ -512,6 +521,7 @@ const AttorneyDetailsCard = () => {
                               <textarea
                                 type="text"
                                 name="bio"
+                                maxLength={31}
                                 className="form-control"
                                 id="validationCustom04"
                                 placeholder="Enter Your Bio"

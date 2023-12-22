@@ -39,7 +39,7 @@ const AttorneyRegister = () => {
       phonenumber: "",
       firm: "",
       bio: "",
-      address:"",
+      address: "",
       country: "",
       state: "",
       city: "",
@@ -51,11 +51,17 @@ const AttorneyRegister = () => {
       email: currentUser.email,
     },
     validationSchema: Yup.object({
-      attorneybarnumber: Yup.string().required(
-        "Please Enter Your Attorney BarNumber"
-      ),
-      phonenumber: Yup.string().required("Please Enter Your Phone Number"),
-      //   email: Yup.string().required("Please Enter Your Email"),
+      phonenumber: Yup.string().max(20, 'Must be 20 characters or less'),
+      firm: Yup.string().max(30, 'Must be 30 characters or less'),
+      bio: Yup.string().required("Please Enter Your bio").max(30, 'Must be 30 characters or less'),
+      address: Yup.string().max(60, 'Must be 60 characters or less'),
+      city: Yup.string().max(30, 'Must be 30 characters or less'),
+      postalCode: Yup.string().max(10, 'Must be 10 characters or less'),
+      expertise: Yup.string().max(30, 'Must be 30 characters or less'),
+      jurisdiction: Yup.string().max(30, 'Must be 30 characters or less'),
+      fee: Yup.string().required("Please Enter Your fee").max(10, 'Must be 10 characters or less'),
+      subdomain: Yup.string().required("Please Enter Your subdomain"),
+      attorneybarnumber: Yup.string().max(30, 'Must be 30 characters or less'),
     }),
     onSubmit: values => {
       handleAttorneyReg({
@@ -103,7 +109,7 @@ const AttorneyRegister = () => {
       setUpdateError("Failed to Register an attroney!!")
     }
   }
-
+  
   return (
     <React.Fragment>
       <div className="page-content">
@@ -148,6 +154,7 @@ const AttorneyRegister = () => {
                                 <Input
                                   name="attorneybarnumber"
                                   type="text"
+                                  maxLength={31}
                                   className="form-control"
                                   id="validationCustom01"
                                   placeholder="Enter Your Attorney BarNumber"
@@ -158,13 +165,13 @@ const AttorneyRegister = () => {
                                   }
                                   invalid={
                                     validation.touched.attorneybarnumber &&
-                                    validation.errors.attorneybarnumber
+                                      validation.errors.attorneybarnumber
                                       ? true
                                       : false
                                   }
                                 />
                                 {validation.touched.attorneybarnumber &&
-                                validation.errors.attorneybarnumber ? (
+                                  validation.errors.attorneybarnumber ? (
                                   <FormFeedback type="invalid">
                                     {validation.errors.attorneybarnumber}
                                   </FormFeedback>
@@ -177,18 +184,27 @@ const AttorneyRegister = () => {
                                 <Label htmlFor="validationCustom05">Firm</Label>
                                 <Input
                                   name="firm"
+                                  maxLength={31}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.firm && validation.errors.firm ? "is-invalid" : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your firm"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.firm || ""}
                                 />
+                                {validation.touched.firm && validation.errors.firm && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.firm}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                           </Row>
                           <Row>
-                          
+
 
                             <Col lg="6">
                               <FormGroup className="mb-3">
@@ -197,6 +213,7 @@ const AttorneyRegister = () => {
                                 </Label>
                                 <Input
                                   type="text"
+                                  maxLength={21}
                                   name="phonenumber"
                                   className="form-control"
                                   id="validationCustom03"
@@ -206,13 +223,13 @@ const AttorneyRegister = () => {
                                   value={validation.values.phonenumber || ""}
                                   invalid={
                                     validation.touched.phonenumber &&
-                                    validation.errors.phonenumber
+                                      validation.errors.phonenumber
                                       ? true
                                       : false
                                   }
                                 />
                                 {validation.touched.phonenumber &&
-                                validation.errors.phonenumber ? (
+                                  validation.errors.phonenumber ? (
                                   <FormFeedback type="invalid">
                                     {validation.errors.phonenumber}
                                   </FormFeedback>
@@ -227,7 +244,7 @@ const AttorneyRegister = () => {
                                 <Input
                                   type="text"
                                   name="address"
-                                  
+                                  maxLength={61}
                                   className="form-control"
                                   id="validationCustom04"
                                   placeholder="Enter Your Address"
@@ -236,72 +253,72 @@ const AttorneyRegister = () => {
                                   value={validation.values.address || ""}
                                   invalid={
                                     validation.touched.address &&
-                                    validation.errors.address
+                                      validation.errors.address
                                       ? true
                                       : false
                                   }
                                 />
                                 {validation.touched.address &&
-                                validation.errors.address ? (
+                                  validation.errors.address ? (
                                   <FormFeedback type="invalid">
                                     {validation.errors.address}
                                   </FormFeedback>
                                 ) : null}
                               </FormGroup>
                             </Col>
-                            </Row>
-                            <Row>
-                              {" "}
-                              <Col lg="6">
-                                <FormGroup className="mb-3">
-                                  <Label htmlFor="validationCustom05">
-                                    Country
-                                  </Label>
-                                  <select
-                                    name="country"
-                                    id="validationCustom05"
-                                    className="form-control"
-                                    rows="2"
-                                    placeholder="Enter Your Country"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.country || ""}
-                                  >
-                                    <option value="">Select Country</option>
-                                    {country.map((option, i) => (
-                                      <option value={option?.value} key={i}>
-                                        {option?.text}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </FormGroup>
-                              </Col>
-                              <Col lg="6">
-                                <FormGroup className="mb-3">
-                                  <Label htmlFor="validationCustom05">
-                                    State
-                                  </Label>
-                                  <select
-                                    name="state"
-                                    id="validationCustom05"
-                                    className="form-control"
-                                    rows="2"
-                                    placeholder="Enter Your State"
-                                    onChange={validation.handleChange}
-                                    value={validation.values.state || ""}
-                                  >
-                                    <option value="">Select State</option>
-                                    {state.map((option, i) => (
-                                      <option value={option?.value} key={i}>
-                                        {option?.text}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </FormGroup>
-                              </Col>
-                            </Row>
-                     
+                          </Row>
+                          <Row>
+                            {" "}
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  Country
+                                </Label>
+                                <select
+                                  name="country"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your Country"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.country || ""}
+                                >
+                                  <option value="">Select Country</option>
+                                  {country.map((option, i) => (
+                                    <option value={option?.value} key={i}>
+                                      {option?.text}
+                                    </option>
+                                  ))}
+                                </select>
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup className="mb-3">
+                                <Label htmlFor="validationCustom05">
+                                  State
+                                </Label>
+                                <select
+                                  name="state"
+                                  id="validationCustom05"
+                                  className="form-control"
+                                  rows="2"
+                                  placeholder="Enter Your State"
+                                  onChange={validation.handleChange}
+                                  value={validation.values.state || ""}
+                                >
+                                  <option value="">Select State</option>
+                                  {state.map((option, i) => (
+                                    <option value={option?.value} key={i}>
+                                      {option?.text}
+                                    </option>
+                                  ))}
+                                </select>
+                              </FormGroup>
+                            </Col>
+                          </Row>
 
-                         
+
+
                           <Row>
                             <Col lg="6">
                               <FormGroup className="mb-3">
@@ -309,30 +326,48 @@ const AttorneyRegister = () => {
                                 <Input
                                   name="city"
                                   id="validationCustom05"
-                                  className="form-control"
+                                  maxLength={31}
+                                  className={`form-control ${validation.touched.city && validation.errors.city ? "is-invalid" : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your City"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.city || ""}
                                 />
+                                {validation.touched.city && validation.errors.city && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.city}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                             <Col lg="6">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom05">
-                                  PostalCode
-                                </Label>
+                                <Label htmlFor="validationCustom05">PostalCode</Label>
                                 <Input
                                   name="postalCode"
+                                  maxLength={11}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.postalCode && validation.errors.postalCode
+                                    ? "is-invalid"
+                                    : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your PostalCode"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.postalCode || ""}
                                 />
+                                {validation.touched.postalCode && validation.errors.postalCode && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.postalCode}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                           </Row>
 
                           <Row>
@@ -341,48 +376,77 @@ const AttorneyRegister = () => {
                                 <Label htmlFor="validationCustom05">Expertise</Label>
                                 <Input
                                   name="expertise"
+                                  maxLength={31}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.expertise && validation.errors.expertise
+                                      ? "is-invalid"
+                                      : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your Expertise"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.expertise || ""}
                                 />
+                                {validation.touched.expertise && validation.errors.expertise && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.expertise}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                             <Col lg="6">
                               <FormGroup className="mb-3">
-                                <Label htmlFor="validationCustom05">
-                                  Jurisdiction
-                                </Label>
+                                <Label htmlFor="validationCustom05">Jurisdiction</Label>
                                 <Input
                                   name="jurisdiction"
+                                  maxLength={31}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.jurisdiction && validation.errors.jurisdiction
+                                      ? "is-invalid"
+                                      : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your Jurisdiction"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.jurisdiction || ""}
                                 />
+                                {validation.touched.jurisdiction && validation.errors.jurisdiction && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.jurisdiction}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                           </Row>
 
                           <Row>
-                          <Col lg="4">
+                            <Col lg="4">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">Fee</Label>
                                 <textarea
                                   name="fee"
+                                  maxLength={11}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.fee && validation.errors.fee ? "is-invalid" : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your fee"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.fee || ""}
                                 />
+                                {validation.touched.fee && validation.errors.fee && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.fee}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                             <Col lg="4">
                               <FormGroup className="mb-3">
                                 <Label htmlFor="validationCustom05">SubDomain</Label>
@@ -402,21 +466,30 @@ const AttorneyRegister = () => {
                                 <Label htmlFor="validationCustom05">Bio</Label>
                                 <textarea
                                   name="bio"
+                                  maxLength={31}
                                   id="validationCustom05"
-                                  className="form-control"
+                                  className={`form-control ${validation.touched.bio && validation.errors.bio ? "is-invalid" : ""
+                                    }`}
                                   rows="2"
                                   placeholder="Enter Your bio"
                                   onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
                                   value={validation.values.bio || ""}
                                 />
+                                {validation.touched.bio && validation.errors.bio && (
+                                  <div className="invalid-feedback">
+                                    {validation.errors.bio}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Col>
+
                           </Row>
                         </Form>
                         <div className="d-flex justify-content-end ">
-                        <Button color="primary" type="submit">
-                          SUBMIT
-                        </Button>
+                          <Button color="primary" type="submit">
+                            SUBMIT
+                          </Button>
                         </div>
                       </div>
                     </div>
