@@ -58,10 +58,20 @@ const UserProfile = props => {
     initialValues: {
       firstname: currentUser?.firstname,
       lastname: currentUser?.lastname,
+      password: "",
+    confirmPassword: "",
     },
     validationSchema: Yup.object({
-      firstname: Yup.string().required("Please Enter Your First Name"),
-      lastname: Yup.string().required("Please Enter Your Last Name"),
+      firstname: Yup.string().required("Please Enter Your First Name")
+      .matches(/^(?=.{20}$)/, "Must Contain 20 Characters"),
+      lastname: Yup.string().required("Please Enter Your Last Name")
+      .matches(/^(?=.{20}$)/, "Must Contain 20 Characters"),
+      password: Yup.string().required("Please Enter New Password")
+      .min(16, "Password must be at least 16 characters"),
+    confirmPassword: Yup.string().required("Please Confirm Password")
+      .oneOf([Yup.ref('password'), null], 'Passwords must match')
+      .min(16, "Password must be at least 16 characters"),
+
     }),
     onSubmit: async (values, onSubmitProps) => {
       setLoading(true)
@@ -81,25 +91,31 @@ const UserProfile = props => {
     },
   })
   const handleUpdatePassword = async () => {
-    if (validation.values.password === validation.values.confirmPassword) {
+    const newPassword = validation.values.password;
+  
+    if (newPassword.length >= 16 && newPassword === validation.values.confirmPassword) {
       const res = await updatePassword({
         userID: currentUser.userID,
-        password: validation.values.password,
-      })
-
+        password: newPassword,
+      });
+  
       if (res.success) {
-        setPasswordUpateError("")
-        localStorage.setItem("authUser", JSON.stringify(res))
-        setCurrentUser(res)
-        validation.values.password = ""
-        validation.values.confirmPassword = ""
-        setPasswordUpateSuccess(res.msg)
+        setPasswordUpateError("");
+        localStorage.setItem("authUser", JSON.stringify(res));
+        setCurrentUser(res);
+        validation.values.password = "";
+        validation.values.confirmPassword = "";
+        setPasswordUpateSuccess(res.msg);
       } else {
-        setPasswordUpateSuccess("")
-        setPasswordUpateError("Failed to update password !!")
+        setPasswordUpateSuccess("");
+        setPasswordUpateError("Failed to update password!!");
       }
-    } else setProLoading(false)
-  }
+    } else {
+      setPasswordUpateSuccess("");
+      setPasswordUpateError("Password must be at least 16 characters and match the confirmation.");
+    }
+  };
+  
 
   const profilePicUpload = async e => {
     setProLoading(true)

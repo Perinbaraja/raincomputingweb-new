@@ -62,17 +62,17 @@ const AttorneyDetailsCard = () => {
       subdomain: attorneyDetail?.subdomain,
     },
     validationSchema: Yup.object({
-      phonenumber: Yup.string().required("Please Enter Your Phone Number"),
-      firm: Yup.string().required("Please Enter Your firm"),
+      phonenumber: Yup.string().max(20, 'Must be 20 characters or less'),
+      firm: Yup.string().max(30, 'Must be 30 characters or less'),
       bio: Yup.string().required("Please Enter Your bio"),
-      address: Yup.string().required("Please Enter Your address"),
-      city: Yup.string().required("Please Enter Your city"),
-      postalCode: Yup.string().required("Please Enter Your postalCode"),
-      expertise: Yup.string().required("Please Enter Your expertise"),
-      jurisdiction: Yup.string().required("Please Enter Your jurisdiction"),
+      address: Yup.string().max(60, 'Must be 60 characters or less'),
+      city: Yup.string().max(30, 'Must be 30 characters or less'),
+      postalCode: Yup.string().max(10, 'Must be 10 characters or less'),
+      expertise: Yup.string().max(30, 'Must be 30 characters or less'),
+      jurisdiction: Yup.string().max(30, 'Must be 30 characters or less'),
       fee: Yup.string().required("Please Enter Your fee"),
       subdomain: Yup.string().required("Please Enter Your subdomain"),
-      
+      attorneybarnumber: Yup.string().max(30, 'Must be 30 characters or less'),
     }),
     onSubmit: async values => {
       const res = await attorneyDetailsUpdate({

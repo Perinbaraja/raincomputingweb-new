@@ -20,6 +20,7 @@ import MobileNav from "./MobileNav"
 import Reminder from "rainComputing/pages/reminder"
 import DocketMenu from "rainComputing/pages/docket/DocketMenu"
 import logoImage from "../../assets/images/ChatPro.png"
+import ManageDomains from "rainComputing/components/chat/ManageDomains"
 const Header = props => {
   const { currentAttorney } = useUser()
   const { currentUser } = useUser()
@@ -64,21 +65,36 @@ const Header = props => {
                 </span>
               </Link>
 
-              <div className="p-4" id="domainTooltip">
+              <Link to="/" className="logo logo-light  ">
+                <span className="logo-sm">
+                  <img src={rainlglogo} alt="" height="22" />
+                </span>
+                <span className="logo-lg">
+                  <img src={rainlglogo} alt="" height="50" />
+                </span>
+              </Link>
+            </div>
+          </div>
+          <div className="d-flex justify-content-md-between " id="">
+            {/* <div id="navbox"></div> */}
+            {isMobile ? (
+              <>
+                {" "}
+                <div className="p-4" id="domainTooltip">
                 <i
                   className="bx bx-link-external"
                   id="atticon"
                   onClick={toggleSubDomainOpen}
                   target="_blank"
                   style={{ cursor: "pointer" }}
-                  
+
                 />
                 <UncontrolledTooltip
-                                          placement="bottom"
-                                          target="domainTooltip"
-                                        >
-                                          Domains
-                                        </UncontrolledTooltip>
+                  placement="bottom"
+                  target="domainTooltip"
+                >
+                  Domains
+                </UncontrolledTooltip>
                 <Dropdown
                   isOpen={subDomainOpen}
                   toggle={toggleSubDomainOpen}
@@ -116,23 +132,6 @@ const Header = props => {
                   </DropdownMenu>
                 </Dropdown>
               </div>
-
-
-              <Link to="/" className="logo logo-light  ">
-                <span className="logo-sm">
-                  <img src={rainlglogo} alt="" height="22" />
-                </span>
-                <span className="logo-lg">
-                  <img src={rainlglogo} alt="" height="50" />
-                </span>
-              </Link>
-            </div>
-          </div>
-          <div className="d-flex justify-content-md-between " id="">
-            {/* <div id="navbox"></div> */}
-            {isMobile ? (
-              <>
-                {" "}
                 <div>
                   <ul id="menunav" className="d-flex">
                     <li id="navmen" className="">
@@ -178,7 +177,7 @@ const Header = props => {
                     />
                   )}
                   <ProfileMenu />
-                </div>
+                                  </div>
               </>
             ) : (
               <div className="flex-fill">

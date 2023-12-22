@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import MetaTags from "react-meta-tags"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Row,
   Col,
@@ -52,14 +52,19 @@ const ForgetPasswordPage = props => {
     validationSchema: Yup.object({
       NewPassword: Yup.string()
         .required("Please Enter Your Password")
-        .matches(/^(?=.{5,})/, "Must Contain 5 Characters"),
+        .matches(/^(?=.{5,16}$)/, "Must Contain 5 to 16 Characters"),
       // ConfirmPassword: Yup.string().oneOf([Yup.ref('NewPassword'),null],"ConfirmPassword doesn't match"),
     }),
     onSubmit: async (values, onSubmitProps) => {
+      if(values?.NewPassword.length <= 16) {
       await handleSetPasswordLink(values?.NewPassword)
       onSubmitProps.resetForm()
-    },
+    }else{
+      toastr.error(`Your passsword 16 charcters above`, "error")
+    }
+  }
   })
+
   const handleSetPasswordLink = async pw => {
     const payload = {
       verifyToken: query.get("token"),

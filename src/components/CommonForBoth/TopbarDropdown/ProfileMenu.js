@@ -170,12 +170,12 @@ const ProfileMenu = props => {
               <i className="bx bx-alarm font-size-16 align-middle me-1" />
               {props.t("Reminders")}
             </DropdownItem>
-            {currentAttorney && (
+            {/* {currentAttorney && (
               <DropdownItem tag="a" href="/reminderDashboard">
                 <i className="bx bx-alarm font-size-16 align-middle me-1" />
                 {props.t("Case Reminder")}
               </DropdownItem>
-            )}
+            )} */}
             {currentAttorney && (
               <DropdownItem
                 tag="a"

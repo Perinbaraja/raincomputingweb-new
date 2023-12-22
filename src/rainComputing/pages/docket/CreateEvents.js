@@ -8,6 +8,7 @@ import {
 import { useUser } from "rainComputing/contextProviders/UserProvider"
 import { Link } from "react-router-dom"
 import toastr from "toastr"
+import "toastr/build/toastr.min.css"
 
 const CreateEvents = ({ caseId }) => {
   const { currentAttorney } = useUser()
@@ -35,12 +36,20 @@ const CreateEvents = ({ caseId }) => {
     setEventIntervals(prevInputs => [...prevInputs, ""])
   }
   const handleEventTextChange = (index, value) => {
+    // Validate the length before updating the state
+    if (value.length > 30) {
+      toastr.error('Event text must be 30 characters or less',);
+      return;
+    }
+    
+  
     setEventText(prevInputs => {
-      const newEventsTexts = [...prevInputs]
-      newEventsTexts[index] = value
-      return newEventsTexts
-    })
-  }
+      const newEventsTexts = [...prevInputs];
+      newEventsTexts[index] = value;
+      return newEventsTexts;
+    });
+  };
+  
   const handleEventIntervalChange = (index, value) => {
     setEventIntervals(prevInputs => {
       const newRecievedDate = [...prevInputs]
@@ -56,6 +65,10 @@ const CreateEvents = ({ caseId }) => {
     })
   }
   const handleCreateEvent = async () => {
+    if (eventName.trim() === '' || eventName.length > 30) {
+      toastr.error('Event name must be 1 to 30 characters',);
+      return;
+    }
     const eventData = {
       eventName: eventName,
       firmId: currentAttorney?._id,
@@ -133,7 +146,14 @@ const CreateEvents = ({ caseId }) => {
       return newInputs
     })
   }
-
+const handleEventNameChange = (value) => {
+  if (value.length > 30) {
+    toastr.error('EventName text must be 30 characters or less',);
+    return;
+  }else{
+  setEventName(value)
+  }
+}
   return (
     <div className="py-5 my-5">
       <div>
@@ -169,7 +189,9 @@ const CreateEvents = ({ caseId }) => {
               <input
                 className="form-control"
                 type="text"
-                onChange={e => setEventName(e.target.value)}
+                placeholder="Enter the events name"
+                value={eventName}
+                onChange={(e) => handleEventNameChange(e.target.value)}
               />
             </div>
             <div className="col-md-2 col-sm-12 mb-3">
@@ -214,6 +236,7 @@ const CreateEvents = ({ caseId }) => {
                   <input
                     className="form-control"
                     type="text"
+                    placeholder="Enter the events Textname"
                     value={text}
                     onChange={e => handleEventTextChange(index, e.target.value)}
                   />
