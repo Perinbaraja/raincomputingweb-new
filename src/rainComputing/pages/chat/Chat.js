@@ -660,6 +660,11 @@ const ChatRc = () => {
     setChatLoader(false)
   }
 
+  useEffect(() => {
+    ongetAllChatRooms();
+    ongetAllCases({ isSet: false });
+  }, [messages,notifications])
+
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
     setPageLoader(true)
@@ -901,6 +906,7 @@ const ChatRc = () => {
         "Success"
       )
       setCurrentCase(null)
+      setCurrentChat(null)
       await ongetAllChatRooms()
       await ongetAllCases({ isSet: false })
     } else {
@@ -908,6 +914,7 @@ const ChatRc = () => {
     }
     setCaseDeleteModalOpen(false)
   }
+  
   const handleCaseDelete = () => {
     setCaseDeleteModalOpen(true)
   }
@@ -920,6 +927,7 @@ const ChatRc = () => {
     }
     const res = await updateGroup(payload)
     if (res.success) {
+      setCurrentChat(null)
       await ongetAllChatRooms()
       toastr.success(`Chat has been Deleted successfully`, "Success")
       setCurrentChatDelete(null)
@@ -1083,8 +1091,8 @@ const ChatRc = () => {
       setIsVoiceMessage(false)
       setRecorder([])
       setBlobURL(null)
-      await ongetAllChatRooms();
-      await ongetAllCases({ isSet: false });
+      await ongetAllChatRooms()
+      await ongetAllCases({ isSet: false })
     }
     setLoading(false)
     // setReplyMsgModalOpen(false)
@@ -1822,6 +1830,7 @@ const ChatRc = () => {
     }
     const res = await completedCase(payload)
     if (res.success) {
+      setCurrentChat(null)
       await ongetAllCases({ isSet: false })
       toastr.success(`case completed  successfully`, "Success")
     }

@@ -81,7 +81,12 @@ const CaseMembers = ({ members, admins, caseId }) => {
         </CardTitle>
         <CardText className="my-1">{member?.id?.email}</CardText>
         <CardText className="m-0">Rain Computing</CardText>
-        <CardText className="">Attorney</CardText>
+        {member?.id?.attorneyStatus ? (
+          <CardText className="text-primary fw-semibold">Attorney</CardText>
+          ):(
+            <CardText><br/></CardText>
+          )
+        }
         <CardText className="text-muted">
           Added by{" "}
           {member?.addedBy?._id === currentUser?.userID

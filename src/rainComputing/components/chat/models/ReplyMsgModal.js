@@ -202,6 +202,7 @@ const ReplyMsgModal = ({
     }
     setLoading(false)
   }
+
   return (
     <>
       <Modal
@@ -352,32 +353,40 @@ const ReplyMsgModal = ({
           <Row>
             <Col>
               <div style={{ position: "absolute", right: "20px", top: "3px" }}>
-                <input
-                  type="file"
-                  name="file"
-                  multiple="true"
-                  id="hidden-file"
-                  className="d-none"
-                  accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
-                  onChange={e => handleFileChange(e)}
-                ></input>
-                <label
-                  for="hidden-file"
-                  style={{ margin: "10px" }}
-                >
-                  <i
-                    class="mdi mdi-attachment mdi-rotate-315"
-                    disabled={
-                      recorder?.state === "recording"
-                    }
-                    title="Attachments"
-                    style={{
-                      // color: "#556EE6",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                    }}
-                  ></i>
-                </label>
+                {
+                  recorder &&
+                    recorder.state === "recording" || allVoicemsg.length > 0 ? (
+                    <></>
+                  ) : (
+                    <>
+                      <input
+                        type="file"
+                        name="file"
+                        multiple="true"
+                        id="hidden-file"
+                        className="d-none"
+                        accept=".png, .jpg, .jpeg,.pdf,.doc,.xls,.docx,.xlsx,.zip,.mp3,.webm"
+                        onChange={e => handleFileChange(e)}
+                      ></input>
+                      <label
+                        for="hidden-file"
+                        style={{ margin: "10px" }}
+                      >
+                        <i
+                          class="mdi mdi-attachment mdi-rotate-315"
+                          disabled={
+                            recorder?.state === "recording"
+                          }
+                          title="Attachments"
+                          style={{
+                            // color: "#556EE6",
+                            fontSize: "16px",
+                            cursor: "pointer",
+                          }}
+                        ></i>
+                      </label>
+                    </>
+                  )}
                 {recorder &&
                   recorder.state === "recording" ? (
                   <i
@@ -402,6 +411,7 @@ const ReplyMsgModal = ({
                     }}
                   ></i>
                 )}
+
               </div>
             </Col>
           </Row>
