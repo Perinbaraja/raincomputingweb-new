@@ -56,8 +56,8 @@ const RainLogin = props => {
       captcha: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      password: Yup.string().required("Please Enter Your Password"),
+      email: Yup.string().required("Please Enter Your Email").max(40, 'Must be 40 characters or less'),
+      password: Yup.string().required("Please Enter Your Password").max(16, 'Must be 16 characters or less'),
       captcha: Yup.string().required("Please Enter Your captcha"),
     }),
     onSubmit: async values => {
@@ -180,6 +180,7 @@ const RainLogin = props => {
                           <Label className="form-label">Email</Label>
                           <Input
                             name="email"
+                            maxLength={41}
                             className="form-control"
                             placeholder="Enter email"
                             type="email"
@@ -205,6 +206,7 @@ const RainLogin = props => {
                           <Label className="form-label">Password</Label>
                           <Input
                             name="password"
+                            maxLength={17}
                             value={validation.values.password || ""}
                             type="password"
                             placeholder="Enter Password"

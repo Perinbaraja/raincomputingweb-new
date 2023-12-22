@@ -873,6 +873,11 @@ const ChatRc = () => {
   //Selecting current case
   const onSelectingCase = cas => {
     setCurrentCase(cas)
+    setAllVoicemsg([])
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
+    setAllFiles([])
   }
 
   //pinned Message
@@ -1903,6 +1908,18 @@ const ChatRc = () => {
     setRecorder([])
     setBlobURL(null)
   }
+
+  const handleSelectingChat = (chat) => {
+    setCurrentCase(null)
+    setCurrentChat(chat)
+    setAllFiles([])
+    setAllVoicemsg([])
+    setIsAttachment(false)
+    setIsVoiceMessage(false)
+    setRecorder([])
+    setBlobURL(null)
+  }
+
   return (
     <div className="page-contents " style={{ marginTop: 100 }}>
       <>
@@ -2292,8 +2309,7 @@ const ChatRc = () => {
                               <Link
                                 to="#"
                                 onClick={() => {
-                                  setCurrentCase(null)
-                                  setCurrentChat(chat)
+                                  handleSelectingChat(chat)
                                 }}
                               >
                                 <div className="d-flex">
