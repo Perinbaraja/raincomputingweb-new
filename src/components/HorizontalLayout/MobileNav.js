@@ -29,7 +29,7 @@ const MobileNav = () => {
   const handleIconClick = () => {
     window.open(currentAttorney?.subdomain, '_blank');
   };
- 
+
   const handleSubDomainClick = () => {
     const subdomain = currentAttorney?.subdomain;
     const url = subdomain ? (subdomain.startsWith("https://") ? subdomain : `https://${subdomain}`) : null;
@@ -49,46 +49,48 @@ const MobileNav = () => {
   return (
     <div>
       {isMobile && (
-        <ul id="" className=" ul  " style={{ zIndex: 300 }}>
-          <li id="" className="">
-            <Link to="/" className="ul1">
-              Home
-            </Link>
-          </li>
-          <li id="" className="">
-            <Link to="/chat-rc" className="ul1">
-              {" "}
-              ChatPro<sup>TM</sup>
-            </Link>
-          </li>
-          {!currentUser && (
+        <div className="">
+          <ul id="" className=" ul  " style={{ zIndex: 300 }}>
             <li id="" className="">
-              <Link to="/help" className="ul1">
-                Help
+              <Link to="/" className="ul1">
+                Home
               </Link>
             </li>
-          )}
-          {currentUser && currentAttorney?.status === "approved" && (
             <li id="" className="">
-              <Link to="/req-user" className="ul1">
-                Requests
-              </Link>
-            </li>
-          )}
-          {currentUser && !currentAttorney && (
-            <li id="">
-              <Link to="/appointment-status " className=" ul1">
+              <Link to="/chat-rc" className="ul1">
                 {" "}
-                Connection
+                ChatPro<sup>TM</sup>
               </Link>
             </li>
-          )}
-          {currentUser && currentAttorney?.status === "approved" && (
-            <li className="ul1">
-              <DocketMenu />
-            </li>
-          )}
-        </ul>
+            {!currentUser && (
+              <li id="" className="">
+                <Link to="/help" className="ul1">
+                  Help
+                </Link>
+              </li>
+            )}
+            {currentUser && currentAttorney?.status === "approved" && (
+              <li id="" className="">
+                <Link to="/req-user" className="ul1">
+                  Requests
+                </Link>
+              </li>
+            )}
+            {currentUser && !currentAttorney && (
+              <li id="">
+                <Link to="/appointment-status " className=" ul1">
+                  {" "}
+                  Connection
+                </Link>
+              </li>
+            )}
+            {currentUser && currentAttorney?.status === "approved" && (
+              <li className="ul1">
+                <DocketMenu />
+              </li>
+            )}
+          </ul>
+        </div>
       )}
       <div className=" flex-container ">
         <div className="  ">
@@ -97,9 +99,9 @@ const MobileNav = () => {
             className="border-0 bg-transparent"
           >
             {isMobile ? (
-              <div className="burger-bar show "></div>
+              <div className="burger-bar show"></div>
             ) : (
-              <div className="burger-bar "></div>
+              <div className="burger-bar"></div>
             )}
           </button>
           <Link to="/" className="logo logo-dark">
@@ -108,7 +110,60 @@ const MobileNav = () => {
             </span>
           </Link>{" "}
         </div>
-        <div className="d-flex  ">
+
+        <div className="d-flex ">
+          <div className="mt-4" id="domainTooltip">
+            <i
+              className="bx bx-link-external"
+              id="atticon"
+              onClick={toggleSubDomainOpen}
+              target="_blank"
+              style={{ cursor: "pointer",float: "right" }}
+
+            />
+            <UncontrolledTooltip
+              placement="bottom"
+              target="domainTooltip"
+            >
+              Domains
+            </UncontrolledTooltip>
+            <Dropdown
+              isOpen={subDomainOpen}
+              toggle={toggleSubDomainOpen}
+              className="float-end me-2"
+            >
+              <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
+              <DropdownMenu className="custom-dropdown-menu"
+                style={{
+                  whiteSpace: "break-spaces",
+                  overflow: "hidden",
+                  wordWrap: "break-word",
+                }}
+              >
+                {currentAttorney?.subdomain &&
+                  <DropdownItem
+                    className="border-bottom px-3 py-3 domain-items"
+                    onClick={() => handleSubDomainClick()}
+                  >
+                    {currentAttorney?.subdomain}
+                  </DropdownItem>}
+                {currentUser?.domains ? (
+                  currentUser.domains.map((user, i) => (
+                    <div
+                      className="border-bottom px-3 py-3 domain-item"
+                      key={i}
+                      onClick={() => handleDomainClick(user?.name)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {user?.name}
+                    </div>
+                  ))
+                ) : (
+                  <p>No domains available</p>
+                )}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
           <div> {currentUser && <NotificationDropdown />}</div>
           <div className="mt-3 p-1">
             {" "}
@@ -124,58 +179,6 @@ const MobileNav = () => {
             {" "}
             <ProfileMenu />
           </div>{" "}
-          <div className="p-4" id="domainTooltip">
-                <i
-                  className="bx bx-link-external"
-                  id="atticon"
-                  onClick={toggleSubDomainOpen}
-                  target="_blank"
-                  style={{ cursor: "pointer" }}
-
-                />
-                <UncontrolledTooltip
-                  placement="bottom"
-                  target="domainTooltip"
-                >
-                  Domains
-                </UncontrolledTooltip>
-                <Dropdown
-                  isOpen={subDomainOpen}
-                  toggle={toggleSubDomainOpen}
-                  className="float-end me-2"
-                >
-                  <DropdownToggle className="btn nav-btn" tag="i"></DropdownToggle>
-                  <DropdownMenu className="custom-dropdown-menu"
-                    style={{
-                      whiteSpace: "break-spaces",
-                      overflow: "hidden",
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    {currentAttorney?.subdomain &&
-                      <DropdownItem
-                        className="border-bottom px-3 py-3 domain-items"
-                        onClick={() => handleSubDomainClick()}
-                      >
-                        {currentAttorney?.subdomain}
-                      </DropdownItem>}
-                    {currentUser?.domains ? (
-                      currentUser.domains.map((user, i) => (
-                        <div
-                          className="border-bottom px-3 py-3 domain-item"
-                          key={i}
-                          onClick={() => handleDomainClick(user?.name)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {user?.name}
-                        </div>
-                      ))
-                    ) : (
-                      <p>No domains available</p>
-                    )}
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ const Header = props => {
   return (
     <React.Fragment>
       <header id="page-topbar">
-        <div className="d-flex justify-content-md-between flex-grow-1 col-md-12  ">
+        <div className="d-flex justify-content-md-around gap-4 flex-grow-1 col-md-12  ">
           <div className="d-flex ">
             <div className="d-flex navbar-brand-box">
               <Link to="/" className="logo logo-dark">
@@ -64,7 +64,7 @@ const Header = props => {
                   <img src={rainlglogo} alt="" height="50" />
                 </span>
               </Link>
-
+              
               <Link to="/" className="logo logo-light  ">
                 <span className="logo-sm">
                   <img src={rainlglogo} alt="" height="22" />
@@ -75,12 +75,49 @@ const Header = props => {
               </Link>
             </div>
           </div>
-          <div className="d-flex justify-content-md-between " id="">
+          
+          
             {/* <div id="navbox"></div> */}
             {isMobile ? (
               <>
-                {" "}
-                <div className="p-4" id="domainTooltip">
+              {" "}
+                <div className="">
+                  <ul id="menunav" className="d-flex">
+                    <li id="navmen" className="">
+                      <Link to="/">Home</Link>
+                    </li>
+                    <li id="navmen" className="">
+                      <Link to="/chat-rc">
+                        <Link
+                          className=""
+                          to="/chat-rc"
+                        >
+                          ChatPro<sup>TM</sup>
+                        </Link>
+                      </Link>
+                    </li>
+                    {!currentUser && (
+                      <li id="navmen" className="">
+                        <Link to="/help">Help</Link>
+                      </li>
+                    )}
+                    {currentUser && currentAttorney?.status === "approved" && (
+                      <li id="navmen" className="">
+                        <Link to="/req-user">Requests</Link>
+                      </li>
+                    )}
+                    {currentUser && !currentAttorney && (
+                      <li id="navmen" className="">
+                        <Link to="/appointment-status">Connection</Link>
+                      </li>
+                    )}
+                    <li id="navmen" className="">
+                      <DocketMenu />
+                    </li>
+                  </ul>
+                </div>
+                <div className="d-flex align-items-center ">
+                  <div className="" id="domainTooltip">
                 <i
                   className="bx bx-link-external"
                   id="atticon"
@@ -132,57 +169,25 @@ const Header = props => {
                   </DropdownMenu>
                 </Dropdown>
               </div>
-                <div>
-                  <ul id="menunav" className="d-flex">
-                    <li id="navmen" className="">
-                      <Link to="/">Home</Link>
-                    </li>
-                    <li id="navmen" className="">
-                      <Link to="/chat-rc">
-                        <Link
-                          className=""
-                          to="/chat-rc"
-                        >
-                          ChatPro<sup>TM</sup>
-                        </Link>
-                      </Link>
-                    </li>
-                    {!currentUser && (
-                      <li id="navmen" className="">
-                        <Link to="/help">Help</Link>
-                      </li>
-                    )}
-                    {currentUser && currentAttorney?.status === "approved" && (
-                      <li id="navmen" className="">
-                        <Link to="/req-user">Requests</Link>
-                      </li>
-                    )}
-                    {currentUser && !currentAttorney && (
-                      <li id="navmen" className="">
-                        <Link to="/appointment-status">Connection</Link>
-                      </li>
-                    )}
-                    <li id="navmen" className="">
-                      <DocketMenu />
-                    </li>
-                  </ul>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  {currentUser && <NotificationDropdown />}
-                  {currentUser && (
+              <div>
+                  {currentUser && <NotificationDropdown />}</div>
+                 
+                 <div> {currentUser && (
                     <Reminder
                       toggle={tog_scroll}
                       open={modal_scroll}
                       setOpen={setmodal_scroll}
                     />
                   )}
-                  <ProfileMenu />
-                                  </div>
+                  </div>
+                  <div><ProfileMenu /></div>
+                </div>
               </>
             ) : (
               <div className="flex-fill">
                 <MobileNav />
               </div>
+
             )}
             {/* <div id="topinput">
             <form >
@@ -190,7 +195,7 @@ const Header = props => {
               <input type="text" placeholder="Search for Attorney..." className="border-0"/>={}
             </form>
           </div> */}
-          </div>
+          
         </div>
       </header>
     </React.Fragment>

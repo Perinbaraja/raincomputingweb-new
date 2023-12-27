@@ -664,7 +664,7 @@ const ChatRc = () => {
   useEffect(() => {
     ongetAllChatRooms();
     ongetAllCases({ isSet: false });
-  }, [messages, notifications])
+  }, [messages])
 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
@@ -978,14 +978,15 @@ const ChatRc = () => {
   }
   //Textbox empty or spaces
   const isEmptyOrSpaces = () => {
-    if (isAttachment) {
-      return false
-    } else if (isVoiceMessage) {
-      return false
+    if (isAttachment || isVoiceMessage) {
+      return false;
     }
+    const isNullOrWhitespace = curMessage === null || curMessage.trim() === '';
+    const hasNonWhitespaceContent = curMessage !== null && curMessage.replace(/<[^>]*>/g, '').trim().length > 0;
+    return isNullOrWhitespace || !hasNonWhitespaceContent;
+  };
 
-    return curMessage === null || curMessage.match(/^ *$/) !== null
-  }
+
   const toggle_emailModal = () => {
     setEmailModal(!emailModal)
     document.body.classList.add("no_padding")
@@ -1091,7 +1092,7 @@ const ChatRc = () => {
       }
       payLoad.attachments = attachmentsId
       payLoad.voiceMessage = voiceMessageId
-      handleSendingMessage(payLoad)
+      await handleSendingMessage(payLoad)
       setAllFiles([])
       setAllVoicemsg([])
       setcurMessage("")
@@ -1100,8 +1101,8 @@ const ChatRc = () => {
       setIsVoiceMessage(false)
       setRecorder([])
       setBlobURL(null)
-      await ongetAllChatRooms()
-      await ongetAllCases({ isSet: false })
+      // await ongetAllChatRooms()
+      // await ongetAllCases({ isSet: false })
     }
     setLoading(false)
     // setReplyMsgModalOpen(false)
@@ -1228,7 +1229,6 @@ const ChatRc = () => {
   //Handling File change
   const handleFileChange = e => {
     const selectedFiles = Array.from(e.target.files);
-    console.log("selectedFiles", selectedFiles);
 
     // Check individual file sizes and display an error for files exceeding 25 MB
     const exceedingFiles = selectedFiles.filter(file => file.size > 25 * 1024 * 1024);
@@ -1392,15 +1392,12 @@ const ChatRc = () => {
     const zip = new JSZip()
     zip.file(`${chatDocName}.pdf`, chatDocBlob)
     const caseFolder = zip.folder(currentCase?.caseName ?? "Private Chat")
-    console.log("caseFolder", caseFolder)
     // Loop through each case file and add it to the ZIP file
     for (const file of caseFile) {
       try {
         // Fetch the file from MongoDB
         const res = await fetch(`${SERVER_URL}/file/${file.id}`)
-        console.log("res", res)
         const blob = await res.blob()
-        console.log("blob", blob)
         caseFolder.file(file.name, blob)
       } catch (err) {
         console.error(`Error fetching case file ${file.name}: ${err}`)
@@ -2427,13 +2424,7 @@ const ChatRc = () => {
                                 caseData,
                                 notifyCount: notifyCountforCase(caseData._id),
                               }))
-                              .sort((a, b) => {
-                                const notifyCountDiff =
-                                  b.notifyCount - a.notifyCount
-                                if (notifyCountDiff !== 0) {
-                                  return notifyCountDiff // Sort by notifyCount first
-                                }
-                              })
+
                               .map(
                                 (
                                   { caseData, notifyCount },
