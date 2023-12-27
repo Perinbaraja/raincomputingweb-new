@@ -1,24 +1,23 @@
-.ul{
+.ul {
     position: absolute;
-     display:inline-block;
-     list-style: none;  
-    
-     left: 0;
-     top: 52px;
-     transition: all 0.5s ease-out;
-     width: 100%;
+    display: inline-block;
+    list-style: none;  
+    left: 0;
+    transform: translateX(-50%);
+    top: 52px;
+    transition: all 0.5s ease-out;
+    width: 100%;
     color: white;
-     z-index: 60;
-     text-align: center;
-     background-color: #556ee6
-     ;
-     line-height: 35px;
- 
-     }
+    z-index: 60;
+    text-align: center;
+    background-color: #556ee6;
+    line-height: 35px;
+}
+
   
  .ul1{
     color:  white;
- }
+     }
  .burger-bar,
  .burger-bar::before,
  .burger-bar::after{
@@ -53,12 +52,13 @@
  }
  .show.burger-bar{
      background: transparent;
- }
+      }
  
  
     .flex-container {
       display: flex;
-      justify-content:space-between;
-      gap: 200px;
+      
+    gap: 100px;
     }
-  
+    
+   
