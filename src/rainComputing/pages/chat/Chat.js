@@ -664,7 +664,7 @@ const ChatRc = () => {
   useEffect(() => {
     ongetAllChatRooms();
     ongetAllCases({ isSet: false });
-  }, [messages])
+  }, [messages,notifications])
 
   //Creating New ChatRoom
   const handleCreateChatRoom = async id => {
