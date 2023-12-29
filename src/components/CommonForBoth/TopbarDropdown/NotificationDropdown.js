@@ -12,9 +12,11 @@ import ChatLoader from "rainComputing/components/chat/ChatLoader"
 import PrivateReplyMsg from "rainComputing/components/chat/PrivateReplyMsg"
 import GroupReplyMsg from "rainComputing/components/chat/GroupReplyMsg"
 import classNames from "classnames";
+import { getRecentMessages } from "rainComputing/helpers/backend_helper"
 const NotificationDropdown = (props) => {
   const { currentUser, setCurrentUser } = useUser();
   const { notifications, setNotifications } = useNotifications();
+  const[recentNotifications,setRecentNotifications] = useState([])
   const [loading, setLoading] = useState(false);
   const [menu, setMenu] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
@@ -42,24 +44,38 @@ const NotificationDropdown = (props) => {
       }
     }
   }, [currentUser?.isNotifySound, notifications]);
-  const setNotificationsInLocalStorage = (notifications) => {
-    try {
-      // const notificationsWithFlags = notifications.map((notification) => ({
-      //   ...notification,
-      //   isNew: true, // Add your boolean flag here, set to true by default
-      // }));
-      // Convert the notifications array to a JSON string
-      const notificationsJSON = JSON.stringify(notifications);
-      // Store the JSON string in local storage under a specific key
-      localStorage.setItem("notifications", notificationsJSON);
-    } catch (error) {
-      console.error("Error saving notifications to local storage:", error);
-    }
-  };
-  const previousNotifications = JSON.parse(localStorage.getItem("notifications"));
+  // const setNotificationsInLocalStorage = (notifications) => {
+  //   try {
+  //     // const notificationsWithFlags = notifications.map((notification) => ({
+  //     //   ...notification,
+  //     //   isNew: true, // Add your boolean flag here, set to true by default
+  //     // }));
+  //     // Convert the notifications array to a JSON string
+  //     const notificationsJSON = JSON.stringify(notifications);
+  //     // Store the JSON string in local storage under a specific key
+  //     localStorage.setItem("notifications", notificationsJSON);
+  //   } catch (error) {
+  //     console.error("Error saving notifications to local storage:", error);
+  //   }
+  // };
+  // const previousNotifications = JSON.parse(localStorage.getItem("notifications"));
   const toggleDropdown = () => {
     setMenu(!menu);
   };
+
+  const getAllRecentMessages = async() => {
+    const payload = {
+      userId: currentUser?.userID
+    }
+    const res = await getRecentMessages(payload)
+    if(res.success){
+      setRecentNotifications(res?.chats)
+    }
+  }
+  useEffect(()=> {
+    getAllRecentMessages()
+  },[currentUser,notifications])
+ 
   return (
     <React.Fragment>
       <Dropdown
@@ -174,7 +190,7 @@ const NotificationDropdown = (props) => {
                 loading ? (
                   <ChatLoader />
                 ) : (
-                  previousNotifications && (
+                  recentNotifications && (
                     <SimpleBar style={{ height: "230px" }}>
                       <div>
                         <div className="p-3">
@@ -190,7 +206,7 @@ const NotificationDropdown = (props) => {
                             </div>
                           </Row>
                         </div>
-                        {previousNotifications.map((notify, i) => {
+                        {recentNotifications.map((notify, i) => {
                           if (notify.isReply && !notify.caseId) {
                             return <PrivateReplyMsg notification={notify} key={i} />;
                           } else if (notify.isReply && notify.caseId) {

@@ -96,6 +96,8 @@ const unpinMessage = payload =>
 const createOnevsOneChat = payload =>
   post(`${BASE_URL}/group/createChat`, payload)
 
+  const getRecentMessages = payload => post(`${BASE_URL}/group/getAllMessages`, payload)
+
 const getOnevsOneChat = payload => post(`${BASE_URL}/group/getChat`, payload)
 
 const getFileFromGFS = ({ id }, config) =>
@@ -313,5 +315,6 @@ export {
   getAllSubCases,
   createDomains,
     updateDomains,
-    deleteDomains
+    deleteDomains,
+    getRecentMessages
 }

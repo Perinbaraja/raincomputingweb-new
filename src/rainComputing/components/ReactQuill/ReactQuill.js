@@ -10,6 +10,7 @@ import { useDropzone } from "react-dropzone";
 import { error } from "logrocket";
 import toastr from "toastr"
 import "toastr/build/toastr.min.css"
+import useMediaQuery from "rainComputing/helpers/hooks/useMediaQuery";
 
 const ReactQuillInput = ({
   value,
@@ -30,6 +31,7 @@ const ReactQuillInput = ({
   subject,
   setSubject
 }) => {
+  const [isMobile] = useMediaQuery("764")
 
   const onSubjectChange = (e) => {
     // Handle the subject input change here
@@ -164,7 +166,9 @@ const ReactQuillInput = ({
       {!isQuill && (
         <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <input
+          {isMobile ? (
+<>
+<input
             type="text"
             placeholder="Type the Subject of this message..."
             value={subject}
@@ -181,7 +185,28 @@ const ReactQuillInput = ({
               minWidth: "fit-content"
             }}
           />
-
+</>
+          ) : (
+            <>
+          <input
+            type="text"
+            placeholder="Type the Subject of this message..."
+            value={subject}
+            onChange={onSubjectChange}
+            className="px-2 py-1 text-break mb-1 border border-2 border-dark rounded-3 "
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "40px",
+              width: "130px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-line",
+              minWidth: "fit-content"
+            }}
+          />
+          </>
+          )}
           <ReactQuill
             theme="snow"
             className="quil"
