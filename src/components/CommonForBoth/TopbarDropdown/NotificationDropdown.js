@@ -38,7 +38,7 @@ const NotificationDropdown = (props) => {
           // Update the notification to mark it as played
           notify.playedSound = true;
         });
-        setNotificationsInLocalStorage(notifications);
+        // setNotificationsInLocalStorage(notifications);
         // To trigger re-render and update the notifications array in state
         setNotifications([...notifications]);
       }
