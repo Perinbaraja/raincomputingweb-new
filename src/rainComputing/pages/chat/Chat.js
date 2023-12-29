@@ -1107,8 +1107,8 @@ const ChatRc = () => {
       setIsVoiceMessage(false)
       setRecorder([])
       setBlobURL(null)
-      await ongetAllChatRooms()
-      await ongetAllCases({ isSet: false })
+      // await ongetAllChatRooms()
+      // await ongetAllCases({ isSet: false })
     }
     setLoading(false)
     // setReplyMsgModalOpen(false)
