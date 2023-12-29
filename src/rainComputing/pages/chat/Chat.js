@@ -453,20 +453,26 @@ const ChatRc = () => {
     const res = await getMessagesByUserIdandGroupId(payload)
     if (res.success) {
       setMessages(res.groupMessages)
-    } else {
-      console.log("Failed to fetch Group message", res)
-      setNoNewMessage(res.groupMessages)
-    }
-    setChatLoader(false)
-  }
-  useEffect(() => {
-    if (nonewmessage) {
       const timer = setTimeout(() => {
         scrollToBottom()
       }, 500)
       return () => clearTimeout(timer)
+    } else {
+      console.log("Failed to fetch Group message", res)
+      setNoNewMessage(res.groupMessages)
+     
+          
     }
-  }, [messages])
+    setChatLoader(false)
+  }
+  // useEffect(() => {
+  //   if (nonewmessage) {
+  //     const timer = setTimeout(() => {
+  //       scrollToBottom()
+  //     }, 500)
+  //     return () => clearTimeout(timer)
+  //   }
+  // }, [messages])
   const filterChats = async () => {
     if (searchText !== "") {
       const filteredChats = chats?.filter(chat =>
@@ -728,7 +734,7 @@ const ChatRc = () => {
   }
   //Getting all the cases
   const ongetAllCases = async ({ isSet = false, isSearch = false }) => {
-    setCaseLoading(true)
+    
     const allCasesRes = await getCasesByUserId({
       userId: currentUser.userID,
       page: isSearch ? 1 : casePage,
@@ -755,7 +761,7 @@ const ChatRc = () => {
       setAllgroups(null)
     }
 
-    setCaseLoading(false)
+ 
   }
 
   // const onGetAllSubCases = async () => {
@@ -1101,8 +1107,8 @@ const ChatRc = () => {
       setIsVoiceMessage(false)
       setRecorder([])
       setBlobURL(null)
-      // await ongetAllChatRooms()
-      // await ongetAllCases({ isSet: false })
+      await ongetAllChatRooms()
+      await ongetAllCases({ isSet: false })
     }
     setLoading(false)
     // setReplyMsgModalOpen(false)
@@ -2414,9 +2420,7 @@ const ChatRc = () => {
                         )} */}
                       </div>
 
-                      {caseLoading ? (
-                        <ChatLoader />
-                      ) : (
+                    
                         <PerfectScrollbar style={{ height: "500px" }}>
                           <ul className="list-unstyled chat-list">
                             {allCases
@@ -2450,7 +2454,7 @@ const ChatRc = () => {
                               )}
                           </ul>
                         </PerfectScrollbar>
-                      )}
+                     
                     </TabPane>
                     <TabPane tabId="3">
                       <div className="my-2">
