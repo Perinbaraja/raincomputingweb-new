@@ -1789,16 +1789,16 @@ const ChatRc = () => {
   }, [privateReplyChatId, pageLoader])
 
   useEffect(() => {
-    if (groupReplyChatId && caseReplyChatId && !pageLoader && !caseLoading) {
+    if (groupReplyChatId && caseReplyChatId && !pageLoader) {
       const groupChat = allgroups?.find(gch => gch?._id === groupReplyChatId)
       const tempCase = allCases?.find(c => c?._id === caseReplyChatId)
       setactiveTab("2")
       setCurrentCase(tempCase)
       setCurrentChat(groupChat)
     }
-  }, [groupReplyChatId, pageLoader, caseReplyChatId, caseLoading])
+  }, [groupReplyChatId, pageLoader, caseReplyChatId])
   useEffect(() => {
-    if (groupChatId && caseChatId && !pageLoader && !caseLoading) {
+    if (groupChatId && caseChatId && !pageLoader) {
       const groupChat = allgroups?.find(gch => gch?._id === groupChatId)
       const tempCase = allCases?.find(c => c?._id === caseChatId)
       setactiveTab("2")
