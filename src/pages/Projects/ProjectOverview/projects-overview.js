@@ -1,76 +1,83 @@
-import React, { useEffect } from "react"
-import MetaTags from "react-meta-tags"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
-import { useLocation, withRouter } from "react-router-dom"
-import { connect } from "react-redux"
+import { Link, useLocation, withRouter } from "react-router-dom"
 import { isEmpty } from "lodash"
 import { Col, Container, Row } from "reactstrap"
+
 //Import Breadcrumb
-import Breadcrumbs from "components/Common/Breadcrumb"
-import { getProjectDetail as onGetProjectDetail } from "store/projects/actions"
 import ProjectDetail from "./projectDetail"
-import TeamMembers from "./teamMembers"
-import OverviewChart from "./overviewChart"
-import { options, series } from "common/data/projects"
-import AttachedFiles from "./attachedFiles"
-import Comments from "./comments"
-//IMPORT ATTORNEY DETAILS
-import { getAttorneyByid as onGetAttorneyDetails } from "store/projects/actions"
-//redux
-import { useSelector, useDispatch } from "react-redux"
+import { regAttorneyDetails } from "rainComputing/helpers/backend_helper"
+
 function useQuery() {
   const { search } = useLocation()
   return React.useMemo(() => new URLSearchParams(search), [search])
 }
 const ProjectsOverview = props => {
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true)
+  const [attorneyDetails,setAttorneyDetail] = useState({})
   let query = useQuery()
-  //Attorney Detail Update
-  const { projectDetail } = useSelector(state => ({
-    projectDetail: state.projects.attorney.msg,
-  }))
-  console.log("projectDetail ", projectDetail)
-  const {
-    match: { params },
-  } = props
-  //Attorney Details
-  useEffect(() => {
-    dispatch(onGetAttorneyDetails({ objectId: query.get("uid") }))
-  }, [])
+
+    const getAttorneyinfo = async () => {
+      setLoading(true)
+      const res = await regAttorneyDetails({id:query.get("uid")})
+      if (res) {
+        setAttorneyDetail(res.attorney)
+      setLoading(false)
+    }
+  }
+  useEffect(() =>{
+    getAttorneyinfo()
+  },[])
+
   return (
     <React.Fragment>
-      <div className="page-content">
-        <MetaTags>
-          <title>Project Overview | Rain - Admin & Dashboard Template</title>
-        </MetaTags>
+    
+      <div className="py-5 my-5">
+      {loading ? (
+              <Row>
+                <Col xs="12">
+                  <div className="text-center my-3">
+                    <Link to="#" className="text-success">
+                      <i className="bx bx-hourglass bx-spin me-2" />
+                      Loading. . .
+                    </Link>
+                  </div>
+                </Col>
+              </Row>
+            ) : (
         <Container fluid>
           {/* Render Breadcrumbs */}
           {/* <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" /> */}
-          {!isEmpty(projectDetail) && (
+          {!isEmpty(attorneyDetails) && (
             <>
               <Row>
-                <Col lg="8">
-                  <ProjectDetail project={projectDetail} />
+                <Col>
+                  <ProjectDetail project={attorneyDetails} />
                 </Col>
-                <Col lg="4">
+
+                
+                {/* <Col lg="4">
                   <TeamMembers team={projectDetail.team} />
-                </Col>
+                </Col> */}
               </Row>
               <Row>
-                <Col lg="4">
+                {/* <Col lg="4">
                   <OverviewChart options={options} series={series} />
-                </Col>
-                <Col lg="4">
+                </Col> */}
+                {/* <Col lg="4">
                   <AttachedFiles files={projectDetail.files} />
-                </Col>
-                <Col lg="4">
+                </Col> */}
+                {/* <Col lg="4">
                   <Comments comments={projectDetail.comments} />
-                </Col>
+                </Col> */}
               </Row>
+             
             </>
           )}
         </Container>
+        )}
       </div>
+
     </React.Fragment>
   )
 }

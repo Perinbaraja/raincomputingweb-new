@@ -20,7 +20,6 @@ import {
 } from "./actions"
 
 //Include Both Helper File with needed methods
-import { getProjects, getProjectsDetails, addNewProject, updateProject, deleteProject } from "helpers/fakebackend_helper"
 import { get } from "lodash"
 import {getAttorneyByID} from "helpers/backend_helper"
 
@@ -83,9 +82,7 @@ function* onAddNewProject({ payload: project }) {
 }
 function* onGetAttorneyByID({ payload: user }) {
   try {
-    console.log(user,"before call")
     const response = yield call(getAttorneyByID,{objectId:user.user.objectId});
-    console.log(response,'dinesh res');
     yield put(getProjectDetailSuccess(response))
   } catch (error) {
     //yield put(addProjectFail(error))

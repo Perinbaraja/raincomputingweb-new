@@ -1,4 +1,3 @@
-
 //
 // accordion.scss
 //
@@ -13,6 +12,7 @@
         font-weight: $font-weight-semibold;
         align-items: center;
         justify-content: space-between;
+
         &.collapsed {
             i.accor-plus-icon {
                 &:before {
@@ -21,7 +21,7 @@
             }
         }
 
-        .accor-plus-icon{
+        .accor-plus-icon {
             display: inline-block;
             font-size: 16px;
             height: 24px;
@@ -33,7 +33,7 @@
         }
     }
 
-    
+
     a {
 
         &.collapsed {
@@ -49,4 +49,8 @@
     .card-body {
         color: $text-muted;
     }
+}
+
+.accordion-body-rc {
+    background-color: $accordion-button-active-bg;
 }

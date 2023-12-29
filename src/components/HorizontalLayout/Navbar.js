@@ -2,34 +2,18 @@ import PropTypes from "prop-types"
 import React, { useState, useEffect } from "react"
 import { Row, Col, Collapse } from "reactstrap"
 import { Link, withRouter } from "react-router-dom"
-import classname from "classnames"
+import PDF from "assets/guide/guide.pdf"
 
 //i18n
 import { withTranslation } from "react-i18next"
 
 import { connect } from "react-redux"
 
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+
 const Navbar = props => {
-  const [dashboard, setdashboard] = useState(false)
-  const [ui, setui] = useState(false)
-  const [app, setapp] = useState(false)
-  const [email, setemail] = useState(false)
-  const [ecommerce, setecommerce] = useState(false)
-  const [crypto, setcrypto] = useState(false)
-  const [project, setproject] = useState(false)
-  const [task, settask] = useState(false)
-  const [contact, setcontact] = useState(false)
-  const [blog, setBlog] = useState(false)
-  const [component, setcomponent] = useState(false)
-  const [form, setform] = useState(false)
-  const [table, settable] = useState(false)
-  const [chart, setchart] = useState(false)
-  const [icon, seticon] = useState(false)
-  const [map, setmap] = useState(false)
-  const [extra, setextra] = useState(false)
-  const [invoice, setinvoice] = useState(false)
-  const [auth, setauth] = useState(false)
-  const [utility, setutility] = useState(false)
+  const { currentAttorney } = useUser()
+  const { currentUser } = useUser()
 
   useEffect(() => {
     var matchingMenuItem = null
@@ -85,12 +69,9 @@ const Navbar = props => {
               className="navbar-collapse"
               id="topnav-menu-content"
             >
-              <ul className="navbar-nav">
+              <ul className="navbar-nav text-white">
                 <li className="nav-item dropdown">
-                  <Link
-                    className="nav-link dropdown-toggle arrow-none"
-                    to="/contacts-grid"
-                  >
+                  <Link className="nav-link dropdown-toggle arrow-none" to="/">
                     <i className="bx bx-home-circle me-2"></i>
                     {props.t("Home")} {props.menuOpen}
                   </Link>
@@ -98,18 +79,62 @@ const Navbar = props => {
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle arrow-none"
-                    to="/rc-chat"
+                    to="/chat-rc"
                   >
                     <i className="bx bxl-messenger me-2"></i>
                     {props.t("Chat")} {props.menuOpen}
                   </Link>
                 </li>
+                {currentAttorney && currentAttorney?.status === "approved" && (
+                  <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/req-user"
+                    >
+                      <i className="bx bx-git-pull-request me-2"></i>
+                      {props.t("Requests")} {props.menuOpen}
+                    </Link>
+                  </li>
+                )}
+                
+                 {currentUser && !currentAttorney && (
+                 <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/appointment-status"
+                    >
+                      <i className="mdi mdi-connection me-2"></i>
+                      {props.t("Connection")} {props.menuOpen}
+                    </Link>
+                  </li>
+                   )} 
+                   <li className="nav-item dropdown">
+                    <Link
+                      className="nav-link dropdown-toggle arrow-none"
+                      to="/help"
+                    >
+                      <i className="mdi mdi-help me-2"></i>
+                      {props.t("Help")} {props.menuOpen}
+                    </Link>
+
+                  </li>
+                   {/* <li className=" dropdown">
+                    <a href={PDF}  download="guide.pdf"
+                      className="nav-link dropdown-toggle arrow-none"
+                     
+                    >
+                      <i className="mdi mdi-download "></i>
+                      
+                    </a>
+
+                  </li> */}
+
               </ul>
             </Collapse>
           </nav>
         </div>
       </div>
-    </React.Fragment>
+    </React.Fragment> 
   )
 }
 

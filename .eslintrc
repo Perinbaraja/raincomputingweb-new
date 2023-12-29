@@ -1,6 +1,7 @@
 {
   "rules": {
-    "no-undef": "off"
+    "no-undef": "off",
+    "react/no-unknown-property": ["off", { "ignore": ["download"] }]
   },
   "extends": [
     "plugin:react/recommended"

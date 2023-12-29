@@ -8,18 +8,23 @@
 }
 
 .avatar-sm {
-  height: 3rem;
-  width: 3rem;
+  height: 2.5rem;
+  width: 2.5rem;
 }
 
 .avatar-md {
-  height: 4.5rem;
-  width: 4.5rem;
+  height: 5rem;
+  width: 5rem;
+  border-radius:6px;
+  padding: 4px;
 }
 
 .avatar-lg {
-  height: 6rem;
-  width: 6rem;
+  height: 7rem;
+  width: 7rem;
+  border-radius:6px;
+  border:2px dotted #556ee6;
+  padding: 4px;
 }
 
 .avatar-xl {
@@ -28,8 +33,12 @@
 }
 
 .avatar-xl1 {
-  height: 9.5rem;
-  width: 9.5rem;
+  height: 6.8rem;
+  width: 6.8rem;
+  // border-radius:50%;
+  // border-radius:8px;
+  border:2px solid #556ee6;
+  padding: 4px;
 }
 .avatar-title {
   align-items: center;
@@ -57,4 +66,10 @@
       transform: translateY(-2px);
     }
   }
+}
+.ql-editor{
+  width: 694px;
+}
+.ql-toolbar.ql-snow{
+  border:none
 }

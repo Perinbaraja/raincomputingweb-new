@@ -7,12 +7,15 @@ import { logoutUser } from "../../store/actions"
 
 //redux
 import { useSelector, useDispatch } from "react-redux"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
 const Logout = props => {
   const dispatch = useDispatch()
+  const { setCurrentUser } = useUser()
 
   useEffect(() => {
     dispatch(logoutUser(props.history))
+    setCurrentUser(null)
   }, [dispatch])
 
   return <></>

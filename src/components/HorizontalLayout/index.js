@@ -18,8 +18,13 @@ import Navbar from "./Navbar"
 import Header from "./Header"
 import Footer from "./Footer"
 import RightSidebar from "../CommonForBoth/RightSidebar"
+import { useLocation } from 'react-router-dom';
+
 const Layout = props => {
   const dispatch = useDispatch()
+  const location = useLocation();
+
+  const ischat = location.pathname.includes('/chat-rc');
 
   const { topbarTheme, layoutWidth, isPreloader, showRightSidebar } =
     useSelector(state => ({
@@ -36,7 +41,7 @@ const Layout = props => {
     const title = props.location.pathname
     let currentage = title.charAt(1).toUpperCase() + title.slice(2)
 
-    document.title = currentage + " | Rain - Admin & Dashboard Template"
+    document.title = currentage + " | Rain Computing"
   }, [props.location.pathname])
 
   useEffect(() => {
@@ -118,9 +123,11 @@ const Layout = props => {
           isMenuOpened={isMenuOpened}
           openLeftMenuCallBack={openMenu}
         />
-        <Navbar menuOpen={isMenuOpened} />
+        {/* <Navbar menuOpen={isMenuOpened} /> */}
         <div className="main-content">{props.children}</div>
+        
         <Footer />
+      
       </div>
 
       {/* {showRightSidebar ? <RightSidebar /> : null} */}

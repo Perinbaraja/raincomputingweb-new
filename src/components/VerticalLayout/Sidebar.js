@@ -9,10 +9,10 @@ import SidebarContent from "./SidebarContent";
 
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/images/logo.svg";
-import logoLightPng from "../../assets/images/logo-light.png";
-import logoLightSvg from "../../assets/images/logo-light.svg";
-import logoDark from "../../assets/images/logo-dark.png";
+import rain from "../../assets/images/rain-drop.png";
+import rainlogo from "../../assets/images/RainCom_Logo.webp";
+import rain1logo from "../../assets/images/RainCom_Logo.webp";
+import rain1 from "../../assets/images/rain-drop.png";
 
 const Sidebar = props => {
 
@@ -20,21 +20,21 @@ const Sidebar = props => {
     <React.Fragment>
       <div className="vertical-menu">
         <div className="navbar-brand-box">
-          <Link to="/" className="logo logo-dark">
+          <Link to="/admin-page" className="logo logo-dark">
             <span className="logo-sm">
-              <img src={logo} alt="" height="22" />
+              <img src={rainlogo} alt="" height="40" />
             </span>
             <span className="logo-lg">
-              <img src={logoDark} alt="" height="17" />
+              <img src={rain1logo} alt="" height="35" />
             </span>
           </Link>
 
-          <Link to="/" className="logo logo-light">
+          <Link to="/admin-page" className="logo logo-light">
             <span className="logo-sm">
-              <img src={logoLightSvg} alt="" height="22" />
+              <img src={rain} alt="" height="22" />
             </span>
             <span className="logo-lg">
-              <img src={logoLightPng} alt="" height="19" />
+              <img src={rain1} alt="" height="19" />
             </span>
           </Link>
         </div>

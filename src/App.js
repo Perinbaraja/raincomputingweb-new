@@ -1,11 +1,12 @@
 import PropTypes from "prop-types"
 import React from "react"
+import LogRocket from "logrocket"
 
-import { Switch, BrowserRouter as Router } from "react-router-dom"
+import { Switch, BrowserRouter as Router, Route } from "react-router-dom"
 import { connect } from "react-redux"
 
 // Import Routes all
-import { authProtectedRoutes, publicRoutes } from "./routes"
+import { authProtectedRoutes, publicRoutes, adminRoutes } from "./routes"
 
 // Import all middleware
 import Authmiddleware from "./routes/route"
@@ -13,64 +14,53 @@ import Authmiddleware from "./routes/route"
 // layouts Format
 import VerticalLayout from "./components/VerticalLayout/"
 import HorizontalLayout from "./components/HorizontalLayout/"
+
 import NonAuthLayout from "./components/NonAuthLayout"
 
 // Import scss
 import "./assets/scss/theme.scss"
 
-// Import Firebase Configuration file
-// import { initFirebaseBackend } from "./helpers/firebase_helper"
-
-import fakeBackend from "./helpers/AuthType/fakeBackend"
-
-// Activating fake backend
-fakeBackend()
-
-// const firebaseConfig = {
-//   apiKey: process.env.                      ,
-//   authDomain: process.env.REACT_APP_AUTHDOMAIN,
-//   databaseURL: process.env.REACT_APP_DATABASEURL,
-//   projectId: process.env.REACT_APP_PROJECTID,
-//   storageBucket: process.env.REACT_APP_STORAGEBUCKET,
-//   messagingSenderId: process.env.REACT_APP_MESSAGINGSENDERID,
-//   appId: process.env.REACT_APP_APPID,
-//   measurementId: process.env.REACT_APP_MEASUREMENTID,
-// }
-
-// init firebase backend
-// initFirebaseBackend(firebaseConfig)
-
-//Custom
-
 import { ChatProvider } from "rainComputing/contextProviders/ChatProvider"
 import { useSocket } from "rainComputing/contextProviders/SocketProvider"
+import LandingGrid from "rainComputing/pages/landing/LandingGrid"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
 
-const App = props => {
+const App = () => {
+  const { currentUser } = useUser()
+  // LogRocket.init("jk2db1/demo", {
+  //   dom: {
+  //     textSanitizer: true,
+  //     inputSanitizer: true,
+  //   },
+  // })
+  // if (currentUser?.userID) {
+  //   LogRocket.identify(currentUser?.userID, {
+  //     name: currentUser?.firstname + " " + currentUser?.lastname,
+  //     email: currentUser?.email,
+  //   })
+  // }
+
   const { socket } = useSocket()
-  function getLayout() {
-    let layoutCls = VerticalLayout
-    switch (props.layout.layoutType) {
-      case "horizontal":
-        layoutCls = HorizontalLayout
-        break
-      default:
-        layoutCls = VerticalLayout
-        break
-    }
-    return layoutCls
-  }
 
-  const Layout = getLayout()
   return (
     <ChatProvider socket={socket}>
       {/* <NotificationsProvider> */}
       <React.Fragment>
         <Router>
           <Switch>
+            <Route
+              path="/"
+              exact
+              render={props => (
+                <HorizontalLayout>
+                  <LandingGrid {...props} />
+                </HorizontalLayout>
+              )}
+            />
             {publicRoutes.map((route, idx) => (
               <Authmiddleware
                 path={route.path}
-                layout={NonAuthLayout}
+                layout={HorizontalLayout}
                 component={route.component}
                 key={idx}
                 isAuthProtected={false}
@@ -81,10 +71,21 @@ const App = props => {
             {authProtectedRoutes.map((route, idx) => (
               <Authmiddleware
                 path={route.path}
-                layout={Layout}
+                layout={HorizontalLayout}
                 component={route.component}
                 key={idx}
                 isAuthProtected={true}
+                exact
+              />
+            ))}
+
+            {adminRoutes.map((route, idx) => (
+              <Authmiddleware
+                path={route.path}
+                layout={VerticalLayout}
+                component={route.component}
+                key={idx}
+                isAuthProtected={false}
                 exact
               />
             ))}
@@ -96,14 +97,4 @@ const App = props => {
   )
 }
 
-App.propTypes = {
-  layout: PropTypes.any,
-}
-
-const mapStateToProps = state => {
-  return {
-    layout: state.Layout,
-  }
-}
-
-export default connect(mapStateToProps, null)(App)
+export default App

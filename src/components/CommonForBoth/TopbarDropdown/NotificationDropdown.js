@@ -1,23 +1,81 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
-import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from "reactstrap"
+import { Dropdown, DropdownToggle, DropdownMenu, Row, Col,TabContent, Nav, NavItem, NavLink, UncontrolledTooltip } from "reactstrap"
 import SimpleBar from "simplebar-react"
-
-//Import images
-import avatar3 from "../../../assets/images/users/avatar-3.jpg"
-import avatar4 from "../../../assets/images/users/avatar-4.jpg"
-
-//i18n
 import { withTranslation } from "react-i18next"
 import { useNotifications } from "rainComputing/contextProviders/NotificationsProvider"
-import moment from "moment"
+import PrivateMsg from "rainComputing/components/chat/PrivateMsg"
+import GroupMsg from "rainComputing/components/chat/GroupMsg"
+import { useUser } from "rainComputing/contextProviders/UserProvider"
+import ChatLoader from "rainComputing/components/chat/ChatLoader"
+import PrivateReplyMsg from "rainComputing/components/chat/PrivateReplyMsg"
+import GroupReplyMsg from "rainComputing/components/chat/GroupReplyMsg"
+import classNames from "classnames";
+import { getRecentMessages } from "rainComputing/helpers/backend_helper"
+const NotificationDropdown = (props) => {
+  const { currentUser, setCurrentUser } = useUser();
+  const { notifications, setNotifications } = useNotifications();
+  const[recentNotifications,setRecentNotifications] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState("1");
+  const toggleTab = (tab) => {
+    console.log("tab:", tab)
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+    }
+  };
+  useEffect(() => {
+    // Check if there are new notifications
+    if (currentUser?.isNotifySound) {
+      const newNotifications = notifications.filter((notify) => !notify.playedSound);
+      if (newNotifications.length > 0) {
+        // Play the audio notification for each new notification
+        newNotifications.forEach((notify) => {
+          const audioElement = new Audio(currentUser?.notificationSound);
+          audioElement.play();
+          // Update the notification to mark it as played
+          notify.playedSound = true;
+        });
+        // setNotificationsInLocalStorage(notifications);
+        // To trigger re-render and update the notifications array in state
+        setNotifications([...notifications]);
+      }
+    }
+  }, [currentUser?.isNotifySound, notifications]);
+  // const setNotificationsInLocalStorage = (notifications) => {
+  //   try {
+  //     // const notificationsWithFlags = notifications.map((notification) => ({
+  //     //   ...notification,
+  //     //   isNew: true, // Add your boolean flag here, set to true by default
+  //     // }));
+  //     // Convert the notifications array to a JSON string
+  //     const notificationsJSON = JSON.stringify(notifications);
+  //     // Store the JSON string in local storage under a specific key
+  //     localStorage.setItem("notifications", notificationsJSON);
+  //   } catch (error) {
+  //     console.error("Error saving notifications to local storage:", error);
+  //   }
+  // };
+  // const previousNotifications = JSON.parse(localStorage.getItem("notifications"));
+  const toggleDropdown = () => {
+    setMenu(!menu);
+  };
 
-const NotificationDropdown = props => {
-  // Declare a new state variable, which we'll call "menu"
-  const { notifications } = useNotifications()
-  const [menu, setMenu] = useState(false)
-
+  const getAllRecentMessages = async() => {
+    const payload = {
+      userId: currentUser?.userID
+    }
+    const res = await getRecentMessages(payload)
+    if(res.success){
+      setRecentNotifications(res?.chats)
+    }
+  }
+  useEffect(()=> {
+    getAllRecentMessages()
+  },[currentUser,notifications])
+ 
   return (
     <React.Fragment>
       <Dropdown
@@ -30,144 +88,151 @@ const NotificationDropdown = props => {
           className="btn header-item noti-icon"
           tag="button"
           id="page-header-notifications-dropdown"
+          
         >
-          <i className="bx bx-bell" />
+          {currentUser && <i className="bx bx-bell" id="notificationTooltip"/>}
+          <UncontrolledTooltip
+          placement="bottom"
+          target="notificationTooltip"
+        >
+          Notification
+        </UncontrolledTooltip>
           {notifications.length > 0 && (
             <span className="badge bg-danger rounded-pill">
               {notifications.length}
             </span>
           )}
         </DropdownToggle>
-        {notifications.length > 0 && (
-          <DropdownMenu className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
-            <div className="p-3">
-              <Row className="align-items-center">
-                <Col>
-                  <h6 className="m-0"> {props.t("Notifications")} </h6>
-                </Col>
-                <div className="col-auto">
-                  <a href="/rc-chat" className="small">
-                    {" "}
-                    View All
-                  </a>
+        <DropdownMenu className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
+          <i className="px-2 py-1 bx bx-x close-icon d-flex justify-content-end"
+            style={{ cursor: "pointer", fontSize: "12px", position: "absolute", right: "2px", top: "30px", }}
+            onClick={toggleDropdown}>
+          </i>
+          <Nav pills justified>
+            <NavItem>
+              <NavLink
+                className={classNames({
+                  active: activeTab === "1",
+                })}
+                onClick={() => {
+                  toggleTab("1");
+                }}
+              >
+                {props.t("UnRead Messages")}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classNames({
+                  active: activeTab === "2",
+                })}
+                onClick={() => {
+                  toggleTab("2");
+                }}
+              >
+                {props.t("Recent Messages")}
+              </NavLink>
+            </NavItem>
+          </Nav>
+          <TabContent activeTab={activeTab} className="py-1">
+            {activeTab === "1" &&
+              (notifications.length === 0 ? (
+                <div className="d-flex justify-content-center py-2">
+                  <span>No Messages</span>
                 </div>
-              </Row>
-            </div>
-
-            <SimpleBar style={{ height: "230px" }}>
-              <Link to="/rc-chat" className="text-reset notification-item">
-                <div className="d-flex">
-                  <div className="avatar-xs me-3">
-                    <span className="avatar-title bg-primary rounded-circle font-size-16">
-                      <i className="bx bx-chat" />
-                    </span>
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="mt-0 mb-1">
-                      {props.t("Your have new messages")}
-                    </h6>
-                    <div className="font-size-12 text-muted">
-                      <p className="mb-1">
-                        {/* {props.t("If several languages coalesce the grammar")} */}
-                        {props.t(`${notifications.length} messages in chat`)}
-                      </p>
-                      <p className="mb-0">
-                        <i className="mdi mdi-clock-outline" />{" "}
-                        {moment(notifications[0].createdAt).format(
-                          "DD-MM-YY hh:mm"
-                        )}
-                      </p>
-                    </div>
-                  </div>
+              ) : (
+                loading ? (
+                  <ChatLoader />
+                ) : (
+                  notifications.length > 0 && (
+                    <SimpleBar style={{ height: "230px" }}>
+                      <div>
+                        <div className="p-3">
+                          <Row className="align-items-center">
+                            <Col>
+                              <h6 className="m-0"> {props.t("Notifications")} </h6>
+                            </Col>
+                            <div className="col-auto">
+                              <a href="/chat-rc" className="small">
+                                {" "}
+                                View All
+                              </a>
+                            </div>
+                          </Row>
+                        </div>
+                        {notifications.map((notify, i) => {
+                          if (notify.isReply && !notify.caseId) {
+                            return <PrivateReplyMsg notification={notify} key={i} />;
+                          } else if (notify.isReply && notify.caseId) {
+                            return <GroupReplyMsg notification={notify} key={i} />;
+                          } else if (notify.caseId) {
+                            return <GroupMsg notification={notify} key={i} />;
+                          } else {
+                            return (
+                              <div className="text-reset notification-item" key={i}>
+                                <PrivateMsg notification={notify} key={i} />
+                              </div>
+                            );
+                          }
+                        })}
+                      </div>
+                    </SimpleBar>
+                  )
+                )
+              ))
+            }
+            {activeTab === "2" &&
+              (notifications.length < 0 ? (
+                <div className="d-flex justify-content-center py-2">
+                  <span>No Messages</span>
                 </div>
-              </Link>
-              {/* <Link to="" className="text-reset notification-item">
-              <div className="d-flex">
-                <img
-                  src={avatar3}
-                  className="me-3 rounded-circle avatar-xs"
-                  alt="user-pic"
-                />
-                <div className="flex-grow-1">
-                  <h6 className="mt-0 mb-1">James Lemire</h6>
-                  <div className="font-size-12 text-muted">
-                    <p className="mb-1">
-                      {props.t("It will seem like simplified English") + "."}
-                    </p>
-                    <p className="mb-0">
-                      <i className="mdi mdi-clock-outline" />
-                      {props.t("1 hours ago")}{" "}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
-              {/* <Link to="" className="text-reset notification-item">
-              <div className="d-flex">
-                <div className="avatar-xs me-3">
-                  <span className="avatar-title bg-success rounded-circle font-size-16">
-                    <i className="bx bx-badge-check" />
-                  </span>
-                </div>
-                <div className="flex-grow-1">
-                  <h6 className="mt-0 mb-1">
-                    {props.t("Your item is shipped")}
-                  </h6>
-                  <div className="font-size-12 text-muted">
-                    <p className="mb-1">
-                      {props.t("If several languages coalesce the grammar")}
-                    </p>
-                    <p className="mb-0">
-                      <i className="mdi mdi-clock-outline" />{" "}
-                      {props.t("3 min ago")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
-
-              {/* <Link to="" className="text-reset notification-item">
-              <div className="d-flex">
-                <img
-                  src={avatar4}
-                  className="me-3 rounded-circle avatar-xs"
-                  alt="user-pic"
-                />
-                <div className="flex-grow-1">
-                  <h6 className="mt-0 mb-1">Salena Layfield</h6>
-                  <div className="font-size-12 text-muted">
-                    <p className="mb-1">
-                      {props.t(
-                        "As a skeptical Cambridge friend of mine occidental"
-                      ) + "."}
-                    </p>
-                    <p className="mb-0">
-                      <i className="mdi mdi-clock-outline" />
-                      {props.t("1 hours ago")}{" "}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
-            </SimpleBar>
-            {/* <div className="p-2 border-top d-grid">
-            <Link
-              className="btn btn-sm btn-link font-size-14 text-center"
-              to="#"
-            >
-              <i className="mdi mdi-arrow-right-circle me-1"></i>{" "}
-              <span key="t-view-more">{props.t("View More..")}</span>
-            </Link>
-          </div> */}
-          </DropdownMenu>
-        )}
+              ) : (
+                loading ? (
+                  <ChatLoader />
+                ) : (
+                  recentNotifications && (
+                    <SimpleBar style={{ height: "230px" }}>
+                      <div>
+                        <div className="p-3">
+                          <Row className="align-items-center">
+                            <Col>
+                              <h6 className="m-0"> {props.t("Notifications")} </h6>
+                            </Col>
+                            <div className="col-auto">
+                              <a href="/chat-rc" className="small">
+                                {" "}
+                                View All
+                              </a>
+                            </div>
+                          </Row>
+                        </div>
+                        {recentNotifications.map((notify, i) => {
+                          if (notify.isReply && !notify.caseId) {
+                            return <PrivateReplyMsg notification={notify} key={i} />;
+                          } else if (notify.isReply && notify.caseId) {
+                            return <GroupReplyMsg notification={notify} key={i} />;
+                          } else if (notify.caseId) {
+                            return <GroupMsg notification={notify} key={i} />;
+                          } else {
+                            return (
+                              <div className="text-reset notification-item" key={i}>
+                                <PrivateMsg notification={notify} key={i} />
+                              </div>
+                            );
+                          }
+                        })}
+                      </div>
+                    </SimpleBar>
+                  ))
+              )
+              )}
+          </TabContent>
+        </DropdownMenu>
       </Dropdown>
     </React.Fragment>
-  )
-}
-
+  );
+};
 export default withTranslation()(NotificationDropdown)
-
 NotificationDropdown.propTypes = {
   t: PropTypes.any,
 }
